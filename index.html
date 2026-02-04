@@ -4,34 +4,11 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>المحقق المخادع</title> 
-    <!-- Firebase SDK -->
-    <script type="module">
-  import { initializeApp } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-app.js";
-  import { getDatabase, ref as dbRef, get as dbGet, set as dbSet, update as dbUpdate } 
-    from "https://www.gstatic.com/firebasejs/9.23.0/firebase-database.js";
+    <!-- Firebase (Compat) -->
+<script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-database-compat.js"></script>
 
-  const firebaseConfig = {
-    apiKey: "PUT_YOUR_API_KEY",
-    authDomain: "PUT_YOUR_AUTH_DOMAIN",
-    databaseURL: "PUT_YOUR_DATABASE_URL",
-    projectId: "PUT_YOUR_PROJECT_ID",
-    storageBucket: "PUT_YOUR_STORAGE_BUCKET",
-    messagingSenderId: "PUT_YOUR_SENDER_ID",
-    appId: "PUT_YOUR_APP_ID"
-  };
-  const app = initializeApp(firebaseConfig);
-  const db = getDatabase(app);
-
-  window.db = db;
-  window.dbRef = dbRef;
-  window.dbGet = dbGet;
-  window.dbSet = dbSet;
-  window.dbUpdate = dbUpdate;
-</script>
-<script type="module">
-  import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js';
-  import { getDatabase, ref, set, get, onValue } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js';
-
+<script>
   const firebaseConfig = {
     apiKey: "AIzaSyB88NCDQzsUzHZgH07B63e4Dpxc3LfXSyY",
     authDomain: "detective-game-df960.firebaseapp.com",
@@ -40,27 +17,17 @@
     storageBucket: "detective-game-df960.firebasestorage.app",
     messagingSenderId: "25405560822",
     appId: "1:25405560822:web:72e3da05fb611c727d59d7"
-      async function loadGameState() {
-    if (!gameState.roomCode || !window.db) return null;
-
-    try {
-        const snapshot = await window.dbGet(
-            window.dbRef(window.db, `rooms/${gameState.roomCode}`)
-        );
-        return snapshot.exists() ? snapshot.val() : null;
-    } catch (error) {
-        console.error("loadGameState error:", error);
-        return null;
-    }
-}
   };
 
-  const app = initializeApp(firebaseConfig);
-  window.db = getDatabase(app);
-  window.dbRef = ref;
-  window.dbSet = set;
-  window.dbGet = get;
-  window.dbOnValue = onValue;
+  firebase.initializeApp(firebaseConfig);
+
+  window.db = firebase.database();
+  window.dbRef = (_db, path) => firebase.database().ref(path);
+  window.dbGet = (ref) => ref.get();
+  window.dbSet = (ref, data) => ref.set(data);
+  window.dbUpdate = (ref, data) => ref.update(data);
+</script>
+
 </script>
     <!-- Google Fonts - Arabic Kufi -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -72,18 +39,6 @@
             padding: 0;
             box-sizing: border-box;
         }
-async function saveGameState(data) {
-    if (!gameState.roomCode || !window.db) return;
-
-    try {
-        await window.dbSet(
-            window.dbRef(window.db, `rooms/${gameState.roomCode}`),
-            data
-        );
-    } catch (error) {
-        console.error("saveGameState error:", error);
-    }
-}
 
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
@@ -2678,6 +2633,18 @@ async function saveGameState(data) {
         console.error("loadGameState error:", error);
         return null;
     }
+}
+        async function saveGameState() {
+  if (!gameState.roomCode || !window.db) return;
+
+  try {
+    await window.dbSet(
+      window.dbRef(window.db, `rooms/${gameState.roomCode}`),
+      gameState
+    );
+  } catch (error) {
+    console.error("saveGameState error:", error);
+  }
 }
     </script>
 </body>
