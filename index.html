@@ -5,6 +5,29 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>المحقق المخادع</title> 
     <!-- Firebase SDK -->
+    <script type="module">
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-app.js";
+  import { getDatabase, ref as dbRef, get as dbGet, set as dbSet, update as dbUpdate } 
+    from "https://www.gstatic.com/firebasejs/9.23.0/firebase-database.js";
+
+  const firebaseConfig = {
+    apiKey: "PUT_YOUR_API_KEY",
+    authDomain: "PUT_YOUR_AUTH_DOMAIN",
+    databaseURL: "PUT_YOUR_DATABASE_URL",
+    projectId: "PUT_YOUR_PROJECT_ID",
+    storageBucket: "PUT_YOUR_STORAGE_BUCKET",
+    messagingSenderId: "PUT_YOUR_SENDER_ID",
+    appId: "PUT_YOUR_APP_ID"
+  };
+  const app = initializeApp(firebaseConfig);
+  const db = getDatabase(app);
+
+  window.db = db;
+  window.dbRef = dbRef;
+  window.dbGet = dbGet;
+  window.dbSet = dbSet;
+  window.dbUpdate = dbUpdate;
+</script>
 <script type="module">
   import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js';
   import { getDatabase, ref, set, get, onValue } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js';
@@ -17,6 +40,19 @@
     storageBucket: "detective-game-df960.firebasestorage.app",
     messagingSenderId: "25405560822",
     appId: "1:25405560822:web:72e3da05fb611c727d59d7"
+      async function loadGameState() {
+    if (!gameState.roomCode || !window.db) return null;
+
+    try {
+        const snapshot = await window.dbGet(
+            window.dbRef(window.db, `rooms/${gameState.roomCode}`)
+        );
+        return snapshot.exists() ? snapshot.val() : null;
+    } catch (error) {
+        console.error("loadGameState error:", error);
+        return null;
+    }
+}
   };
 
   const app = initializeApp(firebaseConfig);
@@ -36,6 +72,18 @@
             padding: 0;
             box-sizing: border-box;
         }
+async function saveGameState(data) {
+    if (!gameState.roomCode || !window.db) return;
+
+    try {
+        await window.dbSet(
+            window.dbRef(window.db, `rooms/${gameState.roomCode}`),
+            data
+        );
+    } catch (error) {
+        console.error("saveGameState error:", error);
+    }
+}
 
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
