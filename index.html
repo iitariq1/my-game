@@ -1431,7 +1431,7 @@
             listenToRoom(gameState.roomCode);
             document.getElementById('hostControls').classList.remove('hidden');
         }
-        function listenToRoom(roomCode) {
+       function listenToRoom(roomCode) {
   const roomRef = window.dbRef(window.db, `rooms/${roomCode}`);
 
   roomRef.on('value', (snapshot) => {
@@ -1440,8 +1440,17 @@
     const data = snapshot.val();
     gameState = data;
     updateLobby();
+
+    // ✅ هنا الانتقال التلقائي
+    if (gameState.phase === "game") {
+      showGame();
+      revealRole();
+    } else {
+      showLobby();
+    }
   });
 }
+
 
         async function joinRoom() {
             const playerName = document.getElementById('playerName').value.trim();
@@ -1490,7 +1499,7 @@ listenToRoom(roomCode);
             });
 
             await saveGameState();
-            
+            listenToRoom(roomCode);
             showLobby();
             updateLobby();
             pollForUpdates();
