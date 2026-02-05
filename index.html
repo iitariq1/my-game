@@ -1425,7 +1425,7 @@
 
             // Save to storage
             await saveGameState();
-            
+            pollForUpdates();
             showLobby();
             updateLobby();
             document.getElementById('hostControls').classList.remove('hidden');
