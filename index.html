@@ -999,7 +999,7 @@
                     <option value="12">12 لاعب</option>
                 </select>
             </div>
-            <button onclick="createRoom()">إنشاء الغرفة</button>
+            <button id="createRoomBtn" onclick="createRoom()">إنشاء الغرفة</button>
             <button onclick="showHome()" style="background: #6c757d; margin-top: 10px;">رجوع</button>
         </div>
 
@@ -1014,7 +1014,7 @@
                 <label>رمز الغرفة:</label>
                 <input type="text" id="roomCodeInput" placeholder="أدخل رمز الغرفة">
             </div>
-            <button onclick="joinRoom()">انضمام</button>
+            <button id="joinRoomBtn" onclick="joinRoom()">انضمام</button>
             <button onclick="showHome()" style="background: #6c757d; margin-top: 10px;">رجوع</button>
         </div>
 
@@ -1439,7 +1439,11 @@
 
             try {
                 // إظهار رسالة تحميل
-                const createBtn = document.querySelector('#createRoomScreen button');
+                const createBtn = document.getElementById('createRoomBtn');
+                if (!createBtn) {
+                    console.error('Create button not found');
+                    return;
+                }
                 const originalText = createBtn.textContent;
                 createBtn.textContent = 'جاري الإنشاء...';
                 createBtn.disabled = true;
@@ -1499,16 +1503,25 @@
 
             // التحقق من جاهزية Firebase
             if (!window.db) {
-                alert('جاري تحميل الاتصال... حاول مرة أخرى');
+                alert('جاري تحميل الاتصال... حاول مرة أخرى بعد ثانية');
                 return;
             }
 
+            // الحصول على زر الانضمام
+            const joinBtn = document.getElementById('joinRoomBtn');
+            if (!joinBtn) {
+                console.error('Join button not found');
+                return;
+            }
+
+            const originalText = joinBtn.textContent;
+            
             try {
                 // إظهار رسالة تحميل
-                const joinBtn = document.querySelector('#joinRoomScreen button');
-                const originalText = joinBtn.textContent;
                 joinBtn.textContent = 'جاري الانضمام...';
                 joinBtn.disabled = true;
+
+                console.log('Attempting to join room:', roomCode);
 
                 gameState.roomCode = roomCode;
                 gameState.playerName = playerName;
@@ -1517,6 +1530,8 @@
 
                 // Load room data
                 const roomData = await loadGameState();
+                
+                console.log('Room data loaded:', roomData);
                 
                 if (!roomData) {
                     alert('الغرفة غير موجودة. تأكد من رمز الغرفة.');
@@ -1550,7 +1565,12 @@
                     isHost: false
                 });
 
-                await saveGameState();
+                console.log('Updating players list...');
+                
+                // استخدام تحديث جزئي للاعبين فقط بدلاً من الكتابة فوق كل البيانات
+                await updatePlayersOnly();
+                
+                console.log('Players updated successfully');
                 
                 joinBtn.textContent = originalText;
                 joinBtn.disabled = false;
@@ -1559,13 +1579,14 @@
                 updateLobby();
                 pollForUpdates();
                 
+                console.log('Joined room successfully!');
+                
             } catch (error) {
                 console.error('Join room error:', error);
-                alert('حدث خطأ أثناء الانضمام. حاول مرة أخرى.');
+                alert('حدث خطأ أثناء الانضمام: ' + error.message);
                 gameState.roomCode = null;
-                const joinBtn = document.querySelector('#joinRoomScreen button');
                 if (joinBtn) {
-                    joinBtn.textContent = 'انضمام';
+                    joinBtn.textContent = originalText;
                     joinBtn.disabled = false;
                 }
             }
@@ -1807,7 +1828,24 @@
 
         function revealRole() {
             const myPlayer = gameState.players.find(p => p.id === gameState.playerId);
+            
+            if (!myPlayer) {
+                console.error('Player not found in players list!');
+                console.log('My ID:', gameState.playerId);
+                console.log('Players:', gameState.players);
+                alert('حدث خطأ: لم يتم العثور على بياناتك. حاول إعادة تحميل الصفحة.');
+                return;
+            }
+
+            if (!myPlayer.role) {
+                console.error('Player has no role assigned!');
+                console.log('My Player:', myPlayer);
+                alert('حدث خطأ: لم يتم تعيين دور لك. انتظر بدء اللعبة.');
+                return;
+            }
+
             gameState.role = myPlayer.role;
+            console.log('Role revealed:', gameState.role);
 
             // Show role switcher in demo mode
             if (gameState.roomCode && gameState.roomCode.startsWith('DEMO')) {
@@ -2656,16 +2694,22 @@
 
         // Polling for updates
         let pollInterval = null;
+        let cluesPollInterval = null;
 
         function pollForUpdates() {
             if (pollInterval) {
                 clearInterval(pollInterval);
             }
 
+            console.log('Started polling for updates...');
+
             pollInterval = setInterval(async () => {
                 const roomData = await loadGameState();
                 
-                if (!roomData) return;
+                if (!roomData) {
+                    console.log('No room data found');
+                    return;
+                }
 
                 // Update players list in lobby
                 if (!gameState.gameStarted && roomData.players) {
@@ -2676,10 +2720,13 @@
 
                 // Check if game started
                 if (!gameState.gameStarted && roomData.gameStarted) {
-                    // إيقاف التحديث المتكرر للغرفة بمجرد بدء اللعبة
+                    console.log('Game started! Loading game data...');
+                    
+                    // إيقاف التحديث المتكرر للغرفة
                     clearInterval(pollInterval);
                     pollInterval = null;
                     
+                    // نسخ كل البيانات من الخادم
                     gameState.gameStarted = true;
                     gameState.murderWeapon = roomData.murderWeapon || null;
                     gameState.murderEvidence = roomData.murderEvidence || null;
@@ -2690,15 +2737,31 @@
                     gameState.clues = roomData.clues || [];
                     gameState.votes = roomData.votes || [];
 
+                    // العثور على دور اللاعب الحالي
+                    const myPlayer = gameState.players.find(p => p.id === gameState.playerId);
+                    if (myPlayer) {
+                        gameState.role = myPlayer.role;
+                        console.log('My role:', gameState.role);
+                    }
+
                     showGame();
                     revealRole();
+                    
+                    // بدء الاستماع للتحديثات أثناء اللعبة
+                    pollForClues();
                 }
             }, 2000);
         }
 
         function pollForClues() {
-            // كل اللاعبين يحتاجون للتحديث
-            setInterval(async () => {
+            // تجنب تشغيل أكثر من polling واحد
+            if (cluesPollInterval) {
+                clearInterval(cluesPollInterval);
+            }
+
+            console.log('Started polling for clues...');
+
+            cluesPollInterval = setInterval(async () => {
                 const roomData = await loadGameState();
                 if (roomData) {
                     // Update clues
@@ -2816,6 +2879,20 @@
                 );
             } catch (error) {
                 console.error("saveGameState error:", error);
+            }
+        }
+
+        // دالة لتحديث اللاعبين فقط (للانضمام)
+        async function updatePlayersOnly() {
+            if (!gameState.roomCode || !window.db) return;
+
+            try {
+                await window.dbUpdate(
+                    window.dbRef(window.db, `rooms/${gameState.roomCode}`),
+                    { players: gameState.players }
+                );
+            } catch (error) {
+                console.error("updatePlayersOnly error:", error);
             }
         }
     </script>
