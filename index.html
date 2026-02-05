@@ -1602,66 +1602,56 @@ listenToRoom(roomCode);
     return;
   }
 
+  // 1) جهّز الحالة كاملة أول
   gameState.phase = "game";
   gameState.gameStarted = true;
 
-            // Assign roles
-            const roles = assignRoles(gameState.players.length);
-             await saveGameState();
-            gameState.gameStarted = true;
-            // Don't set murder weapon and evidence yet - murderer will choose
-            gameState.murderWeapon = null;
-            gameState.murderEvidence = null;
+  // 2) وزّع الأدوار
+  const roles = assignRoles(gameState.players.length);
 
-            // Generate 6 clue cards for forensic scientist
-            gameState.forensicClueCards = generateForensicClueCards();
+  // 3) صفّر أشياء الجريمة
+  gameState.murderWeapon = null;
+  gameState.murderEvidence = null;
 
-            // Distribute weapons and evidence to players (except forensic scientist)
-            const shuffledWeapons = shuffleArray(WEAPONS);
-            const shuffledEvidence = shuffleArray(EVIDENCE);
-            
-            let weaponIndex = 0;
-            let evidenceIndex = 0;
-            const weaponsPerPlayer = 4;
-            const evidencePerPlayer = 4;
-            
-            gameState.players = gameState.players.map((player, index) => {
-                const playerRole = roles[index];
-                
-                // Forensic scientist doesn't get weapons or evidence
-                if (playerRole === 'forensic') {
-                    return {
-                        ...player,
-                        role: playerRole,
-                        weapons: [],
-                        evidence: []
-                    };
-                }
-                
-                // Other players get 4 weapons and 4 evidence
-                const playerWeapons = shuffledWeapons.slice(weaponIndex, weaponIndex + weaponsPerPlayer);
-                const playerEvidence = shuffledEvidence.slice(evidenceIndex, evidenceIndex + evidencePerPlayer);
-                
-                weaponIndex += weaponsPerPlayer;
-                evidenceIndex += evidencePerPlayer;
-                
-                return {
-                    ...player,
-                    role: playerRole,
-                    weapons: playerWeapons,
-                    evidence: playerEvidence
-                };
-            });
+  // 4) بطاقات الطبيب الشرعي
+  gameState.forensicClueCards = generateForensicClueCards();
 
-            // Find murderer
-            const murderer = gameState.players.find(p => p.role === 'murderer');
-            gameState.murdererName = murderer.name;
+  // 5) وزّع الأسلحة/الأدلة
+  const shuffledWeapons = shuffleArray(WEAPONS);
+  const shuffledEvidence = shuffleArray(EVIDENCE);
 
-            await saveGameState();
-            
-            showGame();
-            revealRole();
-        }
+  let weaponIndex = 0;
+  let evidenceIndex = 0;
+  const weaponsPerPlayer = 4;
+  const evidencePerPlayer = 4;
+
+  gameState.players = gameState.players.map((player, index) => {
+    const playerRole = roles[index];
+
+    if (playerRole === 'forensic') {
+      return { ...player, role: playerRole, weapons: [], evidence: [] };
+    }
+
+    const playerWeapons = shuffledWeapons.slice(weaponIndex, weaponIndex + weaponsPerPlayer);
+    const playerEvidence = shuffledEvidence.slice(evidenceIndex, evidenceIndex + evidencePerPlayer);
+
+    weaponIndex += weaponsPerPlayer;
+    evidenceIndex += evidencePerPlayer;
+
+    return { ...player, role: playerRole, weapons: playerWeapons, evidence: playerEvidence };
+  });
+
+  // 6) حدّد المجرم
+  const murderer = gameState.players.find(p => p.role === 'murderer');
+  gameState.murdererName = murderer ? murderer.name : null;
+
+  // 7) الآن احفظ مرة وحدة فقط
+  await saveGameState();
+
+  // 8) المضيف يدخل لعبته + يكشف دوره
+  showGame();
+  revealRole();
+}
 
         function generateForensicClueCards() {
             const cards = [];
