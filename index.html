@@ -13,7 +13,7 @@
   const firebaseConfig = {
     apiKey: "AIzaSyB88NCDQzsUzHZgH07B63e4Dpxc3LfXSyY",
     authDomain: "detective-game-df960.firebaseapp.com",
-    databaseURL: "https://detective-game-df960-default-rtdb.europe-west1.firebasedatabase.app",
+    databaseURL: "https://detective-game-df960-default-rtdb.firebaseio.com",
     projectId: "detective-game-df960",
     storageBucket: "detective-game-df960.firebasestorage.app",
     messagingSenderId: "25405560822",
@@ -980,7 +980,7 @@
                     <option value="12">12 لاعب</option>
                 </select>
             </div>
-            <button type="button" onclick="createRoom()">إنشاء الغرفة</button>
+            <button onclick="createRoom()">إنشاء الغرفة</button>
             <button onclick="showHome()" style="background: #6c757d; margin-top: 10px;">رجوع</button>
         </div>
 
@@ -1428,39 +1428,13 @@
             
             showLobby();
             updateLobby();
-            listenToRoom(gameState.roomCode);
             document.getElementById('hostControls').classList.remove('hidden');
         }
-       function listenToRoom(roomCode) {
-  const roomRef = window.dbRef(window.db, `rooms/${roomCode}`);
-
-  roomRef.on('value', (snapshot) => {
-    if (!snapshot.exists()) return;
-
-    const data = snapshot.val();
-    gameState = data;
-    updateLobby();
-
-    // ✅ هنا الانتقال التلقائي
-    if (gameState.phase === "game") {
-  showGame();
-
-  // ❗ نكشف الدور مرة واحدة فقط لكل لاعب
-  if (!gameState.roleRevealed) {
-    revealRole();
-    gameState.roleRevealed = true;
-  }
-} else {
-  showLobby();
-}
-  });
-}
-
 
         async function joinRoom() {
             const playerName = document.getElementById('playerName').value.trim();
             const roomCode = document.getElementById('roomCodeInput').value.trim().toUpperCase();
-listenToRoom(roomCode);
+
             if (!playerName) {
                 alert('الرجاء إدخال اسمك');
                 return;
@@ -1475,7 +1449,6 @@ listenToRoom(roomCode);
             gameState.playerName = playerName;
             gameState.playerId = generatePlayerId();
             gameState.isHost = false;
-            
 
             // Load room data
             const roomData = await loadGameState();
@@ -1504,7 +1477,7 @@ listenToRoom(roomCode);
             });
 
             await saveGameState();
-            listenToRoom(roomCode);
+            
             showLobby();
             updateLobby();
             pollForUpdates();
@@ -1606,66 +1579,86 @@ listenToRoom(roomCode);
                 };
             });
 
-          
+            // Find murderer
+            const murderer = gameState.players.find(p => p.role === 'murderer');
+            gameState.murdererName = murderer.name;
+
+            // تهيئة المصفوفات
+            gameState.selectedClues = [];
+            gameState.clues = [];
+            gameState.votes = [];
+            gameState.hasVoted = false;
+
+            showGame();
+            revealRole();
+            
+            // إظهار زر إعادة التجربة في الوضع التجريبي
+            document.getElementById('demoRestartBtn').classList.remove('hidden');
         }
 
-       async function startGame() {
+        async function startGame() {
+            if (gameState.players.length < 4) {
+                alert('يجب أن يكون هناك 4 لاعبين على الأقل');
+                return;
+            }
 
-  if (gameState.players.length < 4) {
-    alert("يجب أن يكون هناك 4 لاعبين على الأقل");
-    return;
-  }
+            // Assign roles
+            const roles = assignRoles(gameState.players.length);
+            
+            gameState.gameStarted = true;
+            // Don't set murder weapon and evidence yet - murderer will choose
+            gameState.murderWeapon = null;
+            gameState.murderEvidence = null;
 
-  // 1) جهّز الحالة كاملة أول
-  gameState.phase = "game";
-  gameState.gameStarted = true;
+            // Generate 6 clue cards for forensic scientist
+            gameState.forensicClueCards = generateForensicClueCards();
 
-  // 2) وزّع الأدوار
-  const roles = assignRoles(gameState.players.length);
+            // Distribute weapons and evidence to players (except forensic scientist)
+            const shuffledWeapons = shuffleArray(WEAPONS);
+            const shuffledEvidence = shuffleArray(EVIDENCE);
+            
+            let weaponIndex = 0;
+            let evidenceIndex = 0;
+            const weaponsPerPlayer = 4;
+            const evidencePerPlayer = 4;
+            
+            gameState.players = gameState.players.map((player, index) => {
+                const playerRole = roles[index];
+                
+                // Forensic scientist doesn't get weapons or evidence
+                if (playerRole === 'forensic') {
+                    return {
+                        ...player,
+                        role: playerRole,
+                        weapons: [],
+                        evidence: []
+                    };
+                }
+                
+                // Other players get 4 weapons and 4 evidence
+                const playerWeapons = shuffledWeapons.slice(weaponIndex, weaponIndex + weaponsPerPlayer);
+                const playerEvidence = shuffledEvidence.slice(evidenceIndex, evidenceIndex + evidencePerPlayer);
+                
+                weaponIndex += weaponsPerPlayer;
+                evidenceIndex += evidencePerPlayer;
+                
+                return {
+                    ...player,
+                    role: playerRole,
+                    weapons: playerWeapons,
+                    evidence: playerEvidence
+                };
+            });
 
-  // 3) صفّر أشياء الجريمة
-  gameState.murderWeapon = null;
-  gameState.murderEvidence = null;
+            // Find murderer
+            const murderer = gameState.players.find(p => p.role === 'murderer');
+            gameState.murdererName = murderer.name;
 
-  // 4) بطاقات الطبيب الشرعي
-  gameState.forensicClueCards = generateForensicClueCards();
-
-  // 5) وزّع الأسلحة/الأدلة
-  const shuffledWeapons = shuffleArray(WEAPONS);
-  const shuffledEvidence = shuffleArray(EVIDENCE);
-
-  let weaponIndex = 0;
-  let evidenceIndex = 0;
-  const weaponsPerPlayer = 4;
-  const evidencePerPlayer = 4;
-
-  gameState.players = gameState.players.map((player, index) => {
-    const playerRole = roles[index];
-
-    if (playerRole === 'forensic') {
-      return { ...player, role: playerRole, weapons: [], evidence: [] };
-    }
-
-    const playerWeapons = shuffledWeapons.slice(weaponIndex, weaponIndex + weaponsPerPlayer);
-    const playerEvidence = shuffledEvidence.slice(evidenceIndex, evidenceIndex + evidencePerPlayer);
-
-    weaponIndex += weaponsPerPlayer;
-    evidenceIndex += evidencePerPlayer;
-
-    return { ...player, role: playerRole, weapons: playerWeapons, evidence: playerEvidence };
-  });
-
-  // 6) حدّد المجرم
-  const murderer = gameState.players.find(p => p.role === 'murderer');
-  gameState.murdererName = murderer ? murderer.name : null;
-gameState.phase = "game";
-gameState.roleRevealed = false; // مهم عشان كل لاعب يكشف دوره مرة
-
-  // 7) الآن احفظ مرة وحدة فقط
-  await saveGameState();
-
- 
-}
+            await saveGameState();
+            
+            showGame();
+            revealRole();
+        }
 
         function generateForensicClueCards() {
             const cards = [];
@@ -1958,27 +1951,37 @@ gameState.roleRevealed = false; // مهم عشان كل لاعب يكشف دور
                 return;
             }
 
-            player.weapons.forEach(weapon => {
-                const card = document.createElement('div');
-                card.className = 'evidence-card';
-                card.textContent = weapon;
-                if (weapon === gameState.murderWeapon && gameState.role === 'murderer') {
-                    card.style.borderColor = '#dc3545';
-                    card.style.fontWeight = 'bold';
-                }
-                weaponCardsDiv.appendChild(card);
-            });
+            // التحقق من وجود الأسلحة
+            if (player.weapons && Array.isArray(player.weapons)) {
+                player.weapons.forEach(weapon => {
+                    const card = document.createElement('div');
+                    card.className = 'evidence-card';
+                    card.textContent = weapon;
+                    if (weapon === gameState.murderWeapon && gameState.role === 'murderer') {
+                        card.style.borderColor = '#dc3545';
+                        card.style.fontWeight = 'bold';
+                    }
+                    weaponCardsDiv.appendChild(card);
+                });
+            } else {
+                weaponCardsDiv.innerHTML = '<p style="text-align: center; color: #666;">لا توجد أسلحة</p>';
+            }
 
-            player.evidence.forEach(evidence => {
-                const card = document.createElement('div');
-                card.className = 'evidence-card';
-                card.textContent = evidence;
-                if (evidence === gameState.murderEvidence && gameState.role === 'murderer') {
-                    card.style.borderColor = '#dc3545';
-                    card.style.fontWeight = 'bold';
-                }
-                evidenceCardsDiv.appendChild(card);
-            });
+            // التحقق من وجود الأدلة
+            if (player.evidence && Array.isArray(player.evidence)) {
+                player.evidence.forEach(evidence => {
+                    const card = document.createElement('div');
+                    card.className = 'evidence-card';
+                    card.textContent = evidence;
+                    if (evidence === gameState.murderEvidence && gameState.role === 'murderer') {
+                        card.style.borderColor = '#dc3545';
+                        card.style.fontWeight = 'bold';
+                    }
+                    evidenceCardsDiv.appendChild(card);
+                });
+            } else {
+                evidenceCardsDiv.innerHTML = '<p style="text-align: center; color: #666;">لا توجد أدلة</p>';
+            }
         }
 
         function displayAllPlayersCards() {
@@ -2021,23 +2024,31 @@ gameState.roleRevealed = false; // مهم عشان كل لاعب يكشف دور
                 
                 container.appendChild(playerSection);
 
-                // Add weapons
+                // Add weapons - التحقق من وجود الأسلحة
                 const weaponsDiv = document.getElementById(`player-${player.id}-weapons`);
-                player.weapons.forEach(weapon => {
-                    const card = document.createElement('span');
-                    card.className = 'mini-card';
-                    card.textContent = weapon;
-                    weaponsDiv.appendChild(card);
-                });
+                if (player.weapons && Array.isArray(player.weapons)) {
+                    player.weapons.forEach(weapon => {
+                        const card = document.createElement('span');
+                        card.className = 'mini-card';
+                        card.textContent = weapon;
+                        weaponsDiv.appendChild(card);
+                    });
+                } else {
+                    weaponsDiv.innerHTML = '<span class="mini-card" style="color: #999;">لا توجد أسلحة</span>';
+                }
 
-                // Add evidence
+                // Add evidence - التحقق من وجود الأدلة
                 const evidenceDiv = document.getElementById(`player-${player.id}-evidence`);
-                player.evidence.forEach(evidence => {
-                    const card = document.createElement('span');
-                    card.className = 'mini-card';
-                    card.textContent = evidence;
-                    evidenceDiv.appendChild(card);
-                });
+                if (player.evidence && Array.isArray(player.evidence)) {
+                    player.evidence.forEach(evidence => {
+                        const card = document.createElement('span');
+                        card.className = 'mini-card';
+                        card.textContent = evidence;
+                        evidenceDiv.appendChild(card);
+                    });
+                } else {
+                    evidenceDiv.innerHTML = '<span class="mini-card" style="color: #999;">لا توجد أدلة</span>';
+                }
             });
         }
 
@@ -2198,8 +2209,12 @@ gameState.roleRevealed = false; // مهم عشان كل لاعب يكشف دور
             suspectEvidenceSelect.innerHTML = '<option value="">-- اختر المشتبه به أولاً --</option>';
             suspectEvidenceSelect.disabled = true;
 
+            // إزالة المستمعات القديمة لتجنب التكرار
+            const newSuspectSelect = suspectPlayerSelect.cloneNode(true);
+            suspectPlayerSelect.parentNode.replaceChild(newSuspectSelect, suspectPlayerSelect);
+
             // When suspect is selected, populate their weapons and evidence
-            suspectPlayerSelect.addEventListener('change', function() {
+            newSuspectSelect.addEventListener('change', function() {
                 const selectedPlayerName = this.value;
                 
                 if (!selectedPlayerName) {
@@ -2217,22 +2232,28 @@ gameState.roleRevealed = false; // مهم عشان كل لاعب يكشف دور
                 // Populate weapons of the selected suspect
                 suspectWeaponSelect.innerHTML = '<option value="">-- اختر سلاح --</option>';
                 suspectWeaponSelect.disabled = false;
-                selectedPlayer.weapons.forEach(weapon => {
-                    const option = document.createElement('option');
-                    option.value = weapon;
-                    option.textContent = weapon;
-                    suspectWeaponSelect.appendChild(option);
-                });
+                
+                if (selectedPlayer.weapons && Array.isArray(selectedPlayer.weapons)) {
+                    selectedPlayer.weapons.forEach(weapon => {
+                        const option = document.createElement('option');
+                        option.value = weapon;
+                        option.textContent = weapon;
+                        suspectWeaponSelect.appendChild(option);
+                    });
+                }
 
                 // Populate evidence of the selected suspect
                 suspectEvidenceSelect.innerHTML = '<option value="">-- اختر دليل --</option>';
                 suspectEvidenceSelect.disabled = false;
-                selectedPlayer.evidence.forEach(evidence => {
-                    const option = document.createElement('option');
-                    option.value = evidence;
-                    option.textContent = evidence;
-                    suspectEvidenceSelect.appendChild(option);
-                });
+                
+                if (selectedPlayer.evidence && Array.isArray(selectedPlayer.evidence)) {
+                    selectedPlayer.evidence.forEach(evidence => {
+                        const option = document.createElement('option');
+                        option.value = evidence;
+                        option.textContent = evidence;
+                        suspectEvidenceSelect.appendChild(option);
+                    });
+                }
             });
         }
 
@@ -2545,15 +2566,6 @@ gameState.roleRevealed = false; // مهم عشان كل لاعب يكشف دور
             `;
         }
 
-        // Storage Functions (using localStorage for demo, can be replaced with backend)
-        async function saveGameState() {
-    if (!gameState.roomCode || !window.db) return;
-    try {
-        await window.dbSet(window.dbRef(window.db, `rooms/${gameState.roomCode}`), gameState);
-    } catch (error) {
-        console.error('Error:', error);
-    }
-}
         // Polling for updates
         let pollInterval = null;
 
@@ -2567,20 +2579,28 @@ gameState.roleRevealed = false; // مهم عشان كل لاعب يكشف دور
                 
                 if (!roomData) return;
 
-                // Update players list
-                if (!gameState.gameStarted && roomData.players.length !== gameState.players.length) {
+                // Update players list in lobby
+                if (!gameState.gameStarted && roomData.players) {
                     gameState.players = roomData.players;
+                    gameState.maxPlayers = roomData.maxPlayers;
                     updateLobby();
                 }
 
                 // Check if game started
                 if (!gameState.gameStarted && roomData.gameStarted) {
+                    // إيقاف التحديث المتكرر للغرفة بمجرد بدء اللعبة
+                    clearInterval(pollInterval);
+                    pollInterval = null;
+                    
                     gameState.gameStarted = true;
-                    gameState.murderWeapon = roomData.murderWeapon;
-                    gameState.murderEvidence = roomData.murderEvidence;
+                    gameState.murderWeapon = roomData.murderWeapon || null;
+                    gameState.murderEvidence = roomData.murderEvidence || null;
                     gameState.murdererName = roomData.murdererName;
                     gameState.players = roomData.players;
                     gameState.forensicClueCards = roomData.forensicClueCards || [];
+                    gameState.selectedClues = roomData.selectedClues || [];
+                    gameState.clues = roomData.clues || [];
+                    gameState.votes = roomData.votes || [];
 
                     showGame();
                     revealRole();
@@ -2589,10 +2609,7 @@ gameState.roleRevealed = false; // مهم عشان كل لاعب يكشف دور
         }
 
         function pollForClues() {
-            if (gameState.role === 'forensic') {
-                return; // Forensic scientist doesn't need to poll for their own clues
-            }
-
+            // كل اللاعبين يحتاجون للتحديث
             setInterval(async () => {
                 const roomData = await loadGameState();
                 if (roomData) {
@@ -2601,6 +2618,11 @@ gameState.roleRevealed = false; // مهم عشان كل لاعب يكشف دور
                         gameState.clues = roomData.clues;
                         gameState.selectedClues = roomData.selectedClues || [];
                         displayPublicClues();
+                        
+                        // تحديث عرض الأدلة للطبيب الشرعي أيضاً
+                        if (gameState.role === 'forensic') {
+                            displayForensicClues();
+                        }
                     }
                     
                     // Update votes
@@ -2609,63 +2631,73 @@ gameState.roleRevealed = false; // مهم عشان كل لاعب يكشف دور
                         displayVotes();
                     }
                     
-                    // Update murder weapon and evidence if changed
+                    // Update murder weapon and evidence if changed (from murderer's choice)
                     if (roomData.murderWeapon && roomData.murderEvidence) {
-                        if (gameState.murderWeapon !== roomData.murderWeapon || 
-                            gameState.murderEvidence !== roomData.murderEvidence) {
+                        const weaponChanged = gameState.murderWeapon !== roomData.murderWeapon;
+                        const evidenceChanged = gameState.murderEvidence !== roomData.murderEvidence;
+                        
+                        if (weaponChanged || evidenceChanged) {
                             gameState.murderWeapon = roomData.murderWeapon;
                             gameState.murderEvidence = roomData.murderEvidence;
                             
                             // Update for accomplice
                             if (gameState.role === 'accomplice') {
-                                document.getElementById('accompliceWeapon').textContent = gameState.murderWeapon;
-                                document.getElementById('accompliceEvidence').textContent = gameState.murderEvidence;
+                                const weaponEl = document.getElementById('accompliceWeapon');
+                                const evidenceEl = document.getElementById('accompliceEvidence');
+                                if (weaponEl) weaponEl.textContent = gameState.murderWeapon;
+                                if (evidenceEl) evidenceEl.textContent = gameState.murderEvidence;
                             }
                             
                             // Update for forensic
                             if (gameState.role === 'forensic') {
-                                document.getElementById('forensicWeapon').textContent = gameState.murderWeapon;
-                                document.getElementById('forensicEvidence').textContent = gameState.murderEvidence;
+                                const weaponEl = document.getElementById('forensicWeapon');
+                                const evidenceEl = document.getElementById('forensicEvidence');
+                                if (weaponEl) weaponEl.textContent = gameState.murderWeapon;
+                                if (evidenceEl) evidenceEl.textContent = gameState.murderEvidence;
                             }
                         }
                     }
+
+                    // تحديث بيانات اللاعبين إذا تغيرت
+                    if (roomData.players) {
+                        gameState.players = roomData.players;
+                    }
                 }
-            }, 3000);
+            }, 2500);
         }
 
         // Initialize
         window.addEventListener('load', () => {
             console.log('Deception: Murder in Hong Kong - Game Loaded');
         });
+
+        // Storage Functions
         async function loadGameState() {
-    if (!gameState.roomCode || !window.db) return null;
+            if (!gameState.roomCode || !window.db) return null;
 
-    try {
-        const snapshot = await window.dbGet(
-            window.dbRef(window.db, `rooms/${gameState.roomCode}`)
-        );
-        return snapshot.exists() ? snapshot.val() : null;
-    } catch (error) {
-        console.error("loadGameState error:", error);
-        return null;
-    }
-}
+            try {
+                const snapshot = await window.dbGet(
+                    window.dbRef(window.db, `rooms/${gameState.roomCode}`)
+                );
+                return snapshot.exists() ? snapshot.val() : null;
+            } catch (error) {
+                console.error("loadGameState error:", error);
+                return null;
+            }
+        }
+
         async function saveGameState() {
-  if (!gameState.roomCode || !window.db) return;
+            if (!gameState.roomCode || !window.db) return;
 
-  try {
-    await window.dbSet(
-      window.dbRef(window.db, `rooms/${gameState.roomCode}`),
-      gameState
-    );
-  } catch (error) {
-    console.error("saveGameState error:", error);
-  }
-}
-window.createRoom = createRoom;
-window.joinRoom = joinRoom;
-window.showHome = showHome;
-
+            try {
+                await window.dbSet(
+                    window.dbRef(window.db, `rooms/${gameState.roomCode}`),
+                    gameState
+                );
+            } catch (error) {
+                console.error("saveGameState error:", error);
+            }
+        }
     </script>
 </body>
 </html>
