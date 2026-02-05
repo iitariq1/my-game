@@ -1443,11 +1443,16 @@
 
     // ✅ هنا الانتقال التلقائي
     if (gameState.phase === "game") {
-      showGame();
-      revealRole();
-    } else {
-      showLobby();
-    }
+  showGame();
+
+  // ❗ نكشف الدور مرة واحدة فقط لكل لاعب
+  if (!gameState.roleRevealed) {
+    revealRole();
+    gameState.roleRevealed = true;
+  }
+} else {
+  showLobby();
+}
   });
 }
 
@@ -1653,13 +1658,13 @@ listenToRoom(roomCode);
   // 6) حدّد المجرم
   const murderer = gameState.players.find(p => p.role === 'murderer');
   gameState.murdererName = murderer ? murderer.name : null;
+gameState.phase = "game";
+gameState.roleRevealed = false; // مهم عشان كل لاعب يكشف دوره مرة
 
   // 7) الآن احفظ مرة وحدة فقط
   await saveGameState();
 
-  // 8) المضيف يدخل لعبته + يكشف دوره
-  showGame();
-  revealRole();
+ 
 }
 
         function generateForensicClueCards() {
