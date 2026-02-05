@@ -20,8 +20,9 @@
         }
 
         .container {
-            max-width: 800px;
+            max-width: 900px;
             margin: 0 auto;
+            padding-bottom: 200px;
         }
 
         .screen { display: none; }
@@ -56,113 +57,115 @@
         }
 
         button {
-            width: 100%;
-            padding: 12px;
+            padding: 10px 20px;
             border: none;
             border-radius: 8px;
-            font-size: 16px;
+            font-size: 14px;
             cursor: pointer;
             font-family: 'Cairo', sans-serif;
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             color: white;
-            margin: 5px 0;
-            transition: transform 0.2s;
+            margin: 3px;
+            transition: all 0.2s;
         }
 
-        button:hover { transform: scale(1.02); }
-        button:disabled { opacity: 0.5; cursor: not-allowed; }
+        button:hover { transform: scale(1.02); opacity: 0.9; }
+        button:disabled { opacity: 0.5; cursor: not-allowed; transform: none; }
 
+        .btn-full { width: 100%; margin: 5px 0; }
         .btn-danger { background: linear-gradient(135deg, #e74c3c 0%, #c0392b 100%); }
         .btn-success { background: linear-gradient(135deg, #27ae60 0%, #2ecc71 100%); }
         .btn-warning { background: linear-gradient(135deg, #f39c12 0%, #e67e22 100%); }
         .btn-secondary { background: #6c757d; }
+        .btn-small { padding: 5px 10px; font-size: 11px; }
 
-        /* قائمة اللاعبين */
-        .players-list {
-            display: flex;
-            flex-direction: column;
-            gap: 10px;
-        }
-
+        /* بطاقات اللاعبين */
         .player-card {
             background: rgba(255,255,255,0.95);
             color: #333;
             padding: 15px;
             border-radius: 12px;
-            display: flex;
-            flex-direction: column;
-            gap: 10px;
+            margin-bottom: 15px;
+        }
+
+        .player-card.is-forensic {
+            background: linear-gradient(135deg, #3498db20, #2980b920);
+            border: 2px solid #3498db;
         }
 
         .player-header {
             display: flex;
             justify-content: space-between;
             align-items: center;
+            margin-bottom: 10px;
+            flex-wrap: wrap;
+            gap: 10px;
         }
 
         .player-name {
             font-weight: bold;
-            font-size: 1.1em;
+            font-size: 1.2em;
             background: #fff;
             color: #000;
-            padding: 5px 15px;
-            border-radius: 20px;
-            border: 2px solid #333;
+            padding: 8px 20px;
+            border-radius: 25px;
+            border: 3px solid #333;
+            display: inline-block;
+        }
+
+        .player-name.forensic-badge {
+            background: #3498db;
+            color: white;
+            border-color: #2980b9;
         }
 
         .player-items {
-            display: none;
+            display: flex;
             flex-wrap: wrap;
             gap: 5px;
             margin-top: 10px;
         }
 
-        .player-card.expanded .player-items { display: flex; }
-
         .item-btn {
-            width: auto;
-            padding: 8px 12px;
-            font-size: 12px;
-            margin: 2px;
-            background: #e0e0e0;
+            padding: 6px 10px;
+            font-size: 11px;
+            background: #f0f0f0;
             color: #333;
+            border-radius: 5px;
         }
+
+        .item-btn.weapon { border-right: 3px solid #e74c3c; }
+        .item-btn.evidence { border-right: 3px solid #3498db; }
 
         .item-btn.selected {
-            background: #667eea;
-            color: white;
+            background: #667eea !important;
+            color: white !important;
         }
 
-        .item-btn.weapon { border-left: 3px solid #e74c3c; }
-        .item-btn.evidence { border-left: 3px solid #3498db; }
-
-        .vote-btn {
-            width: auto;
-            padding: 8px 20px;
-            background: #e74c3c;
+        .vote-section {
+            margin-top: 15px;
+            padding-top: 15px;
+            border-top: 2px dashed #ddd;
             display: none;
         }
 
-        .player-card.ready-to-vote .vote-btn { display: inline-block; }
+        .player-card.has-selection .vote-section { display: block; }
 
         .vote-info {
-            background: rgba(0,0,0,0.1);
+            background: rgba(231, 76, 60, 0.1);
+            border: 1px solid #e74c3c;
             padding: 10px;
             border-radius: 8px;
+            margin-top: 10px;
             font-size: 0.9em;
-            display: none;
         }
-
-        .player-card.voted .vote-info { display: block; }
-        .player-card.voted .player-items { display: none; }
-        .player-card.voted .vote-btn { display: none; }
 
         /* بطاقة الدور */
         .role-card {
             text-align: center;
-            padding: 30px;
-            border-radius: 20px;
-            margin-bottom: 20px;
+            padding: 20px;
+            border-radius: 15px;
+            margin-bottom: 15px;
         }
 
         .role-card.murderer { background: linear-gradient(135deg, #c0392b, #e74c3c); }
@@ -171,27 +174,27 @@
         .role-card.forensic { background: linear-gradient(135deg, #2980b9, #3498db); }
         .role-card.investigator { background: linear-gradient(135deg, #27ae60, #2ecc71); }
 
-        .role-icon { font-size: 4em; }
-        .role-title { font-size: 1.8em; margin: 10px 0; }
+        .role-icon { font-size: 3em; }
+        .role-title { font-size: 1.5em; margin: 10px 0; }
 
-        /* لوحة الطبيب الشرعي العائمة */
+        /* لوحة الطبيب الشرعي */
         .forensic-panel {
             position: fixed;
-            bottom: 10px;
-            left: 10px;
-            right: 10px;
-            background: rgba(41, 128, 185, 0.95);
-            border-radius: 15px;
-            padding: 10px;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: linear-gradient(135deg, #2980b9ee, #3498dbee);
+            padding: 10px 15px;
             z-index: 1000;
-            max-height: 50vh;
+            max-height: 60vh;
             overflow-y: auto;
             transition: all 0.3s;
             backdrop-filter: blur(10px);
+            border-top: 3px solid #ffd700;
         }
 
         .forensic-panel.minimized {
-            max-height: 50px;
+            max-height: 45px;
             overflow: hidden;
         }
 
@@ -200,104 +203,157 @@
             justify-content: space-between;
             align-items: center;
             cursor: pointer;
-            padding: 5px;
+            padding: 5px 0;
         }
 
-        .forensic-panel-toggle {
-            background: rgba(255,255,255,0.2);
-            border: none;
-            color: white;
+        .forensic-panel-header h3 { font-size: 1em; }
+
+        .toggle-btn {
+            background: rgba(255,255,255,0.3);
             width: 30px;
             height: 30px;
             border-radius: 50%;
-            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
         }
 
-        .forensic-clue-card {
-            background: rgba(255,255,255,0.1);
-            border-radius: 10px;
+        .forensic-secret {
+            background: rgba(0,0,0,0.2);
             padding: 10px;
+            border-radius: 10px;
+            margin: 10px 0;
+            font-size: 0.9em;
+        }
+
+        .forensic-secret p { margin: 5px 0; }
+
+        .clue-card {
+            background: rgba(255,255,255,0.15);
+            border-radius: 10px;
+            padding: 12px;
             margin: 10px 0;
         }
 
-        .clue-options {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 5px;
-            margin-top: 10px;
-        }
+        .clue-card h4 { margin-bottom: 8px; font-size: 0.95em; }
+        .clue-card.used { opacity: 0.5; }
 
-        .clue-option-btn {
-            width: auto;
-            padding: 6px 12px;
-            font-size: 12px;
+        .clue-options { display: flex; flex-wrap: wrap; gap: 5px; }
+
+        .clue-opt-btn {
+            padding: 5px 10px;
+            font-size: 11px;
             background: rgba(255,255,255,0.2);
         }
 
-        .clue-option-btn.selected {
-            background: #27ae60;
+        .clue-opt-btn.selected { background: #27ae60; }
+
+        .round-info {
+            background: rgba(255,215,0,0.2);
+            padding: 10px;
+            border-radius: 8px;
+            text-align: center;
+            margin: 10px 0;
         }
 
         /* الأدلة العامة */
         .public-clues {
-            background: rgba(39, 174, 96, 0.2);
+            background: rgba(39, 174, 96, 0.15);
             border: 2px solid #27ae60;
             border-radius: 15px;
             padding: 15px;
             margin-bottom: 15px;
         }
 
+        .public-clues h3 { color: #2ecc71; margin-bottom: 10px; }
+
         .clue-item {
             background: rgba(255,255,255,0.1);
-            padding: 10px;
+            padding: 8px 12px;
             border-radius: 8px;
             margin: 5px 0;
+            font-size: 0.9em;
         }
 
-        /* شاشة النتائج */
-        .results-screen {
-            text-align: center;
+        /* اختيار القاتل */
+        .murderer-selection {
+            background: rgba(192, 57, 43, 0.2);
+            border: 2px solid #c0392b;
+            border-radius: 15px;
+            padding: 20px;
+            margin-bottom: 15px;
+        }
+
+        .murderer-selection h3 { color: #e74c3c; margin-bottom: 15px; }
+
+        .selection-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+            gap: 8px;
+        }
+
+        .selection-btn {
+            padding: 10px;
+            font-size: 12px;
+            background: rgba(255,255,255,0.1);
+            border: 2px solid transparent;
+        }
+
+        .selection-btn.selected {
+            background: #c0392b;
+            border-color: #ffd700;
+        }
+
+        /* النتائج */
+        .results-box {
+            background: rgba(0,0,0,0.8);
+            border-radius: 20px;
             padding: 30px;
+            text-align: center;
+            margin-top: 20px;
         }
 
-        .results-screen.win { background: linear-gradient(135deg, #27ae60, #2ecc71); }
-        .results-screen.lose { background: linear-gradient(135deg, #c0392b, #e74c3c); }
+        .results-box.win { border: 3px solid #27ae60; }
+        .results-box.lose { border: 3px solid #e74c3c; }
 
-        .result-icon { font-size: 5em; }
-        .result-title { font-size: 2em; margin: 20px 0; }
+        .result-icon { font-size: 4em; }
+        .result-title { font-size: 1.8em; margin: 15px 0; }
 
-        /* معلومات سرية */
-        .secret-info {
-            background: rgba(0,0,0,0.3);
-            border-radius: 10px;
+        .truth-reveal {
+            background: rgba(255,255,255,0.1);
             padding: 15px;
-            margin: 10px 0;
+            border-radius: 10px;
+            margin: 15px 0;
+            text-align: right;
         }
 
+        .truth-reveal p { margin: 8px 0; }
+
+        /* الانتظار */
         .room-code {
-            font-size: 2em;
+            font-size: 2.5em;
             font-weight: bold;
             color: #ffd700;
-            letter-spacing: 5px;
+            letter-spacing: 8px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.5);
         }
 
         .lobby-player {
             background: rgba(255,255,255,0.1);
-            padding: 10px 15px;
+            padding: 12px 15px;
             border-radius: 8px;
-            margin: 5px 0;
+            margin: 8px 0;
             display: flex;
             justify-content: space-between;
+            align-items: center;
         }
 
-        .lobby-player.host { border-right: 3px solid #ffd700; }
+        .lobby-player.host { border-right: 4px solid #ffd700; }
 
-        /* تنبيهات */
         .alert {
             padding: 15px;
             border-radius: 10px;
             margin: 10px 0;
-            text-align: center;
         }
 
         .alert-info { background: rgba(52, 152, 219, 0.3); }
@@ -307,22 +363,38 @@
 
         .hidden { display: none !important; }
 
-        /* الأدوات الخاصة */
         .my-items {
             background: rgba(0,0,0,0.2);
             border-radius: 10px;
-            padding: 10px;
+            padding: 12px;
             margin: 10px 0;
         }
 
-        .my-items h4 { margin-bottom: 10px; color: #ffd700; }
-        .my-items span { 
-            display: inline-block; 
-            background: rgba(255,255,255,0.1); 
-            padding: 5px 10px; 
-            border-radius: 5px; 
+        .my-items h4 { margin-bottom: 8px; color: #ffd700; font-size: 0.95em; }
+        .my-items .item-tag {
+            display: inline-block;
+            background: rgba(255,255,255,0.15);
+            padding: 4px 10px;
+            border-radius: 5px;
             margin: 3px;
-            font-size: 0.9em;
+            font-size: 0.85em;
+        }
+
+        .secret-info {
+            background: rgba(0,0,0,0.3);
+            border-radius: 10px;
+            padding: 15px;
+            margin: 10px 0;
+        }
+
+        .secret-info p { margin: 5px 0; }
+
+        .suspects-info {
+            background: rgba(241, 196, 15, 0.2);
+            border: 2px solid #f1c40f;
+            border-radius: 10px;
+            padding: 15px;
+            margin: 10px 0;
         }
     </style>
 </head>
@@ -336,23 +408,22 @@
             </div>
             
             <div class="card">
-                <p style="text-align: center; margin-bottom: 20px; line-height: 1.8;">
-                    حدثت جريمة قتل! القاتل والشريك يحاولان الإفلات، والطبيب الشرعي يعرف الحقيقة ويساعد المحققين بالأدلة.
-                    الشاهد يعرف القاتل والشريك لكنه لا يعرف تفاصيل الجريمة.
+                <p style="text-align: center; margin-bottom: 20px; line-height: 1.8; font-size: 0.95em;">
+                    جريمة قتل غامضة! القاتل يختار سلاحه ودليله، والشريك يساعده في الإفلات.
+                    الطبيب الشرعي يعرف كل شيء ويقدم الأدلة للمحققين.
+                    الشاهد يعرف المتهمَين لكن لا يعرف التفاصيل!
                 </p>
-                <button onclick="showScreen('createRoomScreen')">🏠 إنشاء غرفة</button>
-                <button onclick="showScreen('joinRoomScreen')" class="btn-secondary">🚪 انضمام لغرفة</button>
+                <button onclick="showScreen('createRoomScreen')" class="btn-full">🏠 إنشاء غرفة</button>
+                <button onclick="showScreen('joinRoomScreen')" class="btn-full btn-secondary">🚪 انضمام لغرفة</button>
             </div>
         </div>
 
         <!-- إنشاء غرفة -->
         <div id="createRoomScreen" class="screen">
-            <div class="header">
-                <h1>إنشاء غرفة جديدة</h1>
-            </div>
+            <div class="header"><h1>إنشاء غرفة جديدة</h1></div>
             <div class="card">
                 <label>اسمك:</label>
-                <input type="text" id="hostName" placeholder="أدخل اسمك">
+                <input type="text" id="hostName" placeholder="أدخل اسمك" maxlength="15">
                 
                 <label>عدد اللاعبين:</label>
                 <select id="playerCount">
@@ -361,27 +432,29 @@
                     <option value="6">6 لاعبين</option>
                     <option value="7">7 لاعبين</option>
                     <option value="8">8 لاعبين</option>
+                    <option value="9">9 لاعبين</option>
+                    <option value="10">10 لاعبين</option>
+                    <option value="11">11 لاعب</option>
+                    <option value="12">12 لاعب</option>
                 </select>
                 
-                <button onclick="createRoom()">إنشاء الغرفة</button>
-                <button onclick="showScreen('homeScreen')" class="btn-secondary">رجوع</button>
+                <button onclick="createRoom()" class="btn-full btn-success">إنشاء الغرفة</button>
+                <button onclick="showScreen('homeScreen')" class="btn-full btn-secondary">رجوع</button>
             </div>
         </div>
 
-        <!-- الانضمام لغرفة -->
+        <!-- الانضمام -->
         <div id="joinRoomScreen" class="screen">
-            <div class="header">
-                <h1>الانضمام لغرفة</h1>
-            </div>
+            <div class="header"><h1>الانضمام لغرفة</h1></div>
             <div class="card">
                 <label>اسمك:</label>
-                <input type="text" id="playerName" placeholder="أدخل اسمك">
+                <input type="text" id="playerName" placeholder="أدخل اسمك" maxlength="15">
                 
                 <label>رمز الغرفة:</label>
-                <input type="text" id="roomCodeInput" placeholder="أدخل رمز الغرفة" style="text-transform: uppercase;">
+                <input type="text" id="roomCodeInput" placeholder="مثال: ABCD" maxlength="4" style="text-transform: uppercase; text-align: center; font-size: 1.5em; letter-spacing: 5px;">
                 
-                <button onclick="joinRoom()">انضمام</button>
-                <button onclick="showScreen('homeScreen')" class="btn-secondary">رجوع</button>
+                <button onclick="joinRoom()" class="btn-full btn-success">انضمام</button>
+                <button onclick="showScreen('homeScreen')" class="btn-full btn-secondary">رجوع</button>
             </div>
         </div>
 
@@ -390,13 +463,14 @@
             <div class="header">
                 <h1>غرفة الانتظار</h1>
                 <div class="room-code" id="displayRoomCode">----</div>
+                <p style="margin-top:10px;">شارك الرمز مع أصدقائك</p>
             </div>
             <div class="card">
                 <h3>اللاعبون (<span id="playerCountDisplay">0</span>/<span id="maxPlayerDisplay">4</span>)</h3>
                 <div id="lobbyPlayersList"></div>
             </div>
             <div id="hostControls" class="hidden">
-                <button onclick="startGame()" class="btn-success" id="startBtn">بدء اللعبة</button>
+                <button onclick="startGame()" class="btn-full btn-success" id="startBtn">🎮 بدء اللعبة</button>
             </div>
         </div>
 
@@ -412,94 +486,132 @@
             <!-- معلومات سرية -->
             <div id="secretInfo" class="secret-info hidden"></div>
 
+            <!-- معلومات الشاهد -->
+            <div id="witnessInfo" class="suspects-info hidden"></div>
+
+            <!-- اختيار القاتل للسلاح والدليل -->
+            <div id="murdererSelection" class="murderer-selection hidden">
+                <h3>🔪 اختر سلاح الجريمة والدليل:</h3>
+                <p style="margin-bottom:15px;font-size:0.9em;">اختر سلاحاً واحداً ودليلاً واحداً من أدواتك</p>
+                
+                <h4 style="margin:10px 0;">⚔️ الأسلحة:</h4>
+                <div id="murdererWeapons" class="selection-grid"></div>
+                
+                <h4 style="margin:15px 0 10px;">🔍 الأدلة:</h4>
+                <div id="murdererEvidence" class="selection-grid"></div>
+                
+                <button onclick="confirmMurderChoice()" class="btn-full btn-danger" style="margin-top:20px;" id="confirmMurderBtn" disabled>
+                    ✓ تأكيد الاختيار
+                </button>
+            </div>
+
+            <!-- انتظار القاتل -->
+            <div id="waitingForMurderer" class="alert alert-warning hidden">
+                <h3>⏳ انتظر...</h3>
+                <p>القاتل يختار سلاح الجريمة والدليل</p>
+            </div>
+
             <!-- أدواتي -->
-            <div id="myItems" class="my-items">
+            <div id="myItems" class="my-items hidden">
                 <h4>🎒 أدواتي:</h4>
                 <div id="myWeapons"></div>
                 <div id="myEvidence"></div>
             </div>
 
             <!-- الأدلة العامة -->
-            <div class="public-clues">
+            <div id="publicCluesSection" class="public-clues hidden">
                 <h3>📋 أدلة الطبيب الشرعي:</h3>
                 <div id="publicCluesList">
-                    <p style="color: #aaa;">لم يتم تقديم أدلة بعد...</p>
+                    <p style="color: #aaa;">انتظر الطبيب الشرعي...</p>
                 </div>
             </div>
 
-            <!-- قائمة اللاعبين للتصويت -->
-            <div class="card">
-                <h3>👥 اللاعبون:</h3>
-                <div id="playersVotingList" class="players-list"></div>
+            <!-- قائمة اللاعبين -->
+            <div id="playersSection" class="card hidden">
+                <h3>👥 اللاعبون - اختر المتهم:</h3>
+                <div id="playersVotingList"></div>
             </div>
 
-            <!-- شاشة النتائج -->
+            <!-- النتائج -->
             <div id="gameResults" class="hidden"></div>
         </div>
 
         <!-- لوحة الطبيب الشرعي -->
-        <div id="forensicPanel" class="forensic-panel hidden">
+        <div id="forensicPanel" class="forensic-panel hidden minimized">
             <div class="forensic-panel-header" onclick="toggleForensicPanel()">
-                <span>🔬 لوحة الطبيب الشرعي</span>
-                <button class="forensic-panel-toggle" id="panelToggleBtn">▼</button>
+                <h3>🔬 لوحة الطبيب الشرعي</h3>
+                <span class="toggle-btn" id="panelToggleBtn">▲</span>
             </div>
             <div id="forensicContent">
-                <div class="secret-info">
-                    <p>🔪 <strong>القاتل:</strong> <span id="forensicMurderer">-</span></p>
-                    <p>🤝 <strong>الشريك:</strong> <span id="forensicAccomplice">-</span></p>
-                    <p>👁️ <strong>الشاهد:</strong> <span id="forensicWitness">-</span></p>
-                    <p>⚔️ <strong>السلاح:</strong> <span id="forensicWeapon">-</span></p>
-                    <p>🔍 <strong>الدليل:</strong> <span id="forensicEvidence">-</span></p>
+                <div class="forensic-secret">
+                    <p>🔪 <strong>القاتل:</strong> <span id="fMurderer">-</span></p>
+                    <p>🤝 <strong>الشريك:</strong> <span id="fAccomplice">-</span></p>
+                    <p>👁️ <strong>الشاهد:</strong> <span id="fWitness">-</span></p>
+                    <hr style="margin:10px 0;border-color:rgba(255,255,255,0.2);">
+                    <p>⚔️ <strong>السلاح:</strong> <span id="fWeapon">انتظر اختيار القاتل</span></p>
+                    <p>🔍 <strong>الدليل:</strong> <span id="fEvidence">انتظر اختيار القاتل</span></p>
                 </div>
+                
+                <div class="round-info">
+                    <strong>الجولة: <span id="currentRound">1</span>/3</strong>
+                    <span id="roundStatus"></span>
+                </div>
+
                 <div id="forensicClueCards"></div>
+                
+                <button onclick="nextRound()" class="btn-full btn-warning" id="nextRoundBtn" style="display:none;">
+                    🔄 الجولة التالية (تبديل بطاقة)
+                </button>
             </div>
         </div>
     </div>
 
     <script>
-        // ==================== Firebase ====================
-        var firebaseConfig = {
+        // =============== Firebase ===============
+        firebase.initializeApp({
             apiKey: "AIzaSyB88NCDQzsUzHZgH07B63e4Dpxc3LfXSyY",
             authDomain: "detective-game-df960.firebaseapp.com",
             databaseURL: "https://detective-game-df960-default-rtdb.europe-west1.firebasedatabase.app",
             projectId: "detective-game-df960"
-        };
+        });
+        var db = firebase.database();
 
-        firebase.initializeApp(firebaseConfig);
-        window.db = firebase.database();
-
-        // ==================== Game Data ====================
+        // =============== بيانات اللعبة ===============
         var WEAPONS = [
             '🔫 مسدس', '🔪 سكين', '🪢 حبل', '☠️ سم', '🪓 فأس', '🔨 مطرقة',
-            '⚾ عصا بيسبول', '✂️ مقص', '💉 حقنة', '🔌 كابل كهربائي',
-            '🪛 مفك براغي', '🔩 قضيب حديدي', '⚔️ سيف', '🏹 قوس ونشاب',
-            '⛓️ سلسلة', '🔧 مفتاح إنجليزي', '🪨 حجر ثقيل', '🗡️ خنجر',
-            '🍳 مقلاة', '🏏 هراوة', '⚡ صاعق كهربائي', '🔥 نار'
+            '⚾ مضرب', '✂️ مقص', '💉 حقنة', '🔌 كابل', '🪛 مفك', '🔩 قضيب حديد',
+            '⚔️ سيف', '🏹 قوس', '⛓️ سلسلة', '🔧 مفتاح', '🪨 حجر', '🗡️ خنجر',
+            '🍳 مقلاة', '🏏 عصا', '⚡ صاعق', '🔥 نار', '🧊 جليد', '💊 دواء'
         ];
 
         var EVIDENCE = [
-            '👣 آثار أقدام', '🩸 بقعة دم', '💇 شعرة', '👆 بصمة', '🧵 قماش ممزق',
-            '📱 هاتف', '🔑 مفتاح', '💍 خاتم', '🎫 تذكرة', '📝 رسالة',
-            '🧤 قفاز', '👓 نظارة', '⌚ ساعة', '🎭 قناع', '🧪 عينة',
-            '📷 صورة', '💳 بطاقة', '🗝️ مفتاح قديم', '📜 وثيقة', '💊 حبوب'
+            '👣 أثر قدم', '🩸 دم', '💇 شعرة', '👆 بصمة', '🧵 قماش', '📱 هاتف',
+            '🔑 مفتاح', '💍 خاتم', '🎫 تذكرة', '📝 رسالة', '🧤 قفاز', '👓 نظارة',
+            '⌚ ساعة', '🎭 قناع', '🧪 عينة', '📷 صورة', '💳 بطاقة', '🗝️ مفتاح قديم',
+            '📜 وثيقة', '💊 حبوب', '🎵 تسجيل', '📧 إيميل', '🖊️ قلم', '👟 حذاء'
         ];
 
         var CLUE_CARDS = [
-            { title: 'مكان الجريمة', options: ['غرفة النوم', 'المطبخ', 'الحمام', 'غرفة المعيشة', 'المرآب', 'الحديقة'] },
-            { title: 'وقت الجريمة', options: ['الفجر', 'الصباح', 'الظهر', 'العصر', 'المساء', 'منتصف الليل'] },
-            { title: 'حالة الضحية', options: ['نائم', 'جالس', 'واقف', 'يركض', 'يأكل', 'يتحدث بالهاتف'] },
-            { title: 'الدافع', options: ['المال', 'الانتقام', 'الغيرة', 'السلطة', 'السر', 'الحب'] },
-            { title: 'الطقس', options: ['مشمس', 'غائم', 'ممطر', 'عاصف', 'ثلجي', 'ضبابي'] },
-            { title: 'ملابس القاتل', options: ['أسود', 'أبيض', 'أحمر', 'أزرق', 'قناع', 'قفازات'] }
+            { title: '📍 مكان الجريمة', options: ['غرفة النوم', 'المطبخ', 'الحمام', 'الصالة', 'المرآب', 'الحديقة', 'السطح', 'القبو'] },
+            { title: '🕐 وقت الجريمة', options: ['الفجر', 'الصباح', 'الظهر', 'العصر', 'المغرب', 'العشاء', 'منتصف الليل', 'قبل الفجر'] },
+            { title: '😵 حالة الضحية', options: ['نائم', 'جالس', 'واقف', 'يركض', 'يأكل', 'يتحدث', 'يقرأ', 'يستحم'] },
+            { title: '💭 الدافع', options: ['المال', 'الانتقام', 'الغيرة', 'السلطة', 'السر', 'الحب', 'الخوف', 'الجنون'] },
+            { title: '🌤️ الطقس', options: ['مشمس', 'غائم', 'ممطر', 'عاصف', 'ثلجي', 'ضبابي', 'حار', 'بارد'] },
+            { title: '👔 ملابس القاتل', options: ['أسود', 'أبيض', 'أحمر', 'أزرق', 'رمادي', 'بني', 'متنكر', 'رسمي'] },
+            { title: '🎭 شخصية القاتل', options: ['هادئ', 'عصبي', 'ماكر', 'متهور', 'بارد', 'مجنون', 'محترف', 'مبتدئ'] },
+            { title: '🔊 صوت سُمع', options: ['صراخ', 'سقوط', 'كسر زجاج', 'طلقة', 'صمت', 'موسيقى', 'تلفاز', 'محادثة'] },
+            { title: '💡 الإضاءة', options: ['مظلم', 'خافت', 'ساطع', 'شموع', 'طبيعي', 'ملون', 'متقطع', 'ضوء القمر'] },
+            { title: '👃 رائحة', options: ['دم', 'عطر', 'دخان', 'طعام', 'كيماويات', 'زهور', 'عفن', 'لا شيء'] }
         ];
 
-        // ==================== Game State ====================
+        // =============== حالة اللعبة ===============
         var gameState = {
             roomCode: null,
-            playerId: null,
+            oderId: null,
             playerName: null,
             isHost: false,
             players: [],
+            maxPlayers: 4,
             gameStarted: false,
             role: null,
             murderWeapon: null,
@@ -507,92 +619,85 @@
             murdererName: null,
             accompliceName: null,
             witnessName: null,
+            forensicName: null,
             clues: [],
             votes: [],
-            gamePhase: 'playing',
-            selectedVote: {}
+            gamePhase: 'waiting',
+            currentRound: 1,
+            forensicClueCards: [],
+            murdererReady: false
         };
 
-        // ==================== Session Storage ====================
+        var selectedMurderWeapon = null;
+        var selectedMurderEvidence = null;
+        var selectedVotes = {};
+
+        // =============== Session ===============
         function saveSession() {
-            sessionStorage.setItem('detectiveGame', JSON.stringify({
+            sessionStorage.setItem('detective', JSON.stringify({
                 roomCode: gameState.roomCode,
-                playerId: gameState.playerId,
+                oderId: gameState.oderId,
                 playerName: gameState.playerName,
                 isHost: gameState.isHost
             }));
         }
 
         function loadSession() {
-            var saved = sessionStorage.getItem('detectiveGame');
-            if (saved) {
-                var data = JSON.parse(saved);
-                if (data.roomCode && data.playerId) {
-                    gameState.roomCode = data.roomCode;
-                    gameState.playerId = data.playerId;
-                    gameState.playerName = data.playerName;
-                    gameState.isHost = data.isHost;
-                    return true;
+            try {
+                var s = sessionStorage.getItem('detective');
+                if (s) {
+                    var d = JSON.parse(s);
+                    if (d.roomCode && d.oderId) {
+                        gameState.roomCode = d.roomCode;
+                        gameState.oderId = d.oderId;
+                        gameState.playerName = d.playerName;
+                        gameState.isHost = d.isHost;
+                        return true;
+                    }
                 }
-            }
+            } catch(e) {}
             return false;
         }
 
-        // ==================== Utility Functions ====================
-        function generateId() {
-            return Math.random().toString(36).substr(2, 9);
+        // =============== أدوات ===============
+        function genId() { return Math.random().toString(36).substr(2, 9); }
+        
+        function genCode() {
+            var c = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789', r = '';
+            for (var i = 0; i < 4; i++) r += c[Math.floor(Math.random() * c.length)];
+            return r;
         }
 
-        function generateRoomCode() {
-            var chars = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
-            var code = '';
-            for (var i = 0; i < 4; i++) {
-                code += chars.charAt(Math.floor(Math.random() * chars.length));
-            }
-            return code;
-        }
-
-        function shuffle(array) {
-            var arr = array.slice();
+        function shuffle(a) {
+            var arr = a.slice();
             for (var i = arr.length - 1; i > 0; i--) {
                 var j = Math.floor(Math.random() * (i + 1));
-                var temp = arr[i];
-                arr[i] = arr[j];
-                arr[j] = temp;
+                var t = arr[i]; arr[i] = arr[j]; arr[j] = t;
             }
             return arr;
         }
 
-        function showScreen(screenId) {
-            document.querySelectorAll('.screen').forEach(function(s) {
-                s.classList.remove('active');
-            });
-            document.getElementById(screenId).classList.add('active');
+        function showScreen(id) {
+            document.querySelectorAll('.screen').forEach(function(s) { s.classList.remove('active'); });
+            document.getElementById(id).classList.add('active');
         }
 
-        // ==================== Room Management ====================
+        // =============== إدارة الغرف ===============
         function createRoom() {
-            var hostName = document.getElementById('hostName').value.trim();
-            var playerCount = parseInt(document.getElementById('playerCount').value);
+            var name = document.getElementById('hostName').value.trim();
+            var count = parseInt(document.getElementById('playerCount').value);
+            
+            if (!name) { alert('أدخل اسمك'); return; }
 
-            if (!hostName) {
-                alert('الرجاء إدخال اسمك');
-                return;
-            }
-
-            gameState.roomCode = generateRoomCode();
-            gameState.playerId = generateId();
-            gameState.playerName = hostName;
+            gameState.roomCode = genCode();
+            gameState.oderId = genId();
+            gameState.playerName = name;
             gameState.isHost = true;
-            gameState.maxPlayers = playerCount;
-            gameState.players = [{
-                id: gameState.playerId,
-                name: hostName,
-                isHost: true
-            }];
+            gameState.maxPlayers = count;
+            gameState.players = [{ id: gameState.oderId, name: name, isHost: true }];
 
             saveSession();
-            saveGameState().then(function() {
+            db.ref('rooms/' + gameState.roomCode).set(gameState).then(function() {
                 showScreen('lobbyScreen');
                 updateLobby();
                 document.getElementById('hostControls').classList.remove('hidden');
@@ -601,43 +706,29 @@
         }
 
         function joinRoom() {
-            var playerName = document.getElementById('playerName').value.trim();
-            var roomCode = document.getElementById('roomCodeInput').value.trim().toUpperCase();
+            var name = document.getElementById('playerName').value.trim();
+            var code = document.getElementById('roomCodeInput').value.trim().toUpperCase();
+            
+            if (!name || !code) { alert('أدخل اسمك ورمز الغرفة'); return; }
 
-            if (!playerName || !roomCode) {
-                alert('الرجاء إدخال اسمك ورمز الغرفة');
-                return;
-            }
+            db.ref('rooms/' + code).once('value').then(function(snap) {
+                if (!snap.exists()) { alert('الغرفة غير موجودة'); return; }
+                
+                var data = snap.val();
+                if (data.gameStarted) { alert('اللعبة بدأت'); return; }
+                if (data.players && data.players.length >= data.maxPlayers) { alert('الغرفة ممتلئة'); return; }
 
-            gameState.roomCode = roomCode;
-            gameState.playerId = generateId();
-            gameState.playerName = playerName;
-            gameState.isHost = false;
-
-            loadGameState().then(function(data) {
-                if (!data) {
-                    alert('الغرفة غير موجودة');
-                    return;
-                }
-
-                if (data.gameStarted) {
-                    alert('اللعبة بدأت بالفعل');
-                    return;
-                }
-
+                gameState.roomCode = code;
+                gameState.oderId = genId();
+                gameState.playerName = name;
+                gameState.isHost = false;
                 gameState.players = data.players || [];
                 gameState.maxPlayers = data.maxPlayers;
-                gameState.players.push({
-                    id: gameState.playerId,
-                    name: playerName,
-                    isHost: false
-                });
-
-                saveSession();
                 
-                firebase.database().ref('rooms/' + roomCode).update({
-                    players: gameState.players
-                }).then(function() {
+                gameState.players.push({ id: gameState.oderId, name: name, isHost: false });
+                
+                saveSession();
+                db.ref('rooms/' + code + '/players').set(gameState.players).then(function() {
                     showScreen('lobbyScreen');
                     updateLobby();
                     listenToRoom();
@@ -648,7 +739,7 @@
         function updateLobby() {
             document.getElementById('displayRoomCode').textContent = gameState.roomCode;
             document.getElementById('playerCountDisplay').textContent = gameState.players.length;
-            document.getElementById('maxPlayerDisplay').textContent = gameState.maxPlayers || 4;
+            document.getElementById('maxPlayerDisplay').textContent = gameState.maxPlayers;
 
             var list = document.getElementById('lobbyPlayersList');
             list.innerHTML = '';
@@ -656,164 +747,233 @@
             gameState.players.forEach(function(p) {
                 var div = document.createElement('div');
                 div.className = 'lobby-player' + (p.isHost ? ' host' : '');
-                div.innerHTML = '<span>' + p.name + '</span>' + 
-                    (p.isHost ? '<span>👑</span>' : '');
+                div.innerHTML = '<span>' + p.name + '</span>' + (p.isHost ? '<span>👑</span>' : '');
                 list.appendChild(div);
             });
 
-            var startBtn = document.getElementById('startBtn');
-            if (startBtn && gameState.isHost) {
-                startBtn.disabled = gameState.players.length < 4;
-            }
+            var btn = document.getElementById('startBtn');
+            if (btn) btn.disabled = gameState.players.length < 4;
         }
 
-        // ==================== Game Start ====================
+        // =============== بدء اللعبة ===============
         function startGame() {
-            if (gameState.players.length < 4) {
-                alert('يجب أن يكون هناك 4 لاعبين على الأقل');
-                return;
-            }
+            if (gameState.players.length < 4) { alert('يجب 4 لاعبين على الأقل'); return; }
 
-            var shuffledPlayers = shuffle(gameState.players);
-            
-            // الأدوار الثابتة: طبيب شرعي، قاتل، شريك، شاهد
+            var shuffled = shuffle(gameState.players);
             var roles = ['forensic', 'murderer', 'accomplice', 'witness'];
-            
-            // باقي اللاعبين محققون
-            for (var i = 4; i < shuffledPlayers.length; i++) {
-                roles.push('investigator');
-            }
+            for (var i = 4; i < shuffled.length; i++) roles.push('investigator');
 
-            // توزيع الأدوار
-            shuffledPlayers.forEach(function(player, index) {
-                player.role = roles[index];
-                player.weapons = shuffle(WEAPONS).slice(0, 4);
-                player.evidence = shuffle(EVIDENCE).slice(0, 4);
+            shuffled.forEach(function(p, i) {
+                p.role = roles[i];
+                if (p.role !== 'forensic') {
+                    p.weapons = shuffle(WEAPONS).slice(0, 4);
+                    p.evidence = shuffle(EVIDENCE).slice(0, 4);
+                } else {
+                    p.weapons = [];
+                    p.evidence = [];
+                }
             });
 
-            // تحديد القاتل والشريك والشاهد
-            var murderer = shuffledPlayers.find(function(p) { return p.role === 'murderer'; });
-            var accomplice = shuffledPlayers.find(function(p) { return p.role === 'accomplice'; });
-            var witness = shuffledPlayers.find(function(p) { return p.role === 'witness'; });
+            var murderer = shuffled.find(function(p) { return p.role === 'murderer'; });
+            var accomplice = shuffled.find(function(p) { return p.role === 'accomplice'; });
+            var witness = shuffled.find(function(p) { return p.role === 'witness'; });
+            var forensic = shuffled.find(function(p) { return p.role === 'forensic'; });
 
-            gameState.players = shuffledPlayers;
+            gameState.players = shuffled;
             gameState.gameStarted = true;
             gameState.murdererName = murderer.name;
             gameState.accompliceName = accomplice.name;
             gameState.witnessName = witness.name;
-            gameState.murderWeapon = murderer.weapons[0];
-            gameState.murderEvidence = murderer.evidence[0];
+            gameState.forensicName = forensic.name;
+            gameState.murderWeapon = null;
+            gameState.murderEvidence = null;
+            gameState.murdererReady = false;
             gameState.clues = [];
             gameState.votes = [];
-            gameState.gamePhase = 'playing';
-            gameState.forensicClueCards = shuffle(CLUE_CARDS).slice(0, 4);
+            gameState.gamePhase = 'murderer_choosing';
+            gameState.currentRound = 1;
+            gameState.forensicClueCards = shuffle(CLUE_CARDS).slice(0, 6);
 
-            saveGameState();
+            db.ref('rooms/' + gameState.roomCode).set(gameState);
         }
 
-        // ==================== Game Display ====================
+        // =============== عرض اللعبة ===============
         function showGame() {
             showScreen('gameScreen');
             
-            var myPlayer = gameState.players.find(function(p) {
-                return p.id === gameState.playerId;
-            });
+            var me = gameState.players.find(function(p) { return p.id === gameState.oderId; });
+            if (!me) return;
 
-            if (myPlayer) {
-                gameState.role = myPlayer.role;
-                showRole(myPlayer);
-                showMyItems(myPlayer);
-                renderPlayersForVoting();
+            gameState.role = me.role;
+            showRole(me);
 
-                if (myPlayer.role === 'forensic') {
-                    showForensicPanel();
+            if (gameState.gamePhase === 'murderer_choosing') {
+                if (me.role === 'murderer') {
+                    showMurdererSelection(me);
+                } else {
+                    document.getElementById('waitingForMurderer').classList.remove('hidden');
                 }
+            } else if (gameState.gamePhase === 'playing') {
+                showPlayingPhase(me);
+            } else if (gameState.gamePhase === 'witness_guess') {
+                showWitnessGuessPhase();
+            } else if (gameState.gamePhase === 'ended') {
+                showFinalResult();
             }
         }
 
         function showRole(player) {
-            var roleCard = document.getElementById('roleCard');
-            var roleIcon = document.getElementById('roleIcon');
-            var roleTitle = document.getElementById('roleTitle');
-            var roleDesc = document.getElementById('roleDescription');
-            var secretInfo = document.getElementById('secretInfo');
-
-            roleCard.className = 'role-card ' + player.role;
+            var card = document.getElementById('roleCard');
+            var icon = document.getElementById('roleIcon');
+            var title = document.getElementById('roleTitle');
+            var desc = document.getElementById('roleDescription');
 
             var roles = {
-                murderer: { icon: '🔪', title: 'القاتل', desc: 'أنت القاتل! اختبئ بين المحققين.' },
-                accomplice: { icon: '🤝', title: 'الشريك', desc: 'ساعد القاتل في الإفلات!' },
-                witness: { icon: '👁️', title: 'الشاهد', desc: 'أنت تعرف القاتل والشريك، ساعد المحققين بحذر!' },
-                forensic: { icon: '🔬', title: 'الطبيب الشرعي', desc: 'قدم الأدلة للمحققين.' },
-                investigator: { icon: '🔍', title: 'محقق', desc: 'اكتشف القاتل والسلاح والدليل!' }
+                murderer: { i: '🔪', t: 'القاتل', d: 'اختر سلاحك ودليلك واختبئ!' },
+                accomplice: { i: '🤝', t: 'الشريك', d: 'ساعد القاتل في الإفلات!' },
+                witness: { i: '👁️', t: 'الشاهد', d: 'أنت تعرف المتهمَين، ساعد بحذر!' },
+                forensic: { i: '🔬', t: 'الطبيب الشرعي', d: 'قدم 6 أدلة للمحققين!' },
+                investigator: { i: '🔍', t: 'محقق', d: 'اكتشف القاتل والسلاح والدليل!' }
             };
 
             var r = roles[player.role];
-            roleIcon.textContent = r.icon;
-            roleTitle.textContent = r.title;
-            roleDesc.textContent = r.desc;
+            card.className = 'role-card ' + player.role;
+            icon.textContent = r.i;
+            title.textContent = r.t;
+            desc.textContent = r.d;
 
-            // معلومات سرية
-            secretInfo.classList.add('hidden');
-            secretInfo.innerHTML = '';
+            // المعلومات السرية
+            var secret = document.getElementById('secretInfo');
+            var witnessInfo = document.getElementById('witnessInfo');
+            secret.classList.add('hidden');
+            witnessInfo.classList.add('hidden');
 
             if (player.role === 'murderer') {
-                var accomplice = gameState.players.find(function(p) { return p.role === 'accomplice'; });
-                secretInfo.classList.remove('hidden');
-                secretInfo.innerHTML = 
-                    '<p>🤝 <strong>شريكك:</strong> ' + accomplice.name + '</p>' +
-                    '<p>⚔️ <strong>سلاح الجريمة:</strong> ' + gameState.murderWeapon + '</p>' +
-                    '<p>🔍 <strong>الدليل:</strong> ' + gameState.murderEvidence + '</p>';
+                secret.classList.remove('hidden');
+                secret.innerHTML = '<p>🤝 <strong>شريكك:</strong> ' + gameState.accompliceName + '</p>';
             } else if (player.role === 'accomplice') {
-                var murderer = gameState.players.find(function(p) { return p.role === 'murderer'; });
-                secretInfo.classList.remove('hidden');
-                secretInfo.innerHTML = 
-                    '<p>🔪 <strong>القاتل:</strong> ' + murderer.name + '</p>' +
-                    '<p>⚔️ <strong>سلاح الجريمة:</strong> ' + gameState.murderWeapon + '</p>' +
-                    '<p>🔍 <strong>الدليل:</strong> ' + gameState.murderEvidence + '</p>';
+                secret.classList.remove('hidden');
+                secret.innerHTML = '<p>🔪 <strong>القاتل:</strong> ' + gameState.murdererName + '</p>';
+                if (gameState.murderWeapon) {
+                    secret.innerHTML += '<p>⚔️ <strong>السلاح:</strong> ' + gameState.murderWeapon + '</p>' +
+                        '<p>🔍 <strong>الدليل:</strong> ' + gameState.murderEvidence + '</p>';
+                }
             } else if (player.role === 'witness') {
-                var murderer = gameState.players.find(function(p) { return p.role === 'murderer'; });
-                var accomplice = gameState.players.find(function(p) { return p.role === 'accomplice'; });
-                secretInfo.classList.remove('hidden');
-                secretInfo.innerHTML = 
-                    '<p>🔪 <strong>القاتل:</strong> ' + murderer.name + '</p>' +
-                    '<p>🤝 <strong>الشريك:</strong> ' + accomplice.name + '</p>' +
-                    '<p style="color: #f39c12;">⚠️ لا تعرف السلاح والدليل!</p>';
+                witnessInfo.classList.remove('hidden');
+                witnessInfo.innerHTML = '<h4>👁️ أنت تعلم أن المتهمَين هما:</h4>' +
+                    '<p style="font-size:1.2em;margin-top:10px;"><strong>' + gameState.murdererName + '</strong> و <strong>' + gameState.accompliceName + '</strong></p>' +
+                    '<p style="color:#f39c12;margin-top:10px;">⚠️ لكنك لا تعرف من منهما القاتل ومن الشريك، ولا تعرف السلاح والدليل!</p>';
             }
         }
 
-        function showMyItems(player) {
-            var weaponsDiv = document.getElementById('myWeapons');
-            var evidenceDiv = document.getElementById('myEvidence');
+        function showMurdererSelection(player) {
+            var section = document.getElementById('murdererSelection');
+            section.classList.remove('hidden');
 
-            weaponsDiv.innerHTML = '<strong>الأسلحة:</strong> ';
+            var wDiv = document.getElementById('murdererWeapons');
+            var eDiv = document.getElementById('murdererEvidence');
+            wDiv.innerHTML = '';
+            eDiv.innerHTML = '';
+
             player.weapons.forEach(function(w) {
-                weaponsDiv.innerHTML += '<span>' + w + '</span>';
+                var btn = document.createElement('button');
+                btn.className = 'selection-btn';
+                btn.textContent = w;
+                btn.onclick = function() { selectMurderItem('weapon', w, this); };
+                wDiv.appendChild(btn);
             });
 
-            evidenceDiv.innerHTML = '<strong>الأدلة:</strong> ';
             player.evidence.forEach(function(e) {
-                evidenceDiv.innerHTML += '<span>' + e + '</span>';
+                var btn = document.createElement('button');
+                btn.className = 'selection-btn';
+                btn.textContent = e;
+                btn.onclick = function() { selectMurderItem('evidence', e, this); };
+                eDiv.appendChild(btn);
             });
         }
 
-        // ==================== Forensic Panel ====================
+        function selectMurderItem(type, value, btn) {
+            var container = btn.parentElement;
+            container.querySelectorAll('.selection-btn').forEach(function(b) { b.classList.remove('selected'); });
+            btn.classList.add('selected');
+
+            if (type === 'weapon') selectedMurderWeapon = value;
+            else selectedMurderEvidence = value;
+
+            document.getElementById('confirmMurderBtn').disabled = !(selectedMurderWeapon && selectedMurderEvidence);
+        }
+
+        function confirmMurderChoice() {
+            if (!selectedMurderWeapon || !selectedMurderEvidence) return;
+
+            gameState.murderWeapon = selectedMurderWeapon;
+            gameState.murderEvidence = selectedMurderEvidence;
+            gameState.murdererReady = true;
+            gameState.gamePhase = 'playing';
+
+            db.ref('rooms/' + gameState.roomCode).update({
+                murderWeapon: gameState.murderWeapon,
+                murderEvidence: gameState.murderEvidence,
+                murdererReady: true,
+                gamePhase: 'playing'
+            });
+        }
+
+        function showPlayingPhase(me) {
+            document.getElementById('murdererSelection').classList.add('hidden');
+            document.getElementById('waitingForMurderer').classList.add('hidden');
+
+            // عرض أدواتي (إلا الطبيب الشرعي)
+            if (me.role !== 'forensic') {
+                document.getElementById('myItems').classList.remove('hidden');
+                var wDiv = document.getElementById('myWeapons');
+                var eDiv = document.getElementById('myEvidence');
+                
+                wDiv.innerHTML = '<strong>⚔️ أسلحتي:</strong> ';
+                me.weapons.forEach(function(w) { wDiv.innerHTML += '<span class="item-tag">' + w + '</span>'; });
+                
+                eDiv.innerHTML = '<strong>🔍 أدلتي:</strong> ';
+                me.evidence.forEach(function(e) { eDiv.innerHTML += '<span class="item-tag">' + e + '</span>'; });
+            }
+
+            // تحديث المعلومات السرية للشريك
+            if (me.role === 'accomplice') {
+                var secret = document.getElementById('secretInfo');
+                secret.classList.remove('hidden');
+                secret.innerHTML = '<p>🔪 <strong>القاتل:</strong> ' + gameState.murdererName + '</p>' +
+                    '<p>⚔️ <strong>السلاح:</strong> ' + gameState.murderWeapon + '</p>' +
+                    '<p>🔍 <strong>الدليل:</strong> ' + gameState.murderEvidence + '</p>';
+            }
+
+            // الأدلة العامة
+            document.getElementById('publicCluesSection').classList.remove('hidden');
+            displayPublicClues();
+
+            // قائمة اللاعبين
+            document.getElementById('playersSection').classList.remove('hidden');
+            renderPlayers();
+
+            // لوحة الطبيب الشرعي
+            if (me.role === 'forensic') {
+                showForensicPanel();
+            }
+        }
+
+        // =============== الطبيب الشرعي ===============
         function showForensicPanel() {
             var panel = document.getElementById('forensicPanel');
             panel.classList.remove('hidden');
+            panel.classList.remove('minimized');
 
-            // معلومات للطبيب الشرعي
-            var murderer = gameState.players.find(function(p) { return p.role === 'murderer'; });
-            var accomplice = gameState.players.find(function(p) { return p.role === 'accomplice'; });
-            var witness = gameState.players.find(function(p) { return p.role === 'witness'; });
-
-            document.getElementById('forensicMurderer').textContent = murderer.name;
-            document.getElementById('forensicAccomplice').textContent = accomplice.name;
-            document.getElementById('forensicWitness').textContent = witness.name;
-            document.getElementById('forensicWeapon').textContent = gameState.murderWeapon;
-            document.getElementById('forensicEvidence').textContent = gameState.murderEvidence;
+            document.getElementById('fMurderer').textContent = gameState.murdererName;
+            document.getElementById('fAccomplice').textContent = gameState.accompliceName;
+            document.getElementById('fWitness').textContent = gameState.witnessName;
+            document.getElementById('fWeapon').textContent = gameState.murderWeapon || 'انتظر...';
+            document.getElementById('fEvidence').textContent = gameState.murderEvidence || 'انتظر...';
+            document.getElementById('currentRound').textContent = gameState.currentRound;
 
             renderForensicCards();
+            updateRoundButton();
         }
 
         function toggleForensicPanel() {
@@ -827,44 +987,99 @@
             var container = document.getElementById('forensicClueCards');
             container.innerHTML = '';
 
-            gameState.forensicClueCards.forEach(function(card, cardIndex) {
-                var isUsed = gameState.clues.some(function(c) { return c.cardIndex === cardIndex; });
+            gameState.forensicClueCards.forEach(function(card, idx) {
+                var used = gameState.clues.some(function(c) { return c.cardIndex === idx; });
                 
-                var cardDiv = document.createElement('div');
-                cardDiv.className = 'forensic-clue-card';
-                if (isUsed) cardDiv.style.opacity = '0.5';
+                var div = document.createElement('div');
+                div.className = 'clue-card' + (used ? ' used' : '');
 
                 var html = '<h4>' + card.title + '</h4><div class="clue-options">';
-                
-                card.options.forEach(function(option) {
-                    html += '<button class="clue-option-btn" onclick="selectClue(' + cardIndex + ', \'' + option + '\')" ' +
-                        (isUsed ? 'disabled' : '') + '>' + option + '</button>';
+                card.options.forEach(function(opt) {
+                    var sel = gameState.clues.some(function(c) { return c.cardIndex === idx && c.option === opt; });
+                    html += '<button class="clue-opt-btn' + (sel ? ' selected' : '') + '" ' +
+                        (used ? 'disabled' : 'onclick="selectClue(' + idx + ',\'' + opt + '\')"') + '>' + opt + '</button>';
                 });
-
                 html += '</div>';
-                cardDiv.innerHTML = html;
-                container.appendChild(cardDiv);
+
+                div.innerHTML = html;
+                container.appendChild(div);
             });
         }
 
-        function selectClue(cardIndex, option) {
-            var card = gameState.forensicClueCards[cardIndex];
-            
+        function selectClue(cardIdx, option) {
+            // التحقق من عدم تجاوز 6 أدلة
+            var cluesInRound = gameState.clues.filter(function(c) { return c.round === gameState.currentRound; }).length;
+            if (cluesInRound >= 6 && !gameState.clues.some(function(c) { return c.cardIndex === cardIdx; })) {
+                alert('لقد قدمت 6 أدلة في هذه الجولة');
+                return;
+            }
+
+            // إزالة الدليل القديم إن وجد
+            gameState.clues = gameState.clues.filter(function(c) { return c.cardIndex !== cardIdx; });
+
             gameState.clues.push({
-                cardIndex: cardIndex,
-                cardTitle: card.title,
-                option: option
+                cardIndex: cardIdx,
+                cardTitle: gameState.forensicClueCards[cardIdx].title,
+                option: option,
+                round: gameState.currentRound
             });
 
-            saveGameState();
+            db.ref('rooms/' + gameState.roomCode + '/clues').set(gameState.clues);
             renderForensicCards();
+            updateRoundButton();
+        }
+
+        function updateRoundButton() {
+            var btn = document.getElementById('nextRoundBtn');
+            var status = document.getElementById('roundStatus');
+            var cluesCount = gameState.clues.length;
+
+            status.textContent = ' (' + cluesCount + '/6 أدلة)';
+
+            if (cluesCount >= 6 && gameState.currentRound < 3) {
+                btn.style.display = 'block';
+                btn.textContent = '🔄 الجولة ' + (gameState.currentRound + 1) + ' (تبديل بطاقة عشوائية)';
+            } else {
+                btn.style.display = 'none';
+            }
+        }
+
+        function nextRound() {
+            if (gameState.currentRound >= 3) return;
+
+            gameState.currentRound++;
+            
+            // تبديل بطاقة عشوائية
+            var usedIndices = gameState.clues.map(function(c) { return c.cardIndex; });
+            var availableCards = CLUE_CARDS.filter(function(c) {
+                return !gameState.forensicClueCards.includes(c);
+            });
+
+            if (availableCards.length > 0) {
+                var randomIdx = usedIndices[Math.floor(Math.random() * usedIndices.length)];
+                var newCard = availableCards[Math.floor(Math.random() * availableCards.length)];
+                gameState.forensicClueCards[randomIdx] = newCard;
+                
+                // إزالة الدليل القديم لهذه البطاقة
+                gameState.clues = gameState.clues.filter(function(c) { return c.cardIndex !== randomIdx; });
+            }
+
+            db.ref('rooms/' + gameState.roomCode).update({
+                currentRound: gameState.currentRound,
+                forensicClueCards: gameState.forensicClueCards,
+                clues: gameState.clues
+            });
+
+            document.getElementById('currentRound').textContent = gameState.currentRound;
+            renderForensicCards();
+            updateRoundButton();
         }
 
         function displayPublicClues() {
             var container = document.getElementById('publicCluesList');
             
             if (!gameState.clues || gameState.clues.length === 0) {
-                container.innerHTML = '<p style="color: #aaa;">لم يتم تقديم أدلة بعد...</p>';
+                container.innerHTML = '<p style="color:#aaa;">انتظر أدلة الطبيب الشرعي...</p>';
                 return;
             }
 
@@ -877,58 +1092,64 @@
             });
         }
 
-        // ==================== Voting System ====================
-        function renderPlayersForVoting() {
+        // =============== قائمة اللاعبين والتصويت ===============
+        function renderPlayers() {
             var container = document.getElementById('playersVotingList');
             container.innerHTML = '';
 
             gameState.players.forEach(function(player) {
-                // لا يظهر الطبيب الشرعي في قائمة التصويت
-                if (player.role === 'forensic') return;
                 // لا يظهر اللاعب نفسه
-                if (player.id === gameState.playerId) return;
-
-                var existingVote = gameState.votes.find(function(v) {
-                    return v.suspectName === player.name;
-                });
+                if (player.id === gameState.oderId) return;
 
                 var card = document.createElement('div');
                 card.className = 'player-card';
-                card.id = 'playerCard_' + player.id;
+                card.id = 'pcard_' + player.id;
 
-                if (existingVote) {
-                    card.classList.add('voted');
+                // الطبيب الشرعي معروف للجميع
+                if (player.role === 'forensic') {
+                    card.classList.add('is-forensic');
                 }
 
-                var html = '<div class="player-header">' +
-                    '<span class="player-name">' + player.name + '</span>' +
-                    '<button class="btn-secondary" style="width:auto;padding:5px 15px;" onclick="togglePlayerCard(\'' + player.id + '\')">اختيار</button>' +
-                    '</div>';
-
-                // أدوات اللاعب
-                html += '<div class="player-items">';
-                html += '<div style="width:100%;margin-bottom:5px;"><strong>الأسلحة:</strong></div>';
-                player.weapons.forEach(function(w) {
-                    var selected = gameState.selectedVote[player.id] && gameState.selectedVote[player.id].weapon === w;
-                    html += '<button class="item-btn weapon' + (selected ? ' selected' : '') + '" onclick="selectItem(\'' + player.id + '\', \'weapon\', \'' + w + '\')">' + w + '</button>';
-                });
-
-                html += '<div style="width:100%;margin:10px 0 5px;"><strong>الأدلة:</strong></div>';
-                player.evidence.forEach(function(e) {
-                    var selected = gameState.selectedVote[player.id] && gameState.selectedVote[player.id].evidence === e;
-                    html += '<button class="item-btn evidence' + (selected ? ' selected' : '') + '" onclick="selectItem(\'' + player.id + '\', \'evidence\', \'' + e + '\')">' + e + '</button>';
-                });
-
-                html += '<button class="vote-btn" id="voteBtn_' + player.id + '" onclick="submitVote(\'' + player.id + '\', \'' + player.name + '\')">🗳️ تصويت</button>';
+                var html = '<div class="player-header">';
+                html += '<span class="player-name' + (player.role === 'forensic' ? ' forensic-badge' : '') + '">' + 
+                    player.name + (player.role === 'forensic' ? ' 🔬' : '') + '</span>';
                 html += '</div>';
 
-                // معلومات التصويت السابق
-                if (existingVote) {
-                    html += '<div class="vote-info">' +
-                        '<strong>صوّت عليه:</strong> ' + existingVote.voterName + '<br>' +
-                        '<strong>السلاح:</strong> ' + existingVote.weapon + '<br>' +
-                        '<strong>الدليل:</strong> ' + existingVote.evidence +
-                        '</div>';
+                // أدوات اللاعب (إلا الطبيب الشرعي)
+                if (player.role !== 'forensic') {
+                    html += '<div class="player-items">';
+                    
+                    html += '<div style="width:100%;margin-bottom:5px;color:#e74c3c;font-weight:bold;">⚔️ الأسلحة:</div>';
+                    player.weapons.forEach(function(w) {
+                        var sel = selectedVotes[player.id] && selectedVotes[player.id].weapon === w;
+                        html += '<button class="item-btn weapon' + (sel ? ' selected' : '') + '" onclick="selectVoteItem(\'' + player.id + '\',\'weapon\',\'' + w + '\')">' + w + '</button>';
+                    });
+
+                    html += '<div style="width:100%;margin:10px 0 5px;color:#3498db;font-weight:bold;">🔍 الأدلة:</div>';
+                    player.evidence.forEach(function(e) {
+                        var sel = selectedVotes[player.id] && selectedVotes[player.id].evidence === e;
+                        html += '<button class="item-btn evidence' + (sel ? ' selected' : '') + '" onclick="selectVoteItem(\'' + player.id + '\',\'evidence\',\'' + e + '\')">' + e + '</button>';
+                    });
+
+                    html += '</div>';
+
+                    // قسم التصويت
+                    html += '<div class="vote-section" id="voteSec_' + player.id + '">';
+                    html += '<button class="btn-danger btn-full" onclick="submitVote(\'' + player.id + '\',\'' + player.name + '\')">🗳️ تصويت على ' + player.name + '</button>';
+                    html += '</div>';
+                }
+
+                // عرض التصويتات السابقة على هذا اللاعب
+                var votesOnPlayer = gameState.votes.filter(function(v) { return v.suspectName === player.name; });
+                if (votesOnPlayer.length > 0) {
+                    html += '<div style="margin-top:10px;">';
+                    votesOnPlayer.forEach(function(v) {
+                        html += '<div class="vote-info">' +
+                            '<strong>🗳️ ' + v.voterName + ' يتهم:</strong><br>' +
+                            '⚔️ ' + v.weapon + ' | 🔍 ' + v.evidence +
+                            '</div>';
+                    });
+                    html += '</div>';
                 }
 
                 card.innerHTML = html;
@@ -936,110 +1157,89 @@
             });
         }
 
-        function togglePlayerCard(playerId) {
-            var card = document.getElementById('playerCard_' + playerId);
-            if (card.classList.contains('voted')) return;
-            
-            // إغلاق البطاقات الأخرى
-            document.querySelectorAll('.player-card').forEach(function(c) {
-                if (c.id !== 'playerCard_' + playerId) {
-                    c.classList.remove('expanded');
-                }
-            });
-            
-            card.classList.toggle('expanded');
-        }
-
-        function selectItem(playerId, type, value) {
-            if (!gameState.selectedVote[playerId]) {
-                gameState.selectedVote[playerId] = {};
-            }
-            gameState.selectedVote[playerId][type] = value;
+        function selectVoteItem(playerId, type, value) {
+            if (!selectedVotes[playerId]) selectedVotes[playerId] = {};
+            selectedVotes[playerId][type] = value;
 
             // تحديث الأزرار
-            var card = document.getElementById('playerCard_' + playerId);
+            var card = document.getElementById('pcard_' + playerId);
             card.querySelectorAll('.item-btn.' + type).forEach(function(btn) {
                 btn.classList.remove('selected');
-                if (btn.textContent === value) {
-                    btn.classList.add('selected');
-                }
+                if (btn.textContent === value) btn.classList.add('selected');
             });
 
-            // التحقق من اكتمال الاختيار
-            var vote = gameState.selectedVote[playerId];
+            // إظهار/إخفاء زر التصويت
+            var vote = selectedVotes[playerId];
+            var sec = document.getElementById('voteSec_' + playerId);
             if (vote.weapon && vote.evidence) {
-                card.classList.add('ready-to-vote');
+                card.classList.add('has-selection');
             } else {
-                card.classList.remove('ready-to-vote');
+                card.classList.remove('has-selection');
             }
         }
 
         function submitVote(playerId, playerName) {
-            if (gameState.hasVoted) {
-                alert('لقد صوّت بالفعل!');
-                return;
-            }
-
-            var vote = gameState.selectedVote[playerId];
+            var vote = selectedVotes[playerId];
             if (!vote || !vote.weapon || !vote.evidence) {
                 alert('اختر السلاح والدليل أولاً');
                 return;
             }
 
-            var isCorrect = 
-                playerName === gameState.murdererName &&
+            var isCorrect = playerName === gameState.murdererName &&
                 vote.weapon === gameState.murderWeapon &&
                 vote.evidence === gameState.murderEvidence;
 
             var voteData = {
-                oderId: gameState.playerId,
+                oderId: gameState.oderId,
                 voterName: gameState.playerName,
                 suspectId: playerId,
                 suspectName: playerName,
                 weapon: vote.weapon,
                 evidence: vote.evidence,
-                isCorrect: isCorrect
+                isCorrect: isCorrect,
+                time: Date.now()
             };
 
             if (!gameState.votes) gameState.votes = [];
             gameState.votes.push(voteData);
-            gameState.hasVoted = true;
 
             if (isCorrect) {
                 gameState.gamePhase = 'witness_guess';
                 gameState.correctVoterName = gameState.playerName;
+                db.ref('rooms/' + gameState.roomCode).update({
+                    votes: gameState.votes,
+                    gamePhase: 'witness_guess',
+                    correctVoterName: gameState.playerName
+                });
+            } else {
+                db.ref('rooms/' + gameState.roomCode + '/votes').set(gameState.votes);
             }
 
-            saveGameState();
-            renderPlayersForVoting();
+            // مسح الاختيار
+            delete selectedVotes[playerId];
+            renderPlayers();
         }
 
-        // ==================== Game Results ====================
-        function showCorrectAnswer(voterName) {
-            var resultsDiv = document.getElementById('gameResults');
-            resultsDiv.classList.remove('hidden');
-            resultsDiv.className = 'results-screen';
-            resultsDiv.style.background = 'rgba(0,0,0,0.8)';
-            resultsDiv.style.borderRadius = '20px';
-            resultsDiv.style.padding = '30px';
-            resultsDiv.style.marginTop = '20px';
+        // =============== نهاية اللعبة ===============
+        function showWitnessGuessPhase() {
+            var results = document.getElementById('gameResults');
+            results.classList.remove('hidden');
+            results.className = 'results-box';
 
             var html = '<div class="result-icon">🎯</div>' +
                 '<div class="result-title">تم كشف القاتل!</div>' +
-                '<p><strong>' + voterName + '</strong> اكتشف الحقيقة!</p>' +
-                '<div class="secret-info" style="text-align:right;margin-top:20px;">' +
+                '<p><strong>' + (gameState.correctVoterName || 'أحد المحققين') + '</strong> اكتشف الحقيقة!</p>' +
+                '<div class="truth-reveal">' +
                 '<p>🔪 <strong>القاتل:</strong> ' + gameState.murdererName + '</p>' +
                 '<p>⚔️ <strong>السلاح:</strong> ' + gameState.murderWeapon + '</p>' +
                 '<p>🔍 <strong>الدليل:</strong> ' + gameState.murderEvidence + '</p>' +
                 '</div>';
 
             if (gameState.role === 'murderer') {
-                html += '<div class="alert alert-danger" style="margin-top:20px;">' +
+                html += '<div class="alert alert-danger">' +
                     '<h3>⚠️ تم اصطيادك!</h3>' +
-                    '<p>لديك فرصة أخيرة... حدد الشاهد للفوز!</p>' +
+                    '<p>فرصتك الأخيرة: حدد الشاهد للفوز!</p>' +
                     '</div>' +
-                    '<div style="margin-top:20px;">' +
-                    '<label><strong>من هو الشاهد؟</strong></label>' +
                     '<select id="witnessGuess" style="margin:10px 0;">';
                 
                 gameState.players.forEach(function(p) {
@@ -1049,184 +1249,158 @@
                 });
 
                 html += '</select>' +
-                    '<button onclick="guessWitness()" class="btn-danger">تأكيد</button>' +
-                    '</div>';
+                    '<button onclick="guessWitness()" class="btn-danger btn-full">تأكيد اختيار الشاهد</button>';
             } else {
-                html += '<div class="alert alert-info" style="margin-top:20px;">' +
-                    '<p>⏳ انتظر... القاتل يحاول تحديد الشاهد</p>' +
-                    '</div>';
+                html += '<div class="alert alert-info"><p>⏳ القاتل يحاول تحديد الشاهد...</p></div>';
             }
 
-            resultsDiv.innerHTML = html;
+            results.innerHTML = html;
+
+            // إخفاء باقي العناصر
+            document.getElementById('playersSection').classList.add('hidden');
+            document.getElementById('forensicPanel').classList.add('hidden');
         }
 
         function guessWitness() {
             var guess = document.getElementById('witnessGuess').value;
             
-            if (guess === gameState.witnessName) {
-                gameState.gamePhase = 'murderer_wins';
-            } else {
-                gameState.gamePhase = 'investigators_win';
-            }
-
             gameState.witnessGuess = guess;
-            saveGameState();
+            gameState.gamePhase = (guess === gameState.witnessName) ? 'murderer_wins' : 'investigators_win';
+
+            db.ref('rooms/' + gameState.roomCode).update({
+                witnessGuess: guess,
+                gamePhase: gameState.gamePhase
+            });
         }
 
         function showFinalResult() {
-            var resultsDiv = document.getElementById('gameResults');
-            resultsDiv.classList.remove('hidden');
+            var results = document.getElementById('gameResults');
+            results.classList.remove('hidden');
 
-            var isWin = gameState.gamePhase === 'investigators_win';
-            
-            if (gameState.role === 'murderer' || gameState.role === 'accomplice') {
-                isWin = gameState.gamePhase === 'murderer_wins';
+            var murdererWins = gameState.gamePhase === 'murderer_wins';
+            results.className = 'results-box ' + (murdererWins ? 'lose' : 'win');
+
+            var html = '<div class="result-icon">' + (murdererWins ? '🔪' : '🎉') + '</div>' +
+                '<div class="result-title">' + (murdererWins ? 'القاتل والشريك يفوزان!' : 'المحققون يفوزون!') + '</div>';
+
+            if (murdererWins) {
+                html += '<p>القاتل نجح في تحديد الشاهد!</p>';
+            } else {
+                html += '<p>القاتل فشل في تحديد الشاهد!</p>';
             }
 
-            resultsDiv.className = 'results-screen ' + (isWin ? 'win' : 'lose');
-            resultsDiv.style.borderRadius = '20px';
-            resultsDiv.style.padding = '30px';
-            resultsDiv.style.marginTop = '20px';
-
-            var title = gameState.gamePhase === 'murderer_wins' ? 
-                '🔪 القاتل والشريك يفوزان!' : '🎉 المحققون يفوزون!';
-
-            var html = '<div class="result-icon">' + (gameState.gamePhase === 'murderer_wins' ? '🔪' : '🎉') + '</div>' +
-                '<div class="result-title">' + title + '</div>' +
-                '<div class="secret-info" style="text-align:right;margin-top:20px;background:rgba(0,0,0,0.3);">' +
+            html += '<div class="truth-reveal">' +
                 '<p>🔪 <strong>القاتل:</strong> ' + gameState.murdererName + '</p>' +
                 '<p>🤝 <strong>الشريك:</strong> ' + gameState.accompliceName + '</p>' +
                 '<p>👁️ <strong>الشاهد:</strong> ' + gameState.witnessName + '</p>' +
-                '<p>⚔️ <strong>السلاح:</strong> ' + gameState.murderWeapon + '</p>' +
+                '<p>🔬 <strong>الطبيب الشرعي:</strong> ' + gameState.forensicName + '</p>' +
+                '<hr style="margin:10px 0;border-color:rgba(255,255,255,0.2);">' +
+                '<p>⚔️ <strong>سلاح الجريمة:</strong> ' + gameState.murderWeapon + '</p>' +
                 '<p>🔍 <strong>الدليل:</strong> ' + gameState.murderEvidence + '</p>';
 
             if (gameState.witnessGuess) {
-                html += '<p>🎯 <strong>تخمين القاتل للشاهد:</strong> ' + gameState.witnessGuess + 
+                html += '<hr style="margin:10px 0;border-color:rgba(255,255,255,0.2);">' +
+                    '<p>🎯 <strong>تخمين القاتل:</strong> ' + gameState.witnessGuess + 
                     (gameState.witnessGuess === gameState.witnessName ? ' ✅' : ' ❌') + '</p>';
             }
 
             html += '</div>' +
-                '<button onclick="location.reload()" style="margin-top:20px;">لعبة جديدة</button>';
+                '<button onclick="location.reload()" class="btn-full btn-success" style="margin-top:20px;">🔄 لعبة جديدة</button>';
 
-            resultsDiv.innerHTML = html;
+            results.innerHTML = html;
+
+            // إخفاء باقي العناصر
+            document.getElementById('playersSection').classList.add('hidden');
+            document.getElementById('forensicPanel').classList.add('hidden');
+            document.getElementById('publicCluesSection').classList.add('hidden');
+            document.getElementById('myItems').classList.add('hidden');
         }
 
-        // ==================== Firebase Functions ====================
-        function saveGameState() {
-            return firebase.database().ref('rooms/' + gameState.roomCode).set(gameState);
-        }
-
-        function loadGameState() {
-            return firebase.database().ref('rooms/' + gameState.roomCode).once('value')
-                .then(function(snapshot) {
-                    return snapshot.val();
-                });
-        }
-
-        var roomListener = null;
+        // =============== Firebase Listener ===============
+        var roomRef = null;
 
         function listenToRoom() {
-            if (roomListener) roomListener.off();
+            if (roomRef) roomRef.off();
+            roomRef = db.ref('rooms/' + gameState.roomCode);
 
-            roomListener = firebase.database().ref('rooms/' + gameState.roomCode);
-            
-            roomListener.on('value', function(snapshot) {
-                if (!snapshot.exists()) return;
+            roomRef.on('value', function(snap) {
+                if (!snap.exists()) return;
+                var data = snap.val();
 
-                var data = snapshot.val();
+                gameState.players = data.players || [];
+                gameState.maxPlayers = data.maxPlayers;
 
-                // تحديث اللاعبين
-                if (data.players) {
-                    gameState.players = data.players;
-                    
-                    if (!gameState.gameStarted) {
-                        gameState.maxPlayers = data.maxPlayers;
-                        updateLobby();
-                    }
+                if (!gameState.gameStarted && !data.gameStarted) {
+                    updateLobby();
+                    return;
                 }
 
-                // بدء اللعبة
-                if (!gameState.gameStarted && data.gameStarted) {
-                    gameState.gameStarted = true;
-                    gameState.murderWeapon = data.murderWeapon;
-                    gameState.murderEvidence = data.murderEvidence;
-                    gameState.murdererName = data.murdererName;
-                    gameState.accompliceName = data.accompliceName;
-                    gameState.witnessName = data.witnessName;
-                    gameState.forensicClueCards = data.forensicClueCards || [];
-                    gameState.clues = data.clues || [];
-                    gameState.votes = data.votes || [];
-                    
-                    showGame();
-                }
+                // تحديث البيانات
+                gameState.gameStarted = data.gameStarted;
+                gameState.murderWeapon = data.murderWeapon;
+                gameState.murderEvidence = data.murderEvidence;
+                gameState.murdererName = data.murdererName;
+                gameState.accompliceName = data.accompliceName;
+                gameState.witnessName = data.witnessName;
+                gameState.forensicName = data.forensicName;
+                gameState.forensicClueCards = data.forensicClueCards || [];
+                gameState.clues = data.clues || [];
+                gameState.votes = data.votes || [];
+                gameState.currentRound = data.currentRound || 1;
+                gameState.murdererReady = data.murdererReady;
+                gameState.correctVoterName = data.correctVoterName;
+                gameState.witnessGuess = data.witnessGuess;
 
-                // تحديثات اللعبة
+                var oldPhase = gameState.gamePhase;
+                gameState.gamePhase = data.gamePhase || 'waiting';
+
+                // عرض اللعبة
                 if (gameState.gameStarted) {
-                    if (data.clues) {
-                        gameState.clues = data.clues;
-                        displayPublicClues();
-                        if (gameState.role === 'forensic') {
-                            renderForensicCards();
-                        }
-                    }
-
-                    if (data.votes) {
-                        gameState.votes = data.votes;
-                        renderPlayersForVoting();
-                    }
-
-                    // مراحل اللعبة
-                    if (data.gamePhase && data.gamePhase !== gameState.gamePhase) {
-                        gameState.gamePhase = data.gamePhase;
-
-                        if (data.gamePhase === 'witness_guess') {
-                            showCorrectAnswer(data.correctVoterName || 'أحد المحققين');
-                        } else if (data.gamePhase === 'murderer_wins' || data.gamePhase === 'investigators_win') {
-                            gameState.witnessGuess = data.witnessGuess;
-                            showFinalResult();
-                        }
-                    }
+                    showGame();
                 }
             });
         }
 
-        // ==================== Init ====================
+        // =============== تحميل الصفحة ===============
         window.onload = function() {
             if (loadSession()) {
-                // محاولة العودة للعبة
-                loadGameState().then(function(data) {
-                    if (data) {
-                        gameState.players = data.players || [];
-                        gameState.maxPlayers = data.maxPlayers;
-                        gameState.gameStarted = data.gameStarted;
-                        gameState.murderWeapon = data.murderWeapon;
-                        gameState.murderEvidence = data.murderEvidence;
-                        gameState.murdererName = data.murdererName;
-                        gameState.accompliceName = data.accompliceName;
-                        gameState.witnessName = data.witnessName;
-                        gameState.forensicClueCards = data.forensicClueCards || [];
-                        gameState.clues = data.clues || [];
-                        gameState.votes = data.votes || [];
-                        gameState.gamePhase = data.gamePhase || 'playing';
-
-                        if (data.gameStarted) {
-                            showGame();
-                            
-                            if (data.gamePhase === 'witness_guess') {
-                                showCorrectAnswer(data.correctVoterName);
-                            } else if (data.gamePhase === 'murderer_wins' || data.gamePhase === 'investigators_win') {
-                                gameState.witnessGuess = data.witnessGuess;
-                                showFinalResult();
-                            }
-                        } else {
-                            showScreen('lobbyScreen');
-                            updateLobby();
-                            if (gameState.isHost) {
-                                document.getElementById('hostControls').classList.remove('hidden');
-                            }
-                        }
+                db.ref('rooms/' + gameState.roomCode).once('value').then(function(snap) {
+                    if (snap.exists()) {
+                        var data = snap.val();
                         
-                        listenToRoom();
+                        // التحقق من وجود اللاعب
+                        var found = data.players && data.players.some(function(p) { return p.id === gameState.oderId; });
+                        
+                        if (found) {
+                            gameState.players = data.players;
+                            gameState.maxPlayers = data.maxPlayers;
+                            gameState.gameStarted = data.gameStarted;
+                            gameState.murderWeapon = data.murderWeapon;
+                            gameState.murderEvidence = data.murderEvidence;
+                            gameState.murdererName = data.murdererName;
+                            gameState.accompliceName = data.accompliceName;
+                            gameState.witnessName = data.witnessName;
+                            gameState.forensicName = data.forensicName;
+                            gameState.forensicClueCards = data.forensicClueCards || [];
+                            gameState.clues = data.clues || [];
+                            gameState.votes = data.votes || [];
+                            gameState.gamePhase = data.gamePhase || 'waiting';
+                            gameState.currentRound = data.currentRound || 1;
+                            gameState.correctVoterName = data.correctVoterName;
+                            gameState.witnessGuess = data.witnessGuess;
+
+                            if (data.gameStarted) {
+                                showGame();
+                            } else {
+                                showScreen('lobbyScreen');
+                                updateLobby();
+                                if (gameState.isHost) {
+                                    document.getElementById('hostControls').classList.remove('hidden');
+                                }
+                            }
+                            
+                            listenToRoom();
+                        }
                     }
                 });
             }
