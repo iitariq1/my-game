@@ -10,6 +10,7 @@
 <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-database-compat.js"></script>
 
 <script>
+  // تهيئة Firebase
   const firebaseConfig = {
     apiKey: "AIzaSyB88NCDQzsUzHZgH07B63e4Dpxc3LfXSyY",
     authDomain: "detective-game-df960.firebaseapp.com",
@@ -20,13 +21,26 @@
     appId: "1:25405560822:web:72e3da05fb611c727d59d7"
   };
 
-  firebase.initializeApp(firebaseConfig);
+  let firebaseReady = false;
+  
+  try {
+    firebase.initializeApp(firebaseConfig);
+    window.db = firebase.database();
+    window.dbRef = (_db, path) => firebase.database().ref(path);
+    window.dbGet = (ref) => ref.get();
+    window.dbSet = (ref, data) => ref.set(data);
+    window.dbUpdate = (ref, data) => ref.update(data);
+    firebaseReady = true;
+    console.log('Firebase initialized successfully');
+  } catch (error) {
+    console.error('Firebase initialization error:', error);
+    firebaseReady = false;
+  }
 
-  window.db = firebase.database();
-  window.dbRef = (_db, path) => firebase.database().ref(path);
-  window.dbGet = (ref) => ref.get();
-  window.dbSet = (ref, data) => ref.set(data);
-  window.dbUpdate = (ref, data) => ref.update(data);
+  // دالة للتحقق من الاتصال
+  function checkConnection() {
+    return firebaseReady && window.db;
+  }
 </script>
 
     <!-- Google Fonts - Arabic Kufi -->
@@ -941,6 +955,11 @@
 
         <!-- Home Screen -->
         <div id="homeScreen" class="screen active">
+            <!-- Connection Status -->
+            <div id="connectionStatus" style="text-align: center; margin-bottom: 10px; padding: 10px; border-radius: 8px; background: #fff3cd; color: #856404; display: none;">
+                ⏳ جاري الاتصال بالخادم...
+            </div>
+            
             <!-- Detective Background Scene -->
             <div class="home-background" style="font-size: 200px; opacity: 0.15;">
                 <div style="position: absolute; bottom: -30px; right: 8%; animation: float-slow 8s ease-in-out infinite;">🥷</div>
@@ -953,8 +972,8 @@
             <div class="crime-tape"></div>
             
             <div style="text-align: center; margin: 50px 0; position: relative; z-index: 2;">
-                <button onclick="showCreateRoom()" style="margin: 10px;">إنشاء غرفة جديدة</button>
-                <button onclick="showJoinRoom()" style="margin: 10px; background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);">الانضمام لغرفة</button>
+                <button id="createRoomBtn" onclick="showCreateRoom()" style="margin: 10px;">إنشاء غرفة جديدة</button>
+                <button id="joinRoomBtn" onclick="showJoinRoom()" style="margin: 10px; background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);">الانضمام لغرفة</button>
                 <button onclick="startDemoMode()" style="margin: 10px; background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);">🎮 تجربة اللعبة (وضع تجريبي)</button>
             </div>
         </div>
@@ -1412,23 +1431,56 @@
                 return;
             }
 
-            gameState.roomCode = generateRoomCode();
-            gameState.playerName = hostName;
-            gameState.playerId = generatePlayerId();
-            gameState.isHost = true;
-            gameState.maxPlayers = playerCount;
-            gameState.players = [{
-                id: gameState.playerId,
-                name: hostName,
-                isHost: true
-            }];
+            // التحقق من جاهزية Firebase
+            if (!window.db) {
+                alert('جاري تحميل الاتصال... حاول مرة أخرى');
+                return;
+            }
 
-            // Save to storage
-            await saveGameState();
-            
-            showLobby();
-            updateLobby();
-            document.getElementById('hostControls').classList.remove('hidden');
+            try {
+                // إظهار رسالة تحميل
+                const createBtn = document.querySelector('#createRoomScreen button');
+                const originalText = createBtn.textContent;
+                createBtn.textContent = 'جاري الإنشاء...';
+                createBtn.disabled = true;
+
+                gameState.roomCode = generateRoomCode();
+                gameState.playerName = hostName;
+                gameState.playerId = generatePlayerId();
+                gameState.isHost = true;
+                gameState.maxPlayers = playerCount;
+                gameState.players = [{
+                    id: gameState.playerId,
+                    name: hostName,
+                    isHost: true
+                }];
+                gameState.gameStarted = false;
+                gameState.votes = [];
+                gameState.clues = [];
+                gameState.selectedClues = [];
+
+                // Save to storage
+                await saveGameState();
+                
+                createBtn.textContent = originalText;
+                createBtn.disabled = false;
+                
+                showLobby();
+                updateLobby();
+                document.getElementById('hostControls').classList.remove('hidden');
+                
+                // بدء الاستماع للتحديثات للمضيف أيضاً
+                pollForUpdates();
+                
+            } catch (error) {
+                console.error('Create room error:', error);
+                alert('حدث خطأ أثناء إنشاء الغرفة. حاول مرة أخرى.');
+                const createBtn = document.querySelector('#createRoomScreen button');
+                if (createBtn) {
+                    createBtn.textContent = 'إنشاء الغرفة';
+                    createBtn.disabled = false;
+                }
+            }
         }
 
         async function joinRoom() {
@@ -1445,42 +1497,78 @@
                 return;
             }
 
-            gameState.roomCode = roomCode;
-            gameState.playerName = playerName;
-            gameState.playerId = generatePlayerId();
-            gameState.isHost = false;
-
-            // Load room data
-            const roomData = await loadGameState();
-            
-            if (!roomData) {
-                alert('الغرفة غير موجودة');
+            // التحقق من جاهزية Firebase
+            if (!window.db) {
+                alert('جاري تحميل الاتصال... حاول مرة أخرى');
                 return;
             }
 
-            if (roomData.players.length >= roomData.maxPlayers) {
-                alert('الغرفة ممتلئة');
-                return;
+            try {
+                // إظهار رسالة تحميل
+                const joinBtn = document.querySelector('#joinRoomScreen button');
+                const originalText = joinBtn.textContent;
+                joinBtn.textContent = 'جاري الانضمام...';
+                joinBtn.disabled = true;
+
+                gameState.roomCode = roomCode;
+                gameState.playerName = playerName;
+                gameState.playerId = generatePlayerId();
+                gameState.isHost = false;
+
+                // Load room data
+                const roomData = await loadGameState();
+                
+                if (!roomData) {
+                    alert('الغرفة غير موجودة. تأكد من رمز الغرفة.');
+                    joinBtn.textContent = originalText;
+                    joinBtn.disabled = false;
+                    gameState.roomCode = null;
+                    return;
+                }
+
+                if (roomData.players && roomData.players.length >= roomData.maxPlayers) {
+                    alert('الغرفة ممتلئة');
+                    joinBtn.textContent = originalText;
+                    joinBtn.disabled = false;
+                    gameState.roomCode = null;
+                    return;
+                }
+
+                if (roomData.gameStarted) {
+                    alert('اللعبة بدأت بالفعل');
+                    joinBtn.textContent = originalText;
+                    joinBtn.disabled = false;
+                    gameState.roomCode = null;
+                    return;
+                }
+
+                gameState.players = roomData.players || [];
+                gameState.maxPlayers = roomData.maxPlayers;
+                gameState.players.push({
+                    id: gameState.playerId,
+                    name: playerName,
+                    isHost: false
+                });
+
+                await saveGameState();
+                
+                joinBtn.textContent = originalText;
+                joinBtn.disabled = false;
+                
+                showLobby();
+                updateLobby();
+                pollForUpdates();
+                
+            } catch (error) {
+                console.error('Join room error:', error);
+                alert('حدث خطأ أثناء الانضمام. حاول مرة أخرى.');
+                gameState.roomCode = null;
+                const joinBtn = document.querySelector('#joinRoomScreen button');
+                if (joinBtn) {
+                    joinBtn.textContent = 'انضمام';
+                    joinBtn.disabled = false;
+                }
             }
-
-            if (roomData.gameStarted) {
-                alert('اللعبة بدأت بالفعل');
-                return;
-            }
-
-            gameState.players = roomData.players;
-            gameState.maxPlayers = roomData.maxPlayers;
-            gameState.players.push({
-                id: gameState.playerId,
-                name: playerName,
-                isHost: false
-            });
-
-            await saveGameState();
-            
-            showLobby();
-            updateLobby();
-            pollForUpdates();
         }
 
         function updateLobby() {
@@ -2669,6 +2757,38 @@
         // Initialize
         window.addEventListener('load', () => {
             console.log('Deception: Murder in Hong Kong - Game Loaded');
+            
+            // التحقق من حالة الاتصال
+            const statusEl = document.getElementById('connectionStatus');
+            
+            if (window.db && firebaseReady) {
+                // الاتصال ناجح
+                if (statusEl) {
+                    statusEl.style.display = 'none';
+                }
+                console.log('Firebase connection ready');
+            } else {
+                // إظهار رسالة انتظار
+                if (statusEl) {
+                    statusEl.style.display = 'block';
+                    statusEl.innerHTML = '⏳ جاري الاتصال بالخادم...';
+                }
+                
+                // محاولة إعادة الاتصال بعد ثانية
+                setTimeout(() => {
+                    if (window.db) {
+                        if (statusEl) {
+                            statusEl.style.display = 'none';
+                        }
+                    } else {
+                        if (statusEl) {
+                            statusEl.innerHTML = '❌ فشل الاتصال. يرجى تحديث الصفحة.';
+                            statusEl.style.background = '#f8d7da';
+                            statusEl.style.color = '#721c24';
+                        }
+                    }
+                }, 2000);
+            }
         });
 
         // Storage Functions
