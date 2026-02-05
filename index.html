@@ -1592,12 +1592,7 @@ listenToRoom(roomCode);
                 };
             });
 
-            // Find murderer
-            const murderer = gameState.players.find(p => p.role === 'murderer');
-            gameState.murdererName = murderer.name;
-
-            showGame();
-            revealRole();
+          
         }
 
        async function startGame() {
@@ -1610,16 +1605,9 @@ listenToRoom(roomCode);
   gameState.phase = "game";
   gameState.gameStarted = true;
 
-  await saveGameState();
-
-  // (اختياري) للمضيف نفسه ينتقل مباشرة
-  showGame();
-}
-
-
             // Assign roles
             const roles = assignRoles(gameState.players.length);
-            
+             await saveGameState();
             gameState.gameStarted = true;
             // Don't set murder weapon and evidence yet - murderer will choose
             gameState.murderWeapon = null;
