@@ -11,36 +11,54 @@
 
 <script>
   // تهيئة Firebase
-  const firebaseConfig = {
-    apiKey: "AIzaSyB88NCDQzsUzHZgH07B63e4Dpxc3LfXSyY",
-    authDomain: "detective-game-df960.firebaseapp.com",
-    databaseURL: "https://detective-game-df960-default-rtdb.firebaseio.com",
-    projectId: "detective-game-df960",
-    storageBucket: "detective-game-df960.firebasestorage.app",
-    messagingSenderId: "25405560822",
-    appId: "1:25405560822:web:72e3da05fb611c727d59d7"
-  };
-
   let firebaseReady = false;
   
-  try {
-    firebase.initializeApp(firebaseConfig);
-    window.db = firebase.database();
-    window.dbRef = (_db, path) => firebase.database().ref(path);
-    window.dbGet = (ref) => ref.get();
-    window.dbSet = (ref, data) => ref.set(data);
-    window.dbUpdate = (ref, data) => ref.update(data);
-    firebaseReady = true;
-    console.log('Firebase initialized successfully');
-  } catch (error) {
-    console.error('Firebase initialization error:', error);
-    firebaseReady = false;
+  function initFirebase() {
+    const firebaseConfig = {
+      apiKey: "AIzaSyB88NCDQzsUzHZgH07B63e4Dpxc3LfXSyY",
+      authDomain: "detective-game-df960.firebaseapp.com",
+      databaseURL: "https://detective-game-df960-default-rtdb.firebaseio.com",
+      projectId: "detective-game-df960",
+      storageBucket: "detective-game-df960.firebasestorage.app",
+      messagingSenderId: "25405560822",
+      appId: "1:25405560822:web:72e3da05fb611c727d59d7"
+    };
+
+    try {
+      if (typeof firebase !== 'undefined') {
+        firebase.initializeApp(firebaseConfig);
+        window.db = firebase.database();
+        window.dbRef = (_db, path) => firebase.database().ref(path);
+        window.dbGet = (ref) => ref.get();
+        window.dbSet = (ref, data) => ref.set(data);
+        window.dbUpdate = (ref, data) => ref.update(data);
+        firebaseReady = true;
+        console.log('✅ Firebase initialized successfully');
+        
+        // تحديث حالة الاتصال في الصفحة
+        const statusEl = document.getElementById('connectionStatus');
+        if (statusEl) {
+          statusEl.style.display = 'none';
+        }
+        return true;
+      } else {
+        console.error('Firebase SDK not loaded');
+        return false;
+      }
+    } catch (error) {
+      console.error('Firebase initialization error:', error);
+      firebaseReady = false;
+      return false;
+    }
   }
 
-  // دالة للتحقق من الاتصال
-  function checkConnection() {
-    return firebaseReady && window.db;
-  }
+  // محاولة التهيئة عند تحميل الصفحة
+  document.addEventListener('DOMContentLoaded', function() {
+    if (!initFirebase()) {
+      // إعادة المحاولة بعد ثانية
+      setTimeout(initFirebase, 1000);
+    }
+  });
 </script>
 
     <!-- Google Fonts - Arabic Kufi -->
@@ -1423,31 +1441,31 @@
 
         // Room Management
         async function createRoom() {
+            console.log('createRoom called');
+            
             const hostName = document.getElementById('hostName').value.trim();
             const playerCount = parseInt(document.getElementById('playerCount').value);
+
+            console.log('Host name:', hostName, 'Player count:', playerCount);
 
             if (!hostName) {
                 alert('الرجاء إدخال اسمك');
                 return;
             }
 
-            // التحقق من جاهزية Firebase
-            if (!window.db) {
-                alert('جاري تحميل الاتصال... حاول مرة أخرى');
+            // الحصول على زر الإنشاء
+            const createBtn = document.getElementById('createRoomBtn');
+            if (!createBtn) {
+                console.error('Create button not found');
+                alert('خطأ: لم يتم العثور على الزر');
                 return;
             }
+            
+            const originalText = createBtn.textContent;
+            createBtn.textContent = 'جاري الإنشاء...';
+            createBtn.disabled = true;
 
             try {
-                // إظهار رسالة تحميل
-                const createBtn = document.getElementById('createRoomBtn');
-                if (!createBtn) {
-                    console.error('Create button not found');
-                    return;
-                }
-                const originalText = createBtn.textContent;
-                createBtn.textContent = 'جاري الإنشاء...';
-                createBtn.disabled = true;
-
                 gameState.roomCode = generateRoomCode();
                 gameState.playerName = hostName;
                 gameState.playerId = generatePlayerId();
@@ -1463,33 +1481,47 @@
                 gameState.clues = [];
                 gameState.selectedClues = [];
 
-                // Save to storage
-                await saveGameState();
+                console.log('Game state prepared:', gameState.roomCode);
+
+                // التحقق من جاهزية Firebase
+                if (window.db) {
+                    console.log('Saving to Firebase...');
+                    await saveGameState();
+                    console.log('Saved to Firebase successfully');
+                } else {
+                    console.log('Firebase not ready, continuing without save');
+                }
                 
                 createBtn.textContent = originalText;
                 createBtn.disabled = false;
                 
+                console.log('Showing lobby...');
                 showLobby();
                 updateLobby();
                 document.getElementById('hostControls').classList.remove('hidden');
                 
                 // بدء الاستماع للتحديثات للمضيف أيضاً
-                pollForUpdates();
+                if (window.db) {
+                    pollForUpdates();
+                }
+                
+                console.log('Room created successfully!');
                 
             } catch (error) {
                 console.error('Create room error:', error);
-                alert('حدث خطأ أثناء إنشاء الغرفة. حاول مرة أخرى.');
-                const createBtn = document.querySelector('#createRoomScreen button');
-                if (createBtn) {
-                    createBtn.textContent = 'إنشاء الغرفة';
-                    createBtn.disabled = false;
-                }
+                alert('حدث خطأ: ' + error.message);
+                createBtn.textContent = originalText;
+                createBtn.disabled = false;
             }
         }
 
         async function joinRoom() {
+            console.log('joinRoom called');
+            
             const playerName = document.getElementById('playerName').value.trim();
             const roomCode = document.getElementById('roomCodeInput').value.trim().toUpperCase();
+
+            console.log('Player name:', playerName, 'Room code:', roomCode);
 
             if (!playerName) {
                 alert('الرجاء إدخال اسمك');
@@ -1501,37 +1533,38 @@
                 return;
             }
 
-            // التحقق من جاهزية Firebase
-            if (!window.db) {
-                alert('جاري تحميل الاتصال... حاول مرة أخرى بعد ثانية');
-                return;
-            }
-
             // الحصول على زر الانضمام
             const joinBtn = document.getElementById('joinRoomBtn');
             if (!joinBtn) {
                 console.error('Join button not found');
+                alert('خطأ: لم يتم العثور على الزر');
                 return;
             }
 
             const originalText = joinBtn.textContent;
-            
-            try {
-                // إظهار رسالة تحميل
-                joinBtn.textContent = 'جاري الانضمام...';
-                joinBtn.disabled = true;
+            joinBtn.textContent = 'جاري الانضمام...';
+            joinBtn.disabled = true;
 
-                console.log('Attempting to join room:', roomCode);
+            try {
+                // التحقق من جاهزية Firebase
+                if (!window.db) {
+                    alert('جاري تحميل الاتصال... حاول مرة أخرى بعد ثانية');
+                    joinBtn.textContent = originalText;
+                    joinBtn.disabled = false;
+                    return;
+                }
 
                 gameState.roomCode = roomCode;
                 gameState.playerName = playerName;
                 gameState.playerId = generatePlayerId();
                 gameState.isHost = false;
 
+                console.log('Loading room data...');
+
                 // Load room data
                 const roomData = await loadGameState();
                 
-                console.log('Room data loaded:', roomData);
+                console.log('Room data:', roomData);
                 
                 if (!roomData) {
                     alert('الغرفة غير موجودة. تأكد من رمز الغرفة.');
@@ -1565,12 +1598,11 @@
                     isHost: false
                 });
 
-                console.log('Updating players list...');
+                console.log('Updating players...');
                 
-                // استخدام تحديث جزئي للاعبين فقط بدلاً من الكتابة فوق كل البيانات
                 await updatePlayersOnly();
                 
-                console.log('Players updated successfully');
+                console.log('Players updated');
                 
                 joinBtn.textContent = originalText;
                 joinBtn.disabled = false;
@@ -1579,16 +1611,14 @@
                 updateLobby();
                 pollForUpdates();
                 
-                console.log('Joined room successfully!');
+                console.log('Joined successfully!');
                 
             } catch (error) {
                 console.error('Join room error:', error);
-                alert('حدث خطأ أثناء الانضمام: ' + error.message);
+                alert('حدث خطأ: ' + error.message);
                 gameState.roomCode = null;
-                if (joinBtn) {
-                    joinBtn.textContent = originalText;
-                    joinBtn.disabled = false;
-                }
+                joinBtn.textContent = originalText;
+                joinBtn.disabled = false;
             }
         }
 
@@ -2819,38 +2849,11 @@
 
         // Initialize
         window.addEventListener('load', () => {
-            console.log('Deception: Murder in Hong Kong - Game Loaded');
+            console.log('🎮 Deception: Murder in Hong Kong - Game Loaded');
             
-            // التحقق من حالة الاتصال
-            const statusEl = document.getElementById('connectionStatus');
-            
-            if (window.db && firebaseReady) {
-                // الاتصال ناجح
-                if (statusEl) {
-                    statusEl.style.display = 'none';
-                }
-                console.log('Firebase connection ready');
-            } else {
-                // إظهار رسالة انتظار
-                if (statusEl) {
-                    statusEl.style.display = 'block';
-                    statusEl.innerHTML = '⏳ جاري الاتصال بالخادم...';
-                }
-                
-                // محاولة إعادة الاتصال بعد ثانية
-                setTimeout(() => {
-                    if (window.db) {
-                        if (statusEl) {
-                            statusEl.style.display = 'none';
-                        }
-                    } else {
-                        if (statusEl) {
-                            statusEl.innerHTML = '❌ فشل الاتصال. يرجى تحديث الصفحة.';
-                            statusEl.style.background = '#f8d7da';
-                            statusEl.style.color = '#721c24';
-                        }
-                    }
-                }, 2000);
+            // محاولة تهيئة Firebase إذا لم تتم
+            if (!firebaseReady) {
+                initFirebase();
             }
         });
 
