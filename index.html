@@ -1492,7 +1492,7 @@
                 showLobby();
                 updateLobby();
                 document.getElementById('hostControls').classList.remove('hidden');
-                pollForUpdates();
+                listenToRoom(); // استخدام listener بدلاً من polling
                 
             }).catch(function(err) {
                 console.error('Failed to save room:', err);
@@ -1505,8 +1505,6 @@
         }
 
         function joinRoom() {
-            console.log('joinRoom called');
-            
             var playerName = document.getElementById('playerName').value.trim();
             var roomCode = document.getElementById('roomCodeInput').value.trim().toUpperCase();
 
@@ -1520,90 +1518,73 @@
                 return;
             }
 
+            if (!window.db) {
+                alert('جاري الاتصال... حاول مرة أخرى');
+                return;
+            }
+
             var joinBtn = document.getElementById('joinRoomBtn');
             if (joinBtn) {
                 joinBtn.textContent = 'جاري الانضمام...';
                 joinBtn.disabled = true;
             }
 
+            // تعيين رمز الغرفة للبحث
             gameState.roomCode = roomCode;
-            gameState.playerName = playerName;
-            gameState.playerId = generatePlayerId();
-            gameState.isHost = false;
-
-            // تحميل بيانات الغرفة
-            if (!window.db) {
-                alert('الاتصال غير جاهز. حاول مرة أخرى.');
-                if (joinBtn) {
-                    joinBtn.textContent = 'انضمام';
-                    joinBtn.disabled = false;
-                }
-                return;
-            }
 
             loadGameState().then(function(roomData) {
-                console.log('Room data:', roomData);
-                
                 if (!roomData) {
                     alert('الغرفة غير موجودة');
-                    if (joinBtn) {
-                        joinBtn.textContent = 'انضمام';
-                        joinBtn.disabled = false;
-                    }
-                    gameState.roomCode = null;
+                    resetJoinBtn(joinBtn);
                     return;
                 }
 
                 if (roomData.gameStarted) {
                     alert('اللعبة بدأت بالفعل');
-                    if (joinBtn) {
-                        joinBtn.textContent = 'انضمام';
-                        joinBtn.disabled = false;
-                    }
-                    gameState.roomCode = null;
+                    resetJoinBtn(joinBtn);
                     return;
                 }
 
                 if (roomData.players && roomData.players.length >= roomData.maxPlayers) {
                     alert('الغرفة ممتلئة');
-                    if (joinBtn) {
-                        joinBtn.textContent = 'انضمام';
-                        joinBtn.disabled = false;
-                    }
-                    gameState.roomCode = null;
+                    resetJoinBtn(joinBtn);
                     return;
                 }
 
+                // إضافة اللاعب
+                gameState.playerName = playerName;
+                gameState.playerId = generatePlayerId();
+                gameState.isHost = false;
                 gameState.players = roomData.players || [];
                 gameState.maxPlayers = roomData.maxPlayers;
+                
                 gameState.players.push({
                     id: gameState.playerId,
                     name: playerName,
                     isHost: false
                 });
 
-                // تحديث اللاعبين فقط
                 updatePlayersOnly().then(function() {
-                    console.log('Joined successfully');
-                    
-                    if (joinBtn) {
-                        joinBtn.textContent = 'انضمام';
-                        joinBtn.disabled = false;
-                    }
-                    
+                    resetJoinBtn(joinBtn);
                     showLobby();
                     updateLobby();
-                    pollForUpdates();
+                    listenToRoom(); // استخدام listener بدلاً من polling
+                }).catch(function(err) {
+                    alert('فشل الانضمام');
+                    resetJoinBtn(joinBtn);
                 });
 
             }).catch(function(err) {
-                console.error('Join error:', err);
-                alert('حدث خطأ: ' + err.message);
-                if (joinBtn) {
-                    joinBtn.textContent = 'انضمام';
-                    joinBtn.disabled = false;
-                }
+                alert('خطأ في الاتصال');
+                resetJoinBtn(joinBtn);
             });
+        }
+
+        function resetJoinBtn(btn) {
+            if (btn) {
+                btn.textContent = 'انضمام';
+                btn.disabled = false;
+            }
         }
 
         function updateLobby() {
@@ -2842,44 +2823,150 @@
         });
 
         // Storage Functions
-        async function loadGameState() {
-            if (!gameState.roomCode || !window.db) return null;
+        function loadGameState() {
+            return new Promise(function(resolve, reject) {
+                if (!gameState.roomCode || !window.db) {
+                    resolve(null);
+                    return;
+                }
 
-            try {
-                const snapshot = await window.dbGet(
-                    window.dbRef(window.db, `rooms/${gameState.roomCode}`)
-                );
-                return snapshot.exists() ? snapshot.val() : null;
-            } catch (error) {
-                console.error("loadGameState error:", error);
-                return null;
-            }
+                var roomRef = firebase.database().ref('rooms/' + gameState.roomCode);
+                roomRef.once('value').then(function(snapshot) {
+                    if (snapshot.exists()) {
+                        resolve(snapshot.val());
+                    } else {
+                        resolve(null);
+                    }
+                }).catch(function(error) {
+                    console.error("loadGameState error:", error);
+                    reject(error);
+                });
+            });
         }
 
-        async function saveGameState() {
-            if (!gameState.roomCode || !window.db) return;
+        function saveGameState() {
+            return new Promise(function(resolve, reject) {
+                if (!gameState.roomCode || !window.db) {
+                    reject('No connection');
+                    return;
+                }
 
-            try {
-                await window.dbSet(
-                    window.dbRef(window.db, `rooms/${gameState.roomCode}`),
-                    gameState
-                );
-            } catch (error) {
-                console.error("saveGameState error:", error);
-            }
+                var roomRef = firebase.database().ref('rooms/' + gameState.roomCode);
+                roomRef.set(gameState).then(function() {
+                    console.log('✅ Room saved:', gameState.roomCode);
+                    resolve();
+                }).catch(function(error) {
+                    console.error("saveGameState error:", error);
+                    reject(error);
+                });
+            });
         }
 
-        // دالة لتحديث اللاعبين فقط (للانضمام)
-        async function updatePlayersOnly() {
+        function updatePlayersOnly() {
+            return new Promise(function(resolve, reject) {
+                if (!gameState.roomCode || !window.db) {
+                    reject('No connection');
+                    return;
+                }
+
+                var roomRef = firebase.database().ref('rooms/' + gameState.roomCode);
+                roomRef.update({ players: gameState.players }).then(function() {
+                    console.log('✅ Players updated');
+                    resolve();
+                }).catch(function(error) {
+                    console.error("updatePlayersOnly error:", error);
+                    reject(error);
+                });
+            });
+        }
+
+        // الاستماع للتغييرات في الغرفة (بدلاً من polling)
+        var roomListener = null;
+
+        function listenToRoom() {
             if (!gameState.roomCode || !window.db) return;
 
-            try {
-                await window.dbUpdate(
-                    window.dbRef(window.db, `rooms/${gameState.roomCode}`),
-                    { players: gameState.players }
-                );
-            } catch (error) {
-                console.error("updatePlayersOnly error:", error);
+            // إيقاف أي listener سابق
+            if (roomListener) {
+                roomListener.off();
+            }
+
+            roomListener = firebase.database().ref('rooms/' + gameState.roomCode);
+            
+            roomListener.on('value', function(snapshot) {
+                if (!snapshot.exists()) return;
+
+                var roomData = snapshot.val();
+                console.log('📡 Room updated:', roomData);
+
+                // تحديث قائمة اللاعبين
+                if (roomData.players) {
+                    gameState.players = roomData.players;
+                    if (!gameState.gameStarted) {
+                        updateLobby();
+                    }
+                }
+
+                // التحقق من بدء اللعبة
+                if (!gameState.gameStarted && roomData.gameStarted) {
+                    console.log('🎮 Game started!');
+                    
+                    gameState.gameStarted = true;
+                    gameState.murderWeapon = roomData.murderWeapon;
+                    gameState.murderEvidence = roomData.murderEvidence;
+                    gameState.murdererName = roomData.murdererName;
+                    gameState.players = roomData.players;
+                    gameState.forensicClueCards = roomData.forensicClueCards || [];
+                    gameState.selectedClues = roomData.selectedClues || [];
+                    gameState.clues = roomData.clues || [];
+                    gameState.votes = roomData.votes || [];
+
+                    showGame();
+                    revealRole();
+                }
+
+                // تحديث الأدلة أثناء اللعبة
+                if (gameState.gameStarted) {
+                    if (roomData.clues) {
+                        gameState.clues = roomData.clues;
+                        gameState.selectedClues = roomData.selectedClues || [];
+                        displayPublicClues();
+                    }
+
+                    if (roomData.votes) {
+                        gameState.votes = roomData.votes;
+                        displayVotes();
+                    }
+
+                    // تحديث سلاح ودليل القاتل
+                    if (roomData.murderWeapon && roomData.murderEvidence) {
+                        gameState.murderWeapon = roomData.murderWeapon;
+                        gameState.murderEvidence = roomData.murderEvidence;
+
+                        if (gameState.role === 'accomplice') {
+                            var wEl = document.getElementById('accompliceWeapon');
+                            var eEl = document.getElementById('accompliceEvidence');
+                            if (wEl) wEl.textContent = gameState.murderWeapon;
+                            if (eEl) eEl.textContent = gameState.murderEvidence;
+                        }
+
+                        if (gameState.role === 'forensic') {
+                            var wEl2 = document.getElementById('forensicWeapon');
+                            var eEl2 = document.getElementById('forensicEvidence');
+                            if (wEl2) wEl2.textContent = gameState.murderWeapon;
+                            if (eEl2) eEl2.textContent = gameState.murderEvidence;
+                        }
+                    }
+                }
+            });
+
+            console.log('👂 Listening to room:', gameState.roomCode);
+        }
+
+        function stopListening() {
+            if (roomListener) {
+                roomListener.off();
+                roomListener = null;
             }
         }
     </script>
