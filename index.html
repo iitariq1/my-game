@@ -545,18 +545,25 @@
         ];
 
         var CLUE_CARDS = [
-            { title: '💀 سبب الوفاة', options: ['طعن', 'خنق', 'تسميم', 'ضرب', 'إطلاق نار', 'سقوط', 'غرق', 'صعق'], fixed: true },
-            { title: '📍 موقع الجريمة', options: ['غرفة نوم', 'مطبخ', 'حمام', 'صالة', 'مرآب', 'حديقة', 'سطح', 'قبو'], changeOnce: true },
-            { title: '🕐 الوقت', options: ['فجر', 'صباح', 'ظهر', 'عصر', 'مغرب', 'عشاء', 'منتصف الليل', 'قبل الفجر'] },
-            { title: '😵 حالة الضحية', options: ['نائم', 'جالس', 'واقف', 'يركض', 'يأكل', 'يتحدث', 'يقرأ', 'يستحم'] },
-            { title: '💭 الدافع', options: ['مال', 'انتقام', 'غيرة', 'سلطة', 'سر', 'حب', 'خوف', 'جنون'] },
-            { title: '🌤️ الطقس', options: ['مشمس', 'غائم', 'ممطر', 'عاصف', 'ثلجي', 'ضبابي', 'حار', 'بارد'] },
-            { title: '👔 ملابس القاتل', options: ['أسود', 'أبيض', 'أحمر', 'أزرق', 'رمادي', 'متنكر', 'رسمي', 'رياضي'] },
-            { title: '🎭 شخصية القاتل', options: ['هادئ', 'عصبي', 'ماكر', 'متهور', 'بارد', 'محترف', 'مرتبك', 'واثق'] },
-            { title: '🔊 صوت', options: ['صراخ', 'سقوط', 'زجاج', 'طلقة', 'صمت', 'موسيقى', 'محادثة', 'خطوات'] },
-            { title: '💡 إضاءة', options: ['مظلم', 'خافت', 'ساطع', 'شموع', 'طبيعي', 'قمر', 'متقطع', 'ملون'] },
-            { title: '👃 رائحة', options: ['دم', 'عطر', 'دخان', 'طعام', 'كيماويات', 'زهور', 'عفن', 'نظيف'] },
-            { title: '🎒 أداة مساعدة', options: ['حقيبة', 'سيارة', 'قفازات', 'قناع', 'هاتف', 'كاميرا', 'مفتاح', 'خريطة'] }
+            { title: '💀 سبب الوفاة', options: ['طعن', 'خنق', 'تسميم', 'ضرب', 'إطلاق نار', 'صعق'], fixed: true },
+            { title: '📍 موقع الجريمة', options: ['غرفة نوم', 'مطبخ', 'حمام', 'صالة', 'مرآب', 'حديقة'], isLocation: true },
+            { title: '🕐 الوقت', options: ['فجر', 'صباح', 'ظهر', 'عصر', 'مغرب', 'منتصف الليل'] },
+            { title: '😵 حالة الضحية', options: ['نائم', 'جالس', 'واقف', 'يركض', 'يأكل', 'يتحدث'] },
+            { title: '💭 الدافع', options: ['مال', 'انتقام', 'غيرة', 'سلطة', 'سر', 'حب'] },
+            { title: '🌤️ الطقس', options: ['مشمس', 'غائم', 'ممطر', 'عاصف', 'ثلجي', 'ضبابي'] },
+            { title: '👔 ملابس القاتل', options: ['أسود', 'أبيض', 'أحمر', 'أزرق', 'رمادي', 'متنكر'] },
+            { title: '🎭 شخصية القاتل', options: ['هادئ', 'عصبي', 'ماكر', 'متهور', 'بارد', 'محترف'] },
+            { title: '🔊 صوت', options: ['صراخ', 'سقوط', 'زجاج', 'طلقة', 'صمت', 'خطوات'] },
+            { title: '💡 إضاءة', options: ['مظلم', 'خافت', 'ساطع', 'شموع', 'طبيعي', 'قمر'] },
+            { title: '👃 رائحة', options: ['دم', 'عطر', 'دخان', 'طعام', 'كيماويات', 'نظيف'] },
+            { title: '🎒 أداة مساعدة', options: ['حقيبة', 'سيارة', 'قفازات', 'قناع', 'هاتف', 'مفتاح'] }
+        ];
+
+        // بطاقات مواقع الجريمة البديلة
+        var LOCATION_CARDS = [
+            { title: '📍 موقع الجريمة', options: ['غرفة نوم', 'مطبخ', 'حمام', 'صالة', 'مرآب', 'حديقة'], isLocation: true },
+            { title: '📍 موقع الجريمة', options: ['مكتب', 'قبو', 'سطح', 'درج', 'ممر', 'شرفة'], isLocation: true },
+            { title: '📍 موقع الجريمة', options: ['مطعم', 'فندق', 'مستشفى', 'مدرسة', 'حديقة عامة', 'موقف'], isLocation: true }
         ];
 
         // ========== State ==========
@@ -969,10 +976,10 @@
                 
                 // تحديد إذا كان يمكن استبدال هذه البطاقة
                 var canReplace = false;
-                if (game.round > 1 && !alreadyReplacedThisRound) {
-                    if (idx === 0) {
+                if (game.round > 1 && !alreadyReplacedThisRound && used) {
+                    if (card.fixed) {
                         canReplace = false; // سبب الوفاة لا يمكن استبداله أبداً
-                    } else if (idx === 1) {
+                    } else if (card.isLocation) {
                         canReplace = !game.locationChanged; // موقع الجريمة يمكن استبداله مرة واحدة فقط
                     } else {
                         canReplace = true;
@@ -980,12 +987,12 @@
                 }
 
                 var cardLabel = card.title;
-                if (idx === 0) cardLabel += ' <span style="color:#ffd700;font-size:0.8em;">(ثابت)</span>';
-                if (idx === 1 && game.locationChanged) cardLabel += ' <span style="color:#f39c12;font-size:0.8em;">(تم تغييره)</span>';
+                if (card.fixed) cardLabel += ' <span style="color:#e74c3c;font-size:0.7em;">(ثابت)</span>';
+                if (card.isLocation && game.locationChanged) cardLabel += ' <span style="color:#f39c12;font-size:0.7em;">(تم تغييره)</span>';
 
                 var html = '<h5>' + cardLabel;
-                if (canReplace && used) {
-                    html += ' <button onclick="selectForReplace(' + idx + ')" class="btn-small" style="margin-right:10px;background:#e67e22;">🔄 استبدال</button>';
+                if (canReplace) {
+                    html += ' <button onclick="selectForReplace(' + idx + ')" class="btn-small" style="margin-right:10px;background:#e67e22;font-size:10px;">🔄</button>';
                 }
                 html += '</h5><div class="clue-options">';
                 
@@ -1002,9 +1009,15 @@
 
             // إظهار البطاقة المحددة للاستبدال
             if (selectedCardToReplace !== null) {
+                var replaceCard = game.cards[selectedCardToReplace];
+                var replaceMsg = replaceCard.isLocation ? 
+                    'سيتم استبدالها ببطاقة موقع جريمة أخرى' : 
+                    'سيتم استبدالها ببطاقة عشوائية';
+                    
                 container.innerHTML += '<div class="alert alert-warning" style="margin-top:10px;">' +
-                    '<p>سيتم استبدال بطاقة: <strong>' + game.cards[selectedCardToReplace].title + '</strong></p>' +
-                    '<button onclick="confirmReplace()" class="btn-small btn-danger">تأكيد الاستبدال</button> ' +
+                    '<p>استبدال: <strong>' + replaceCard.title + '</strong></p>' +
+                    '<p style="font-size:0.85em;opacity:0.8;">' + replaceMsg + '</p>' +
+                    '<button onclick="confirmReplace()" class="btn-small btn-danger">تأكيد</button> ' +
                     '<button onclick="cancelReplace()" class="btn-small btn-secondary">إلغاء</button>' +
                     '</div>';
             }
@@ -1024,25 +1037,33 @@
             if (selectedCardToReplace === null) return;
 
             var idx = selectedCardToReplace;
+            var currentCard = game.cards[idx];
+            var newCard = null;
             
-            // الحصول على بطاقة عشوائية جديدة
-            var usedTitles = game.cards.map(function(c) { return c.title; });
-            var available = CLUE_CARDS.filter(function(c) { 
-                return !usedTitles.includes(c.title) && !c.fixed; 
-            });
-
-            if (available.length > 0) {
-                var newCard = available[Math.floor(Math.random() * available.length)];
-                
-                // إذا كان موقع الجريمة، نسجل أنه تم تغييره
-                if (idx === 1) {
+            // إذا كانت بطاقة موقع الجريمة، نستبدلها ببطاقة موقع أخرى
+            if (currentCard.isLocation) {
+                var availableLocations = LOCATION_CARDS.filter(function(c) {
+                    return c.options.join() !== currentCard.options.join();
+                });
+                if (availableLocations.length > 0) {
+                    newCard = availableLocations[Math.floor(Math.random() * availableLocations.length)];
                     game.locationChanged = true;
                 }
+            } else {
+                // بطاقة عادية - نستبدلها ببطاقة عشوائية
+                var usedTitles = game.cards.map(function(c) { return c.title; });
+                var available = CLUE_CARDS.filter(function(c) { 
+                    return !usedTitles.includes(c.title) && !c.fixed && !c.isLocation; 
+                });
+                if (available.length > 0) {
+                    newCard = available[Math.floor(Math.random() * available.length)];
+                }
+            }
 
+            if (newCard) {
                 game.cards[idx] = newCard;
                 game.clues = game.clues.filter(function(c) { return c.cardIndex !== idx; });
                 
-                // تسجيل أنه تم الاستبدال في هذه الجولة
                 if (!game.replacedInRound) game.replacedInRound = {};
                 game.replacedInRound[game.round] = true;
 
@@ -1095,6 +1116,9 @@
             // التحقق إذا صوّت اللاعب مسبقاً
             var myVote = game.votes.find(function(v) { return v.oderId === game.oderId; });
             if (myVote) hasVoted = true;
+
+            // التحقق إذا صُوِّت على اللاعب الحالي
+            var votesOnMe = game.votes.filter(function(v) { return v.suspect === game.name; });
 
             game.players.forEach(function(p) {
                 if (p.id === game.oderId) return; // Skip self
@@ -1176,6 +1200,19 @@
                 card.innerHTML = html;
                 container.appendChild(card);
             });
+
+            // إظهار التصويتات على اللاعب الحالي (إذا صُوِّت عليه)
+            if (votesOnMe.length > 0) {
+                var alertDiv = document.createElement('div');
+                alertDiv.className = 'alert alert-danger';
+                alertDiv.style.marginBottom = '15px';
+                var alertHtml = '<h4>⚠️ تم التصويت عليك!</h4>';
+                votesOnMe.forEach(function(v) {
+                    alertHtml += '<p>🗳️ <strong>' + v.voter + '</strong> يتهمك بـ: ' + v.weapon + ' و ' + v.evidence + '</p>';
+                });
+                alertDiv.innerHTML = alertHtml;
+                container.insertBefore(alertDiv, container.firstChild);
+            }
         }
 
         function toggleSuspect(id) {
@@ -1267,12 +1304,18 @@
             document.getElementById('playersSection').classList.add('hidden');
             document.getElementById('cluesBar').classList.add('hidden');
             document.getElementById('myItems').classList.add('hidden');
+            document.getElementById('secretInfo').classList.add('hidden');
+            document.getElementById('witnessInfo').classList.add('hidden');
+            document.getElementById('roleCard').classList.add('hidden');
 
             var res = document.getElementById('gameResults');
             res.classList.remove('hidden');
+            res.innerHTML = ''; // مسح المحتوى السابق
 
-            var html = '<div class="results-box">';
-            html += '<div class="result-icon">🎯</div>';
+            var box = document.createElement('div');
+            box.className = 'results-box';
+
+            var html = '<div class="result-icon">🎯</div>';
             html += '<div class="result-title">تم كشف القاتل!</div>';
             html += '<p><strong>' + (game.correctVoter || 'محقق') + '</strong> اكتشف الحقيقة!</p>';
             html += '<div class="truth-reveal">';
@@ -1281,52 +1324,55 @@
             html += '<p>🔍 الدليل: <strong>' + game.evidence + '</strong></p>';
             html += '</div>';
 
+            box.innerHTML = html;
+            res.appendChild(box);
+
             if (game.role === 'murderer') {
-                html += '<div class="alert alert-danger"><h3>⚠️ تم اصطيادك!</h3><p>حدد الشاهد للفوز!</p></div>';
-                html += '<select id="witnessGuess" style="width:100%;padding:12px;margin:10px 0;font-size:16px;border-radius:8px;">';
+                var alertDiv = document.createElement('div');
+                alertDiv.className = 'alert alert-danger';
+                alertDiv.innerHTML = '<h3>⚠️ تم اصطيادك!</h3><p>حدد الشاهد للفوز!</p>';
+                box.appendChild(alertDiv);
+
+                var selectEl = document.createElement('select');
+                selectEl.id = 'witnessGuessSelect';
+                selectEl.style.cssText = 'width:100%;padding:15px;margin:15px 0;font-size:18px;border-radius:10px;border:2px solid #e74c3c;';
                 
-                var options = [];
                 game.players.forEach(function(p) {
                     if (p.role !== 'murderer' && p.role !== 'accomplice' && p.role !== 'forensic') {
-                        options.push(p.name);
+                        var opt = document.createElement('option');
+                        opt.value = p.name;
+                        opt.textContent = p.name;
+                        selectEl.appendChild(opt);
                     }
                 });
-                
-                options.forEach(function(name) {
-                    html += '<option value="' + name + '">' + name + '</option>';
-                });
+                box.appendChild(selectEl);
 
-                html += '</select>';
-                html += '<button onclick="guessWitness()" class="btn-full btn-danger" style="padding:15px;font-size:16px;">✓ تأكيد اختيار الشاهد</button>';
+                var confirmBtn = document.createElement('button');
+                confirmBtn.className = 'btn-full btn-danger';
+                confirmBtn.style.cssText = 'padding:18px;font-size:18px;margin-top:10px;';
+                confirmBtn.textContent = '✓ تأكيد اختيار الشاهد';
+                confirmBtn.onclick = function() {
+                    var sel = document.getElementById('witnessGuessSelect');
+                    if (sel && sel.value) {
+                        var guess = sel.value;
+                        game.witnessGuess = guess;
+                        game.phase = (guess === game.witness) ? 'murderer_wins' : 'investigators_win';
+                        db.ref('rooms/' + game.roomCode).update({
+                            witnessGuess: guess,
+                            phase: game.phase
+                        });
+                    }
+                };
+                box.appendChild(confirmBtn);
             } else {
-                html += '<div class="alert alert-info"><p>⏳ القاتل يحدد الشاهد...</p></div>';
+                var waitDiv = document.createElement('div');
+                waitDiv.className = 'alert alert-info';
+                waitDiv.innerHTML = '<p>⏳ القاتل يحدد الشاهد...</p>';
+                box.appendChild(waitDiv);
             }
-
-            html += '</div>';
-            res.innerHTML = html;
         }
 
-        function guessWitness() {
-            var select = document.getElementById('witnessGuess');
-            if (!select) {
-                console.error('Select not found');
-                return;
-            }
-            
-            var guess = select.value;
-            if (!guess) {
-                alert('اختر الشاهد');
-                return;
-            }
-
-            game.witnessGuess = guess;
-            game.phase = (guess === game.witness) ? 'murderer_wins' : 'investigators_win';
-
-            db.ref('rooms/' + game.roomCode).update({
-                witnessGuess: guess,
-                phase: game.phase
-            });
-        }
+        // حذف guessWitness القديمة لأننا نستخدم onclick مباشرة
 
         function showResult() {
             document.getElementById('playersSection').classList.add('hidden');
