@@ -1600,14 +1600,22 @@ listenToRoom(roomCode);
             revealRole();
         }
 
-        async function startGame() {
-            gameState.phase = "game";
-await saveGameState();
+       async function startGame() {
 
-            if (gameState.players.length < 4) {
-                alert('يجب أن يكون هناك 4 لاعبين على الأقل');
-                return;
-            }
+  if (gameState.players.length < 4) {
+    alert("يجب أن يكون هناك 4 لاعبين على الأقل");
+    return;
+  }
+
+  gameState.phase = "game";
+  gameState.gameStarted = true;
+
+  await saveGameState();
+
+  // (اختياري) للمضيف نفسه ينتقل مباشرة
+  showGame();
+}
+
 
             // Assign roles
             const roles = assignRoles(gameState.players.length);
