@@ -1440,12 +1440,11 @@
         }
 
         // Room Management
-        async function createRoom() {
-            alert('تم الضغط على زر إنشاء الغرفة!');
+        function createRoom() {
             console.log('createRoom called');
             
-            const hostName = document.getElementById('hostName').value.trim();
-            const playerCount = parseInt(document.getElementById('playerCount').value);
+            var hostName = document.getElementById('hostName').value.trim();
+            var playerCount = parseInt(document.getElementById('playerCount').value);
 
             console.log('Host name:', hostName, 'Player count:', playerCount);
 
@@ -1455,74 +1454,63 @@
             }
 
             // الحصول على زر الإنشاء
-            const createBtn = document.getElementById('createRoomBtn');
-            if (!createBtn) {
-                console.error('Create button not found');
-                alert('خطأ: لم يتم العثور على الزر');
-                return;
+            var createBtn = document.getElementById('createRoomBtn');
+            if (createBtn) {
+                createBtn.textContent = 'جاري الإنشاء...';
+                createBtn.disabled = true;
+            }
+
+            // إنشاء بيانات الغرفة
+            gameState.roomCode = generateRoomCode();
+            gameState.playerName = hostName;
+            gameState.playerId = generatePlayerId();
+            gameState.isHost = true;
+            gameState.maxPlayers = playerCount;
+            gameState.players = [{
+                id: gameState.playerId,
+                name: hostName,
+                isHost: true
+            }];
+            gameState.gameStarted = false;
+            gameState.votes = [];
+            gameState.clues = [];
+            gameState.selectedClues = [];
+
+            console.log('Room code:', gameState.roomCode);
+
+            // حفظ في Firebase
+            if (window.db) {
+                saveGameState().then(function() {
+                    console.log('Saved to Firebase');
+                }).catch(function(err) {
+                    console.error('Firebase error:', err);
+                });
             }
             
-            const originalText = createBtn.textContent;
-            createBtn.textContent = 'جاري الإنشاء...';
-            createBtn.disabled = true;
-
-            try {
-                gameState.roomCode = generateRoomCode();
-                gameState.playerName = hostName;
-                gameState.playerId = generatePlayerId();
-                gameState.isHost = true;
-                gameState.maxPlayers = playerCount;
-                gameState.players = [{
-                    id: gameState.playerId,
-                    name: hostName,
-                    isHost: true
-                }];
-                gameState.gameStarted = false;
-                gameState.votes = [];
-                gameState.clues = [];
-                gameState.selectedClues = [];
-
-                console.log('Game state prepared:', gameState.roomCode);
-
-                // التحقق من جاهزية Firebase
-                if (window.db) {
-                    console.log('Saving to Firebase...');
-                    await saveGameState();
-                    console.log('Saved to Firebase successfully');
-                } else {
-                    console.log('Firebase not ready, continuing without save');
-                }
-                
-                createBtn.textContent = originalText;
-                createBtn.disabled = false;
-                
-                console.log('Showing lobby...');
-                showLobby();
-                updateLobby();
-                document.getElementById('hostControls').classList.remove('hidden');
-                
-                // بدء الاستماع للتحديثات للمضيف أيضاً
-                if (window.db) {
-                    pollForUpdates();
-                }
-                
-                console.log('Room created successfully!');
-                
-            } catch (error) {
-                console.error('Create room error:', error);
-                alert('حدث خطأ: ' + error.message);
-                createBtn.textContent = originalText;
+            // إعادة الزر
+            if (createBtn) {
+                createBtn.textContent = 'إنشاء الغرفة';
                 createBtn.disabled = false;
             }
+            
+            // الانتقال للوبي
+            showLobby();
+            updateLobby();
+            document.getElementById('hostControls').classList.remove('hidden');
+            
+            // بدء التحديثات
+            if (window.db) {
+                pollForUpdates();
+            }
+            
+            console.log('Room created!');
         }
 
-        async function joinRoom() {
+        function joinRoom() {
             console.log('joinRoom called');
             
-            const playerName = document.getElementById('playerName').value.trim();
-            const roomCode = document.getElementById('roomCodeInput').value.trim().toUpperCase();
-
-            console.log('Player name:', playerName, 'Room code:', roomCode);
+            var playerName = document.getElementById('playerName').value.trim();
+            var roomCode = document.getElementById('roomCodeInput').value.trim().toUpperCase();
 
             if (!playerName) {
                 alert('الرجاء إدخال اسمك');
@@ -1534,59 +1522,56 @@
                 return;
             }
 
-            // الحصول على زر الانضمام
-            const joinBtn = document.getElementById('joinRoomBtn');
-            if (!joinBtn) {
-                console.error('Join button not found');
-                alert('خطأ: لم يتم العثور على الزر');
+            var joinBtn = document.getElementById('joinRoomBtn');
+            if (joinBtn) {
+                joinBtn.textContent = 'جاري الانضمام...';
+                joinBtn.disabled = true;
+            }
+
+            gameState.roomCode = roomCode;
+            gameState.playerName = playerName;
+            gameState.playerId = generatePlayerId();
+            gameState.isHost = false;
+
+            // تحميل بيانات الغرفة
+            if (!window.db) {
+                alert('الاتصال غير جاهز. حاول مرة أخرى.');
+                if (joinBtn) {
+                    joinBtn.textContent = 'انضمام';
+                    joinBtn.disabled = false;
+                }
                 return;
             }
 
-            const originalText = joinBtn.textContent;
-            joinBtn.textContent = 'جاري الانضمام...';
-            joinBtn.disabled = true;
-
-            try {
-                // التحقق من جاهزية Firebase
-                if (!window.db) {
-                    alert('جاري تحميل الاتصال... حاول مرة أخرى بعد ثانية');
-                    joinBtn.textContent = originalText;
-                    joinBtn.disabled = false;
-                    return;
-                }
-
-                gameState.roomCode = roomCode;
-                gameState.playerName = playerName;
-                gameState.playerId = generatePlayerId();
-                gameState.isHost = false;
-
-                console.log('Loading room data...');
-
-                // Load room data
-                const roomData = await loadGameState();
-                
+            loadGameState().then(function(roomData) {
                 console.log('Room data:', roomData);
                 
                 if (!roomData) {
-                    alert('الغرفة غير موجودة. تأكد من رمز الغرفة.');
-                    joinBtn.textContent = originalText;
-                    joinBtn.disabled = false;
-                    gameState.roomCode = null;
-                    return;
-                }
-
-                if (roomData.players && roomData.players.length >= roomData.maxPlayers) {
-                    alert('الغرفة ممتلئة');
-                    joinBtn.textContent = originalText;
-                    joinBtn.disabled = false;
+                    alert('الغرفة غير موجودة');
+                    if (joinBtn) {
+                        joinBtn.textContent = 'انضمام';
+                        joinBtn.disabled = false;
+                    }
                     gameState.roomCode = null;
                     return;
                 }
 
                 if (roomData.gameStarted) {
                     alert('اللعبة بدأت بالفعل');
-                    joinBtn.textContent = originalText;
-                    joinBtn.disabled = false;
+                    if (joinBtn) {
+                        joinBtn.textContent = 'انضمام';
+                        joinBtn.disabled = false;
+                    }
+                    gameState.roomCode = null;
+                    return;
+                }
+
+                if (roomData.players && roomData.players.length >= roomData.maxPlayers) {
+                    alert('الغرفة ممتلئة');
+                    if (joinBtn) {
+                        joinBtn.textContent = 'انضمام';
+                        joinBtn.disabled = false;
+                    }
                     gameState.roomCode = null;
                     return;
                 }
@@ -1599,28 +1584,28 @@
                     isHost: false
                 });
 
-                console.log('Updating players...');
-                
-                await updatePlayersOnly();
-                
-                console.log('Players updated');
-                
-                joinBtn.textContent = originalText;
-                joinBtn.disabled = false;
-                
-                showLobby();
-                updateLobby();
-                pollForUpdates();
-                
-                console.log('Joined successfully!');
-                
-            } catch (error) {
-                console.error('Join room error:', error);
-                alert('حدث خطأ: ' + error.message);
-                gameState.roomCode = null;
-                joinBtn.textContent = originalText;
-                joinBtn.disabled = false;
-            }
+                // تحديث اللاعبين فقط
+                updatePlayersOnly().then(function() {
+                    console.log('Joined successfully');
+                    
+                    if (joinBtn) {
+                        joinBtn.textContent = 'انضمام';
+                        joinBtn.disabled = false;
+                    }
+                    
+                    showLobby();
+                    updateLobby();
+                    pollForUpdates();
+                });
+
+            }).catch(function(err) {
+                console.error('Join error:', err);
+                alert('حدث خطأ: ' + err.message);
+                if (joinBtn) {
+                    joinBtn.textContent = 'انضمام';
+                    joinBtn.disabled = false;
+                }
+            });
         }
 
         function updateLobby() {
