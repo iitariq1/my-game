@@ -1446,14 +1446,16 @@
             var hostName = document.getElementById('hostName').value.trim();
             var playerCount = parseInt(document.getElementById('playerCount').value);
 
-            console.log('Host name:', hostName, 'Player count:', playerCount);
-
             if (!hostName) {
                 alert('الرجاء إدخال اسمك');
                 return;
             }
 
-            // الحصول على زر الإنشاء
+            if (!window.db) {
+                alert('الاتصال غير جاهز. انتظر ثانية وحاول مرة أخرى.');
+                return;
+            }
+
             var createBtn = document.getElementById('createRoomBtn');
             if (createBtn) {
                 createBtn.textContent = 'جاري الإنشاء...';
@@ -1476,34 +1478,30 @@
             gameState.clues = [];
             gameState.selectedClues = [];
 
-            console.log('Room code:', gameState.roomCode);
+            console.log('Saving room:', gameState.roomCode);
 
-            // حفظ في Firebase
-            if (window.db) {
-                saveGameState().then(function() {
-                    console.log('Saved to Firebase');
-                }).catch(function(err) {
-                    console.error('Firebase error:', err);
-                });
-            }
-            
-            // إعادة الزر
-            if (createBtn) {
-                createBtn.textContent = 'إنشاء الغرفة';
-                createBtn.disabled = false;
-            }
-            
-            // الانتقال للوبي
-            showLobby();
-            updateLobby();
-            document.getElementById('hostControls').classList.remove('hidden');
-            
-            // بدء التحديثات
-            if (window.db) {
+            // حفظ في Firebase أولاً ثم الانتقال
+            saveGameState().then(function() {
+                console.log('Room saved to Firebase successfully!');
+                
+                if (createBtn) {
+                    createBtn.textContent = 'إنشاء الغرفة';
+                    createBtn.disabled = false;
+                }
+                
+                showLobby();
+                updateLobby();
+                document.getElementById('hostControls').classList.remove('hidden');
                 pollForUpdates();
-            }
-            
-            console.log('Room created!');
+                
+            }).catch(function(err) {
+                console.error('Failed to save room:', err);
+                alert('فشل في إنشاء الغرفة. حاول مرة أخرى.');
+                if (createBtn) {
+                    createBtn.textContent = 'إنشاء الغرفة';
+                    createBtn.disabled = false;
+                }
+            });
         }
 
         function joinRoom() {
