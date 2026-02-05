@@ -545,7 +545,8 @@
         ];
 
         var CLUE_CARDS = [
-            { title: '📍 المكان', options: ['غرفة نوم', 'مطبخ', 'حمام', 'صالة', 'مرآب', 'حديقة', 'سطح', 'قبو'] },
+            { title: '💀 سبب الوفاة', options: ['طعن', 'خنق', 'تسميم', 'ضرب', 'إطلاق نار', 'سقوط', 'غرق', 'صعق'], fixed: true },
+            { title: '📍 موقع الجريمة', options: ['غرفة نوم', 'مطبخ', 'حمام', 'صالة', 'مرآب', 'حديقة', 'سطح', 'قبو'], changeOnce: true },
             { title: '🕐 الوقت', options: ['فجر', 'صباح', 'ظهر', 'عصر', 'مغرب', 'عشاء', 'منتصف الليل', 'قبل الفجر'] },
             { title: '😵 حالة الضحية', options: ['نائم', 'جالس', 'واقف', 'يركض', 'يأكل', 'يتحدث', 'يقرأ', 'يستحم'] },
             { title: '💭 الدافع', options: ['مال', 'انتقام', 'غيرة', 'سلطة', 'سر', 'حب', 'خوف', 'جنون'] },
@@ -554,7 +555,8 @@
             { title: '🎭 شخصية القاتل', options: ['هادئ', 'عصبي', 'ماكر', 'متهور', 'بارد', 'محترف', 'مرتبك', 'واثق'] },
             { title: '🔊 صوت', options: ['صراخ', 'سقوط', 'زجاج', 'طلقة', 'صمت', 'موسيقى', 'محادثة', 'خطوات'] },
             { title: '💡 إضاءة', options: ['مظلم', 'خافت', 'ساطع', 'شموع', 'طبيعي', 'قمر', 'متقطع', 'ملون'] },
-            { title: '👃 رائحة', options: ['دم', 'عطر', 'دخان', 'طعام', 'كيماويات', 'زهور', 'عفن', 'نظيف'] }
+            { title: '👃 رائحة', options: ['دم', 'عطر', 'دخان', 'طعام', 'كيماويات', 'زهور', 'عفن', 'نظيف'] },
+            { title: '🎒 أداة مساعدة', options: ['حقيبة', 'سيارة', 'قفازات', 'قناع', 'هاتف', 'كاميرا', 'مفتاح', 'خريطة'] }
         ];
 
         // ========== State ==========
@@ -578,7 +580,9 @@
             phase: 'waiting',
             round: 1,
             cards: [],
-            ready: false
+            ready: false,
+            locationChanged: false,
+            replacedInRound: {}
         };
 
         var selectedWeapon = null;
@@ -586,6 +590,8 @@
         var selectedSuspect = null;
         var selectedSuspectWeapon = null;
         var selectedSuspectEvidence = null;
+        var hasVoted = false;
+        var selectedCardToReplace = null;
 
         // ========== Session ==========
         function saveSession() {
@@ -735,7 +741,12 @@
             game.votes = [];
             game.phase = 'choosing';
             game.round = 1;
-            game.cards = shuffle(CLUE_CARDS).slice(0, 6);
+            // البطاقات: سبب الوفاة (ثابت) + موقع الجريمة (يتغير مرة) + 4 عشوائية
+            var fixedCards = CLUE_CARDS.slice(0, 2); // سبب الوفاة وموقع الجريمة
+            var randomCards = shuffle(CLUE_CARDS.slice(2)).slice(0, 4);
+            game.cards = fixedCards.concat(randomCards);
+            game.locationChanged = false;
+            game.replacedInRound = {};
 
             db.ref('rooms/' + game.roomCode).set(game);
         }
@@ -949,12 +960,35 @@
             var container = document.getElementById('forensicCards');
             container.innerHTML = '';
 
+            var alreadyReplacedThisRound = game.replacedInRound && game.replacedInRound[game.round];
+
             game.cards.forEach(function(card, idx) {
                 var used = game.clues.some(function(c) { return c.cardIndex === idx; });
                 var div = document.createElement('div');
                 div.className = 'clue-card' + (used ? ' used' : '');
+                
+                // تحديد إذا كان يمكن استبدال هذه البطاقة
+                var canReplace = false;
+                if (game.round > 1 && !alreadyReplacedThisRound) {
+                    if (idx === 0) {
+                        canReplace = false; // سبب الوفاة لا يمكن استبداله أبداً
+                    } else if (idx === 1) {
+                        canReplace = !game.locationChanged; // موقع الجريمة يمكن استبداله مرة واحدة فقط
+                    } else {
+                        canReplace = true;
+                    }
+                }
 
-                var html = '<h5>' + card.title + '</h5><div class="clue-options">';
+                var cardLabel = card.title;
+                if (idx === 0) cardLabel += ' <span style="color:#ffd700;font-size:0.8em;">(ثابت)</span>';
+                if (idx === 1 && game.locationChanged) cardLabel += ' <span style="color:#f39c12;font-size:0.8em;">(تم تغييره)</span>';
+
+                var html = '<h5>' + cardLabel;
+                if (canReplace && used) {
+                    html += ' <button onclick="selectForReplace(' + idx + ')" class="btn-small" style="margin-right:10px;background:#e67e22;">🔄 استبدال</button>';
+                }
+                html += '</h5><div class="clue-options">';
+                
                 card.options.forEach(function(opt) {
                     var sel = game.clues.some(function(c) { return c.cardIndex === idx && c.option === opt; });
                     html += '<button class="clue-opt' + (sel ? ' selected' : '') + '" ' +
@@ -965,6 +999,64 @@
                 div.innerHTML = html;
                 container.appendChild(div);
             });
+
+            // إظهار البطاقة المحددة للاستبدال
+            if (selectedCardToReplace !== null) {
+                container.innerHTML += '<div class="alert alert-warning" style="margin-top:10px;">' +
+                    '<p>سيتم استبدال بطاقة: <strong>' + game.cards[selectedCardToReplace].title + '</strong></p>' +
+                    '<button onclick="confirmReplace()" class="btn-small btn-danger">تأكيد الاستبدال</button> ' +
+                    '<button onclick="cancelReplace()" class="btn-small btn-secondary">إلغاء</button>' +
+                    '</div>';
+            }
+        }
+
+        function selectForReplace(idx) {
+            selectedCardToReplace = idx;
+            renderForensicCards();
+        }
+
+        function cancelReplace() {
+            selectedCardToReplace = null;
+            renderForensicCards();
+        }
+
+        function confirmReplace() {
+            if (selectedCardToReplace === null) return;
+
+            var idx = selectedCardToReplace;
+            
+            // الحصول على بطاقة عشوائية جديدة
+            var usedTitles = game.cards.map(function(c) { return c.title; });
+            var available = CLUE_CARDS.filter(function(c) { 
+                return !usedTitles.includes(c.title) && !c.fixed; 
+            });
+
+            if (available.length > 0) {
+                var newCard = available[Math.floor(Math.random() * available.length)];
+                
+                // إذا كان موقع الجريمة، نسجل أنه تم تغييره
+                if (idx === 1) {
+                    game.locationChanged = true;
+                }
+
+                game.cards[idx] = newCard;
+                game.clues = game.clues.filter(function(c) { return c.cardIndex !== idx; });
+                
+                // تسجيل أنه تم الاستبدال في هذه الجولة
+                if (!game.replacedInRound) game.replacedInRound = {};
+                game.replacedInRound[game.round] = true;
+
+                db.ref('rooms/' + game.roomCode).update({
+                    cards: game.cards,
+                    clues: game.clues,
+                    locationChanged: game.locationChanged,
+                    replacedInRound: game.replacedInRound
+                });
+            }
+
+            selectedCardToReplace = null;
+            renderForensicCards();
+            updateCluesBar();
         }
 
         function selectClue(idx, opt) {
@@ -984,23 +1076,13 @@
         function nextRound() {
             if (game.round >= 3) return;
             game.round++;
-
-            // Replace one card
-            var usedIdx = game.clues.map(function(c) { return c.cardIndex; });
-            var available = CLUE_CARDS.filter(function(c) { return !game.cards.includes(c); });
             
-            if (available.length > 0 && usedIdx.length > 0) {
-                var replaceIdx = usedIdx[Math.floor(Math.random() * usedIdx.length)];
-                game.cards[replaceIdx] = available[Math.floor(Math.random() * available.length)];
-                game.clues = game.clues.filter(function(c) { return c.cardIndex !== replaceIdx; });
-            }
-
+            // لا نستبدل تلقائياً - اللاعب يختار البطاقة للاستبدال
             db.ref('rooms/' + game.roomCode).update({
-                round: game.round,
-                cards: game.cards,
-                clues: game.clues
+                round: game.round
             });
 
+            document.getElementById('currentRound').textContent = game.round;
             renderForensicCards();
             updateCluesBar();
         }
@@ -1009,6 +1091,10 @@
         function renderPlayers() {
             var container = document.getElementById('playersList');
             container.innerHTML = '';
+
+            // التحقق إذا صوّت اللاعب مسبقاً
+            var myVote = game.votes.find(function(v) { return v.oderId === game.oderId; });
+            if (myVote) hasVoted = true;
 
             game.players.forEach(function(p) {
                 if (p.id === game.oderId) return; // Skip self
@@ -1031,12 +1117,16 @@
                 }
 
                 // Check if ready to vote
-                if (selectedSuspect === p.id && selectedSuspectWeapon && selectedSuspectEvidence) {
+                if (selectedSuspect === p.id && selectedSuspectWeapon && selectedSuspectEvidence && !hasVoted && game.role !== 'forensic') {
                     card.classList.add('ready-vote');
                 }
 
                 var html = '<div class="player-header">';
-                html += '<span class="player-name" onclick="toggleSuspect(\'' + p.id + '\')">' + p.name + '</span>';
+                if (!hasVoted && game.role !== 'forensic') {
+                    html += '<span class="player-name" onclick="toggleSuspect(\'' + p.id + '\')">' + p.name + '</span>';
+                } else {
+                    html += '<span class="player-name" style="cursor:default;">' + p.name + '</span>';
+                }
                 html += '</div>';
 
                 // Weapons
@@ -1044,7 +1134,11 @@
                 html += '<span style="width:100%;font-size:0.8em;color:#e74c3c;margin-bottom:3px;">⚔️ الأسلحة:</span>';
                 p.weapons.forEach(function(w) {
                     var sel = selectedSuspect === p.id && selectedSuspectWeapon === w;
-                    html += '<button class="item-btn weapon' + (sel ? ' selected' : '') + '" onclick="selectVoteItem(\'' + p.id + '\',\'w\',\'' + w + '\')">' + w + '</button>';
+                    if (!hasVoted && game.role !== 'forensic') {
+                        html += '<button class="item-btn weapon' + (sel ? ' selected' : '') + '" onclick="selectVoteItem(\'' + p.id + '\',\'w\',\'' + w + '\')">' + w + '</button>';
+                    } else {
+                        html += '<button class="item-btn weapon" disabled>' + w + '</button>';
+                    }
                 });
                 html += '</div>';
 
@@ -1053,18 +1147,29 @@
                 html += '<span style="width:100%;font-size:0.8em;color:#3498db;margin-bottom:3px;">🔍 الأدلة:</span>';
                 p.evidence.forEach(function(e) {
                     var sel = selectedSuspect === p.id && selectedSuspectEvidence === e;
-                    html += '<button class="item-btn evidence' + (sel ? ' selected' : '') + '" onclick="selectVoteItem(\'' + p.id + '\',\'e\',\'' + e + '\')">' + e + '</button>';
+                    if (!hasVoted && game.role !== 'forensic') {
+                        html += '<button class="item-btn evidence' + (sel ? ' selected' : '') + '" onclick="selectVoteItem(\'' + p.id + '\',\'e\',\'' + e + '\')">' + e + '</button>';
+                    } else {
+                        html += '<button class="item-btn evidence" disabled>' + e + '</button>';
+                    }
                 });
                 html += '</div>';
 
-                // Vote button
-                html += '<button class="vote-btn btn-danger" onclick="submitVote(\'' + p.id + '\',\'' + p.name + '\')">🗳️ تصويت</button>';
+                // Vote button (only if not voted)
+                if (!hasVoted && game.role !== 'forensic') {
+                    html += '<button class="vote-btn btn-danger" onclick="submitVote(\'' + p.id + '\',\'' + p.name + '\')">🗳️ تصويت</button>';
+                }
 
-                // Previous votes
+                // إظهار رسالة "صوّت مسبقاً" للاعب الذي صوّت
+                if (hasVoted && myVote && game.role !== 'forensic') {
+                    html += '<div class="alert alert-info" style="margin-top:10px;padding:8px;font-size:0.85em;">✅ لقد صوّت مسبقاً</div>';
+                }
+
+                // Previous votes on this player (visible to everyone)
                 var votesOn = game.votes.filter(function(v) { return v.suspect === p.name; });
                 if (votesOn.length > 0) {
                     votesOn.forEach(function(v) {
-                        html += '<div class="vote-info">🗳️ <strong>' + v.voter + '</strong>: ' + v.weapon + ' | ' + v.evidence + '</div>';
+                        html += '<div class="vote-info">🗳️ <strong>' + v.voter + '</strong> يتهم بـ: ' + v.weapon + ' و ' + v.evidence + '</div>';
                     });
                 }
 
@@ -1074,7 +1179,7 @@
         }
 
         function toggleSuspect(id) {
-            if (game.role === 'forensic') return; // Forensic can't vote
+            if (game.role === 'forensic' || hasVoted) return;
             
             if (selectedSuspect === id) {
                 // Deselect
@@ -1091,7 +1196,7 @@
         }
 
         function selectVoteItem(playerId, type, val) {
-            if (game.role === 'forensic') return;
+            if (game.role === 'forensic' || hasVoted) return;
             
             // Auto-select this player if not selected
             if (selectedSuspect !== playerId) {
@@ -1110,6 +1215,11 @@
         }
 
         function submitVote(playerId, playerName) {
+            if (hasVoted) {
+                alert('لقد صوّت مسبقاً!');
+                return;
+            }
+            
             if (!selectedSuspectWeapon || !selectedSuspectEvidence) {
                 alert('اختر السلاح والدليل');
                 return;
@@ -1131,6 +1241,7 @@
             };
 
             game.votes.push(vote);
+            hasVoted = true;
 
             if (correct) {
                 game.phase = 'witness_guess';
@@ -1155,6 +1266,7 @@
         function showWitnessGuess() {
             document.getElementById('playersSection').classList.add('hidden');
             document.getElementById('cluesBar').classList.add('hidden');
+            document.getElementById('myItems').classList.add('hidden');
 
             var res = document.getElementById('gameResults');
             res.classList.remove('hidden');
@@ -1171,14 +1283,21 @@
 
             if (game.role === 'murderer') {
                 html += '<div class="alert alert-danger"><h3>⚠️ تم اصطيادك!</h3><p>حدد الشاهد للفوز!</p></div>';
-                html += '<select id="witnessGuess" style="margin:10px 0;">';
+                html += '<select id="witnessGuess" style="width:100%;padding:12px;margin:10px 0;font-size:16px;border-radius:8px;">';
+                
+                var options = [];
                 game.players.forEach(function(p) {
                     if (p.role !== 'murderer' && p.role !== 'accomplice' && p.role !== 'forensic') {
-                        html += '<option value="' + p.name + '">' + p.name + '</option>';
+                        options.push(p.name);
                     }
                 });
+                
+                options.forEach(function(name) {
+                    html += '<option value="' + name + '">' + name + '</option>';
+                });
+
                 html += '</select>';
-                html += '<button onclick="guessWitness()" class="btn-full btn-danger">تأكيد</button>';
+                html += '<button onclick="guessWitness()" class="btn-full btn-danger" style="padding:15px;font-size:16px;">✓ تأكيد اختيار الشاهد</button>';
             } else {
                 html += '<div class="alert alert-info"><p>⏳ القاتل يحدد الشاهد...</p></div>';
             }
@@ -1188,7 +1307,18 @@
         }
 
         function guessWitness() {
-            var guess = document.getElementById('witnessGuess').value;
+            var select = document.getElementById('witnessGuess');
+            if (!select) {
+                console.error('Select not found');
+                return;
+            }
+            
+            var guess = select.value;
+            if (!guess) {
+                alert('اختر الشاهد');
+                return;
+            }
+
             game.witnessGuess = guess;
             game.phase = (guess === game.witness) ? 'murderer_wins' : 'investigators_win';
 
@@ -1265,6 +1395,12 @@
                 game.correctVoter = d.correctVoter;
                 game.witnessGuess = d.witnessGuess;
                 game.phase = d.phase || 'waiting';
+                game.locationChanged = d.locationChanged || false;
+                game.replacedInRound = d.replacedInRound || {};
+
+                // التحقق إذا صوّت اللاعب
+                var myVote = game.votes.find(function(v) { return v.oderId === game.oderId; });
+                if (myVote) hasVoted = true;
 
                 if (game.started) showGame();
             });
