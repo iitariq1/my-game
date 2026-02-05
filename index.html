@@ -2388,53 +2388,82 @@
 
             votesList.innerHTML = '';
 
+            // عرض التصويتات بدون إظهار النتيجة (صح/خطأ)
             gameState.votes.forEach(vote => {
                 const voteCard = document.createElement('div');
-                voteCard.className = `vote-card ${vote.isCorrect ? 'correct' : 'incorrect'}`;
+                voteCard.className = 'vote-card';
                 
                 voteCard.innerHTML = `
-                    <h4>🗳️ ${vote.playerName}</h4>
+                    <h4>🗳️ ${vote.playerName} صوّت</h4>
                     <div class="vote-details">
                         <div class="vote-item"><strong>المشتبه به:</strong> ${vote.suspectName}</div>
                         <div class="vote-item"><strong>السلاح:</strong> ${vote.weapon}</div>
                         <div class="vote-item"><strong>الدليل:</strong> ${vote.evidence}</div>
                     </div>
-                    <span class="vote-status ${vote.isCorrect ? 'correct' : 'incorrect'}">
-                        ${vote.isCorrect ? '✅ صحيح' : '❌ خطأ'}
-                    </span>
                 `;
                 
                 votesList.appendChild(voteCard);
             });
+
+            // التحقق من انتهاء التصويت
+            checkVotingEnd();
         }
 
-        async function submitAccusation() {
-            // Check if already voted
+        function checkVotingEnd() {
+            // عدد المحققين الذين يمكنهم التصويت (الكل ما عدا الطبيب الشرعي)
+            var eligibleVoters = gameState.players.filter(function(p) {
+                return p.role !== 'forensic';
+            }).length;
+
+            var totalVotes = gameState.votes ? gameState.votes.length : 0;
+
+            // التحقق إذا صوّت الجميع
+            if (totalVotes >= eligibleVoters) {
+                // التحقق من وجود إجابة صحيحة
+                var correctVote = gameState.votes.find(function(v) {
+                    return v.isCorrect === true;
+                });
+
+                if (correctVote) {
+                    // أحد المحققين أجاب صحيح - القاتل يحاول تحديد الشاهد
+                    gameState.gamePhase = 'witness_guess';
+                    saveGameState();
+                    showMurdererChance(correctVote.playerName);
+                } else {
+                    // الكل أجاب خطأ - القاتل يفوز
+                    gameState.gamePhase = 'murderer_wins';
+                    saveGameState();
+                    showMurdererWins();
+                }
+            }
+        }
+
+        function submitAccusation() {
+            // التحقق من التصويت السابق
             if (gameState.hasVoted) {
-                alert('لقد قمت بالتصويت بالفعل. كل محقق له فرصة واحدة فقط!');
+                alert('لقد قمت بالتصويت بالفعل!');
                 return;
             }
 
-            const suspectPlayer = document.getElementById('suspectPlayer').value;
-            const suspectWeapon = document.getElementById('suspectWeapon').value;
-            const suspectEvidence = document.getElementById('suspectEvidence').value;
+            var suspectPlayer = document.getElementById('suspectPlayer').value;
+            var suspectWeapon = document.getElementById('suspectWeapon').value;
+            var suspectEvidence = document.getElementById('suspectEvidence').value;
 
             if (!suspectPlayer || !suspectWeapon || !suspectEvidence) {
                 alert('الرجاء اختيار المشتبه به والسلاح والدليل');
                 return;
             }
 
-            // Mark as voted
-            gameState.hasVoted = true;
-
-            const isCorrect = 
+            // تحديد صحة الإجابة (لكن لا نظهرها للاعب)
+            var isCorrect = 
                 suspectPlayer === gameState.murdererName &&
                 suspectWeapon === gameState.murderWeapon &&
                 suspectEvidence === gameState.murderEvidence;
 
-            // Save vote to gameState
-            const vote = {
+            // حفظ التصويت
+            var vote = {
                 playerName: gameState.playerName,
+                playerId: gameState.playerId,
                 suspectName: suspectPlayer,
                 weapon: suspectWeapon,
                 evidence: suspectEvidence,
@@ -2445,175 +2474,166 @@
                 gameState.votes = [];
             }
             gameState.votes.push(vote);
+            gameState.hasVoted = true;
 
-            // Save to backend
-            await saveGameState();
+            // إخفاء قسم التصويت
+            document.getElementById('votingSection').classList.add('hidden');
 
-            // Display updated votes
-            displayVotes();
+            // رسالة للاعب
+            var msgDiv = document.createElement('div');
+            msgDiv.className = 'alert alert-info';
+            msgDiv.innerHTML = '<h3>✅ تم تسجيل تصويتك</h3><p>انتظر بقية اللاعبين للتصويت...</p>';
+            document.getElementById('votingSection').parentNode.insertBefore(msgDiv, document.getElementById('votingSection'));
 
-            if (isCorrect) {
-                // Correct answer - reveal truth and give murderer/accomplice chance to identify witness
-                showCorrectAccusationResult();
-            } else {
-                // Wrong answer - only show it's wrong
-                showWrongAccusationResult();
-            }
+            // حفظ في Firebase
+            saveGameState();
         }
 
-        function showWrongAccusationResult() {
+        // عرض فوز القاتل (كل التصويتات خاطئة)
+        function showMurdererWins() {
             document.getElementById('votingSection').classList.add('hidden');
             document.getElementById('gameResults').classList.remove('hidden');
 
-            const resultsAlert = document.getElementById('resultsAlert');
-            const resultsTitle = document.getElementById('resultsTitle');
-            const resultsMessage = document.getElementById('resultsMessage');
-            const truthReveal = document.getElementById('truthReveal');
+            var murderer = gameState.players.find(function(p) { return p.role === 'murderer'; });
+            var accomplice = gameState.players.find(function(p) { return p.role === 'accomplice'; });
+
+            var resultsAlert = document.getElementById('resultsAlert');
+            var resultsTitle = document.getElementById('resultsTitle');
+            var resultsMessage = document.getElementById('resultsMessage');
+            var truthReveal = document.getElementById('truthReveal');
 
             resultsAlert.className = 'alert alert-danger';
-            resultsTitle.textContent = '❌ إجابة خاطئة!';
-            resultsMessage.textContent = 'اتهامك غير صحيح. استمر في التحقيق واستخدم أدلة الطبيب الشرعي.';
-            truthReveal.innerHTML = `
-                <hr style="margin: 20px 0;">
-                <p style="color: #856404; background: #fff3cd; padding: 15px; border-radius: 8px; border: 1px solid #ffeaa7;">
-                    ⚠️ <strong>تنبيه:</strong> لقد استخدمت فرصتك الوحيدة في التصويت. انتظر المحققين الآخرين أو أدلة الطبيب الشرعي.
-                </p>
-            `;
+            resultsTitle.textContent = '🔪 القاتل والشريك يفوزان!';
+            resultsMessage.textContent = 'فشل جميع المحققين في كشف الحقيقة!';
+            
+            truthReveal.innerHTML = 
+                '<hr style="margin: 20px 0;">' +
+                '<h4>🎭 الحقيقة الكاملة:</h4>' +
+                '<p><strong>القاتل:</strong> ' + (murderer ? murderer.name : 'غير معروف') + '</p>' +
+                '<p><strong>الشريك:</strong> ' + (accomplice ? accomplice.name : 'لا يوجد') + '</p>' +
+                '<p><strong>سلاح الجريمة:</strong> ' + gameState.murderWeapon + '</p>' +
+                '<p><strong>الدليل:</strong> ' + gameState.murderEvidence + '</p>' +
+                '<button onclick="location.reload()" style="margin-top: 20px;">لعبة جديدة</button>';
         }
 
-        function showCorrectAccusationResult() {
+        // عرض فرصة القاتل لتحديد الشاهد
+        function showMurdererChance(correctVoterName) {
             document.getElementById('votingSection').classList.add('hidden');
-            
-            // Check if player is murderer or accomplice - give them chance to identify witness
-            if (gameState.role === 'murderer' || gameState.role === 'accomplice') {
-                showWitnessIdentificationChance();
-            } else {
-                // Show success for investigators
-                showInvestigatorsWin();
-            }
-        }
-
-        function showWitnessIdentificationChance() {
             document.getElementById('gameResults').classList.remove('hidden');
-            
-            const resultsAlert = document.getElementById('resultsAlert');
-            const resultsTitle = document.getElementById('resultsTitle');
-            const resultsMessage = document.getElementById('resultsMessage');
-            const truthReveal = document.getElementById('truthReveal');
 
-            resultsAlert.className = 'alert alert-danger';
-            resultsTitle.textContent = '⚠️ تم كشف الجريمة!';
-            resultsMessage.textContent = 'المحققون اكتشفوا الحقيقة! لديك فرصة أخيرة للفوز...';
-            
-            // Find witness
-            const witness = gameState.players.find(p => p.role === 'witness');
-            
-            truthReveal.innerHTML = `
-                <hr style="margin: 20px 0;">
-                <h4>🎯 فرصتك الأخيرة للفوز:</h4>
-                <p>إذا استطعت تحديد الشاهد، ستنتصر أنت والشريك!</p>
-                <div style="margin: 20px 0;">
-                    <label style="display: block; margin-bottom: 10px;"><strong>من هو الشاهد؟</strong></label>
-                    <select id="witnessGuess" style="width: 100%; padding: 10px; margin-bottom: 15px;">
-                        <option value="">-- اختر لاعب --</option>
-                    </select>
-                    <button onclick="submitWitnessGuess()" style="width: 100%;">تأكيد الاختيار</button>
-                </div>
-            `;
-            
-            // Populate witness guess options
-            const witnessGuessSelect = document.getElementById('witnessGuess');
-            gameState.players.forEach(player => {
-                if (player.id !== gameState.playerId && player.role !== 'murderer' && player.role !== 'accomplice') {
-                    const option = document.createElement('option');
-                    option.value = player.name;
-                    option.textContent = player.name;
-                    witnessGuessSelect.appendChild(option);
-                }
-            });
+            var resultsAlert = document.getElementById('resultsAlert');
+            var resultsTitle = document.getElementById('resultsTitle');
+            var resultsMessage = document.getElementById('resultsMessage');
+            var truthReveal = document.getElementById('truthReveal');
+
+            // إذا كان اللاعب الحالي هو القاتل
+            if (gameState.role === 'murderer') {
+                resultsAlert.className = 'alert alert-warning';
+                resultsTitle.textContent = '⚠️ تم كشفك!';
+                resultsMessage.textContent = correctVoterName + ' اكتشف أنك القاتل! لديك فرصة أخيرة...';
+                
+                // إنشاء قائمة اللاعبين لاختيار الشاهد
+                var playersOptions = '';
+                gameState.players.forEach(function(player) {
+                    if (player.role !== 'murderer' && player.role !== 'accomplice' && player.role !== 'forensic') {
+                        playersOptions += '<option value="' + player.name + '">' + player.name + '</option>';
+                    }
+                });
+
+                truthReveal.innerHTML = 
+                    '<hr style="margin: 20px 0;">' +
+                    '<h4>🎯 فرصتك الأخيرة:</h4>' +
+                    '<p>إذا حددت الشاهد بشكل صحيح، ستفوز أنت والشريك!</p>' +
+                    '<div style="margin: 20px 0;">' +
+                    '<label><strong>من هو الشاهد؟</strong></label>' +
+                    '<select id="witnessGuess" style="width: 100%; padding: 10px; margin: 10px 0;">' +
+                    '<option value="">-- اختر --</option>' +
+                    playersOptions +
+                    '</select>' +
+                    '<button onclick="submitWitnessGuess()" style="width: 100%;">تأكيد</button>' +
+                    '</div>';
+            } else {
+                // بقية اللاعبين ينتظرون
+                resultsAlert.className = 'alert alert-info';
+                resultsTitle.textContent = '⏳ انتظر...';
+                resultsMessage.textContent = 'تم كشف القاتل! القاتل يحاول تحديد الشاهد...';
+                truthReveal.innerHTML = '<p>انتظر قرار القاتل...</p>';
+            }
         }
 
         function submitWitnessGuess() {
-            const guessedWitness = document.getElementById('witnessGuess').value;
+            var guessedWitness = document.getElementById('witnessGuess').value;
             
             if (!guessedWitness) {
                 alert('الرجاء اختيار لاعب');
                 return;
             }
             
-            const actualWitness = gameState.players.find(p => p.role === 'witness');
+            var actualWitness = gameState.players.find(function(p) { return p.role === 'witness'; });
             
             if (actualWitness && guessedWitness === actualWitness.name) {
-                // Murderer/Accomplice win by identifying witness
+                // القاتل حدد الشاهد بشكل صحيح - يفوز
+                gameState.gamePhase = 'murderer_wins_witness';
+                gameState.witnessGuess = guessedWitness;
+                gameState.witnessGuessCorrect = true;
+                saveGameState();
                 showMurdererWinsByWitness();
             } else {
-                // Failed to identify witness - Investigators win
-                showInvestigatorsWinAfterFailedGuess();
+                // القاتل فشل - المحققون يفوزون
+                gameState.gamePhase = 'investigators_win';
+                gameState.witnessGuess = guessedWitness;
+                gameState.witnessGuessCorrect = false;
+                saveGameState();
+                showInvestigatorsWin();
             }
         }
 
         function showMurdererWinsByWitness() {
-            const truthReveal = document.getElementById('truthReveal');
-            const resultsAlert = document.getElementById('resultsAlert');
-            const resultsTitle = document.getElementById('resultsTitle');
-            const resultsMessage = document.getElementById('resultsMessage');
+            var murderer = gameState.players.find(function(p) { return p.role === 'murderer'; });
+            var accomplice = gameState.players.find(function(p) { return p.role === 'accomplice'; });
+            var witness = gameState.players.find(function(p) { return p.role === 'witness'; });
+
+            var resultsAlert = document.getElementById('resultsAlert');
+            var resultsTitle = document.getElementById('resultsTitle');
+            var resultsMessage = document.getElementById('resultsMessage');
+            var truthReveal = document.getElementById('truthReveal');
 
             resultsAlert.className = 'alert alert-danger';
-            resultsTitle.textContent = '🎭 القاتل والشريك ينتصران!';
-            resultsMessage.textContent = 'تم كشف هوية الشاهد! القاتل والشريك يفوزان باللعبة!';
+            resultsTitle.textContent = '🔪 القاتل والشريك يفوزان!';
+            resultsMessage.textContent = 'القاتل نجح في تحديد الشاهد!';
             
-            truthReveal.innerHTML = `
-                <hr style="margin: 20px 0;">
-                <h4>الحقيقة الكاملة:</h4>
-                <p><strong>القاتل:</strong> ${gameState.murdererName}</p>
-                <p><strong>السلاح:</strong> ${gameState.murderWeapon}</p>
-                <p><strong>الدليل:</strong> ${gameState.murderEvidence}</p>
-                <p><strong>الشاهد:</strong> ${gameState.players.find(p => p.role === 'witness')?.name || 'لا يوجد'}</p>
-                <button onclick="location.reload()" style="margin-top: 20px;">لعبة جديدة</button>
-            `;
-        }
-
-        function showInvestigatorsWinAfterFailedGuess() {
-            const truthReveal = document.getElementById('truthReveal');
-            const resultsAlert = document.getElementById('resultsAlert');
-            const resultsTitle = document.getElementById('resultsTitle');
-            const resultsMessage = document.getElementById('resultsMessage');
-
-            resultsAlert.className = 'alert alert-success';
-            resultsTitle.textContent = '🎉 المحققون ينتصرون!';
-            resultsMessage.textContent = 'فشل القاتل في كشف الشاهد! المحققون يفوزون باللعبة!';
-            
-            truthReveal.innerHTML = `
-                <hr style="margin: 20px 0;">
-                <h4>الحقيقة الكاملة:</h4>
-                <p><strong>القاتل:</strong> ${gameState.murdererName}</p>
-                <p><strong>السلاح:</strong> ${gameState.murderWeapon}</p>
-                <p><strong>الدليل:</strong> ${gameState.murderEvidence}</p>
-                <p><strong>الشاهد:</strong> ${gameState.players.find(p => p.role === 'witness')?.name || 'لا يوجد'}</p>
-                <button onclick="location.reload()" style="margin-top: 20px;">لعبة جديدة</button>
-            `;
+            truthReveal.innerHTML = 
+                '<hr style="margin: 20px 0;">' +
+                '<h4>🎭 الحقيقة الكاملة:</h4>' +
+                '<p><strong>القاتل:</strong> ' + (murderer ? murderer.name : '') + '</p>' +
+                '<p><strong>الشريك:</strong> ' + (accomplice ? accomplice.name : 'لا يوجد') + '</p>' +
+                '<p><strong>الشاهد:</strong> ' + (witness ? witness.name : 'لا يوجد') + '</p>' +
+                '<button onclick="location.reload()" style="margin-top: 20px;">لعبة جديدة</button>';
         }
 
         function showInvestigatorsWin() {
-            document.getElementById('gameResults').classList.remove('hidden');
-            
-            const resultsAlert = document.getElementById('resultsAlert');
-            const resultsTitle = document.getElementById('resultsTitle');
-            const resultsMessage = document.getElementById('resultsMessage');
-            const truthReveal = document.getElementById('truthReveal');
+            var murderer = gameState.players.find(function(p) { return p.role === 'murderer'; });
+            var accomplice = gameState.players.find(function(p) { return p.role === 'accomplice'; });
+            var witness = gameState.players.find(function(p) { return p.role === 'witness'; });
+
+            var resultsAlert = document.getElementById('resultsAlert');
+            var resultsTitle = document.getElementById('resultsTitle');
+            var resultsMessage = document.getElementById('resultsMessage');
+            var truthReveal = document.getElementById('truthReveal');
 
             resultsAlert.className = 'alert alert-success';
-            resultsTitle.textContent = '🎉 إجابة صحيحة!';
-            resultsMessage.textContent = 'أحسنت! لقد كشفت الحقيقة!';
+            resultsTitle.textContent = '🎉 المحققون يفوزون!';
+            resultsMessage.textContent = 'تم كشف القاتل والقاتل فشل في تحديد الشاهد!';
             
-            truthReveal.innerHTML = `
-                <hr style="margin: 20px 0;">
-                <h4>الحقيقة الكاملة:</h4>
-                <p><strong>القاتل:</strong> ${gameState.murdererName}</p>
-                <p><strong>السلاح:</strong> ${gameState.murderWeapon}</p>
-                <p><strong>الدليل:</strong> ${gameState.murderEvidence}</p>
-                <button onclick="location.reload()" style="margin-top: 20px;">لعبة جديدة</button>
-            `;
+            truthReveal.innerHTML = 
+                '<hr style="margin: 20px 0;">' +
+                '<h4>🎭 الحقيقة الكاملة:</h4>' +
+                '<p><strong>القاتل:</strong> ' + (murderer ? murderer.name : '') + '</p>' +
+                '<p><strong>الشريك:</strong> ' + (accomplice ? accomplice.name : 'لا يوجد') + '</p>' +
+                '<p><strong>الشاهد:</strong> ' + (witness ? witness.name : 'لا يوجد') + '</p>' +
+                '<p><strong>سلاح الجريمة:</strong> ' + gameState.murderWeapon + '</p>' +
+                '<p><strong>الدليل:</strong> ' + gameState.murderEvidence + '</p>' +
+                '<button onclick="location.reload()" style="margin-top: 20px;">لعبة جديدة</button>';
         }
 
         function restartDemo() {
@@ -2897,7 +2917,7 @@
                 if (!snapshot.exists()) return;
 
                 var roomData = snapshot.val();
-                console.log('📡 Room updated:', roomData);
+                console.log('📡 Room updated');
 
                 // تحديث قائمة اللاعبين
                 if (roomData.players) {
@@ -2925,14 +2945,16 @@
                     revealRole();
                 }
 
-                // تحديث الأدلة أثناء اللعبة
+                // تحديثات أثناء اللعبة
                 if (gameState.gameStarted) {
+                    // تحديث الأدلة
                     if (roomData.clues) {
                         gameState.clues = roomData.clues;
                         gameState.selectedClues = roomData.selectedClues || [];
                         displayPublicClues();
                     }
 
+                    // تحديث التصويتات
                     if (roomData.votes) {
                         gameState.votes = roomData.votes;
                         displayVotes();
@@ -2955,6 +2977,23 @@
                             var eEl2 = document.getElementById('forensicEvidence');
                             if (wEl2) wEl2.textContent = gameState.murderWeapon;
                             if (eEl2) eEl2.textContent = gameState.murderEvidence;
+                        }
+                    }
+
+                    // التحقق من مرحلة اللعبة
+                    if (roomData.gamePhase) {
+                        gameState.gamePhase = roomData.gamePhase;
+
+                        if (roomData.gamePhase === 'murderer_wins') {
+                            showMurdererWins();
+                        } else if (roomData.gamePhase === 'witness_guess' && gameState.role !== 'murderer') {
+                            // اللاعبون الآخرون يرون رسالة انتظار
+                            var correctVote = roomData.votes.find(function(v) { return v.isCorrect; });
+                            showMurdererChance(correctVote ? correctVote.playerName : '');
+                        } else if (roomData.gamePhase === 'murderer_wins_witness') {
+                            showMurdererWinsByWitness();
+                        } else if (roomData.gamePhase === 'investigators_win') {
+                            showInvestigatorsWin();
                         }
                     }
                 }
