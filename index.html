@@ -2410,38 +2410,21 @@
         }
 
         function checkVotingEnd() {
-            // عدد المحققين الذين يمكنهم التصويت (الكل ما عدا الطبيب الشرعي)
-            var eligibleVoters = gameState.players.filter(function(p) {
-                return p.role !== 'forensic';
-            }).length;
-
-            var totalVotes = gameState.votes ? gameState.votes.length : 0;
-
-            // التحقق إذا صوّت الجميع
-            if (totalVotes >= eligibleVoters) {
-                // التحقق من وجود إجابة صحيحة
-                var correctVote = gameState.votes.find(function(v) {
-                    return v.isCorrect === true;
-                });
-
-                if (correctVote) {
-                    // أحد المحققين أجاب صحيح - القاتل يحاول تحديد الشاهد
-                    gameState.gamePhase = 'witness_guess';
-                    saveGameState();
-                    showMurdererChance(correctVote.playerName);
-                } else {
-                    // الكل أجاب خطأ - القاتل يفوز
-                    gameState.gamePhase = 'murderer_wins';
-                    saveGameState();
-                    showMurdererWins();
-                }
-            }
+            // لا نفعل شيء هنا - المرحلة تتغير فقط عند إجابة صحيحة
+            // أو يمكن للمضيف إنهاء التصويت يدوياً
         }
 
         function submitAccusation() {
             // التحقق من التصويت السابق
             if (gameState.hasVoted) {
                 alert('لقد قمت بالتصويت بالفعل!');
+                return;
+            }
+
+            // التحقق من أن اللعبة لم تنتهِ
+            if (gameState.gamePhase === 'witness_guess' || gameState.gamePhase === 'murderer_wins' || 
+                gameState.gamePhase === 'investigators_win' || gameState.gamePhase === 'murderer_wins_witness') {
+                alert('انتهى وقت التصويت!');
                 return;
             }
 
@@ -2454,7 +2437,7 @@
                 return;
             }
 
-            // تحديد صحة الإجابة (لكن لا نظهرها للاعب)
+            // تحديد صحة الإجابة
             var isCorrect = 
                 suspectPlayer === gameState.murdererName &&
                 suspectWeapon === gameState.murderWeapon &&
@@ -2476,17 +2459,24 @@
             gameState.votes.push(vote);
             gameState.hasVoted = true;
 
+            // إذا كانت الإجابة صحيحة - إيقاف التصويت فوراً وإعطاء القاتل فرصة
+            if (isCorrect) {
+                gameState.gamePhase = 'witness_guess';
+                gameState.correctVoterName = gameState.playerName;
+            }
+
+            // حفظ في Firebase
+            saveGameState();
+
             // إخفاء قسم التصويت
             document.getElementById('votingSection').classList.add('hidden');
 
             // رسالة للاعب
             var msgDiv = document.createElement('div');
             msgDiv.className = 'alert alert-info';
-            msgDiv.innerHTML = '<h3>✅ تم تسجيل تصويتك</h3><p>انتظر بقية اللاعبين للتصويت...</p>';
+            msgDiv.id = 'waitingMsg';
+            msgDiv.innerHTML = '<h3>✅ تم تسجيل تصويتك</h3><p>انتظر...</p>';
             document.getElementById('votingSection').parentNode.insertBefore(msgDiv, document.getElementById('votingSection'));
-
-            // حفظ في Firebase
-            saveGameState();
         }
 
         // عرض فوز القاتل (كل التصويتات خاطئة)
@@ -2981,15 +2971,20 @@
                     }
 
                     // التحقق من مرحلة اللعبة
-                    if (roomData.gamePhase) {
+                    if (roomData.gamePhase && roomData.gamePhase !== gameState.gamePhase) {
                         gameState.gamePhase = roomData.gamePhase;
 
-                        if (roomData.gamePhase === 'murderer_wins') {
-                            showMurdererWins();
-                        } else if (roomData.gamePhase === 'witness_guess' && gameState.role !== 'murderer') {
-                            // اللاعبون الآخرون يرون رسالة انتظار
-                            var correctVote = roomData.votes.find(function(v) { return v.isCorrect; });
-                            showMurdererChance(correctVote ? correctVote.playerName : '');
+                        // إخفاء رسالة الانتظار إن وجدت
+                        var waitingMsg = document.getElementById('waitingMsg');
+                        if (waitingMsg) waitingMsg.remove();
+
+                        // إخفاء قسم التصويت
+                        document.getElementById('votingSection').classList.add('hidden');
+
+                        if (roomData.gamePhase === 'witness_guess') {
+                            // إجابة صحيحة - القاتل يحدد الشاهد
+                            var voterName = roomData.correctVoterName || 'أحد المحققين';
+                            showMurdererChance(voterName);
                         } else if (roomData.gamePhase === 'murderer_wins_witness') {
                             showMurdererWinsByWitness();
                         } else if (roomData.gamePhase === 'investigators_win') {
