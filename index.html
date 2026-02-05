@@ -1425,16 +1425,28 @@
 
             // Save to storage
             await saveGameState();
-            pollForUpdates();
+            
             showLobby();
             updateLobby();
+            listenToRoom(gameState.roomCode);
             document.getElementById('hostControls').classList.remove('hidden');
         }
+        function listenToRoom(roomCode) {
+  const roomRef = window.dbRef(window.db, `rooms/${roomCode}`);
+
+  roomRef.on('value', (snapshot) => {
+    if (!snapshot.exists()) return;
+
+    const data = snapshot.val();
+    gameState = data;
+    updateLobby();
+  });
+}
 
         async function joinRoom() {
             const playerName = document.getElementById('playerName').value.trim();
             const roomCode = document.getElementById('roomCodeInput').value.trim().toUpperCase();
-
+listenToRoom(roomCode);
             if (!playerName) {
                 alert('الرجاء إدخال اسمك');
                 return;
@@ -1449,6 +1461,7 @@
             gameState.playerName = playerName;
             gameState.playerId = generatePlayerId();
             gameState.isHost = false;
+            
 
             // Load room data
             const roomData = await loadGameState();
