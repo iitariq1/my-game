@@ -1601,6 +1601,9 @@ listenToRoom(roomCode);
         }
 
         async function startGame() {
+            gameState.phase = "game";
+await saveGameState();
+
             if (gameState.players.length < 4) {
                 alert('يجب أن يكون هناك 4 لاعبين على الأقل');
                 return;
