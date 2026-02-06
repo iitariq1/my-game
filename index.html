@@ -512,7 +512,7 @@
                 </div>
                 <div class="round-info">
                     الجولة <span id="currentRound">1</span>/3 | 
-                    <span id="cluesInRound">0</span>/5 أدلة
+                    <span id="cluesInRound">0</span>/6 أدلة
                 </div>
                 <div id="forensicCards"></div>
                 <button onclick="nextRound()" class="btn-full btn-warning" id="nextRoundBtn" style="display:none;">
@@ -534,7 +534,6 @@
         });
         var db = firebase.database();
 
-         // ========== Data ==========
         var WEAPONS = [
   '🔫 مسدس',
   '🔪 سكين',
@@ -758,7 +757,6 @@
             { title: '📍 موقع الجريمة', options: ['حديقة', 'بيت العطلة', 'سوبر ماركت', 'غابة', 'مدرسة', 'بنك'], isLocation: true },
             { title: '📍 موقع الجريمة', options: ['حانة', 'فندق', 'مكتبة', 'مستشفى', 'ورشة بناء', 'فندق'], isLocation: true }
         ];
-
 
         // ========== State ==========
         var game = {
@@ -1916,9 +1914,24 @@
                                 if (game.isHost) document.getElementById('hostControls').classList.remove('hidden');
                             }
                             listen();
+                        } else {
+                            // اللاعب غير موجود في الغرفة - مسح الجلسة
+                            sessionStorage.clear();
+                            showScreen('homeScreen');
                         }
+                    } else {
+                        // الغرفة غير موجودة - مسح الجلسة
+                        sessionStorage.clear();
+                        showScreen('homeScreen');
                     }
+                }).catch(function(err) {
+                    console.error('Error loading room:', err);
+                    sessionStorage.clear();
+                    showScreen('homeScreen');
                 });
+            } else {
+                // لا توجد جلسة - عرض الشاشة الرئيسية
+                showScreen('homeScreen');
             }
         };
     </script>
