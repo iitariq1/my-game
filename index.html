@@ -450,6 +450,7 @@
             <div id="hostControls" class="hidden">
                 <button onclick="startGame()" class="btn-full btn-success" id="startBtn">🎮 بدء اللعبة</button>
             </div>
+            <button onclick="leaveRoom()" class="btn-full" style="margin-top:10px;background:#e74c3c;">🚪 مغادرة الغرفة</button>
         </div>
 
         <!-- شاشة اللعبة -->
@@ -465,12 +466,16 @@
 
             <!-- اختيار القاتل -->
             <div id="murdererSelection" class="murderer-selection hidden">
-                <h3>🔪 اختر سلاح الجريمة والدليل</h3>
-                <h4 style="margin-top:15px;">⚔️ السلاح:</h4>
+                <h3>🔪 أنت القاتل! اختر سلاح ودليل الجريمة</h3>
+                <div id="allPlayersItems" style="background:rgba(0,0,0,0.3);padding:10px;border-radius:8px;margin:15px 0;max-height:200px;overflow-y:auto;"></div>
+                <div class="alert alert-danger" style="margin-bottom:10px;padding:8px;">
+                    <p style="font-size:0.9em;"><strong>⚠️ اختر من بطاقاتك أنت فقط:</strong></p>
+                </div>
+                <h4 style="margin-top:10px;">⚔️ السلاح:</h4>
                 <div id="murdererWeapons" class="selection-grid"></div>
                 <h4 style="margin-top:15px;">🔍 الدليل:</h4>
                 <div id="murdererEvidence" class="selection-grid"></div>
-                <button onclick="confirmMurderChoice()" class="btn-full btn-danger" style="margin-top:20px;" id="confirmMurderBtn" disabled>✓ تأكيد</button>
+                <button onclick="confirmMurderChoice()" class="btn-full btn-danger" style="margin-top:20px;" id="confirmMurderBtn" disabled>✓ تأكيد اختيار الجريمة</button>
             </div>
 
             <div id="waitingMurderer" class="alert alert-warning hidden">
@@ -778,39 +783,43 @@
                 return;
             }
 
-            game.players.forEach(function(p) {
-                p.role = null;
-                p.weapons = [];
-                p.evidence = [];
+            // إعادة تعيين بيانات اللاعبين
+            var resetPlayers = game.players.map(function(p) {
+                return {
+                    id: p.id,
+                    name: p.name,
+                    isHost: p.isHost,
+                    role: null,
+                    weapons: [],
+                    evidence: []
+                };
             });
 
-            game.started = false;
-            game.weapon = null;
-            game.evidence = null;
-            game.murderer = null;
-            game.accomplice = null;
-            game.witness = null;
-            game.forensic = null;
-            game.clues = [];
-            game.votes = [];
-            game.phase = 'waiting';
-            game.round = 1;
-            game.cards = [];
-            game.ready = false;
-            game.locationChanged = false;
-            game.replacedInRound = {};
-            game.correctVoter = null;
-            game.witnessGuess = null;
+            // إعادة تعيين حالة اللعبة بالكامل
+            var resetGame = {
+                roomCode: game.roomCode,
+                maxPlayers: game.maxPlayers,
+                players: resetPlayers,
+                started: false,
+                weapon: null,
+                evidence: null,
+                murderer: null,
+                accomplice: null,
+                witness: null,
+                forensic: null,
+                clues: [],
+                votes: [],
+                phase: 'waiting',
+                round: 1,
+                cards: [],
+                ready: false,
+                locationChanged: false,
+                replacedInRound: {},
+                correctVoter: null,
+                witnessGuess: null
+            };
 
-            hasVoted = false;
-            selectedWeapon = null;
-            selectedEvidence = null;
-            selectedSuspect = null;
-            selectedSuspectWeapon = null;
-            selectedSuspectEvidence = null;
-            selectedCardToReplace = null;
-
-            db.ref('rooms/' + game.roomCode).set(game);
+            db.ref('rooms/' + game.roomCode).set(resetGame);
         }
 
         // طرد لاعب
@@ -822,6 +831,30 @@
             }
             game.players = game.players.filter(function(p) { return p.id !== playerId; });
             db.ref('rooms/' + game.roomCode + '/players').set(game.players);
+        }
+
+        // مغادرة الغرفة
+        function leaveRoom() {
+            if (game.started) {
+                alert('لا يمكن المغادرة أثناء اللعبة');
+                return;
+            }
+
+            if (game.isHost) {
+                // إذا كان المضيف، نسأله إذا يريد حذف الغرفة
+                if (confirm('أنت المضيف. هل تريد حذف الغرفة بالكامل؟')) {
+                    db.ref('rooms/' + game.roomCode).remove();
+                    sessionStorage.clear();
+                    location.reload();
+                }
+            } else {
+                // إذا كان لاعب عادي، نحذفه من القائمة
+                game.players = game.players.filter(function(p) { return p.id !== game.oderId; });
+                db.ref('rooms/' + game.roomCode + '/players').set(game.players).then(function() {
+                    sessionStorage.clear();
+                    location.reload();
+                });
+            }
         }
 
         // ========== Show Game ==========
@@ -897,6 +930,23 @@
             var sec = document.getElementById('murdererSelection');
             sec.classList.remove('hidden');
 
+            // عرض أسلحة وأدلة جميع اللاعبين
+            var allDiv = document.getElementById('allPlayersItems');
+            allDiv.innerHTML = '<h4 style="margin-bottom:10px;color:#f39c12;">👁️ أسلحة وأدلة جميع اللاعبين:</h4>';
+            
+            game.players.forEach(function(player) {
+                if (player.role === 'forensic') return;
+                
+                var isMe = player.id === game.oderId;
+                var itemHtml = '<div style="margin-bottom:8px;padding:6px;background:rgba(255,255,255,0.1);border-radius:5px;' + (isMe ? 'border:2px solid #e74c3c;' : '') + '">';
+                itemHtml += '<strong style="color:' + (isMe ? '#e74c3c' : '#fff') + ';font-size:0.9em;">' + player.name + (isMe ? ' (أنت)' : '') + '</strong><br>';
+                itemHtml += '<span style="font-size:0.8em;color:#e74c3c;">⚔️ ' + player.weapons.join(' | ') + '</span><br>';
+                itemHtml += '<span style="font-size:0.8em;color:#3498db;">🔍 ' + player.evidence.join(' | ') + '</span>';
+                itemHtml += '</div>';
+                allDiv.innerHTML += itemHtml;
+            });
+
+            // أسلحة وأدلة القاتل للاختيار
             var wDiv = document.getElementById('murdererWeapons');
             var eDiv = document.getElementById('murdererEvidence');
             wDiv.innerHTML = '';
@@ -1184,13 +1234,21 @@
 
             var votesOnMe = game.votes.filter(function(v) { return v.suspect === game.name; });
 
-            // الحصول على أسلحة وأدلة اللاعب الحالي (للقاتل)
-            var myPlayer = game.players.find(function(p) { return p.id === game.oderId; });
-            var myWeapons = myPlayer ? myPlayer.weapons : [];
-            var myEvidence = myPlayer ? myPlayer.evidence : [];
-
             // التحقق من انتهاء اللعبة (الكل صوّت خطأ)
             checkAllVotedWrong();
+
+            // إظهار التصويتات على اللاعب الحالي أولاً
+            if (votesOnMe.length > 0) {
+                var alertDiv = document.createElement('div');
+                alertDiv.className = 'alert alert-danger';
+                alertDiv.style.marginBottom = '15px';
+                var alertHtml = '<h4>⚠️ تم التصويت عليك!</h4>';
+                votesOnMe.forEach(function(v) {
+                    alertHtml += '<p>🗳️ <strong>' + v.voter + '</strong> يتهمك بـ: ' + v.weapon + ' و ' + v.evidence + '</p>';
+                });
+                alertDiv.innerHTML = alertHtml;
+                container.appendChild(alertDiv);
+            }
 
             game.players.forEach(function(p) {
                 if (p.id === game.oderId) return;
@@ -1222,48 +1280,36 @@
                 }
                 html += '</div>';
 
-                // الأسلحة
+                // عرض أسلحة وأدلة اللاعب
                 html += '<div class="player-items">';
                 html += '<span style="width:100%;font-size:0.8em;color:#e74c3c;margin-bottom:3px;">⚔️ الأسلحة:</span>';
                 p.weapons.forEach(function(w) {
                     var sel = selectedSuspect === p.id && selectedSuspectWeapon === w;
-                    var canSelect = !hasVoted && game.role !== 'forensic';
-                    
-                    // القاتل يمكنه اختيار فقط من أسلحته
-                    if (game.role === 'murderer' && !myWeapons.includes(w)) {
-                        canSelect = false;
-                    }
-                    
-                    if (canSelect) {
+                    if (!hasVoted && game.role !== 'forensic' && selectedSuspect === p.id) {
                         html += '<button class="item-btn weapon' + (sel ? ' selected' : '') + '" onclick="selectVoteItem(\'' + p.id + '\',\'w\',\'' + w + '\')">' + w + '</button>';
                     } else {
-                        html += '<button class="item-btn weapon" disabled style="opacity:0.5;">' + w + '</button>';
+                        html += '<span class="item-btn weapon" style="cursor:default;' + (selectedSuspect !== p.id ? 'opacity:0.7;' : '') + '">' + w + '</span>';
                     }
                 });
                 html += '</div>';
 
-                // الأدلة
                 html += '<div class="player-items">';
                 html += '<span style="width:100%;font-size:0.8em;color:#3498db;margin-bottom:3px;">🔍 الأدلة:</span>';
                 p.evidence.forEach(function(e) {
                     var sel = selectedSuspect === p.id && selectedSuspectEvidence === e;
-                    var canSelect = !hasVoted && game.role !== 'forensic';
-                    
-                    // القاتل يمكنه اختيار فقط من أدلته
-                    if (game.role === 'murderer' && !myEvidence.includes(e)) {
-                        canSelect = false;
-                    }
-                    
-                    if (canSelect) {
+                    if (!hasVoted && game.role !== 'forensic' && selectedSuspect === p.id) {
                         html += '<button class="item-btn evidence' + (sel ? ' selected' : '') + '" onclick="selectVoteItem(\'' + p.id + '\',\'e\',\'' + e + '\')">' + e + '</button>';
                     } else {
-                        html += '<button class="item-btn evidence" disabled style="opacity:0.5;">' + e + '</button>';
+                        html += '<span class="item-btn evidence" style="cursor:default;' + (selectedSuspect !== p.id ? 'opacity:0.7;' : '') + '">' + e + '</span>';
                     }
                 });
                 html += '</div>';
 
-                if (!hasVoted && game.role !== 'forensic') {
-                    html += '<button class="vote-btn btn-danger" onclick="submitVote(\'' + p.id + '\',\'' + p.name + '\')">🗳️ تصويت</button>';
+                // زر التصويت
+                if (selectedSuspect === p.id && !hasVoted && game.role !== 'forensic') {
+                    html += '<button class="vote-btn btn-danger" onclick="submitVote(\'' + p.id + '\',\'' + p.name + '\')">🗳️ تأكيد التصويت</button>';
+                } else if (!hasVoted && game.role !== 'forensic') {
+                    html += '<button class="vote-btn btn-secondary" onclick="toggleSuspect(\'' + p.id + '\')">👆 اضغط للاتهام</button>';
                 }
 
                 if (hasVoted && myVote && game.role !== 'forensic') {
@@ -1280,18 +1326,6 @@
                 card.innerHTML = html;
                 container.appendChild(card);
             });
-
-            if (votesOnMe.length > 0) {
-                var alertDiv = document.createElement('div');
-                alertDiv.className = 'alert alert-danger';
-                alertDiv.style.marginBottom = '15px';
-                var alertHtml = '<h4>⚠️ تم التصويت عليك!</h4>';
-                votesOnMe.forEach(function(v) {
-                    alertHtml += '<p>🗳️ <strong>' + v.voter + '</strong> يتهمك بـ: ' + v.weapon + ' و ' + v.evidence + '</p>';
-                });
-                alertDiv.innerHTML = alertHtml;
-                container.insertBefore(alertDiv, container.firstChild);
-            }
         }
 
         // التحقق إذا صوّت الجميع بشكل خاطئ
@@ -1539,8 +1573,27 @@
 
                 // التحقق من إعادة اللعبة
                 if (game.started && !d.started) {
-                    // تم إعادة اللعبة
+                    // تم إعادة اللعبة - إعادة تعيين كل شيء
                     game.started = false;
+                    game.role = null;
+                    game.weapon = null;
+                    game.evidence = null;
+                    game.murderer = null;
+                    game.accomplice = null;
+                    game.witness = null;
+                    game.forensic = null;
+                    game.clues = [];
+                    game.votes = [];
+                    game.phase = 'waiting';
+                    game.round = 1;
+                    game.cards = [];
+                    game.ready = false;
+                    game.locationChanged = false;
+                    game.replacedInRound = {};
+                    game.correctVoter = null;
+                    game.witnessGuess = null;
+                    
+                    // إعادة تعيين المتغيرات المحلية
                     hasVoted = false;
                     selectedWeapon = null;
                     selectedEvidence = null;
@@ -1548,6 +1601,18 @@
                     selectedSuspectWeapon = null;
                     selectedSuspectEvidence = null;
                     selectedCardToReplace = null;
+                    
+                    // إخفاء كل العناصر
+                    document.getElementById('gameResults').classList.add('hidden');
+                    document.getElementById('murdererSelection').classList.add('hidden');
+                    document.getElementById('waitingMurderer').classList.add('hidden');
+                    document.getElementById('forensicPanel').classList.add('hidden');
+                    document.getElementById('playersSection').classList.add('hidden');
+                    document.getElementById('cluesBar').classList.add('hidden');
+                    document.getElementById('myItems').classList.add('hidden');
+                    document.getElementById('secretInfo').classList.add('hidden');
+                    document.getElementById('witnessInfo').classList.add('hidden');
+                    document.getElementById('roleCard').classList.add('hidden');
                     
                     showScreen('lobbyScreen');
                     updateLobby();
