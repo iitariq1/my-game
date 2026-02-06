@@ -1648,8 +1648,13 @@
                 game.locationChanged = d.locationChanged || false;
                 game.replacedInRound = d.replacedInRound || {};
 
-                var myVote = game.votes.find(function(v) { return v.oderId === game.oderId; });
-                if (myVote) hasVoted = true;
+                // إعادة تعيين hasVoted إذا لم يكن هناك تصويت سابق
+                if (!game.votes || game.votes.length === 0) {
+                    hasVoted = false;
+                } else {
+                    var myVote = game.votes.find(function(v) { return v.oderId === game.oderId; });
+                    hasVoted = !!myVote;
+                }
 
                 if (game.started) {
                     // التحقق من مرحلة النهاية
