@@ -905,19 +905,31 @@
             var itemsDiv = document.getElementById('myItems');
             itemsDiv.classList.remove('hidden');
             
-            var html = '<h4>🎴 بطاقاتك</h4>';
-            html += '<div style="margin-top:8px;">';
-            html += '<span style="color:#e74c3c;font-size:0.85em;">⚔️ أسلحتك: </span>';
-            me.weapons.forEach(function(w) {
-                html += '<span class="item-tag" style="background:rgba(231,76,60,0.3);">' + w + '</span>';
+            var html = '<h4 style="color:#f39c12;margin-bottom:12px;">👁️ أسلحة وأدلة جميع اللاعبين:</h4>';
+            
+            game.players.forEach(function(player) {
+                if (player.role === 'forensic') return;
+                
+                var isMe = player.id === game.oderId;
+                html += '<div style="margin-bottom:10px;padding:10px;background:' + (isMe ? 'rgba(231,76,60,0.2)' : 'rgba(255,255,255,0.08)') + ';border-radius:8px;' + (isMe ? 'border:2px solid #e74c3c;' : 'border:1px solid rgba(255,255,255,0.1);') + '">';
+                html += '<strong style="color:' + (isMe ? '#e74c3c' : '#ffd700') + ';font-size:0.95em;display:block;margin-bottom:6px;">' + player.name + (isMe ? ' (أنت)' : '') + '</strong>';
+                
+                html += '<div style="margin-bottom:6px;">';
+                html += '<span style="color:#e74c3c;font-size:0.8em;">⚔️ الأسلحة: </span>';
+                player.weapons.forEach(function(w) {
+                    html += '<span class="item-tag" style="background:rgba(231,76,60,0.25);font-size:0.75em;">' + w + '</span>';
+                });
+                html += '</div>';
+                
+                html += '<div>';
+                html += '<span style="color:#3498db;font-size:0.8em;">🔍 الأدلة: </span>';
+                player.evidence.forEach(function(e) {
+                    html += '<span class="item-tag" style="background:rgba(52,152,219,0.25);font-size:0.75em;">' + e + '</span>';
+                });
+                html += '</div>';
+                
+                html += '</div>';
             });
-            html += '</div>';
-            html += '<div style="margin-top:8px;">';
-            html += '<span style="color:#3498db;font-size:0.85em;">🔍 أدلتك: </span>';
-            me.evidence.forEach(function(e) {
-                html += '<span class="item-tag" style="background:rgba(52,152,219,0.3);">' + e + '</span>';
-            });
-            html += '</div>';
             
             itemsDiv.innerHTML = html;
         }
@@ -1091,9 +1103,28 @@
             } else {
                 summary.innerHTML = '';
                 full.innerHTML = '';
+                
+                // عرض الأدلة المختارة فقط في الملخص
                 game.clues.forEach(function(c) {
                     summary.innerHTML += '<span class="clue-tag">' + c.option + '</span>';
-                    full.innerHTML += '<div class="clue-card"><strong>' + c.title + ':</strong> ' + c.option + '</div>';
+                });
+                
+                // عرض جميع البطاقات مع جميع الخيارات في العرض الكامل
+                game.cards.forEach(function(card, idx) {
+                    var selectedClue = game.clues.find(function(c) { return c.cardIndex === idx; });
+                    
+                    full.innerHTML += '<div class="clue-card" style="background:rgba(255,255,255,0.15);border-radius:10px;padding:12px;margin-bottom:12px;">';
+                    full.innerHTML += '<strong style="color:#ffd700;display:block;margin-bottom:8px;">' + card.title + '</strong>';
+                    full.innerHTML += '<div style="display:flex;flex-wrap:wrap;gap:6px;">';
+                    
+                    card.options.forEach(function(opt) {
+                        var isSelected = selectedClue && selectedClue.option === opt;
+                        full.innerHTML += '<span class="clue-tag" style="' + 
+                            (isSelected ? 'background:#ffd700;color:#000;font-weight:bold;font-size:0.9em;padding:6px 12px;border:2px solid #fff;box-shadow:0 0 10px rgba(255,215,0,0.5);' : 'background:rgba(255,255,255,0.2);opacity:0.7;') + 
+                            '">' + opt + (isSelected ? ' ✓' : '') + '</span>';
+                    });
+                    
+                    full.innerHTML += '</div></div>';
                 });
             }
 
@@ -1166,7 +1197,7 @@
                     '<button onclick="setReplaceMode(\'option\')" class="btn-small ' + (replaceMode === 'option' ? 'btn-danger' : 'btn-secondary') + '" style="flex:1;">✏️ تبديل خيار واحد</button>' +
                     '</div>' +
                     '<p style="font-size:0.85em;opacity:0.8;margin-bottom:10px;">' + 
-                    (replaceMode === 'card' ? '🔄 سيتم استبدال البطاقة كاملة ببطاقة أخرى' : '✏️ سيتم استبدال الخيار المختار فقط بخيار جديد') + 
+                    (replaceMode === 'card' ? '🔄 سيتم استبدال البطاقة كاملة ببطاقة أخرى' : '✏️ سيتم إلغاء الخيار الحالي لتتمكن من اختيار خيار آخر من نفس البطاقة') + 
                     '</p>' +
                     '<button onclick="confirmReplace()" class="btn-small btn-danger">✓ تأكيد</button> ' +
                     '<button onclick="cancelReplace()" class="btn-small btn-secondary">✖ إلغاء</button>' +
@@ -1225,23 +1256,8 @@
                     game.clues = game.clues.filter(function(c) { return c.cardIndex !== idx; });
                 }
             } else {
-                // استبدال خيار واحد فقط
-                var selectedClue = game.clues.find(function(c) { return c.cardIndex === idx; });
-                if (selectedClue) {
-                    // إزالة الخيار الحالي من البطاقة
-                    var currentOptions = currentCard.options.slice();
-                    var currentOption = selectedClue.option;
-                    var optionIndex = currentOptions.indexOf(currentOption);
-                    
-                    if (optionIndex > -1) {
-                        // استبدال بخيار عشوائي جديد (يمكن تحسينه لاحقاً)
-                        var newOption = 'خيار جديد ' + Math.floor(Math.random() * 100);
-                        currentOptions[optionIndex] = newOption;
-                        
-                        game.cards[idx].options = currentOptions;
-                        game.clues = game.clues.filter(function(c) { return c.cardIndex !== idx; });
-                    }
-                }
+                // استبدال خيار واحد فقط - إزالة الدليل الحالي حتى يختار الطبيب خيار جديد
+                game.clues = game.clues.filter(function(c) { return c.cardIndex !== idx; });
             }
             
             if (!game.replacedInRound) game.replacedInRound = {};
