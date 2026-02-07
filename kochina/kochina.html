@@ -506,10 +506,64 @@
             color: var(--gold);
         }
 
+        /* Won Cards Area */
+        .won-cards-area {
+            position: fixed;
+            bottom: 180px;
+            right: 20px;
+            background: rgba(0,0,0,0.7);
+            backdrop-filter: blur(10px);
+            padding: 15px;
+            border-radius: 15px;
+            border: 2px solid var(--gold);
+            z-index: 90;
+            min-width: 150px;
+        }
+
+        .won-title {
+            text-align: center;
+            font-size: 1em;
+            font-weight: 700;
+            color: var(--gold);
+            margin-bottom: 10px;
+        }
+
+        .won-cards-stack {
+            display: flex;
+            flex-direction: column;
+            gap: 3px;
+            max-height: 150px;
+            overflow-y: auto;
+        }
+
+        .won-card-mini {
+            background: rgba(255,255,255,0.9);
+            padding: 4px 8px;
+            border-radius: 5px;
+            font-size: 0.9em;
+            font-weight: 600;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .won-card-mini.red { color: var(--red); }
+        .won-card-mini.black { color: var(--black); }
+
+        .won-score {
+            text-align: center;
+            margin-top: 10px;
+            padding-top: 10px;
+            border-top: 2px solid var(--gold);
+            font-size: 1.1em;
+            font-weight: 700;
+            color: var(--gold);
+        }
+
         .hand-cards {
             display: flex;
             justify-content: center;
-            gap: 10px;
+            gap: 5px; /* مسافة أقل بين الأوراق */
             flex-wrap: wrap;
             max-width: 1200px;
             margin: 0 auto;
@@ -817,6 +871,13 @@
             <div class="player-hand">
                 <div class="hand-title">أوراقك (<span id="handCount">0</span>)</div>
                 <div class="hand-cards" id="playerHand"></div>
+            </div>
+
+            <!-- Won Cards Display -->
+            <div class="won-cards-area" id="wonCardsArea" style="display: none;">
+                <div class="won-title">أوراقك المكسوبة</div>
+                <div class="won-cards-stack" id="wonCardsList"></div>
+                <div class="won-score">النقاط: <span id="wonScore">0</span></div>
             </div>
         </div>
     </div>
@@ -1199,6 +1260,7 @@
             container.innerHTML = '';
 
             opponents.forEach(opp => {
+                const wonCount = opp.wonCards ? opp.wonCards.length : 0;
                 const box = document.createElement('div');
                 box.className = 'opponent-box';
                 box.innerHTML = `
@@ -1209,6 +1271,7 @@
                         ).join('')}
                     </div>
                     <div class="opponent-count">${opp.hand.length} أوراق</div>
+                    ${wonCount > 0 ? `<div style="color: var(--gold); font-size: 0.85em; margin-top: 5px;">✨ ${wonCount} مكسوبة</div>` : ''}
                 `;
                 container.appendChild(box);
             });
@@ -1271,29 +1334,78 @@
             sortedHand.forEach(card => {
                 const cardEl = createCardElement(card, false);
                 
+                // تخزين معلومات البطاقة في data attribute
+                cardEl.setAttribute('data-card-id', card.id);
+                cardEl.setAttribute('data-card-rank', card.rank);
+                cardEl.setAttribute('data-card-suit', card.suit);
+                
                 // إضافة selected class إذا كانت مختارة
                 if (gameState.selectedCard && gameState.selectedCard.id === card.id) {
                     cardEl.classList.add('card-selected');
                 }
                 
-                // نظام الضغط: ضغطة أولى للاختيار، ثانية للعب
+                // نظام الضغط
                 if (isMyTurn && room.phase === 'play') {
                     cardEl.style.cursor = 'pointer';
-                    cardEl.onclick = () => {
-                        // إذا الورقة مختارة - العبها
-                        if (gameState.selectedCard && gameState.selectedCard.id === card.id) {
-                            gameState.selectedCard = null;
-                            playCard(card, room);
-                        } else {
-                            // اختر الورقة
-                            gameState.selectedCard = card;
-                            updatePlayerHand(player, isMyTurn, room); // تحديث العرض
-                        }
-                    };
+                    cardEl.classList.add('playable-card');
                 }
                 
                 container.appendChild(cardEl);
             });
+
+            // إضافة event listener واحد للـ container بدلاً من كل ورقة
+            if (isMyTurn && room.phase === 'play') {
+                container.onclick = (e) => {
+                    const cardEl = e.target.closest('.playable-card');
+                    if (!cardEl) return;
+
+                    const cardId = cardEl.getAttribute('data-card-id');
+                    const card = player.hand.find(c => c.id === cardId);
+                    if (!card) return;
+
+                    // إذا الورقة مختارة - العبها
+                    if (gameState.selectedCard && gameState.selectedCard.id === card.id) {
+                        playCard(card, room);
+                    } else {
+                        // اختر الورقة
+                        gameState.selectedCard = card;
+                        updatePlayerHand(player, isMyTurn, room);
+                    }
+                };
+            } else {
+                container.onclick = null;
+            }
+
+            // تحديث عرض الأوراق المكسوبة
+            updateWonCards(player);
+        }
+
+        function updateWonCards(player) {
+            if (!player.wonCards || player.wonCards.length === 0) {
+                document.getElementById('wonCardsArea').style.display = 'none';
+                return;
+            }
+
+            document.getElementById('wonCardsArea').style.display = 'block';
+            
+            const wonList = document.getElementById('wonCardsList');
+            wonList.innerHTML = '';
+
+            // عرض آخر 10 أوراق فقط
+            const recentCards = player.wonCards.slice(-10).reverse();
+            recentCards.forEach(card => {
+                const div = document.createElement('div');
+                div.className = `won-card-mini ${card.isRed ? 'red' : 'black'}`;
+                
+                div.innerHTML = `
+                    <span>${card.rank === 'JOKER' ? '🃏' : card.rank}</span>
+                    <span>${card.suit}</span>
+                `;
+                wonList.appendChild(div);
+            });
+
+            // عرض النقاط
+            document.getElementById('wonScore').textContent = player.score || 0;
         }
 
         async function drawCard(room) {
