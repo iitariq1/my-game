@@ -1335,8 +1335,7 @@
                 const cardEl = createCardElement(card, false);
                 
                 // إضافة selected class إذا كانت مختارة
-                const isSelected = gameState.selectedCard && gameState.selectedCard.id === card.id;
-                if (isSelected) {
+                if (gameState.selectedCard && gameState.selectedCard.id === card.id) {
                     cardEl.classList.add('card-selected');
                 }
                 
@@ -1345,15 +1344,19 @@
                     cardEl.style.cursor = 'pointer';
                     cardEl.onclick = function(e) {
                         e.stopPropagation();
-                        console.log('Card clicked:', card.rank, card.suit);
-                        console.log('Is selected:', isSelected);
                         
-                        // إذا الورقة مختارة - العبها
-                        if (gameState.selectedCard && gameState.selectedCard.id === card.id) {
-                            console.log('Playing card...');
+                        // التحقق المباشر من الاختيار (لا نستخدم متغير محفوظ)
+                        const isCurrentlySelected = gameState.selectedCard && gameState.selectedCard.id === card.id;
+                        
+                        console.log('Card clicked:', card.rank, card.suit);
+                        console.log('Currently selected:', isCurrentlySelected);
+                        
+                        if (isCurrentlySelected) {
+                            // الضغطة الثانية - العب الورقة!
+                            console.log('Playing card NOW!');
                             playCard(card, room);
                         } else {
-                            // اختر الورقة
+                            // الضغطة الأولى - اختر الورقة
                             console.log('Selecting card...');
                             gameState.selectedCard = card;
                             updatePlayerHand(player, isMyTurn, room);
