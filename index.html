@@ -1,0 +1,420 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>مركز الألعاب - المحقق المخادع و كوتشينا</title>
+    <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700;800&family=Amiri:wght@700&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Tajawal', sans-serif;
+            background: linear-gradient(135deg, #0f0c29, #302b63, #24243e);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            overflow-x: hidden;
+            position: relative;
+        }
+
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: 
+                radial-gradient(circle at 20% 50%, rgba(255, 215, 0, 0.1) 0%, transparent 50%),
+                radial-gradient(circle at 80% 50%, rgba(138, 43, 226, 0.1) 0%, transparent 50%);
+            animation: bgShift 15s ease-in-out infinite;
+            pointer-events: none;
+        }
+
+        @keyframes bgShift {
+            0%, 100% { opacity: 0.5; }
+            50% { opacity: 1; }
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 40px 20px;
+            position: relative;
+            z-index: 1;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 60px;
+            animation: fadeInDown 1s ease-out;
+        }
+
+        @keyframes fadeInDown {
+            from {
+                opacity: 0;
+                transform: translateY(-50px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .main-title {
+            font-family: 'Amiri', serif;
+            font-size: 4em;
+            font-weight: 700;
+            background: linear-gradient(135deg, #ffd700 0%, #ffed4e 50%, #ffd700 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 15px;
+            text-shadow: 0 0 30px rgba(255, 215, 0, 0.5);
+            animation: titleGlow 3s ease-in-out infinite;
+        }
+
+        @keyframes titleGlow {
+            0%, 100% { filter: brightness(1); }
+            50% { filter: brightness(1.4); }
+        }
+
+        .subtitle {
+            font-size: 1.4em;
+            color: #a8d0ff;
+            opacity: 0.9;
+        }
+
+        .games-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(450px, 1fr));
+            gap: 40px;
+            margin-top: 50px;
+        }
+
+        .game-card {
+            background: linear-gradient(135deg, rgba(30, 30, 60, 0.9), rgba(50, 50, 80, 0.9));
+            border-radius: 25px;
+            padding: 40px;
+            border: 3px solid transparent;
+            position: relative;
+            overflow: hidden;
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            cursor: pointer;
+            animation: fadeInUp 1s ease-out;
+        }
+
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(50px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .game-card:nth-child(2) {
+            animation-delay: 0.2s;
+        }
+
+        .game-card::before {
+            content: '';
+            position: absolute;
+            top: -2px;
+            left: -2px;
+            right: -2px;
+            bottom: -2px;
+            background: linear-gradient(135deg, #667eea, #764ba2, #f093fb, #667eea);
+            background-size: 400% 400%;
+            border-radius: 25px;
+            z-index: -1;
+            opacity: 0;
+            transition: opacity 0.4s;
+            animation: gradientShift 3s ease infinite;
+        }
+
+        @keyframes gradientShift {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+
+        .game-card:hover::before {
+            opacity: 1;
+        }
+
+        .game-card:hover {
+            transform: translateY(-10px) scale(1.02);
+            box-shadow: 0 20px 60px rgba(102, 126, 234, 0.4);
+        }
+
+        .game-card.detective::before {
+            background: linear-gradient(135deg, #1a237e, #880e4f, #4a148c, #1a237e);
+            background-size: 400% 400%;
+        }
+
+        .game-card.kochina::before {
+            background: linear-gradient(135deg, #1a472a, #d4af37, #2d5f3f, #1a472a);
+            background-size: 400% 400%;
+        }
+
+        .game-icon {
+            font-size: 5em;
+            margin-bottom: 20px;
+            filter: drop-shadow(0 10px 20px rgba(0, 0, 0, 0.5));
+            animation: iconFloat 3s ease-in-out infinite;
+        }
+
+        @keyframes iconFloat {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-15px); }
+        }
+
+        .game-title {
+            font-family: 'Amiri', serif;
+            font-size: 2.5em;
+            font-weight: 700;
+            margin-bottom: 15px;
+            color: #ffd700;
+        }
+
+        .game-description {
+            font-size: 1.1em;
+            line-height: 1.8;
+            color: #b8c5d6;
+            margin-bottom: 25px;
+        }
+
+        .game-features {
+            list-style: none;
+            margin-bottom: 30px;
+        }
+
+        .game-features li {
+            padding: 10px 0;
+            color: #8fa3c0;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            position: relative;
+            padding-right: 25px;
+        }
+
+        .game-features li::before {
+            content: '✦';
+            position: absolute;
+            right: 0;
+            color: #ffd700;
+            font-size: 1.2em;
+        }
+
+        .play-button {
+            width: 100%;
+            padding: 18px 35px;
+            font-size: 1.3em;
+            font-weight: 700;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            border: none;
+            border-radius: 15px;
+            color: white;
+            cursor: pointer;
+            font-family: 'Tajawal', sans-serif;
+            transition: all 0.3s ease;
+            box-shadow: 0 10px 30px rgba(102, 126, 234, 0.4);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .play-button::before {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 0;
+            height: 0;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.3);
+            transform: translate(-50%, -50%);
+            transition: width 0.6s, height 0.6s;
+        }
+
+        .play-button:hover::before {
+            width: 300px;
+            height: 300px;
+        }
+
+        .play-button span {
+            position: relative;
+            z-index: 1;
+        }
+
+        .play-button:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 15px 40px rgba(102, 126, 234, 0.6);
+        }
+
+        .play-button:active {
+            transform: translateY(-1px);
+        }
+
+        .game-card.detective .play-button {
+            background: linear-gradient(135deg, #1a237e, #880e4f);
+        }
+
+        .game-card.kochina .play-button {
+            background: linear-gradient(135deg, #1a472a, #d4af37);
+        }
+
+        .stats {
+            display: flex;
+            justify-content: space-around;
+            margin-top: 25px;
+            padding-top: 20px;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .stat {
+            text-align: center;
+        }
+
+        .stat-value {
+            font-size: 1.8em;
+            font-weight: 700;
+            color: #ffd700;
+            display: block;
+        }
+
+        .stat-label {
+            font-size: 0.9em;
+            color: #8fa3c0;
+            margin-top: 5px;
+        }
+
+        .footer {
+            text-align: center;
+            margin-top: 60px;
+            padding-top: 30px;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+            color: #8fa3c0;
+            animation: fadeIn 2s ease-out;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        @media (max-width: 968px) {
+            .games-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .main-title {
+                font-size: 2.5em;
+            }
+
+            .game-card {
+                padding: 30px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1 class="main-title">🎮 مركز الألعاب 🎮</h1>
+            <p class="subtitle">اختر لعبتك المفضلة واستمتع بوقتك</p>
+        </div>
+
+        <div class="games-grid">
+            <!-- لعبة المحقق المخادع -->
+            <div class="game-card detective" onclick="playGame('detective')">
+                <div class="game-icon">🕵️</div>
+                <h2 class="game-title">المحقق المخادع</h2>
+                <p class="game-description">
+                    لعبة ذكاء وخداع جماعية! كن المحقق الذكي أو المجرم الماكر واستخدم مهاراتك في الخداع والاستنتاج
+                </p>
+                <ul class="game-features">
+                    <li>لعب أونلاين مع الأصدقاء</li>
+                    <li>أدوار متعددة ومثيرة</li>
+                    <li>نظام تصويت تفاعلي</li>
+                    <li>مناسبة لجميع الأعمار</li>
+                </ul>
+                <button class="play-button">
+                    <span>العب الآن 🎯</span>
+                </button>
+                <div class="stats">
+                    <div class="stat">
+                        <span class="stat-value">2-20</span>
+                        <span class="stat-label">لاعب</span>
+                    </div>
+                    <div class="stat">
+                        <span class="stat-value">15-30</span>
+                        <span class="stat-label">دقيقة</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- لعبة كوتشينا -->
+            <div class="game-card kochina" onclick="playGame('kochina')">
+                <div class="game-icon">🎴</div>
+                <h2 class="game-title">كوتشينا</h2>
+                <p class="game-description">
+                    لعبة الأوراق الإستراتيجية! تحدى أصدقاءك في لعبة أوراق مليئة بالتكتيك والتحديات
+                </p>
+                <ul class="game-features">
+                    <li>لعب أونلاين متعدد اللاعبين</li>
+                    <li>نظام تحديات مثير</li>
+                    <li>رسومات ثلاثية الأبعاد</li>
+                    <li>نظام نقاط احترافي</li>
+                </ul>
+                <button class="play-button">
+                    <span>العب الآن 🃏</span>
+                </button>
+                <div class="stats">
+                    <div class="stat">
+                        <span class="stat-value">2-10</span>
+                        <span class="stat-label">لاعب</span>
+                    </div>
+                    <div class="stat">
+                        <span class="stat-value">20-45</span>
+                        <span class="stat-label">دقيقة</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="footer">
+            <p>© 2026 مركز الألعاب - جميع الحقوق محفوظة</p>
+            <p style="margin-top: 10px; font-size: 0.9em;">صُمم بـ ❤️ للاستمتاع واللعب</p>
+        </div>
+    </div>
+
+    <script>
+        function playGame(game) {
+            if (game === 'detective') {
+                window.location.href = 'detective.html';
+            } else if (game === 'kochina') {
+                window.location.href = 'kochina.html';
+            }
+        }
+
+        // إضافة تأثيرات صوتية عند التمرير (اختياري)
+        document.querySelectorAll('.game-card').forEach(card => {
+            card.addEventListener('mouseenter', function() {
+                this.style.zIndex = '10';
+            });
+            card.addEventListener('mouseleave', function() {
+                this.style.zIndex = '1';
+            });
+        });
+    </script>
+</body>
+</html>
