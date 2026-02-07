@@ -1427,39 +1427,46 @@
 
         async function playCard(card, room) {
             console.log('=== PLAYCARD FUNCTION ===');
-            console.log('room:', room);
-            console.log('room.players:', room ? room.players : 'ROOM IS NULL!');
             
-            if (!room || !room.players) {
-                console.error('ERROR: room or room.players is undefined!');
+            // قراءة أحدث بيانات من Firebase مباشرة!
+            const freshSnapshot = await database.ref('rooms/' + gameState.roomCode).once('value');
+            const freshRoom = freshSnapshot.val();
+            
+            if (!freshRoom || !freshRoom.players) {
+                console.error('ERROR: Cannot get fresh room data!');
                 showModal('خطأ', 'حدث خطأ في البيانات. حاول مرة أخرى.', [{text: 'حسناً'}]);
                 return;
             }
             
-            const players = Object.values(room.players);
-            const currentPlayer = players[room.currentPlayerIndex];
+            console.log('Fresh room loaded from Firebase');
+            
+            const players = Object.values(freshRoom.players);
+            const currentPlayer = players[freshRoom.currentPlayerIndex];
 
-            if (currentPlayer.id !== gameState.playerId || room.phase !== 'play') return;
+            if (currentPlayer.id !== gameState.playerId || freshRoom.phase !== 'play') {
+                console.log('Not your turn or wrong phase');
+                return;
+            }
 
             console.log('🎴 Playing card:', card.rank, card.suit);
 
             gameState.selectedCard = null;
 
-            const myPlayer = room.players[gameState.playerId];
+            const myPlayer = freshRoom.players[gameState.playerId];
             const newHand = myPlayer.hand.filter(c => c.id !== card.id);
 
             // Joker - take any card
             if (card.rank === 'JOKER') {
-                const availableRanks = RANKS.filter(r => room.tableCards[r] !== null);
+                const availableRanks = RANKS.filter(r => freshRoom.tableCards[r] !== null);
                 if (availableRanks.length === 0) {
                     showModal('تنبيه', 'لا توجد أوراق على الطاولة!', [{text: 'حسناً'}]);
                     return;
                 }
 
                 const buttons = availableRanks.map(rank => ({
-                    text: `${rank} ${room.tableCards[rank].card.suit}`,
+                    text: `${rank} ${freshRoom.tableCards[rank].card.suit}`,
                     primary: true,
-                    action: () => takeWithJoker(card, rank, room, newHand)
+                    action: () => takeWithJoker(card, rank, freshRoom, newHand)
                 }));
 
                 showModal('🃏 اختر البطاقة', 'أي بطاقة تريد أن يأخذها الجوكر؟', buttons);
@@ -1467,7 +1474,7 @@
             }
 
             // Check if card exists on table
-            if (!room.tableCards[card.rank]) {
+            if (!freshRoom.tableCards[card.rank]) {
                 // السيناريو A: الورقة جديدة - ضعها على الطاولة
                 await database.ref('rooms/' + gameState.roomCode).update({
                     [`players/${gameState.playerId}/hand`]: newHand,
@@ -1476,10 +1483,10 @@
                         owner: gameState.playerId
                     }
                 });
-                await nextTurn(room);
+                await nextTurn(freshRoom);
             } else {
                 // السيناريو B: الورقة موجودة - ابدأ التحدي!
-                const tableCard = room.tableCards[card.rank].card;
+                const tableCard = freshRoom.tableCards[card.rank].card;
                 
                 await database.ref('rooms/' + gameState.roomCode).update({
                     [`players/${gameState.playerId}/hand`]: newHand,
