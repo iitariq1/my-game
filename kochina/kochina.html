@@ -6,8 +6,16 @@
     <title>كوتشينا - لعبة الأوراق</title>
     <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-database-compat.js"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;800&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Amiri:wght@400;700&family=Cairo:wght@400;600;700;800&display=swap" rel="stylesheet">
     <style>
+        :root {
+            --green: #1a5c3f;
+            --dark-green: #0a3d29;
+            --gold: #ffd700;
+            --red: #dc3545;
+            --black: #2c2c2c;
+        }
+
         * {
             margin: 0;
             padding: 0;
@@ -16,9 +24,10 @@
 
         body {
             font-family: 'Cairo', sans-serif;
-            background: linear-gradient(135deg, #0a3d29 0%, #1a5c3f 100%);
+            background: linear-gradient(135deg, var(--dark-green) 0%, var(--green) 100%);
             min-height: 100vh;
             color: #fff;
+            overflow-x: hidden;
         }
 
         .container {
@@ -31,7 +40,6 @@
             justify-content: center;
         }
 
-        /* Header */
         .header {
             text-align: center;
             margin-bottom: 40px;
@@ -43,9 +51,10 @@
         }
 
         h1 {
-            font-size: 2.5em;
+            font-family: 'Amiri', serif;
+            font-size: 2.8em;
             font-weight: 800;
-            color: #ffd700;
+            color: var(--gold);
             margin-bottom: 10px;
             text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
         }
@@ -53,10 +62,8 @@
         .subtitle {
             font-size: 1.1em;
             color: #b8e6d5;
-            font-weight: 400;
         }
 
-        /* Card Container */
         .card {
             background: rgba(255, 255, 255, 0.95);
             border-radius: 20px;
@@ -64,7 +71,6 @@
             box-shadow: 0 20px 60px rgba(0, 0, 0, 0.4);
         }
 
-        /* Form Groups */
         .form-group {
             margin-bottom: 20px;
         }
@@ -72,7 +78,7 @@
         label {
             display: block;
             margin-bottom: 8px;
-            color: #1a5c3f;
+            color: var(--green);
             font-weight: 600;
             font-size: 1em;
         }
@@ -86,7 +92,7 @@
             font-family: 'Cairo', sans-serif;
             transition: all 0.3s;
             background: #fff;
-            color: #1a5c3f;
+            color: var(--green);
         }
 
         input:focus {
@@ -95,11 +101,6 @@
             box-shadow: 0 0 0 3px rgba(40, 167, 69, 0.1);
         }
 
-        input::placeholder {
-            color: #95c5af;
-        }
-
-        /* Buttons */
         .btn {
             width: 100%;
             padding: 16px;
@@ -124,10 +125,6 @@
             box-shadow: 0 6px 20px rgba(40, 167, 69, 0.4);
         }
 
-        .btn-primary:active {
-            transform: translateY(0);
-        }
-
         .btn-secondary {
             background: linear-gradient(135deg, #17a2b8 0%, #138496 100%);
             color: white;
@@ -139,36 +136,23 @@
             box-shadow: 0 6px 20px rgba(23, 162, 184, 0.4);
         }
 
-        .btn-secondary:active {
-            transform: translateY(0);
-        }
-
-        /* Divider */
         .divider {
             text-align: center;
             margin: 25px 0;
             position: relative;
         }
 
-        .divider::before {
+        .divider::before, .divider::after {
             content: '';
             position: absolute;
-            left: 0;
             top: 50%;
             width: 40%;
             height: 1px;
             background: #d4edda;
         }
 
-        .divider::after {
-            content: '';
-            position: absolute;
-            right: 0;
-            top: 50%;
-            width: 40%;
-            height: 1px;
-            background: #d4edda;
-        }
+        .divider::before { left: 0; }
+        .divider::after { right: 0; }
 
         .divider span {
             color: #6c757d;
@@ -177,7 +161,6 @@
             background: rgba(255, 255, 255, 0.95);
         }
 
-        /* Back Button */
         .back-btn {
             position: fixed;
             top: 20px;
@@ -190,9 +173,8 @@
             color: white;
             font-weight: 600;
             cursor: pointer;
-            transition: all 0.3s;
             text-decoration: none;
-            font-family: 'Cairo', sans-serif;
+            z-index: 100;
         }
 
         .back-btn:hover {
@@ -201,28 +183,26 @@
         }
 
         /* Waiting Screen */
-        .waiting-container {
-            text-align: center;
-        }
-
         .room-code {
-            background: linear-gradient(135deg, #ffd700 0%, #ffed4e 100%);
+            background: linear-gradient(135deg, var(--gold) 0%, #ffed4e 100%);
             padding: 20px;
             border-radius: 15px;
             margin: 30px 0;
+            text-align: center;
         }
 
         .room-code-label {
-            color: #1a5c3f;
+            color: var(--green);
             font-size: 0.9em;
             font-weight: 600;
             margin-bottom: 8px;
         }
 
         .room-code-value {
+            font-family: 'Amiri', serif;
             font-size: 2.5em;
             font-weight: 800;
-            color: #1a5c3f;
+            color: var(--green);
             letter-spacing: 5px;
         }
 
@@ -238,7 +218,7 @@
             display: flex;
             justify-content: space-between;
             align-items: center;
-            color: #1a5c3f;
+            color: var(--green);
         }
 
         .player-name {
@@ -247,17 +227,18 @@
         }
 
         .host-badge {
-            background: #ffd700;
+            background: var(--gold);
             padding: 4px 12px;
             border-radius: 20px;
             font-size: 0.85em;
             font-weight: 700;
-            color: #1a5c3f;
         }
 
         /* Game Screen */
         .game-container {
             padding: 20px;
+            max-width: 1400px;
+            margin: 0 auto;
         }
 
         .game-header {
@@ -279,93 +260,223 @@
         .game-info-label {
             font-size: 0.85em;
             opacity: 0.8;
-            margin-bottom: 4px;
         }
 
         .game-info-value {
             font-size: 1.2em;
             font-weight: 700;
-            color: #ffd700;
+            color: var(--gold);
         }
 
         /* Table */
-        .table-container {
+        .table-wrapper {
+            margin: 30px auto;
+            max-width: 1100px;
+            position: relative;
+        }
+
+        .poker-table {
             background: radial-gradient(ellipse at center, #1e5c40 0%, #0d2818 100%);
             border-radius: 50%;
             aspect-ratio: 16/9;
-            border: 8px solid #8b4513;
+            border: 10px solid #8b4513;
             box-shadow: 
                 inset 0 0 50px rgba(0,0,0,0.5),
                 0 20px 50px rgba(0,0,0,0.6);
-            margin: 20px auto;
-            max-width: 900px;
             position: relative;
-            padding: 20px;
+            padding: 40px;
         }
 
-        .table-cards {
+        .table-center {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 85%;
+            height: 75%;
             display: flex;
             flex-wrap: wrap;
-            gap: 10px;
             justify-content: center;
             align-items: center;
-            height: 100%;
+            gap: 8px;
         }
 
-        /* Cards */
-        .card-item {
-            width: 60px;
-            height: 90px;
-            background: white;
-            border-radius: 6px;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.3);
+        /* Opponents Area */
+        .opponents-area {
+            position: absolute;
+            top: 10px;
+            left: 50%;
+            transform: translateX(-50%);
             display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            cursor: pointer;
-            transition: all 0.3s;
-            border: 2px solid #e0e0e0;
-        }
-
-        .card-item:hover {
-            transform: translateY(-10px) scale(1.05);
-            box-shadow: 0 8px 20px rgba(0,0,0,0.5);
+            gap: 15px;
             z-index: 10;
         }
 
-        .card-rank {
-            font-size: 1.5em;
+        .opponent-box {
+            background: rgba(0,0,0,0.5);
+            padding: 10px;
+            border-radius: 10px;
+            text-align: center;
+            min-width: 100px;
+        }
+
+        .opponent-name {
+            font-size: 0.9em;
             font-weight: 700;
+            margin-bottom: 8px;
+        }
+
+        .opponent-cards-stack {
+            display: flex;
+            justify-content: center;
+            gap: -20px;
+            margin: 8px 0;
+        }
+
+        .opponent-card-back {
+            width: 35px;
+            height: 52px;
+            background: linear-gradient(135deg, var(--green), var(--dark-green));
+            border: 2px solid var(--gold);
+            border-radius: 4px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.2em;
+            transform: rotate(-5deg);
+        }
+
+        .opponent-card-back:nth-child(2) {
+            transform: rotate(0deg);
+            margin: 0 -15px;
+        }
+
+        .opponent-card-back:nth-child(3) {
+            transform: rotate(5deg);
+        }
+
+        .opponent-count {
+            font-size: 0.85em;
+            color: var(--gold);
+        }
+
+        /* Playing Cards - Classic Design */
+        .playing-card {
+            width: 65px;
+            height: 95px;
+            background: linear-gradient(135deg, #fff 0%, #f8f8f8 100%);
+            border-radius: 6px;
+            border: 2px solid #e0e0e0;
+            box-shadow: 0 3px 10px rgba(0,0,0,0.3);
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            padding: 5px;
+            cursor: pointer;
+            transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            position: relative;
+            user-select: none;
+        }
+
+        .playing-card::before {
+            content: '';
+            position: absolute;
+            top: 2px;
+            left: 2px;
+            right: 2px;
+            bottom: 2px;
+            border: 1px solid rgba(0,0,0,0.05);
+            border-radius: 4px;
+        }
+
+        .playing-card:hover {
+            transform: translateY(-15px) scale(1.08);
+            box-shadow: 0 12px 25px rgba(0,0,0,0.5);
+            z-index: 50;
+        }
+
+        .card-corner {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            line-height: 1;
+        }
+
+        .card-rank {
+            font-size: 1.3em;
+            font-weight: 700;
+            font-family: 'Amiri', serif;
         }
 
         .card-suit {
-            font-size: 1.8em;
+            font-size: 1.4em;
         }
 
-        .card-red {
-            color: #dc3545;
+        .card-center {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            font-size: 2.5em;
+            opacity: 0.15;
         }
 
-        .card-black {
-            color: #1a1a1a;
+        .card-red { color: var(--red); }
+        .card-black { color: var(--black); }
+
+        /* Joker Card */
+        .card-joker {
+            background: linear-gradient(135deg, #1a1a1a, #2d2d2d);
+            border-color: var(--gold);
+            color: var(--gold);
+            justify-content: center;
+            align-items: center;
         }
 
+        .card-joker .joker-text {
+            font-size: 0.9em;
+            font-weight: 700;
+            margin-bottom: 5px;
+        }
+
+        .card-joker .joker-icon {
+            font-size: 2.5em;
+        }
+
+        /* Card Back */
         .card-back {
-            background: linear-gradient(135deg, #1a5c3f 0%, #0a3d29 100%);
-            color: #ffd700;
-            font-size: 2em;
+            background: linear-gradient(135deg, var(--green), var(--dark-green));
+            background-image: 
+                repeating-linear-gradient(45deg, transparent, transparent 8px, rgba(255,255,255,0.05) 8px, rgba(255,255,255,0.05) 16px);
+            border-color: var(--gold);
+            justify-content: center;
+            align-items: center;
         }
 
+        .card-back-logo {
+            font-size: 2.2em;
+            color: var(--gold);
+            text-shadow: 0 2px 5px rgba(0,0,0,0.3);
+        }
+
+        /* Empty Card Slot */
         .card-empty {
-            background: rgba(255,255,255,0.1);
-            border: 2px dashed rgba(255,255,255,0.3);
+            background: rgba(255,255,255,0.05);
+            border: 2px dashed rgba(255,255,255,0.2);
             cursor: default;
+            justify-content: center;
+            align-items: center;
         }
 
         .card-empty:hover {
             transform: none;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.3);
+            box-shadow: 0 3px 10px rgba(0,0,0,0.3);
+        }
+
+        .card-empty-label {
+            font-size: 1em;
+            color: rgba(255,255,255,0.4);
+            font-weight: 700;
         }
 
         /* Player Hand */
@@ -377,6 +488,7 @@
             background: linear-gradient(to top, rgba(10, 61, 41, 0.98), transparent);
             padding: 20px;
             backdrop-filter: blur(10px);
+            z-index: 100;
         }
 
         .hand-title {
@@ -384,6 +496,7 @@
             margin-bottom: 15px;
             font-size: 1.2em;
             font-weight: 700;
+            color: var(--gold);
         }
 
         .hand-cards {
@@ -391,6 +504,92 @@
             justify-content: center;
             gap: 10px;
             flex-wrap: wrap;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        /* Challenge Overlay */
+        .challenge-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0,0,0,0.92);
+            z-index: 500;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .challenge-overlay.active {
+            display: flex;
+        }
+
+        .challenge-box {
+            background: linear-gradient(135deg, var(--green), var(--dark-green));
+            border: 4px solid var(--gold);
+            border-radius: 20px;
+            padding: 40px;
+            text-align: center;
+            max-width: 550px;
+            width: 90%;
+            box-shadow: 0 25px 80px rgba(0,0,0,0.9);
+        }
+
+        .challenge-title {
+            font-family: 'Amiri', serif;
+            font-size: 2.5em;
+            font-weight: 700;
+            color: var(--gold);
+            margin-bottom: 20px;
+        }
+
+        .challenge-info {
+            font-size: 1.2em;
+            margin-bottom: 25px;
+        }
+
+        .challenge-card-display {
+            margin: 25px auto;
+            width: fit-content;
+        }
+
+        .challenge-timer {
+            font-family: 'Amiri', serif;
+            font-size: 4em;
+            font-weight: 700;
+            color: #ff4444;
+            margin: 20px 0;
+            text-shadow: 0 0 20px rgba(255,68,68,0.5);
+        }
+
+        .challenge-actions {
+            display: flex;
+            gap: 15px;
+            margin-top: 25px;
+            justify-content: center;
+        }
+
+        .challenge-btn {
+            padding: 15px 30px;
+            border: none;
+            border-radius: 12px;
+            font-size: 1.15em;
+            font-weight: 700;
+            cursor: pointer;
+            font-family: 'Cairo', sans-serif;
+            transition: all 0.3s;
+        }
+
+        .challenge-btn-respond {
+            background: linear-gradient(135deg, #28a745, #20c997);
+            color: white;
+        }
+
+        .challenge-btn-pass {
+            background: linear-gradient(135deg, #6c757d, #5a6268);
+            color: white;
         }
 
         /* Hint */
@@ -399,12 +598,13 @@
             top: 100px;
             left: 50%;
             transform: translateX(-50%);
-            background: #ffd700;
-            color: #1a5c3f;
+            background: var(--gold);
+            color: var(--green);
             padding: 12px 25px;
             border-radius: 25px;
             font-weight: 700;
             box-shadow: 0 5px 20px rgba(0,0,0,0.3);
+            z-index: 200;
             animation: bounce 2s infinite;
         }
 
@@ -421,7 +621,7 @@
             left: 0;
             right: 0;
             bottom: 0;
-            background: rgba(0,0,0,0.8);
+            background: rgba(0,0,0,0.85);
             z-index: 1000;
             align-items: center;
             justify-content: center;
@@ -435,23 +635,31 @@
             background: white;
             padding: 40px;
             border-radius: 20px;
-            max-width: 400px;
+            max-width: 450px;
             width: 90%;
             text-align: center;
-            color: #1a5c3f;
         }
 
         .modal-title {
             font-size: 2em;
             font-weight: 800;
             margin-bottom: 20px;
-            color: #1a5c3f;
+            color: var(--green);
         }
 
         .modal-text {
             font-size: 1.1em;
             margin-bottom: 25px;
             line-height: 1.6;
+            color: #555;
+            white-space: pre-line;
+        }
+
+        .modal-buttons {
+            display: flex;
+            gap: 12px;
+            justify-content: center;
+            flex-wrap: wrap;
         }
 
         .modal-btn {
@@ -461,8 +669,8 @@
             font-family: 'Cairo', sans-serif;
             font-weight: 700;
             cursor: pointer;
-            margin: 5px;
             font-size: 1em;
+            transition: all 0.3s;
         }
 
         .modal-btn-primary {
@@ -475,6 +683,11 @@
             color: white;
         }
 
+        .modal-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+        }
+
         /* Screen Control */
         .screen {
             display: none;
@@ -485,24 +698,19 @@
         }
 
         /* Responsive */
-        @media (max-width: 600px) {
-            h1 {
-                font-size: 2em;
+        @media (max-width: 768px) {
+            h1 { font-size: 2.2em; }
+            .playing-card {
+                width: 52px;
+                height: 76px;
             }
-
-            .card {
-                padding: 25px;
-            }
-
-            .card-item {
-                width: 50px;
-                height: 75px;
-            }
+            .poker-table { border-width: 6px; }
+            .opponents-area { font-size: 0.85em; }
         }
     </style>
 </head>
 <body>
-    <!-- الصفحة الرئيسية -->
+    <!-- HOME SCREEN -->
     <div class="screen active" id="homeScreen">
         <a href="../index.html" class="back-btn">← العودة</a>
         
@@ -523,13 +731,11 @@
                     🎮 إنشاء غرفة جديدة
                 </button>
 
-                <div class="divider">
-                    <span>أو</span>
-                </div>
+                <div class="divider"><span>أو</span></div>
 
                 <div class="form-group">
                     <label>كود الغرفة</label>
-                    <input type="text" id="roomCode" placeholder="أدخل الكود" maxlength="6" style="text-transform: uppercase;">
+                    <input type="text" id="roomCode" placeholder="أدخل الكود" maxlength="6">
                 </div>
 
                 <button class="btn btn-secondary" onclick="joinRoom()">
@@ -539,7 +745,7 @@
         </div>
     </div>
 
-    <!-- شاشة الانتظار -->
+    <!-- WAITING SCREEN -->
     <div class="screen" id="waitingScreen">
         <a href="#" class="back-btn" onclick="leaveRoom(); return false;">← مغادرة</a>
         
@@ -550,7 +756,7 @@
                 <p class="subtitle">في انتظار اللاعبين...</p>
             </div>
 
-            <div class="card waiting-container">
+            <div class="card">
                 <div class="room-code">
                     <div class="room-code-label">كود الغرفة</div>
                     <div class="room-code-value" id="displayRoomCode">------</div>
@@ -559,27 +765,19 @@
                 <div class="players-list" id="playersList"></div>
 
                 <div id="hostControls" style="display: none; margin-top: 20px;">
-                    <div class="form-group">
-                        <label>طريقة اللعب</label>
-                        <select id="gameMode" style="width: 100%; padding: 14px; border: 2px solid #d4edda; border-radius: 10px; font-family: 'Cairo', sans-serif; font-size: 1em;">
-                            <option value="individual">فردي</option>
-                            <option value="team">فرق</option>
-                        </select>
-                    </div>
-
                     <button class="btn btn-primary" onclick="startGame()" id="startBtn" disabled>
                         بدء اللعبة (يلزم لاعبان)
                     </button>
                 </div>
 
-                <div id="waitingMessage" style="color: #6c757d; margin-top: 20px;">
+                <div id="waitingMessage" style="color: #6c757d; margin-top: 20px; text-align: center;">
                     في انتظار المضيف...
                 </div>
             </div>
         </div>
     </div>
 
-    <!-- شاشة اللعب -->
+    <!-- GAME SCREEN -->
     <div class="screen" id="gameScreen">
         <a href="#" class="back-btn" onclick="leaveRoom(); return false;">← خروج</a>
         
@@ -599,36 +797,45 @@
                 </div>
             </div>
 
-            <div class="hint" id="gameHint" style="display: none;">
-                اضغط على الورقة!
-            </div>
+            <div class="hint" id="gameHint" style="display: none;"></div>
 
-            <div class="table-container">
-                <div class="table-cards" id="tableCards">
-                    <!-- سيتم ملؤها -->
+            <div class="table-wrapper">
+                <div class="opponents-area" id="opponentsArea"></div>
+                
+                <div class="poker-table">
+                    <div class="table-center" id="tableCards"></div>
                 </div>
             </div>
 
             <div class="player-hand">
                 <div class="hand-title">أوراقك (<span id="handCount">0</span>)</div>
-                <div class="hand-cards" id="playerHand">
-                    <!-- سيتم ملؤها -->
-                </div>
+                <div class="hand-cards" id="playerHand"></div>
             </div>
         </div>
     </div>
 
-    <!-- Modal -->
+    <!-- CHALLENGE OVERLAY -->
+    <div class="challenge-overlay" id="challengeOverlay">
+        <div class="challenge-box">
+            <div class="challenge-title">⚔️ تحدي! ⚔️</div>
+            <div class="challenge-info" id="challengeInfo"></div>
+            <div class="challenge-card-display" id="challengeCardDisplay"></div>
+            <div class="challenge-timer" id="challengeTimer">7</div>
+            <div class="challenge-actions" id="challengeActions"></div>
+        </div>
+    </div>
+
+    <!-- MODAL -->
     <div class="modal" id="modal">
         <div class="modal-content">
             <h2 class="modal-title" id="modalTitle"></h2>
             <p class="modal-text" id="modalText"></p>
-            <div id="modalButtons"></div>
+            <div class="modal-buttons" id="modalButtons"></div>
         </div>
     </div>
 
     <script>
-        // Firebase Config - ضع إعداداتك هنا
+        // Firebase Config
         const firebaseConfig = {
             apiKey: "AIzaSyApbKTdcuE5vTLDEJ5Oi7hger3IRmpLE0A",
             authDomain: "kochina-game.firebaseapp.com",
@@ -647,12 +854,20 @@
             roomCode: null,
             playerId: null,
             playerName: null,
-            isHost: false
+            isHost: false,
+            currentRoom: null
         };
 
         // Constants
         const RANKS = ['2', '3', '4', '5', '6', '7', '8', '9', '10', 'J', 'Q', 'K', 'A'];
         const SUITS = ['♠', '♥', '♦', '♣'];
+        const FACE_SYMBOLS = {
+            'J': '👨',
+            'Q': '👸',
+            'K': '🤴'
+        };
+
+        let challengeTimerInterval = null;
 
         // Helper Functions
         function generateRoomCode() {
@@ -660,9 +875,9 @@
             return Array.from({length: 6}, () => chars[Math.floor(Math.random() * chars.length)]).join('');
         }
 
-        function showScreen(screenId) {
+        function showScreen(id) {
             document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
-            document.getElementById(screenId).classList.add('active');
+            document.getElementById(id).classList.add('active');
         }
 
         function showModal(title, text, buttons) {
@@ -711,6 +926,45 @@
             return deck.sort(() => Math.random() - 0.5);
         }
 
+        function createCardElement(card, clickable = false, onClick = null) {
+            const div = document.createElement('div');
+            
+            if (card.rank === 'JOKER') {
+                div.className = 'playing-card card-joker';
+                div.innerHTML = `
+                    <div class="joker-text">JOKER</div>
+                    <div class="joker-icon">🃏</div>
+                `;
+            } else {
+                div.className = `playing-card ${card.isRed ? 'card-red' : 'card-black'}`;
+                const symbol = FACE_SYMBOLS[card.rank] || card.rank;
+                div.innerHTML = `
+                    <div class="card-corner">
+                        <div class="card-rank">${card.rank}</div>
+                        <div class="card-suit">${card.suit}</div>
+                    </div>
+                    <div class="card-center">${symbol}</div>
+                    <div class="card-corner" style="transform: rotate(180deg);">
+                        <div class="card-rank">${card.rank}</div>
+                        <div class="card-suit">${card.suit}</div>
+                    </div>
+                `;
+            }
+            
+            if (clickable && onClick) {
+                div.onclick = onClick;
+            }
+            
+            return div;
+        }
+
+        function createCardBack() {
+            const div = document.createElement('div');
+            div.className = 'playing-card card-back';
+            div.innerHTML = '<div class="card-back-logo">🎴</div>';
+            return div;
+        }
+
         // Room Functions
         async function createRoom() {
             const name = document.getElementById('playerName').value.trim();
@@ -738,6 +992,7 @@
                             name: name,
                             isHost: true,
                             hand: [],
+                            wonCards: [],
                             score: 0
                         }
                     },
@@ -751,7 +1006,7 @@
                 listenToRoom(roomCode);
             } catch (error) {
                 console.error(error);
-                showModal('خطأ', 'حدث خطأ في إنشاء الغرفة', [{text: 'حسناً'}]);
+                showModal('خطأ', 'حدث خطأ: ' + error.message, [{text: 'حسناً'}]);
             }
         }
 
@@ -794,6 +1049,7 @@
                     name: name,
                     isHost: false,
                     hand: [],
+                    wonCards: [],
                     score: 0
                 });
 
@@ -804,7 +1060,7 @@
                 listenToRoom(code);
             } catch (error) {
                 console.error(error);
-                showModal('خطأ', 'حدث خطأ في الانضمام', [{text: 'حسناً'}]);
+                showModal('خطأ', 'حدث خطأ: ' + error.message, [{text: 'حسناً'}]);
             }
         }
 
@@ -819,6 +1075,8 @@
                     return;
                 }
 
+                gameState.currentRoom = room;
+
                 if (room.status === 'waiting') {
                     updateWaitingScreen(room);
                 } else if (room.status === 'playing') {
@@ -826,6 +1084,17 @@
                         showScreen('gameScreen');
                     }
                     updateGameScreen(room);
+                }
+
+                // Handle challenge
+                if (room.challenge && room.challenge.active) {
+                    handleChallenge(room.challenge);
+                } else {
+                    document.getElementById('challengeOverlay').classList.remove('active');
+                    if (challengeTimerInterval) {
+                        clearInterval(challengeTimerInterval);
+                        challengeTimerInterval = null;
+                    }
                 }
             });
         }
@@ -860,8 +1129,7 @@
         async function startGame() {
             if (!gameState.isHost) return;
 
-            const snapshot = await database.ref('rooms/' + gameState.roomCode).once('value');
-            const room = snapshot.val();
+            const room = gameState.currentRoom;
             const players = Object.values(room.players);
 
             if (players.length < 2) {
@@ -890,7 +1158,8 @@
                 deck: deck,
                 tableCards: tableCards,
                 currentPlayerIndex: 0,
-                phase: 'draw'
+                phase: 'draw',
+                challenge: null
             });
         }
 
@@ -912,38 +1181,55 @@
                 hint.style.display = 'none';
             }
 
-            updateTableCards(room);
+            updateOpponents(players.filter(p => p.id !== gameState.playerId));
+            updateTableCards(room, isMyTurn);
             updatePlayerHand(myPlayer, isMyTurn, room);
         }
 
-        function updateTableCards(room) {
+        function updateOpponents(opponents) {
+            const container = document.getElementById('opponentsArea');
+            container.innerHTML = '';
+
+            opponents.forEach(opp => {
+                const box = document.createElement('div');
+                box.className = 'opponent-box';
+                box.innerHTML = `
+                    <div class="opponent-name">${opp.name}</div>
+                    <div class="opponent-cards-stack">
+                        ${Array(Math.min(3, opp.hand.length)).fill(0).map(() => 
+                            '<div class="opponent-card-back">🎴</div>'
+                        ).join('')}
+                    </div>
+                    <div class="opponent-count">${opp.hand.length} أوراق</div>
+                `;
+                container.appendChild(box);
+            });
+        }
+
+        function updateTableCards(room, isMyTurn) {
             const container = document.getElementById('tableCards');
             container.innerHTML = '';
 
             // Deck
             if (room.deck && room.deck.length > 0) {
-                const deck = document.createElement('div');
-                deck.className = 'card-item card-back';
-                deck.textContent = '🎴';
-                deck.onclick = () => drawCard(room);
+                const deck = createCardBack();
+                if (isMyTurn && room.phase === 'draw') {
+                    deck.onclick = () => drawCard(room);
+                }
                 container.appendChild(deck);
             }
 
             // Table cards
             RANKS.forEach(rank => {
-                const card = document.createElement('div');
                 if (room.tableCards && room.tableCards[rank]) {
-                    const c = room.tableCards[rank].card;
-                    card.className = `card-item ${c.isRed ? 'card-red' : 'card-black'}`;
-                    card.innerHTML = `
-                        <div class="card-rank">${rank}</div>
-                        <div class="card-suit">${c.suit}</div>
-                    `;
+                    const card = createCardElement(room.tableCards[rank].card);
+                    container.appendChild(card);
                 } else {
-                    card.className = 'card-item card-empty';
-                    card.innerHTML = `<div style="font-size: 0.8em; color: rgba(255,255,255,0.5);">${rank}</div>`;
+                    const empty = document.createElement('div');
+                    empty.className = 'playing-card card-empty';
+                    empty.innerHTML = `<div class="card-empty-label">${rank}</div>`;
+                    container.appendChild(empty);
                 }
-                container.appendChild(card);
             });
         }
 
@@ -957,18 +1243,12 @@
             container.innerHTML = '';
 
             player.hand.forEach(card => {
-                const div = document.createElement('div');
-                div.className = `card-item ${card.isRed ? 'card-red' : 'card-black'}`;
-                div.innerHTML = `
-                    <div class="card-rank">${card.rank === 'JOKER' ? '🃏' : card.rank}</div>
-                    <div class="card-suit">${card.suit}</div>
-                `;
-                
-                if (isMyTurn && room.phase === 'play') {
-                    div.onclick = () => playCard(card, room);
-                }
-                
-                container.appendChild(div);
+                const cardEl = createCardElement(
+                    card,
+                    isMyTurn && room.phase === 'play',
+                    () => playCard(card, room)
+                );
+                container.appendChild(cardEl);
             });
         }
 
@@ -976,13 +1256,8 @@
             const players = Object.values(room.players);
             const currentPlayer = players[room.currentPlayerIndex];
 
-            if (currentPlayer.id !== gameState.playerId || room.phase !== 'draw') {
-                return;
-            }
-
-            if (!room.deck || room.deck.length === 0) {
-                return;
-            }
+            if (currentPlayer.id !== gameState.playerId || room.phase !== 'draw') return;
+            if (!room.deck || room.deck.length === 0) return;
 
             const card = room.deck[room.deck.length - 1];
             const newDeck = room.deck.slice(0, -1);
@@ -999,20 +1274,32 @@
             const players = Object.values(room.players);
             const currentPlayer = players[room.currentPlayerIndex];
 
-            if (currentPlayer.id !== gameState.playerId || room.phase !== 'play') {
-                return;
-            }
+            if (currentPlayer.id !== gameState.playerId || room.phase !== 'play') return;
 
             const myPlayer = room.players[gameState.playerId];
             const newHand = myPlayer.hand.filter(c => c.id !== card.id);
 
+            // Joker - take any card
             if (card.rank === 'JOKER') {
-                // TODO: Handle joker selection
-                showModal('جوكر', 'اختيار الجوكر قيد التطوير', [{text: 'حسناً'}]);
+                const availableRanks = RANKS.filter(r => room.tableCards[r] !== null);
+                if (availableRanks.length === 0) {
+                    showModal('تنبيه', 'لا توجد أوراق على الطاولة!', [{text: 'حسناً'}]);
+                    return;
+                }
+
+                const buttons = availableRanks.map(rank => ({
+                    text: `${rank} ${room.tableCards[rank].card.suit}`,
+                    primary: true,
+                    action: () => takeWithJoker(card, rank, room, newHand)
+                }));
+
+                showModal('🃏 اختر البطاقة', 'أي بطاقة تريد أن يأخذها الجوكر؟', buttons);
                 return;
             }
 
+            // Normal card
             if (!room.tableCards[card.rank]) {
+                // Place on table
                 await database.ref('rooms/' + gameState.roomCode).update({
                     [`players/${gameState.playerId}/hand`]: newHand,
                     [`tableCards/${card.rank}`]: {
@@ -1022,15 +1309,169 @@
                 });
                 await nextTurn(room);
             } else {
-                // TODO: Handle challenge
-                showModal('تحدي', 'نظام التحدي قيد التطوير', [{text: 'حسناً'}]);
+                // Start challenge
+                await database.ref('rooms/' + gameState.roomCode).update({
+                    [`players/${gameState.playerId}/hand`]: newHand,
+                    challenge: {
+                        active: true,
+                        targetRank: card.rank,
+                        initiator: gameState.playerId,
+                        initiatorName: myPlayer.name,
+                        cards: [card],
+                        participants: [gameState.playerId],
+                        lastPlayer: gameState.playerId,
+                        lastPlayerName: myPlayer.name,
+                        lastUpdateTime: Date.now()
+                    }
+                });
             }
+        }
+
+        async function takeWithJoker(joker, targetRank, room, newHand) {
+            const myPlayer = room.players[gameState.playerId];
+            const targetCard = room.tableCards[targetRank];
+            
+            const wonCards = [...(myPlayer.wonCards || []), targetCard.card, joker];
+            const newScore = calculateScore(wonCards);
+
+            await database.ref('rooms/' + gameState.roomCode).update({
+                [`players/${gameState.playerId}/hand`]: newHand,
+                [`players/${gameState.playerId}/wonCards`]: wonCards,
+                [`players/${gameState.playerId}/score`]: newScore,
+                [`tableCards/${targetRank}`]: null
+            });
+
+            await nextTurn(room);
+        }
+
+        function handleChallenge(challenge) {
+            const overlay = document.getElementById('challengeOverlay');
+            overlay.classList.add('active');
+
+            const lastCard = challenge.cards[challenge.cards.length - 1];
+            
+            document.getElementById('challengeInfo').textContent = 
+                `${challenge.lastPlayerName} رمى ${lastCard.rank}!`;
+
+            const cardDisplay = document.getElementById('challengeCardDisplay');
+            cardDisplay.innerHTML = '';
+            cardDisplay.appendChild(createCardElement(lastCard));
+
+            // Timer - يتجدد عند كل رمية
+            const elapsed = Date.now() - challenge.lastUpdateTime;
+            let timeLeft = Math.max(0, 7 - Math.floor(elapsed / 1000));
+
+            if (challengeTimerInterval) clearInterval(challengeTimerInterval);
+
+            const timerEl = document.getElementById('challengeTimer');
+            timerEl.textContent = timeLeft;
+
+            challengeTimerInterval = setInterval(() => {
+                const newElapsed = Date.now() - challenge.lastUpdateTime;
+                timeLeft = Math.max(0, 7 - Math.floor(newElapsed / 1000));
+                timerEl.textContent = timeLeft;
+
+                if (timeLeft <= 0) {
+                    clearInterval(challengeTimerInterval);
+                    if (gameState.isHost) {
+                        endChallenge();
+                    }
+                }
+            }, 100);
+
+            // Actions
+            const actionsDiv = document.getElementById('challengeActions');
+            actionsDiv.innerHTML = '';
+
+            if (gameState.playerId !== challenge.lastPlayer) {
+                const myPlayer = gameState.currentRoom.players[gameState.playerId];
+                const matchingCard = myPlayer.hand.find(c => c.rank === challenge.targetRank);
+
+                if (matchingCard) {
+                    const respondBtn = document.createElement('button');
+                    respondBtn.className = 'challenge-btn challenge-btn-respond';
+                    respondBtn.textContent = `رمي ${matchingCard.rank} ${matchingCard.suit}`;
+                    respondBtn.onclick = () => respondToChallenge(matchingCard);
+                    actionsDiv.appendChild(respondBtn);
+                }
+
+                const passBtn = document.createElement('button');
+                passBtn.className = 'challenge-btn challenge-btn-pass';
+                passBtn.textContent = 'تمرير';
+                passBtn.onclick = () => {
+                    overlay.classList.remove('active');
+                };
+                actionsDiv.appendChild(passBtn);
+            } else {
+                actionsDiv.innerHTML = '<p style="color: var(--gold);">في انتظار اللاعبين...</p>';
+            }
+        }
+
+        async function respondToChallenge(card) {
+            const room = gameState.currentRoom;
+            const myPlayer = room.players[gameState.playerId];
+            
+            const newHand = myPlayer.hand.filter(c => c.id !== card.id);
+            
+            await database.ref('rooms/' + gameState.roomCode).update({
+                [`players/${gameState.playerId}/hand`]: newHand,
+                [`challenge/cards`]: [...room.challenge.cards, card],
+                [`challenge/participants`]: [...room.challenge.participants, gameState.playerId],
+                [`challenge/lastPlayer`]: gameState.playerId,
+                [`challenge/lastPlayerName`]: myPlayer.name,
+                [`challenge/lastUpdateTime`]: Date.now() // تجديد الوقت!
+            });
+        }
+
+        async function endChallenge() {
+            const room = gameState.currentRoom;
+            const challenge = room.challenge;
+            
+            if (!challenge || !challenge.active) return;
+
+            const winner = challenge.lastPlayer;
+            const winnerPlayer = room.players[winner];
+            
+            const wonCards = [...(winnerPlayer.wonCards || []), ...challenge.cards];
+            const newScore = calculateScore(wonCards);
+
+            await database.ref('rooms/' + gameState.roomCode).update({
+                [`players/${winner}/wonCards`]: wonCards,
+                [`players/${winner}/score`]: newScore,
+                [`tableCards/${challenge.targetRank}`]: null,
+                [`challenge/active`]: false
+            });
+
+            setTimeout(async () => {
+                await database.ref('rooms/' + gameState.roomCode + '/challenge').remove();
+                await nextTurn(room);
+            }, 1500);
+        }
+
+        function calculateScore(cards) {
+            let score = 0;
+            cards.forEach(card => {
+                if (card.rank === 'JOKER') score += 50;
+                else if (['J', 'Q', 'K'].includes(card.rank)) score += 10;
+                else if (card.rank === 'A') score += 1;
+            });
+            return score;
         }
 
         async function nextTurn(room) {
             const players = Object.values(room.players);
-            const nextIndex = (room.currentPlayerIndex + 1) % players.length;
+            
+            // Check game end
+            if ((!room.deck || room.deck.length === 0) && players.every(p => p.hand.length === 0)) {
+                const winner = players.reduce((max, p) => p.score > max.score ? p : max);
+                showModal('🎉 انتهت اللعبة! 🎉', 
+                    `الفائز: ${winner.name}\nالنقاط: ${winner.score}`, 
+                    [{text: 'لعبة جديدة', primary: true, action: () => window.location.reload()}]
+                );
+                return;
+            }
 
+            const nextIndex = (room.currentPlayerIndex + 1) % players.length;
             await database.ref('rooms/' + gameState.roomCode).update({
                 currentPlayerIndex: nextIndex,
                 phase: 'draw'
