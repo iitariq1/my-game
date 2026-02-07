@@ -1425,6 +1425,16 @@
         }
 
         async function playCard(card, room) {
+            console.log('=== PLAYCARD FUNCTION ===');
+            console.log('room:', room);
+            console.log('room.players:', room ? room.players : 'ROOM IS NULL!');
+            
+            if (!room || !room.players) {
+                console.error('ERROR: room or room.players is undefined!');
+                showModal('خطأ', 'حدث خطأ في البيانات. حاول مرة أخرى.', [{text: 'حسناً'}]);
+                return;
+            }
+            
             const players = Object.values(room.players);
             const currentPlayer = players[room.currentPlayerIndex];
 
