@@ -288,6 +288,114 @@
             padding: 40px;
         }
 
+        /* Play Area - منطقة اللعب */
+        .play-area {
+            position: absolute;
+            bottom: -80px;
+            left: 50%;
+            transform: translateX(-50%);
+            z-index: 50;
+            text-align: center;
+        }
+
+        .play-area-label {
+            font-size: 1.1em;
+            font-weight: 700;
+            color: var(--gold);
+            margin-bottom: 10px;
+            text-shadow: 0 2px 5px rgba(0,0,0,0.5);
+        }
+
+        .play-area-slot {
+            width: 100px;
+            height: 140px;
+            background: rgba(255,215,0,0.2);
+            border: 3px dashed var(--gold);
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.3s;
+            position: relative;
+        }
+
+        .play-area-slot:hover {
+            background: rgba(255,215,0,0.3);
+            transform: scale(1.05);
+            box-shadow: 0 0 20px rgba(255,215,0,0.5);
+        }
+
+        .play-area-slot.has-card {
+            border-color: #28a745;
+            background: rgba(40,167,69,0.3);
+        }
+
+        .play-slot-placeholder {
+            color: var(--gold);
+            font-size: 0.85em;
+            text-align: center;
+            padding: 10px;
+            line-height: 1.3;
+        }
+
+        .play-area-slot .playing-card {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+        }
+
+        /* Play Zone - منطقة اللعب */
+        .play-zone {
+            position: absolute;
+            bottom: 30px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 120px;
+            height: 160px;
+            background: rgba(255,215,0,0.1);
+            border: 3px dashed var(--gold);
+            border-radius: 10px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.3s;
+            z-index: 20;
+        }
+
+        .play-zone:hover {
+            background: rgba(255,215,0,0.2);
+            border-color: var(--gold);
+            border-style: solid;
+            transform: translateX(-50%) scale(1.05);
+        }
+
+        .play-zone.disabled {
+            opacity: 0.3;
+            cursor: not-allowed;
+            pointer-events: none;
+        }
+
+        .play-zone.has-card {
+            background: rgba(255,215,0,0.3);
+            border-style: solid;
+        }
+
+        .play-zone-text {
+            color: var(--gold);
+            font-size: 0.9em;
+            font-weight: 700;
+            text-align: center;
+            margin-bottom: 10px;
+        }
+
+        .play-zone-card {
+            min-height: 95px;
+        }
+
         .table-center {
             position: absolute;
             top: 50%;
@@ -904,6 +1012,14 @@
                 <div class="poker-table">
                     <div class="table-center" id="tableCards"></div>
                 </div>
+                
+                <!-- منطقة رمي الأوراق - أسفل الطاولة قربك -->
+                <div class="play-area" id="playArea">
+                    <div class="play-area-label">🎯 ارمي ورقتك هنا</div>
+                    <div class="play-area-slot" id="playSlot">
+                        <div class="play-slot-placeholder">اضغط على ورقة ثم اضغط هنا</div>
+                    </div>
+                </div>
             </div>
 
             <div class="player-hand">
@@ -1394,29 +1510,21 @@
                     cardEl.classList.add('card-selected');
                 }
                 
-                // Click handler
+                // Click handler - ضغطة واحدة فقط للاختيار
                 if (isMyTurn && room.phase === 'play') {
                     cardEl.style.cursor = 'pointer';
                     cardEl.onclick = function(e) {
                         e.stopPropagation();
                         
-                        console.log('=== CARD CLICKED ===');
+                        console.log('=== CARD SELECTED ===');
                         console.log('Card:', card.rank, card.suit);
-                        console.log('gameState.selectedCard:', gameState.selectedCard);
                         
-                        const isCurrentlySelected = gameState.selectedCard && gameState.selectedCard.id === card.id;
-                        console.log('isCurrentlySelected:', isCurrentlySelected);
+                        // اختر الورقة
+                        gameState.selectedCard = card;
+                        updatePlayerHand(player, isMyTurn, gameState.currentRoom);
                         
-                        if (isCurrentlySelected) {
-                            // ضغطة ثانية - لعب!
-                            console.log('>>> PLAYING CARD NOW! <<<');
-                            playCard(card, gameState.currentRoom); // استخدم currentRoom المحدث!
-                        } else {
-                            // ضغطة أولى - اختيار
-                            console.log('>>> SELECTING CARD <<<');
-                            gameState.selectedCard = card;
-                            updatePlayerHand(player, isMyTurn, gameState.currentRoom);
-                        }
+                        // عرض الورقة في منطقة اللعب
+                        showCardInPlayZone(card);
                     };
                 }
                 
@@ -1447,6 +1555,36 @@
             });
 
             document.getElementById('wonScore').textContent = player.score || 0;
+        }
+
+        function showCardInPlayZone(card) {
+            const playSlot = document.getElementById('playSlot');
+            const playArea = document.getElementById('playArea');
+            
+            playSlot.innerHTML = '';
+            const cardEl = createCardElement(card);
+            cardEl.style.width = '80px';
+            cardEl.style.height = '110px';
+            playSlot.appendChild(cardEl);
+            playSlot.classList.add('has-card');
+            
+            // تفعيل منطقة اللعب
+            playSlot.onclick = () => {
+                if (gameState.selectedCard) {
+                    console.log('>>> PLAYING CARD FROM SLOT! <<<');
+                    playCard(gameState.selectedCard, gameState.currentRoom);
+                }
+            };
+            playSlot.style.cursor = 'pointer';
+        }
+
+        function clearPlayZone() {
+            const playSlot = document.getElementById('playSlot');
+            
+            playSlot.innerHTML = '<div class="play-slot-placeholder">اضغط على ورقة ثم اضغط هنا</div>';
+            playSlot.classList.remove('has-card');
+            playSlot.onclick = null;
+            playSlot.style.cursor = 'default';
         }
 
         async function drawCard(room) {
@@ -1493,6 +1631,7 @@
             console.log('🎴 Playing card:', card.rank, card.suit);
 
             gameState.selectedCard = null;
+            clearPlayZone(); // إخفاء الورقة من منطقة اللعب
 
             // عرض الورقة بصرياً قدامك!
             const myPlayedArea = document.getElementById('myPlayedCard');
