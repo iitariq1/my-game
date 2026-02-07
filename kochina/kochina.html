@@ -360,7 +360,7 @@
             color: var(--gold);
         }
 
-        /* Playing Cards - Classic Design */
+        /* Playing Cards */
         .playing-card {
             width: 65px;
             height: 95px;
@@ -397,50 +397,9 @@
 
         .playing-card.card-selected {
             transform: translateY(-25px) scale(1.12);
-            border-color: #ffd700;
+            border-color: var(--gold);
             box-shadow: 0 0 30px rgba(255,215,0,0.8), 0 15px 30px rgba(0,0,0,0.6);
             z-index: 60;
-        }
-
-        /* Card Flying Animation */
-        @keyframes flyToTable {
-            0% {
-                transform: translateY(0) scale(1);
-                opacity: 1;
-            }
-            50% {
-                transform: translateY(-200px) scale(0.8);
-                opacity: 0.7;
-            }
-            100% {
-                transform: translateY(-400px) scale(0.5);
-                opacity: 0;
-            }
-        }
-
-        .playing-card.flying {
-            animation: flyToTable 0.6s ease-in-out forwards;
-            pointer-events: none;
-        }
-
-        /* Card appearing on table */
-        @keyframes appearOnTable {
-            0% {
-                transform: scale(0.5);
-                opacity: 0;
-            }
-            50% {
-                transform: scale(1.2);
-                opacity: 0.8;
-            }
-            100% {
-                transform: scale(1);
-                opacity: 1;
-            }
-        }
-
-        .playing-card.appearing {
-            animation: appearOnTable 0.5s ease-out forwards;
         }
 
         .card-corner {
@@ -472,7 +431,7 @@
         .card-red { color: var(--red); }
         .card-black { color: var(--black); }
 
-        /* Joker Card */
+        /* Joker */
         .card-joker {
             background: linear-gradient(135deg, #1a1a1a, #2d2d2d);
             border-color: var(--gold);
@@ -507,7 +466,7 @@
             text-shadow: 0 2px 5px rgba(0,0,0,0.3);
         }
 
-        /* Empty Card Slot */
+        /* Empty Card */
         .card-empty {
             background: rgba(255,255,255,0.05);
             border: 2px dashed rgba(255,255,255,0.2);
@@ -547,7 +506,97 @@
             color: var(--gold);
         }
 
-        /* Won Cards Area */
+        .hand-cards {
+            display: flex;
+            justify-content: center;
+            gap: 5px;
+            flex-wrap: wrap;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        /* Challenge Area - قدام اللاعب */
+        .challenge-area {
+            position: fixed;
+            bottom: 200px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: rgba(0,0,0,0.9);
+            border: 4px solid var(--gold);
+            border-radius: 20px;
+            padding: 25px;
+            z-index: 200;
+            display: none;
+            min-width: 400px;
+            box-shadow: 0 0 50px rgba(255,215,0,0.5);
+        }
+
+        .challenge-area.active {
+            display: block;
+        }
+
+        .challenge-header {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        .challenge-title {
+            font-size: 1.8em;
+            font-weight: 700;
+            color: var(--gold);
+            margin-bottom: 10px;
+        }
+
+        .challenge-timer {
+            font-size: 3em;
+            font-weight: 700;
+            color: #ff4444;
+            font-family: 'Amiri', serif;
+        }
+
+        .challenge-cards-display {
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+            flex-wrap: wrap;
+            margin: 20px 0;
+        }
+
+        .challenge-info-text {
+            text-align: center;
+            font-size: 1.1em;
+            margin: 15px 0;
+            color: #fff;
+        }
+
+        .challenge-actions {
+            display: flex;
+            gap: 10px;
+            margin-top: 20px;
+        }
+
+        .challenge-btn {
+            flex: 1;
+            padding: 12px;
+            border: none;
+            border-radius: 10px;
+            font-weight: 700;
+            font-family: 'Cairo', sans-serif;
+            cursor: pointer;
+            font-size: 1em;
+        }
+
+        .challenge-btn-respond {
+            background: linear-gradient(135deg, #28a745, #20c997);
+            color: white;
+        }
+
+        .challenge-btn-pass {
+            background: linear-gradient(135deg, #6c757d, #5a6268);
+            color: white;
+        }
+
+        /* Won Cards Display */
         .won-cards-area {
             position: fixed;
             bottom: 180px;
@@ -559,6 +608,11 @@
             border: 2px solid var(--gold);
             z-index: 90;
             min-width: 150px;
+            display: none;
+        }
+
+        .won-cards-area.active {
+            display: block;
         }
 
         .won-title {
@@ -585,7 +639,6 @@
             font-weight: 600;
             display: flex;
             justify-content: space-between;
-            align-items: center;
         }
 
         .won-card-mini.red { color: var(--red); }
@@ -599,99 +652,6 @@
             font-size: 1.1em;
             font-weight: 700;
             color: var(--gold);
-        }
-
-        .hand-cards {
-            display: flex;
-            justify-content: center;
-            gap: 5px; /* مسافة أقل بين الأوراق */
-            flex-wrap: wrap;
-            max-width: 1200px;
-            margin: 0 auto;
-        }
-
-        /* Challenge Overlay */
-        .challenge-overlay {
-            display: none;
-            position: fixed;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background: rgba(0,0,0,0.92);
-            z-index: 500;
-            align-items: center;
-            justify-content: center;
-        }
-
-        .challenge-overlay.active {
-            display: flex;
-        }
-
-        .challenge-box {
-            background: linear-gradient(135deg, var(--green), var(--dark-green));
-            border: 4px solid var(--gold);
-            border-radius: 20px;
-            padding: 40px;
-            text-align: center;
-            max-width: 550px;
-            width: 90%;
-            box-shadow: 0 25px 80px rgba(0,0,0,0.9);
-        }
-
-        .challenge-title {
-            font-family: 'Amiri', serif;
-            font-size: 2.5em;
-            font-weight: 700;
-            color: var(--gold);
-            margin-bottom: 20px;
-        }
-
-        .challenge-info {
-            font-size: 1.2em;
-            margin-bottom: 25px;
-        }
-
-        .challenge-card-display {
-            margin: 25px auto;
-            width: fit-content;
-        }
-
-        .challenge-timer {
-            font-family: 'Amiri', serif;
-            font-size: 4em;
-            font-weight: 700;
-            color: #ff4444;
-            margin: 20px 0;
-            text-shadow: 0 0 20px rgba(255,68,68,0.5);
-        }
-
-        .challenge-actions {
-            display: flex;
-            gap: 15px;
-            margin-top: 25px;
-            justify-content: center;
-        }
-
-        .challenge-btn {
-            padding: 15px 30px;
-            border: none;
-            border-radius: 12px;
-            font-size: 1.15em;
-            font-weight: 700;
-            cursor: pointer;
-            font-family: 'Cairo', sans-serif;
-            transition: all 0.3s;
-        }
-
-        .challenge-btn-respond {
-            background: linear-gradient(135deg, #28a745, #20c997);
-            color: white;
-        }
-
-        .challenge-btn-pass {
-            background: linear-gradient(135deg, #6c757d, #5a6268);
-            color: white;
         }
 
         /* Hint */
@@ -807,7 +767,7 @@
                 height: 76px;
             }
             .poker-table { border-width: 6px; }
-            .opponents-area { font-size: 0.85em; }
+            .challenge-area { min-width: 300px; }
         }
     </style>
 </head>
@@ -914,23 +874,23 @@
                 <div class="hand-cards" id="playerHand"></div>
             </div>
 
-            <!-- Won Cards Display -->
-            <div class="won-cards-area" id="wonCardsArea" style="display: none;">
+            <!-- Challenge Area قدام اللاعب -->
+            <div class="challenge-area" id="challengeArea">
+                <div class="challenge-header">
+                    <div class="challenge-title">⚔️ تحدي! ⚔️</div>
+                    <div class="challenge-timer" id="challengeTimer">7</div>
+                </div>
+                <div class="challenge-info-text" id="challengeInfoText"></div>
+                <div class="challenge-cards-display" id="challengeCardsDisplay"></div>
+                <div class="challenge-actions" id="challengeActionsArea"></div>
+            </div>
+
+            <!-- Won Cards -->
+            <div class="won-cards-area" id="wonCardsArea">
                 <div class="won-title">أوراقك المكسوبة</div>
                 <div class="won-cards-stack" id="wonCardsList"></div>
                 <div class="won-score">النقاط: <span id="wonScore">0</span></div>
             </div>
-        </div>
-    </div>
-
-    <!-- CHALLENGE OVERLAY -->
-    <div class="challenge-overlay" id="challengeOverlay">
-        <div class="challenge-box">
-            <div class="challenge-title">⚔️ تحدي! ⚔️</div>
-            <div class="challenge-info" id="challengeInfo"></div>
-            <div class="challenge-card-display" id="challengeCardDisplay"></div>
-            <div class="challenge-timer" id="challengeTimer">7</div>
-            <div class="challenge-actions" id="challengeActions"></div>
         </div>
     </div>
 
@@ -965,7 +925,7 @@
             playerName: null,
             isHost: false,
             currentRoom: null,
-            selectedCard: null // للورقة المختارة
+            selectedCard: null
         };
 
         // Constants
@@ -974,7 +934,8 @@
         const FACE_SYMBOLS = {
             'J': '👨',
             'Q': '👸',
-            'K': '🤴'
+            'K': '🤴',
+            'A': '🅰️'
         };
 
         let challengeTimerInterval = null;
@@ -1073,6 +1034,16 @@
             div.className = 'playing-card card-back';
             div.innerHTML = '<div class="card-back-logo">🎴</div>';
             return div;
+        }
+
+        // النقاط الصحيحة: A = 10
+        function calculateScore(cards) {
+            let score = 0;
+            cards.forEach(card => {
+                if (card.rank === 'JOKER') score += 50;
+                else if (['J', 'Q', 'K', 'A'].includes(card.rank)) score += 10;
+            });
+            return score;
         }
 
         // Room Functions
@@ -1200,7 +1171,7 @@
                 if (room.challenge && room.challenge.active) {
                     handleChallenge(room.challenge);
                 } else {
-                    document.getElementById('challengeOverlay').classList.remove('active');
+                    document.getElementById('challengeArea').classList.remove('active');
                     if (challengeTimerInterval) {
                         clearInterval(challengeTimerInterval);
                         challengeTimerInterval = null;
@@ -1294,6 +1265,7 @@
             updateOpponents(players.filter(p => p.id !== gameState.playerId));
             updateTableCards(room, isMyTurn);
             updatePlayerHand(myPlayer, isMyTurn, room);
+            updateWonCards(myPlayer);
         }
 
         function updateOpponents(opponents) {
@@ -1320,14 +1292,6 @@
 
         function updateTableCards(room, isMyTurn) {
             const container = document.getElementById('tableCards');
-            
-            // حفظ البطاقات القديمة
-            const oldCards = {};
-            container.querySelectorAll('.playing-card:not(.card-empty):not(.card-back)').forEach(cardEl => {
-                const rank = cardEl.querySelector('.card-rank')?.textContent;
-                if (rank) oldCards[rank] = true;
-            });
-            
             container.innerHTML = '';
 
             // Deck
@@ -1343,15 +1307,6 @@
             RANKS.forEach(rank => {
                 if (room.tableCards && room.tableCards[rank]) {
                     const card = createCardElement(room.tableCards[rank].card);
-                    
-                    // إذا البطاقة جديدة - أضف أنيميشن
-                    if (!oldCards[rank]) {
-                        card.classList.add('appearing');
-                        setTimeout(() => {
-                            card.classList.remove('appearing');
-                        }, 500);
-                    }
-                    
                     container.appendChild(card);
                 } else {
                     const empty = document.createElement('div');
@@ -1371,7 +1326,7 @@
             count.textContent = player.hand.length;
             container.innerHTML = '';
 
-            // ترتيب الأوراق حسب الرقم والشكل
+            // ترتيب الأوراق
             const sortedHand = [...player.hand].sort((a, b) => {
                 if (a.rank === 'JOKER') return 1;
                 if (b.rank === 'JOKER') return -1;
@@ -1384,7 +1339,6 @@
                 const rankDiff = rankOrder[a.rank] - rankOrder[b.rank];
                 if (rankDiff !== 0) return rankDiff;
                 
-                // نفس الرقم - رتب حسب الشكل
                 const suitOrder = {'♠': 1, '♣': 2, '♥': 3, '♦': 4};
                 return suitOrder[a.suit] - suitOrder[b.suit];
             });
@@ -1392,30 +1346,24 @@
             sortedHand.forEach(card => {
                 const cardEl = createCardElement(card, false);
                 
-                // إضافة selected class إذا كانت مختارة
+                // Selected check
                 if (gameState.selectedCard && gameState.selectedCard.id === card.id) {
                     cardEl.classList.add('card-selected');
                 }
                 
-                // نظام الضغط
+                // Click handler
                 if (isMyTurn && room.phase === 'play') {
                     cardEl.style.cursor = 'pointer';
                     cardEl.onclick = function(e) {
                         e.stopPropagation();
                         
-                        // التحقق المباشر من الاختيار (لا نستخدم متغير محفوظ)
                         const isCurrentlySelected = gameState.selectedCard && gameState.selectedCard.id === card.id;
                         
-                        console.log('Card clicked:', card.rank, card.suit);
-                        console.log('Currently selected:', isCurrentlySelected);
-                        
                         if (isCurrentlySelected) {
-                            // الضغطة الثانية - العب الورقة!
-                            console.log('Playing card NOW!');
+                            // ضغطة ثانية - لعب!
                             playCard(card, room);
                         } else {
-                            // الضغطة الأولى - اختر الورقة
-                            console.log('Selecting card...');
+                            // ضغطة أولى - اختيار
                             gameState.selectedCard = card;
                             updatePlayerHand(player, isMyTurn, room);
                         }
@@ -1424,28 +1372,23 @@
                 
                 container.appendChild(cardEl);
             });
-
-            // تحديث عرض الأوراق المكسوبة
-            updateWonCards(player);
         }
 
         function updateWonCards(player) {
             if (!player.wonCards || player.wonCards.length === 0) {
-                document.getElementById('wonCardsArea').style.display = 'none';
+                document.getElementById('wonCardsArea').classList.remove('active');
                 return;
             }
 
-            document.getElementById('wonCardsArea').style.display = 'block';
+            document.getElementById('wonCardsArea').classList.add('active');
             
             const wonList = document.getElementById('wonCardsList');
             wonList.innerHTML = '';
 
-            // عرض آخر 10 أوراق فقط
             const recentCards = player.wonCards.slice(-10).reverse();
             recentCards.forEach(card => {
                 const div = document.createElement('div');
                 div.className = `won-card-mini ${card.isRed ? 'red' : 'black'}`;
-                
                 div.innerHTML = `
                     <span>${card.rank === 'JOKER' ? '🃏' : card.rank}</span>
                     <span>${card.suit}</span>
@@ -1453,7 +1396,6 @@
                 wonList.appendChild(div);
             });
 
-            // عرض النقاط
             document.getElementById('wonScore').textContent = player.score || 0;
         }
 
@@ -1483,18 +1425,6 @@
 
             console.log('🎴 Playing card:', card.rank, card.suit);
 
-            // إضافة أنيميشن للورقة قبل اللعب
-            const cardElements = document.querySelectorAll('.playing-card');
-            cardElements.forEach(el => {
-                if (el.classList.contains('card-selected')) {
-                    el.classList.add('flying');
-                }
-            });
-
-            // انتظر الأنيميشن (600ms)
-            await new Promise(resolve => setTimeout(resolve, 600));
-
-            // إلغاء الاختيار
             gameState.selectedCard = null;
 
             const myPlayer = room.players[gameState.playerId];
@@ -1518,9 +1448,9 @@
                 return;
             }
 
-            // Normal card
+            // Check if card exists on table
             if (!room.tableCards[card.rank]) {
-                // Place on table
+                // السيناريو A: الورقة جديدة - ضعها على الطاولة
                 await database.ref('rooms/' + gameState.roomCode).update({
                     [`players/${gameState.playerId}/hand`]: newHand,
                     [`tableCards/${card.rank}`]: {
@@ -1530,15 +1460,18 @@
                 });
                 await nextTurn(room);
             } else {
-                // Start challenge
+                // السيناريو B: الورقة موجودة - ابدأ التحدي!
+                const tableCard = room.tableCards[card.rank].card;
+                
                 await database.ref('rooms/' + gameState.roomCode).update({
                     [`players/${gameState.playerId}/hand`]: newHand,
+                    [`tableCards/${card.rank}`]: null, // احذف من الطاولة
                     challenge: {
                         active: true,
                         targetRank: card.rank,
                         initiator: gameState.playerId,
                         initiatorName: myPlayer.name,
-                        cards: [card],
+                        cards: [tableCard, card], // الورقة من الطاولة + ورقتك
                         participants: [gameState.playerId],
                         lastPlayer: gameState.playerId,
                         lastPlayerName: myPlayer.name,
@@ -1562,23 +1495,25 @@
                 [`tableCards/${targetRank}`]: null
             });
 
-            await nextTurn(room);
+            // سحب لين 13 ورقة
+            await drawUntil13(room);
         }
 
         function handleChallenge(challenge) {
-            const overlay = document.getElementById('challengeOverlay');
-            overlay.classList.add('active');
+            const area = document.getElementById('challengeArea');
+            area.classList.add('active');
 
-            const lastCard = challenge.cards[challenge.cards.length - 1];
-            
-            document.getElementById('challengeInfo').textContent = 
-                `${challenge.lastPlayerName} رمى ${lastCard.rank}!`;
+            document.getElementById('challengeInfoText').textContent = 
+                `${challenge.lastPlayerName} رمى ${challenge.targetRank}!`;
 
-            const cardDisplay = document.getElementById('challengeCardDisplay');
-            cardDisplay.innerHTML = '';
-            cardDisplay.appendChild(createCardElement(lastCard));
+            // عرض الأوراق
+            const cardsDisplay = document.getElementById('challengeCardsDisplay');
+            cardsDisplay.innerHTML = '';
+            challenge.cards.forEach(card => {
+                cardsDisplay.appendChild(createCardElement(card));
+            });
 
-            // Timer - يتجدد عند كل رمية
+            // Timer
             const elapsed = Date.now() - challenge.lastUpdateTime;
             let timeLeft = Math.max(0, 7 - Math.floor(elapsed / 1000));
 
@@ -1601,7 +1536,7 @@
             }, 100);
 
             // Actions
-            const actionsDiv = document.getElementById('challengeActions');
+            const actionsDiv = document.getElementById('challengeActionsArea');
             actionsDiv.innerHTML = '';
 
             if (gameState.playerId !== challenge.lastPlayer) {
@@ -1620,7 +1555,7 @@
                 passBtn.className = 'challenge-btn challenge-btn-pass';
                 passBtn.textContent = 'تمرير';
                 passBtn.onclick = () => {
-                    overlay.classList.remove('active');
+                    area.classList.remove('active');
                 };
                 actionsDiv.appendChild(passBtn);
             } else {
@@ -1640,7 +1575,7 @@
                 [`challenge/participants`]: [...room.challenge.participants, gameState.playerId],
                 [`challenge/lastPlayer`]: gameState.playerId,
                 [`challenge/lastPlayerName`]: myPlayer.name,
-                [`challenge/lastUpdateTime`]: Date.now() // تجديد الوقت!
+                [`challenge/lastUpdateTime`]: Date.now()
             });
         }
 
@@ -1659,24 +1594,76 @@
             await database.ref('rooms/' + gameState.roomCode).update({
                 [`players/${winner}/wonCards`]: wonCards,
                 [`players/${winner}/score`]: newScore,
-                [`tableCards/${challenge.targetRank}`]: null,
                 [`challenge/active`]: false
             });
 
             setTimeout(async () => {
                 await database.ref('rooms/' + gameState.roomCode + '/challenge').remove();
-                await nextTurn(room);
+                
+                // الفائز يسحب لين 13 ورقة
+                await drawUntil13AfterChallenge(winner);
             }, 1500);
         }
 
-        function calculateScore(cards) {
-            let score = 0;
-            cards.forEach(card => {
-                if (card.rank === 'JOKER') score += 50;
-                else if (['J', 'Q', 'K'].includes(card.rank)) score += 10;
-                else if (card.rank === 'A') score += 1;
-            });
-            return score;
+        async function drawUntil13(room) {
+            const myPlayer = room.players[gameState.playerId];
+            
+            while (myPlayer.hand.length < 13 && room.deck && room.deck.length > 0) {
+                const card = room.deck[room.deck.length - 1];
+                const newDeck = room.deck.slice(0, -1);
+                const newHand = [...myPlayer.hand, card];
+
+                await database.ref('rooms/' + gameState.roomCode).update({
+                    [`players/${gameState.playerId}/hand`]: newHand,
+                    deck: newDeck
+                });
+
+                // تحديث المتغيرات المحلية
+                myPlayer.hand = newHand;
+                room.deck = newDeck;
+            }
+
+            // إذا كمل 13 - يلعب مباشرة
+            if (myPlayer.hand.length === 13) {
+                await database.ref('rooms/' + gameState.roomCode).update({
+                    phase: 'play'
+                });
+            } else {
+                await nextTurn(room);
+            }
+        }
+
+        async function drawUntil13AfterChallenge(winnerId) {
+            const room = gameState.currentRoom;
+            const winnerPlayer = room.players[winnerId];
+            
+            while (winnerPlayer.hand.length < 13 && room.deck && room.deck.length > 0) {
+                const card = room.deck[room.deck.length - 1];
+                const newDeck = room.deck.slice(0, -1);
+                const newHand = [...winnerPlayer.hand, card];
+
+                await database.ref('rooms/' + gameState.roomCode).update({
+                    [`players/${winnerId}/hand`]: newHand,
+                    deck: newDeck
+                });
+
+                winnerPlayer.hand = newHand;
+                room.deck = newDeck;
+            }
+
+            // تحديد الدور التالي
+            if (winnerPlayer.hand.length === 13) {
+                // الفائز يلعب
+                const players = Object.values(room.players);
+                const winnerIndex = players.findIndex(p => p.id === winnerId);
+                
+                await database.ref('rooms/' + gameState.roomCode).update({
+                    currentPlayerIndex: winnerIndex,
+                    phase: 'play'
+                });
+            } else {
+                await nextTurn(room);
+            }
         }
 
         async function nextTurn(room) {
