@@ -395,6 +395,13 @@
             z-index: 50;
         }
 
+        .playing-card.card-selected {
+            transform: translateY(-25px) scale(1.12);
+            border-color: #ffd700;
+            box-shadow: 0 0 30px rgba(255,215,0,0.8), 0 15px 30px rgba(0,0,0,0.6);
+            z-index: 60;
+        }
+
         .card-corner {
             display: flex;
             flex-direction: column;
@@ -855,7 +862,8 @@
             playerId: null,
             playerName: null,
             isHost: false,
-            currentRoom: null
+            currentRoom: null,
+            selectedCard: null // للورقة المختارة
         };
 
         // Constants
@@ -1242,12 +1250,48 @@
             count.textContent = player.hand.length;
             container.innerHTML = '';
 
-            player.hand.forEach(card => {
-                const cardEl = createCardElement(
-                    card,
-                    isMyTurn && room.phase === 'play',
-                    () => playCard(card, room)
-                );
+            // ترتيب الأوراق حسب الرقم والشكل
+            const sortedHand = [...player.hand].sort((a, b) => {
+                if (a.rank === 'JOKER') return 1;
+                if (b.rank === 'JOKER') return -1;
+                
+                const rankOrder = {
+                    '2': 2, '3': 3, '4': 4, '5': 5, '6': 6, '7': 7, '8': 8, 
+                    '9': 9, '10': 10, 'J': 11, 'Q': 12, 'K': 13, 'A': 14
+                };
+                
+                const rankDiff = rankOrder[a.rank] - rankOrder[b.rank];
+                if (rankDiff !== 0) return rankDiff;
+                
+                // نفس الرقم - رتب حسب الشكل
+                const suitOrder = {'♠': 1, '♣': 2, '♥': 3, '♦': 4};
+                return suitOrder[a.suit] - suitOrder[b.suit];
+            });
+
+            sortedHand.forEach(card => {
+                const cardEl = createCardElement(card, false);
+                
+                // إضافة selected class إذا كانت مختارة
+                if (gameState.selectedCard && gameState.selectedCard.id === card.id) {
+                    cardEl.classList.add('card-selected');
+                }
+                
+                // نظام الضغط: ضغطة أولى للاختيار، ثانية للعب
+                if (isMyTurn && room.phase === 'play') {
+                    cardEl.style.cursor = 'pointer';
+                    cardEl.onclick = () => {
+                        // إذا الورقة مختارة - العبها
+                        if (gameState.selectedCard && gameState.selectedCard.id === card.id) {
+                            gameState.selectedCard = null;
+                            playCard(card, room);
+                        } else {
+                            // اختر الورقة
+                            gameState.selectedCard = card;
+                            updatePlayerHand(player, isMyTurn, room); // تحديث العرض
+                        }
+                    };
+                }
+                
                 container.appendChild(cardEl);
             });
         }
@@ -1275,6 +1319,9 @@
             const currentPlayer = players[room.currentPlayerIndex];
 
             if (currentPlayer.id !== gameState.playerId || room.phase !== 'play') return;
+
+            // إلغاء الاختيار
+            gameState.selectedCard = null;
 
             const myPlayer = room.players[gameState.playerId];
             const newHand = myPlayer.hand.filter(c => c.id !== card.id);
