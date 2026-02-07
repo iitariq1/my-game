@@ -176,6 +176,7 @@
             transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
             position: relative;
             overflow: hidden;
+            z-index: 10;
         }
 
         .btn::before {
@@ -217,6 +218,8 @@
             background: linear-gradient(135deg, #2d5f3f, #1e4a2f);
             color: white;
             box-shadow: 0 12px 35px rgba(45, 95, 63, 0.5);
+            display: block;
+            visibility: visible;
         }
 
         .btn-secondary:hover {
