@@ -3,10 +3,10 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>لعبة كوتشينا - النسخة المحسّنة</title>
+    <title>كوتشينا - لعبة الأوراق</title>
     <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-database-compat.js"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Amiri:wght@400;700&family=Tajawal:wght@400;500;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;800&display=swap" rel="stylesheet">
     <style>
         * {
             margin: 0;
@@ -15,740 +15,402 @@
         }
 
         body {
-            font-family: 'Tajawal', sans-serif;
-            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f0f1e 100%);
+            font-family: 'Cairo', sans-serif;
+            background: linear-gradient(135deg, #0a3d29 0%, #1a5c3f 100%);
             min-height: 100vh;
-            color: white;
-            overflow: hidden;
+            color: #fff;
         }
 
-        /* الملف كبير جداً، سأقسّمه على عدة أجزاء */
-        
-        .screen {
-            display: none;
+        .container {
+            max-width: 500px;
+            margin: 0 auto;
+            padding: 40px 20px;
             min-height: 100vh;
-        }
-
-        .screen.active {
             display: flex;
-        }
-
-        /* شاشة البداية */
-        .home-screen {
             flex-direction: column;
-            align-items: center;
             justify-content: center;
-            background: linear-gradient(135deg, #0f2818 0%, #1a472a 50%, #0d1f15 100%);
-            position: relative;
-            overflow: hidden;
         }
 
-        .home-screen::before {
-            content: '';
-            position: absolute;
-            width: 200%;
-            height: 200%;
-            background: 
-                radial-gradient(circle at 20% 30%, rgba(212, 175, 55, 0.15) 0%, transparent 50%),
-                radial-gradient(circle at 80% 70%, rgba(45, 95, 63, 0.15) 0%, transparent 50%);
-            animation: bgRotate 20s linear infinite;
-        }
-
-        @keyframes bgRotate {
-            from { transform: rotate(0deg); }
-            to { transform: rotate(360deg); }
-        }
-
-        .home-container {
-            max-width: 600px;
-            width: 90%;
-            position: relative;
-            z-index: 1;
-        }
-
-        .home-header {
+        /* Header */
+        .header {
             text-align: center;
-            margin-bottom: 50px;
-            animation: fadeInDown 1s ease-out;
+            margin-bottom: 40px;
         }
 
-        @keyframes fadeInDown {
-            from {
-                opacity: 0;
-                transform: translateY(-30px);
-            }
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
-        }
-
-        .home-title {
-            font-family: 'Amiri', serif;
+        .logo {
             font-size: 4em;
-            font-weight: 700;
-            background: linear-gradient(135deg, #ffd700 0%, #d4af37 50%, #ffd700 100%);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
-            margin-bottom: 15px;
-            animation: titleGlow 3s ease-in-out infinite;
-            text-shadow: 0 0 40px rgba(255, 215, 0, 0.3);
+            margin-bottom: 10px;
         }
 
-        @keyframes titleGlow {
-            0%, 100% { filter: brightness(1); }
-            50% { filter: brightness(1.3); }
-        }
-
-        .home-subtitle {
-            font-size: 1.3em;
-            color: #d4af37;
-            opacity: 0.9;
-        }
-
-        .home-card {
-            background: rgba(26, 71, 42, 0.6);
-            backdrop-filter: blur(15px);
-            border-radius: 25px;
-            padding: 45px;
-            border: 2px solid rgba(212, 175, 55, 0.4);
-            box-shadow: 0 25px 70px rgba(0, 0, 0, 0.6);
-            animation: fadeInUp 1s ease-out 0.3s both;
-        }
-
-        @keyframes fadeInUp {
-            from {
-                opacity: 0;
-                transform: translateY(30px);
-            }
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
-        }
-
-        .input-group {
-            margin-bottom: 25px;
-        }
-
-        .input-group label {
-            display: block;
-            font-size: 1.2em;
-            margin-bottom: 12px;
+        h1 {
+            font-size: 2.5em;
+            font-weight: 800;
             color: #ffd700;
-            font-weight: 600;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
         }
 
-        input[type="text"],
-        input[type="number"] {
-            width: 100%;
-            padding: 16px 20px;
+        .subtitle {
             font-size: 1.1em;
-            background: rgba(255, 255, 255, 0.1);
-            border: 2px solid rgba(212, 175, 55, 0.4);
-            border-radius: 12px;
-            color: white;
-            font-family: 'Tajawal', sans-serif;
-            transition: all 0.3s ease;
+            color: #b8e6d5;
+            font-weight: 400;
         }
 
-        input::placeholder {
-            color: rgba(255, 255, 255, 0.5);
+        /* Card Container */
+        .card {
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 20px;
+            padding: 35px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.4);
+        }
+
+        /* Form Groups */
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 8px;
+            color: #1a5c3f;
+            font-weight: 600;
+            font-size: 1em;
+        }
+
+        input {
+            width: 100%;
+            padding: 14px 16px;
+            border: 2px solid #d4edda;
+            border-radius: 10px;
+            font-size: 1em;
+            font-family: 'Cairo', sans-serif;
+            transition: all 0.3s;
+            background: #fff;
+            color: #1a5c3f;
         }
 
         input:focus {
             outline: none;
-            border-color: #ffd700;
-            background: rgba(255, 255, 255, 0.15);
-            box-shadow: 0 0 20px rgba(255, 215, 0, 0.3);
+            border-color: #28a745;
+            box-shadow: 0 0 0 3px rgba(40, 167, 69, 0.1);
         }
 
+        input::placeholder {
+            color: #95c5af;
+        }
+
+        /* Buttons */
         .btn {
             width: 100%;
-            padding: 18px;
-            font-size: 1.4em;
-            font-weight: 700;
+            padding: 16px;
             border: none;
-            border-radius: 15px;
+            border-radius: 10px;
+            font-size: 1.1em;
+            font-weight: 700;
+            font-family: 'Cairo', sans-serif;
             cursor: pointer;
-            font-family: 'Tajawal', sans-serif;
-            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-            position: relative;
-            overflow: hidden;
-            z-index: 10;
-        }
-
-        .btn::before {
-            content: '';
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            width: 0;
-            height: 0;
-            border-radius: 50%;
-            background: rgba(255, 255, 255, 0.25);
-            transform: translate(-50%, -50%);
-            transition: width 0.6s, height 0.6s;
-        }
-
-        .btn:hover::before {
-            width: 400px;
-            height: 400px;
-        }
-
-        .btn span {
-            position: relative;
-            z-index: 1;
+            transition: all 0.3s;
+            margin-bottom: 12px;
         }
 
         .btn-primary {
-            background: linear-gradient(135deg, #d4af37, #ffd700);
-            color: #1a472a;
-            box-shadow: 0 12px 35px rgba(212, 175, 55, 0.5);
-            margin-bottom: 18px;
+            background: linear-gradient(135deg, #28a745 0%, #20c997 100%);
+            color: white;
+            box-shadow: 0 4px 15px rgba(40, 167, 69, 0.3);
         }
 
         .btn-primary:hover {
-            transform: translateY(-4px);
-            box-shadow: 0 18px 45px rgba(212, 175, 55, 0.7);
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(40, 167, 69, 0.4);
+        }
+
+        .btn-primary:active {
+            transform: translateY(0);
         }
 
         .btn-secondary {
-            background: linear-gradient(135deg, #2d5f3f, #1e4a2f);
+            background: linear-gradient(135deg, #17a2b8 0%, #138496 100%);
             color: white;
-            box-shadow: 0 12px 35px rgba(45, 95, 63, 0.5);
-            display: block;
-            visibility: visible;
+            box-shadow: 0 4px 15px rgba(23, 162, 184, 0.3);
         }
 
         .btn-secondary:hover {
-            transform: translateY(-4px);
-            box-shadow: 0 18px 45px rgba(45, 95, 63, 0.7);
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(23, 162, 184, 0.4);
         }
 
+        .btn-secondary:active {
+            transform: translateY(0);
+        }
+
+        /* Divider */
         .divider {
             text-align: center;
-            margin: 35px 0;
+            margin: 25px 0;
             position: relative;
         }
 
-        .divider::before,
+        .divider::before {
+            content: '';
+            position: absolute;
+            left: 0;
+            top: 50%;
+            width: 40%;
+            height: 1px;
+            background: #d4edda;
+        }
+
         .divider::after {
             content: '';
             position: absolute;
+            right: 0;
             top: 50%;
-            width: 42%;
-            height: 2px;
-            background: linear-gradient(to right, transparent, rgba(212, 175, 55, 0.5), transparent);
+            width: 40%;
+            height: 1px;
+            background: #d4edda;
         }
-
-        .divider::before { left: 0; }
-        .divider::after { right: 0; }
 
         .divider span {
-            padding: 0 20px;
-            color: #d4af37;
-            font-weight: 700;
-            font-size: 1.1em;
+            color: #6c757d;
+            font-weight: 600;
+            padding: 0 15px;
+            background: rgba(255, 255, 255, 0.95);
         }
 
+        /* Back Button */
         .back-btn {
             position: fixed;
-            top: 25px;
-            left: 25px;
-            padding: 14px 28px;
-            background: rgba(212, 175, 55, 0.25);
-            border: 2px solid #d4af37;
-            border-radius: 12px;
-            color: #ffd700;
-            font-weight: 700;
-            font-size: 1.05em;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            z-index: 1000;
+            top: 20px;
+            left: 20px;
+            padding: 10px 20px;
+            background: rgba(255, 255, 255, 0.2);
             backdrop-filter: blur(10px);
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            border-radius: 10px;
+            color: white;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            text-decoration: none;
+            font-family: 'Cairo', sans-serif;
         }
 
         .back-btn:hover {
-            background: rgba(212, 175, 55, 0.4);
+            background: rgba(255, 255, 255, 0.3);
             transform: translateX(-5px);
-            box-shadow: 0 5px 20px rgba(212, 175, 55, 0.4);
         }
 
-        /* شاشة الانتظار */
-        .waiting-screen {
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            background: linear-gradient(135deg, #0f2818 0%, #1a472a 50%, #0d1f15 100%);
-        }
-
+        /* Waiting Screen */
         .waiting-container {
-            max-width: 700px;
-            width: 90%;
-        }
-
-        .room-code-display {
             text-align: center;
-            margin: 40px 0;
-            padding: 35px;
-            background: rgba(212, 175, 55, 0.15);
-            border: 3px solid #ffd700;
-            border-radius: 20px;
-            animation: codePulse 2s ease-in-out infinite;
         }
 
-        @keyframes codePulse {
-            0%, 100% { box-shadow: 0 0 30px rgba(255, 215, 0, 0.3); }
-            50% { box-shadow: 0 0 50px rgba(255, 215, 0, 0.6); }
-        }
-
-        .room-code-label {
-            font-size: 1.1em;
-            color: #d4af37;
-            margin-bottom: 12px;
-        }
-
-        .room-code-value {
-            font-family: 'Amiri', serif;
-            font-size: 3.5em;
-            font-weight: 700;
-            color: #ffd700;
-            letter-spacing: 8px;
-            text-shadow: 0 0 20px rgba(255, 215, 0, 0.5);
-        }
-
-        .players-list {
+        .room-code {
+            background: linear-gradient(135deg, #ffd700 0%, #ffed4e 100%);
+            padding: 20px;
+            border-radius: 15px;
             margin: 30px 0;
         }
 
+        .room-code-label {
+            color: #1a5c3f;
+            font-size: 0.9em;
+            font-weight: 600;
+            margin-bottom: 8px;
+        }
+
+        .room-code-value {
+            font-size: 2.5em;
+            font-weight: 800;
+            color: #1a5c3f;
+            letter-spacing: 5px;
+        }
+
+        .players-list {
+            margin: 25px 0;
+        }
+
         .player-item {
-            padding: 18px 25px;
-            background: rgba(255, 255, 255, 0.08);
-            border-radius: 15px;
-            margin-bottom: 12px;
-            border: 2px solid rgba(212, 175, 55, 0.3);
+            background: #f8f9fa;
+            padding: 15px;
+            border-radius: 10px;
+            margin-bottom: 10px;
             display: flex;
             justify-content: space-between;
             align-items: center;
-            transition: all 0.3s ease;
-        }
-
-        .player-item:hover {
-            background: rgba(255, 255, 255, 0.12);
-            border-color: #d4af37;
-            transform: translateX(-5px);
+            color: #1a5c3f;
         }
 
         .player-name {
-            font-size: 1.3em;
             font-weight: 600;
+            font-size: 1.1em;
         }
 
-        .player-badge {
-            padding: 6px 15px;
-            background: linear-gradient(135deg, #ffd700, #d4af37);
-            color: #1a472a;
+        .host-badge {
+            background: #ffd700;
+            padding: 4px 12px;
             border-radius: 20px;
-            font-size: 0.9em;
+            font-size: 0.85em;
             font-weight: 700;
+            color: #1a5c3f;
         }
 
-        /* شاشة اللعب - تصميم احترافي */
-        .game-screen {
-            flex-direction: column;
-            background: #0a0e1a;
-            position: relative;
-        }
-
-        .game-header {
-            padding: 15px 30px;
-            background: rgba(26, 71, 42, 0.5);
-            backdrop-filter: blur(15px);
-            border-bottom: 2px solid rgba(212, 175, 55, 0.3);
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            flex-wrap: wrap;
-            gap: 15px;
-        }
-
-        .game-info-badge {
-            padding: 10px 20px;
-            background: rgba(212, 175, 55, 0.2);
-            border-radius: 10px;
-            border: 1px solid rgba(212, 175, 55, 0.5);
-            font-weight: 600;
-            font-size: 1.05em;
-        }
-
-        .game-info-badge.highlight {
-            background: rgba(255, 215, 0, 0.3);
-            border-color: #ffd700;
-            color: #ffd700;
-        }
-
-        /* طاولة اللعب الاحترافية */
-        .game-table-container {
-            flex: 1;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            padding: 30px;
-            perspective: 1500px;
-        }
-
-        .poker-table {
-            width: 95%;
-            max-width: 1200px;
-            aspect-ratio: 16 / 9;
-            background: 
-                radial-gradient(ellipse at center, #1e5631 0%, #0d2818 100%);
-            border-radius: 50%;
-            border: 12px solid #8b4513;
-            box-shadow: 
-                inset 0 0 100px rgba(0, 0, 0, 0.6),
-                0 30px 80px rgba(0, 0, 0, 0.8);
-            position: relative;
-            transform: rotateX(35deg);
-            transform-style: preserve-3d;
-        }
-
-        .poker-table::before {
-            content: '';
-            position: absolute;
-            top: 4%;
-            left: 4%;
-            right: 4%;
-            bottom: 4%;
-            border: 3px solid rgba(212, 175, 55, 0.4);
-            border-radius: 50%;
-            pointer-events: none;
-        }
-
-        .poker-table::after {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background: 
-                repeating-linear-gradient(90deg, transparent, transparent 50px, rgba(0,0,0,0.05) 50px, rgba(0,0,0,0.05) 51px),
-                repeating-linear-gradient(0deg, transparent, transparent 50px, rgba(0,0,0,0.05) 50px, rgba(0,0,0,0.05) 51px);
-            border-radius: 50%;
-            pointer-events: none;
-        }
-
-        /* الأوراق على الطاولة */
-        .table-cards-area {
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            width: 85%;
-            height: 75%;
-            display: flex;
-            flex-wrap: wrap;
-            justify-content: center;
-            align-items: center;
-            gap: 12px;
+        /* Game Screen */
+        .game-container {
             padding: 20px;
         }
 
-        /* تصميم الورقة الاحترافي */
-        .card {
-            width: 70px;
-            height: 105px;
-            background: linear-gradient(135deg, #ffffff 0%, #f5f5f5 100%);
-            border-radius: 8px;
-            border: 3px solid #e0e0e0;
+        .game-header {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            padding: 15px;
+            border-radius: 15px;
+            margin-bottom: 20px;
+            display: flex;
+            justify-content: space-around;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+
+        .game-info {
+            text-align: center;
+        }
+
+        .game-info-label {
+            font-size: 0.85em;
+            opacity: 0.8;
+            margin-bottom: 4px;
+        }
+
+        .game-info-value {
+            font-size: 1.2em;
+            font-weight: 700;
+            color: #ffd700;
+        }
+
+        /* Table */
+        .table-container {
+            background: radial-gradient(ellipse at center, #1e5c40 0%, #0d2818 100%);
+            border-radius: 50%;
+            aspect-ratio: 16/9;
+            border: 8px solid #8b4513;
             box-shadow: 
-                0 4px 8px rgba(0, 0, 0, 0.3),
-                inset 0 1px 0 rgba(255, 255, 255, 0.5);
+                inset 0 0 50px rgba(0,0,0,0.5),
+                0 20px 50px rgba(0,0,0,0.6);
+            margin: 20px auto;
+            max-width: 900px;
+            position: relative;
+            padding: 20px;
+        }
+
+        .table-cards {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            justify-content: center;
+            align-items: center;
+            height: 100%;
+        }
+
+        /* Cards */
+        .card-item {
+            width: 60px;
+            height: 90px;
+            background: white;
+            border-radius: 6px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.3);
             display: flex;
             flex-direction: column;
             align-items: center;
             justify-content: center;
             cursor: pointer;
-            transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-            position: relative;
-            user-select: none;
-            transform-style: preserve-3d;
+            transition: all 0.3s;
+            border: 2px solid #e0e0e0;
         }
 
-        .card::before {
-            content: '';
-            position: absolute;
-            top: 2px;
-            left: 2px;
-            right: 2px;
-            bottom: 2px;
-            border: 1px solid rgba(0, 0, 0, 0.1);
-            border-radius: 6px;
-            pointer-events: none;
-        }
-
-        .card:hover {
-            transform: translateY(-15px) scale(1.1) rotateZ(0deg);
-            box-shadow: 
-                0 15px 30px rgba(0, 0, 0, 0.5),
-                0 0 20px rgba(212, 175, 55, 0.6);
-            z-index: 100;
-        }
-
-        .card.selected {
-            transform: translateY(-20px) scale(1.15);
-            border-color: #ffd700;
-            box-shadow: 
-                0 20px 40px rgba(0, 0, 0, 0.6),
-                0 0 30px rgba(255, 215, 0, 0.8);
-            z-index: 101;
+        .card-item:hover {
+            transform: translateY(-10px) scale(1.05);
+            box-shadow: 0 8px 20px rgba(0,0,0,0.5);
+            z-index: 10;
         }
 
         .card-rank {
-            font-size: 1.8em;
+            font-size: 1.5em;
             font-weight: 700;
-            line-height: 1;
         }
 
         .card-suit {
-            font-size: 2.2em;
-            margin-top: 5px;
-            line-height: 1;
+            font-size: 1.8em;
         }
 
-        .card.red {
-            color: #d32f2f;
+        .card-red {
+            color: #dc3545;
         }
 
-        .card.black {
+        .card-black {
             color: #1a1a1a;
         }
 
-        .card.joker {
-            background: linear-gradient(135deg, #8b0000, #dc143c, #8b0000);
-            border-color: #ffd700;
-            color: white;
-            font-size: 0.85em;
-            font-weight: 700;
-        }
-
-        .card.joker .card-suit {
-            font-size: 2.5em;
-        }
-
-        /* ظهر الورقة (للرزمة) */
-        .card.back {
-            background: 
-                linear-gradient(135deg, #1a472a 0%, #2d5f3f 100%),
-                repeating-linear-gradient(45deg, transparent, transparent 10px, rgba(212, 175, 55, 0.1) 10px, rgba(212, 175, 55, 0.1) 20px);
-            border-color: #d4af37;
-            background-blend-mode: overlay;
-        }
-
-        .card.back::after {
-            content: '🎴';
-            font-size: 2.5em;
+        .card-back {
+            background: linear-gradient(135deg, #1a5c3f 0%, #0a3d29 100%);
             color: #ffd700;
-            text-shadow: 0 0 10px rgba(255, 215, 0, 0.5);
+            font-size: 2em;
         }
 
-        /* رزمة الأوراق */
-        .deck-stack {
-            position: relative;
-            cursor: pointer;
+        .card-empty {
+            background: rgba(255,255,255,0.1);
+            border: 2px dashed rgba(255,255,255,0.3);
+            cursor: default;
         }
 
-        .deck-stack .card {
-            position: absolute;
+        .card-empty:hover {
+            transform: none;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.3);
         }
 
-        .deck-stack .card:nth-child(1) { top: 0px; left: 0px; }
-        .deck-stack .card:nth-child(2) { top: -2px; left: -2px; }
-        .deck-stack .card:nth-child(3) { top: -4px; left: -4px; }
-
-        .deck-stack:hover .card {
-            transform: translateY(-5px);
-        }
-
-        /* مواضع اللاعبين حول الطاولة */
-        .players-around {
-            position: absolute;
-            width: 100%;
-            height: 100%;
-            top: 0;
-            left: 0;
-            pointer-events: none;
-        }
-
-        .player-seat {
-            position: absolute;
-            padding: 12px 18px;
-            background: rgba(26, 71, 42, 0.95);
-            backdrop-filter: blur(10px);
-            border-radius: 15px;
-            border: 2px solid rgba(212, 175, 55, 0.4);
-            transform: rotateX(-35deg);
-            pointer-events: all;
-            transition: all 0.3s ease;
-            min-width: 160px;
-        }
-
-        .player-seat.active {
-            border-color: #ffd700;
-            box-shadow: 0 0 25px rgba(255, 215, 0, 0.6);
-            transform: rotateX(-35deg) scale(1.05);
-        }
-
-        .player-seat.current-turn {
-            border-color: #00ff00;
-            box-shadow: 0 0 30px rgba(0, 255, 0, 0.8);
-            animation: turnPulse 1.5s ease-in-out infinite;
-        }
-
-        @keyframes turnPulse {
-            0%, 100% { box-shadow: 0 0 30px rgba(0, 255, 0, 0.5); }
-            50% { box-shadow: 0 0 40px rgba(0, 255, 0, 1); }
-        }
-
-        /* مواضع اللاعبين */
-        .player-seat.pos-0 { top: -90px; left: 50%; transform: translateX(-50%) rotateX(-35deg); }
-        .player-seat.pos-1 { top: 8%; right: -70px; }
-        .player-seat.pos-2 { top: 35%; right: -90px; }
-        .player-seat.pos-3 { bottom: 8%; right: -70px; }
-        .player-seat.pos-4 { bottom: -90px; right: 35%; }
-        .player-seat.pos-5 { bottom: -90px; left: 35%; }
-        .player-seat.pos-6 { bottom: 8%; left: -70px; }
-        .player-seat.pos-7 { top: 35%; left: -90px; }
-        .player-seat.pos-8 { top: 8%; left: -70px; }
-        .player-seat.pos-9 { top: -90px; right: 25%; }
-
-        .player-seat-name {
-            font-weight: 700;
-            color: #ffd700;
-            margin-bottom: 6px;
-            font-size: 1.05em;
-        }
-
-        .player-seat-info {
-            display: flex;
-            justify-content: space-between;
-            gap: 10px;
-            font-size: 0.9em;
-        }
-
-        .player-cards-badge {
-            background: rgba(212, 175, 55, 0.3);
-            padding: 4px 10px;
-            border-radius: 8px;
-            font-weight: 600;
-        }
-
-        .player-score-badge {
-            background: rgba(255, 215, 0, 0.3);
-            padding: 4px 10px;
-            border-radius: 8px;
-            font-weight: 700;
-            color: #ffd700;
-        }
-
-        /* يد اللاعب في الأسفل */
-        .player-hand-area {
+        /* Player Hand */
+        .player-hand {
             position: fixed;
             bottom: 0;
             left: 0;
             right: 0;
-            padding: 25px;
-            background: linear-gradient(to top, rgba(10, 14, 26, 0.98), transparent);
+            background: linear-gradient(to top, rgba(10, 61, 41, 0.98), transparent);
+            padding: 20px;
             backdrop-filter: blur(10px);
-            z-index: 200;
         }
 
         .hand-title {
             text-align: center;
-            font-size: 1.3em;
-            color: #ffd700;
             margin-bottom: 15px;
+            font-size: 1.2em;
             font-weight: 700;
         }
 
-        .hand-cards-container {
+        .hand-cards {
             display: flex;
             justify-content: center;
-            gap: 15px;
+            gap: 10px;
             flex-wrap: wrap;
-            margin-bottom: 15px;
         }
 
-        /* توجيهات اللعب */
-        .game-hint {
+        /* Hint */
+        .hint {
             position: fixed;
             top: 100px;
             left: 50%;
             transform: translateX(-50%);
-            padding: 15px 30px;
-            background: rgba(212, 175, 55, 0.95);
-            color: #1a472a;
-            border-radius: 15px;
+            background: #ffd700;
+            color: #1a5c3f;
+            padding: 12px 25px;
+            border-radius: 25px;
             font-weight: 700;
-            font-size: 1.2em;
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
-            z-index: 300;
-            animation: hintBounce 2s ease-in-out infinite;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.3);
+            animation: bounce 2s infinite;
         }
 
-        @keyframes hintBounce {
+        @keyframes bounce {
             0%, 100% { transform: translateX(-50%) translateY(0); }
             50% { transform: translateX(-50%) translateY(-10px); }
-        }
-
-        /* سجل الأحداث */
-        .game-log {
-            position: fixed;
-            top: 80px;
-            right: 20px;
-            width: 280px;
-            max-height: 350px;
-            background: rgba(26, 71, 42, 0.95);
-            backdrop-filter: blur(15px);
-            border-radius: 15px;
-            padding: 18px;
-            border: 2px solid rgba(212, 175, 55, 0.4);
-            overflow-y: auto;
-            z-index: 150;
-        }
-
-        .log-title {
-            font-size: 1.15em;
-            color: #ffd700;
-            margin-bottom: 12px;
-            font-weight: 700;
-            border-bottom: 2px solid rgba(212, 175, 55, 0.4);
-            padding-bottom: 10px;
-        }
-
-        .log-entry {
-            padding: 10px;
-            margin-bottom: 10px;
-            background: rgba(0, 0, 0, 0.3);
-            border-radius: 8px;
-            font-size: 0.9em;
-            border-right: 4px solid rgba(212, 175, 55, 0.6);
-            line-height: 1.5;
-        }
-
-        .log-entry.highlight {
-            background: rgba(212, 175, 55, 0.25);
-            border-right-color: #ffd700;
-            font-weight: 600;
-        }
-
-        .log-time {
-            font-size: 0.75em;
-            color: #8fa3c0;
-            margin-top: 4px;
         }
 
         /* Modal */
@@ -757,12 +419,12 @@
             position: fixed;
             top: 0;
             left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(0, 0, 0, 0.9);
-            z-index: 2000;
-            justify-content: center;
+            right: 0;
+            bottom: 0;
+            background: rgba(0,0,0,0.8);
+            z-index: 1000;
             align-items: center;
+            justify-content: center;
         }
 
         .modal.active {
@@ -770,179 +432,148 @@
         }
 
         .modal-content {
-            background: linear-gradient(135deg, #1a472a, #2d5f3f);
-            padding: 45px;
-            border-radius: 25px;
-            border: 3px solid #ffd700;
-            max-width: 500px;
+            background: white;
+            padding: 40px;
+            border-radius: 20px;
+            max-width: 400px;
             width: 90%;
             text-align: center;
-            box-shadow: 0 25px 70px rgba(0, 0, 0, 0.7);
-            animation: modalSlideIn 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-        }
-
-        @keyframes modalSlideIn {
-            from {
-                transform: scale(0.8);
-                opacity: 0;
-            }
-            to {
-                transform: scale(1);
-                opacity: 1;
-            }
+            color: #1a5c3f;
         }
 
         .modal-title {
-            font-size: 2.2em;
-            color: #ffd700;
-            margin-bottom: 25px;
-            font-weight: 700;
+            font-size: 2em;
+            font-weight: 800;
+            margin-bottom: 20px;
+            color: #1a5c3f;
         }
 
         .modal-text {
-            font-size: 1.25em;
-            margin-bottom: 35px;
-            line-height: 1.7;
-        }
-
-        .modal-buttons {
-            display: flex;
-            gap: 18px;
-            justify-content: center;
-            flex-wrap: wrap;
+            font-size: 1.1em;
+            margin-bottom: 25px;
+            line-height: 1.6;
         }
 
         .modal-btn {
-            padding: 14px 32px;
-            font-size: 1.15em;
-            font-weight: 700;
+            padding: 12px 30px;
             border: none;
-            border-radius: 12px;
+            border-radius: 10px;
+            font-family: 'Cairo', sans-serif;
+            font-weight: 700;
             cursor: pointer;
-            font-family: 'Tajawal', sans-serif;
-            transition: all 0.3s ease;
-            min-width: 130px;
+            margin: 5px;
+            font-size: 1em;
+        }
+
+        .modal-btn-primary {
+            background: #28a745;
+            color: white;
+        }
+
+        .modal-btn-secondary {
+            background: #6c757d;
+            color: white;
+        }
+
+        /* Screen Control */
+        .screen {
+            display: none;
+        }
+
+        .screen.active {
+            display: block;
         }
 
         /* Responsive */
-        @media (max-width: 968px) {
-            .home-title {
-                font-size: 2.8em;
-            }
-
-            .poker-table {
-                transform: rotateX(25deg);
-            }
-
-            .card {
-                width: 55px;
-                height: 82px;
-                font-size: 0.85em;
-            }
-
-            .player-seat {
-                min-width: 130px;
-                font-size: 0.85em;
-            }
-
-            .game-log {
-                display: none;
-            }
-        }
-
         @media (max-width: 600px) {
-            .card {
-                width: 48px;
-                height: 72px;
+            h1 {
+                font-size: 2em;
             }
 
-            .player-seat {
-                min-width: 110px;
-                padding: 8px 12px;
-                font-size: 0.75em;
+            .card {
+                padding: 25px;
+            }
+
+            .card-item {
+                width: 50px;
+                height: 75px;
             }
         }
     </style>
 </head>
 <body>
-    <!-- شاشة البداية -->
+    <!-- الصفحة الرئيسية -->
     <div class="screen active" id="homeScreen">
-        <button class="back-btn" onclick="window.location.href='../index.html'">
-            ← العودة للقائمة
-        </button>
+        <a href="../index.html" class="back-btn">← العودة</a>
         
-        <div class="home-screen">
-            <div class="home-container">
-                <div class="home-header">
-                    <h1 class="home-title">🎴 كوتشينا 🎴</h1>
-                    <p class="home-subtitle">لعبة الأوراق الإستراتيجية</p>
+        <div class="container">
+            <div class="header">
+                <div class="logo">🎴</div>
+                <h1>كوتشينا</h1>
+                <p class="subtitle">لعبة الأوراق الإستراتيجية</p>
+            </div>
+
+            <div class="card">
+                <div class="form-group">
+                    <label>اسمك</label>
+                    <input type="text" id="playerName" placeholder="أدخل اسمك" maxlength="20">
                 </div>
 
-                <div class="home-card">
-                    <div class="input-group">
-                        <label>اسمك:</label>
-                        <input type="text" id="playerName" placeholder="أدخل اسمك" maxlength="20">
-                    </div>
+                <button class="btn btn-primary" onclick="createRoom()">
+                    🎮 إنشاء غرفة جديدة
+                </button>
 
-                    <button class="btn btn-primary" onclick="createRoom()">
-                        <span>🎮 إنشاء غرفة جديدة</span>
-                    </button>
-
-                    <div class="divider">
-                        <span>أو</span>
-                    </div>
-
-                    <div class="input-group">
-                        <label>كود الغرفة:</label>
-                        <input type="text" id="roomCode" placeholder="أدخل كود الغرفة" maxlength="6" style="text-transform: uppercase;">
-                    </div>
-
-                    <button class="btn btn-secondary" onclick="joinRoom()">
-                        <span>🚪 الانضمام لغرفة</span>
-                    </button>
+                <div class="divider">
+                    <span>أو</span>
                 </div>
+
+                <div class="form-group">
+                    <label>كود الغرفة</label>
+                    <input type="text" id="roomCode" placeholder="أدخل الكود" maxlength="6" style="text-transform: uppercase;">
+                </div>
+
+                <button class="btn btn-secondary" onclick="joinRoom()">
+                    🚪 الانضمام لغرفة
+                </button>
             </div>
         </div>
     </div>
 
     <!-- شاشة الانتظار -->
     <div class="screen" id="waitingScreen">
-        <button class="back-btn" onclick="leaveRoom()">
-            ← مغادرة الغرفة
-        </button>
+        <a href="#" class="back-btn" onclick="leaveRoom(); return false;">← مغادرة</a>
         
-        <div class="waiting-screen">
-            <div class="waiting-container">
-                <div class="home-header">
-                    <h1 class="home-title">قاعة الانتظار</h1>
-                    <p class="home-subtitle">في انتظار اللاعبين...</p>
+        <div class="container">
+            <div class="header">
+                <div class="logo">⏳</div>
+                <h1>قاعة الانتظار</h1>
+                <p class="subtitle">في انتظار اللاعبين...</p>
+            </div>
+
+            <div class="card waiting-container">
+                <div class="room-code">
+                    <div class="room-code-label">كود الغرفة</div>
+                    <div class="room-code-value" id="displayRoomCode">------</div>
                 </div>
 
-                <div class="room-code-display">
-                    <div class="room-code-label">كود الغرفة:</div>
-                    <div class="room-code-value" id="displayRoomCode"></div>
+                <div class="players-list" id="playersList"></div>
+
+                <div id="hostControls" style="display: none; margin-top: 20px;">
+                    <div class="form-group">
+                        <label>طريقة اللعب</label>
+                        <select id="gameMode" style="width: 100%; padding: 14px; border: 2px solid #d4edda; border-radius: 10px; font-family: 'Cairo', sans-serif; font-size: 1em;">
+                            <option value="individual">فردي</option>
+                            <option value="team">فرق</option>
+                        </select>
+                    </div>
+
+                    <button class="btn btn-primary" onclick="startGame()" id="startBtn" disabled>
+                        بدء اللعبة (يلزم لاعبان)
+                    </button>
                 </div>
 
-                <div class="home-card">
-                    <div id="waitingPlayers" class="players-list"></div>
-
-                    <div id="hostControls" style="display: none; margin-top: 25px;">
-                        <div class="input-group">
-                            <label>طريقة اللعب:</label>
-                            <select id="gameMode" style="width: 100%; padding: 16px; font-size: 1.1em; background: rgba(255, 255, 255, 0.1); border: 2px solid rgba(212, 175, 55, 0.4); border-radius: 12px; color: white; font-family: 'Tajawal', sans-serif;">
-                                <option value="individual" style="background: #1a472a;">فردي</option>
-                                <option value="team" style="background: #1a472a;">فرق</option>
-                            </select>
-                        </div>
-
-                        <button class="btn btn-primary" onclick="startGameAsHost()" id="startGameBtn" disabled>
-                            <span>بدء اللعبة (يلزم لاعبان على الأقل)</span>
-                        </button>
-                    </div>
-
-                    <div id="waitingMessage" style="text-align: center; color: #d4af37; font-size: 1.3em; margin-top: 25px;">
-                        في انتظار مضيف الغرفة لبدء اللعبة...
-                    </div>
+                <div id="waitingMessage" style="color: #6c757d; margin-top: 20px;">
+                    في انتظار المضيف...
                 </div>
             </div>
         </div>
@@ -950,57 +581,39 @@
 
     <!-- شاشة اللعب -->
     <div class="screen" id="gameScreen">
-        <div class="game-screen">
-            <!-- رأس اللعبة -->
+        <a href="#" class="back-btn" onclick="leaveRoom(); return false;">← خروج</a>
+        
+        <div class="game-container">
             <div class="game-header">
-                <div class="game-info-badge">
-                    غرفة: <span id="gameRoomCode"></span>
+                <div class="game-info">
+                    <div class="game-info-label">الدور</div>
+                    <div class="game-info-value" id="currentTurn">-</div>
                 </div>
-                <div class="game-info-badge highlight">
-                    الدور: <span id="currentTurnPlayer">-</span>
+                <div class="game-info">
+                    <div class="game-info-label">المرحلة</div>
+                    <div class="game-info-value" id="gamePhase">-</div>
                 </div>
-                <div class="game-info-badge">
-                    المرحلة: <span id="gamePhase">-</span>
-                </div>
-                <div class="game-info-badge">
-                    أوراق متبقية: <span id="deckCount">0</span>
-                </div>
-            </div>
-
-            <!-- توجيه اللعب -->
-            <div class="game-hint" id="gameHint" style="display: none;">
-                اضغط على الورقة للعبها!
-            </div>
-
-            <!-- طاولة اللعب -->
-            <div class="game-table-container">
-                <div class="poker-table">
-                    <!-- الأوراق على الطاولة -->
-                    <div class="table-cards-area" id="tableCardsArea">
-                        <!-- سيتم ملؤها ديناميكياً -->
-                    </div>
-
-                    <!-- اللاعبون حول الطاولة -->
-                    <div class="players-around" id="playersAround">
-                        <!-- سيتم ملؤها ديناميكياً -->
-                    </div>
+                <div class="game-info">
+                    <div class="game-info-label">الأوراق المتبقية</div>
+                    <div class="game-info-value" id="deckCount">0</div>
                 </div>
             </div>
 
-            <!-- يد اللاعب -->
-            <div class="player-hand-area">
-                <div class="hand-title">
-                    أوراقك (<span id="handCount">0</span> ورقة)
-                </div>
-                <div class="hand-cards-container" id="playerHandCards">
-                    <!-- سيتم ملؤها ديناميكياً -->
+            <div class="hint" id="gameHint" style="display: none;">
+                اضغط على الورقة!
+            </div>
+
+            <div class="table-container">
+                <div class="table-cards" id="tableCards">
+                    <!-- سيتم ملؤها -->
                 </div>
             </div>
 
-            <!-- سجل الأحداث -->
-            <div class="game-log">
-                <div class="log-title">📜 سجل الأحداث</div>
-                <div id="gameLogEntries"></div>
+            <div class="player-hand">
+                <div class="hand-title">أوراقك (<span id="handCount">0</span>)</div>
+                <div class="hand-cards" id="playerHand">
+                    <!-- سيتم ملؤها -->
+                </div>
             </div>
         </div>
     </div>
@@ -1010,89 +623,62 @@
         <div class="modal-content">
             <h2 class="modal-title" id="modalTitle"></h2>
             <p class="modal-text" id="modalText"></p>
-            <div id="modalContent"></div>
-            <div class="modal-buttons" id="modalButtons"></div>
+            <div id="modalButtons"></div>
         </div>
     </div>
 
     <script>
-        // Firebase Configuration - استخدم إعداداتك الخاصة
-const firebaseConfig = {
-  apiKey: "AIzaSyApbKTdcuE5vTLDEJ5Oi7hger3IRmpLE0A",
-  authDomain: "kochina-game.firebaseapp.com",
-  databaseURL: "https://kochina-game-default-rtdb.firebaseio.com",
-  projectId: "kochina-game",
-  storageBucket: "kochina-game.firebasestorage.app",
-  messagingSenderId: "844086257220",
-  appId: "1:844086257220:web:46c4b71ab21f04c17fbe11",
-  measurementId: "G-3BJD8E8NXB"
-};
+        // Firebase Config - ضع إعداداتك هنا
+        const firebaseConfig = {
+            apiKey: "AIzaSyApbKTdcuE5vTLDEJ5Oi7hger3IRmpLE0A",
+            authDomain: "kochina-game.firebaseapp.com",
+            databaseURL: "https://kochina-game-default-rtdb.firebaseio.com",
+            projectId: "kochina-game",
+            storageBucket: "kochina-game.firebasestorage.app",
+            messagingSenderId: "844086257220",
+            appId: "1:844086257220:web:46c4b71ab21f04c17fbe11"
+        };
 
         firebase.initializeApp(firebaseConfig);
         const database = firebase.database();
 
-        // Game Constants
-        const RANKS = ['2', '3', '4', '5', '6', '7', '8', '9', '10', 'J', 'Q', 'K', 'A'];
-        const SUITS = ['♠', '♥', '♦', '♣'];
-        const RANK_NAMES_AR = {
-            'J': 'ولد',
-            'Q': 'بنت',
-            'K': 'شايب',
-            'A': 'إكه'
-        };
-
         // Game State
-        let gameState = {
+        const gameState = {
             roomCode: null,
             playerId: null,
             playerName: null,
-            isHost: false,
-            currentRoom: null,
-            selectedCard: null
+            isHost: false
         };
+
+        // Constants
+        const RANKS = ['2', '3', '4', '5', '6', '7', '8', '9', '10', 'J', 'Q', 'K', 'A'];
+        const SUITS = ['♠', '♥', '♦', '♣'];
 
         // Helper Functions
         function generateRoomCode() {
             const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
-            let code = '';
-            for (let i = 0; i < 6; i++) {
-                code += chars.charAt(Math.floor(Math.random() * chars.length));
-            }
-            return code;
-        }
-
-        function getCardDisplay(card) {
-            if (card.rank === 'JOKER') return 'جوكر 🃏';
-            const rankName = RANK_NAMES_AR[card.rank] || card.rank;
-            return `${rankName} ${card.suit}`;
+            return Array.from({length: 6}, () => chars[Math.floor(Math.random() * chars.length)]).join('');
         }
 
         function showScreen(screenId) {
-            document.querySelectorAll('.screen').forEach(screen => {
-                screen.classList.remove('active');
-            });
+            document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
             document.getElementById(screenId).classList.add('active');
         }
 
         function showModal(title, text, buttons) {
             document.getElementById('modalTitle').textContent = title;
             document.getElementById('modalText').textContent = text;
-            document.getElementById('modalContent').innerHTML = '';
             
             const buttonsDiv = document.getElementById('modalButtons');
             buttonsDiv.innerHTML = '';
             
             buttons.forEach(btn => {
                 const button = document.createElement('button');
-                button.className = 'modal-btn';
-                button.style.cssText = 'background: linear-gradient(135deg, #d4af37, #ffd700); color: #1a472a;';
+                button.className = 'modal-btn modal-btn-' + (btn.primary ? 'primary' : 'secondary');
                 button.textContent = btn.text;
                 button.onclick = () => {
-                    if (btn.action === 'close') {
-                        closeModal();
-                    } else if (typeof btn.action === 'function') {
-                        btn.action();
-                    }
+                    document.getElementById('modal').classList.remove('active');
+                    if (btn.action) btn.action();
                 };
                 buttonsDiv.appendChild(button);
             });
@@ -1100,48 +686,19 @@ const firebaseConfig = {
             document.getElementById('modal').classList.add('active');
         }
 
-        function closeModal() {
-            document.getElementById('modal').classList.remove('active');
-        }
-
-        function addLog(message, highlight = false) {
-            const time = new Date().toLocaleTimeString('ar-SA', {
-                hour: '2-digit',
-                minute: '2-digit'
-            });
-            
-            const logDiv = document.getElementById('gameLogEntries');
-            const entry = document.createElement('div');
-            entry.className = `log-entry ${highlight ? 'highlight' : ''}`;
-            entry.innerHTML = `
-                ${message}
-                <div class="log-time">${time}</div>
-            `;
-            
-            logDiv.insertBefore(entry, logDiv.firstChild);
-            
-            // Keep only last 15 entries
-            while (logDiv.children.length > 15) {
-                logDiv.removeChild(logDiv.lastChild);
-            }
-        }
-
-        // Create Deck
         function createDeck(numPlayers) {
             const deck = [];
-            
             for (let d = 0; d < numPlayers; d++) {
                 for (let suit of SUITS) {
                     for (let rank of RANKS) {
                         deck.push({
-                            rank: rank,
-                            suit: suit,
+                            rank,
+                            suit,
                             isRed: suit === '♥' || suit === '♦',
                             id: `${rank}${suit}-${d}`
                         });
                     }
                 }
-                
                 for (let j = 0; j < 4; j++) {
                     deck.push({
                         rank: 'JOKER',
@@ -1151,23 +708,14 @@ const firebaseConfig = {
                     });
                 }
             }
-            
-            return shuffleDeck(deck);
-        }
-
-        function shuffleDeck(deck) {
-            for (let i = deck.length - 1; i > 0; i--) {
-                const j = Math.floor(Math.random() * (i + 1));
-                [deck[i], deck[j]] = [deck[j], deck[i]];
-            }
-            return deck;
+            return deck.sort(() => Math.random() - 0.5);
         }
 
         // Room Functions
         async function createRoom() {
-            const playerName = document.getElementById('playerName').value.trim();
-            if (!playerName) {
-                showModal('تنبيه', 'الرجاء إدخال اسمك', [{text: 'حسناً', action: 'close'}]);
+            const name = document.getElementById('playerName').value.trim();
+            if (!name) {
+                showModal('تنبيه', 'الرجاء إدخال اسمك', [{text: 'حسناً'}]);
                 return;
             }
 
@@ -1176,175 +724,154 @@ const firebaseConfig = {
 
             gameState.roomCode = roomCode;
             gameState.playerId = playerId;
-            gameState.playerName = playerName;
+            gameState.playerName = name;
             gameState.isHost = true;
 
-            const roomData = {
-                code: roomCode,
-                host: playerId,
-                status: 'waiting',
-                gameMode: 'individual',
-                players: {
-                    [playerId]: {
-                        id: playerId,
-                        name: playerName,
-                        hand: [],
-                        wonCards: [],
-                        score: 0,
-                        isHost: true
-                    }
-                },
-                deck: [],
-                tableCards: {},
-                currentPlayerIndex: 0,
-                phase: 'draw',
-                challenge: null,
-                log: [],
-                createdAt: Date.now()
-            };
-
             try {
-                await database.ref('rooms/' + roomCode).set(roomData);
+                await database.ref('rooms/' + roomCode).set({
+                    code: roomCode,
+                    host: playerId,
+                    status: 'waiting',
+                    players: {
+                        [playerId]: {
+                            id: playerId,
+                            name: name,
+                            isHost: true,
+                            hand: [],
+                            score: 0
+                        }
+                    },
+                    createdAt: Date.now()
+                });
+
                 showScreen('waitingScreen');
                 document.getElementById('displayRoomCode').textContent = roomCode;
                 document.getElementById('hostControls').style.display = 'block';
                 document.getElementById('waitingMessage').style.display = 'none';
                 listenToRoom(roomCode);
             } catch (error) {
-                console.error('Error creating room:', error);
-                let errorMessage = 'حدث خطأ أثناء إنشاء الغرفة. ';
-                if (error.code === 'PERMISSION_DENIED') {
-                    errorMessage += 'يرجى التأكد من إعدادات Firebase.';
-                }
-                showModal('خطأ', errorMessage, [{text: 'حسناً', action: 'close'}]);
+                console.error(error);
+                showModal('خطأ', 'حدث خطأ في إنشاء الغرفة', [{text: 'حسناً'}]);
             }
         }
 
         async function joinRoom() {
-            const playerName = document.getElementById('playerName').value.trim();
-            const roomCode = document.getElementById('roomCode').value.trim().toUpperCase();
+            const name = document.getElementById('playerName').value.trim();
+            const code = document.getElementById('roomCode').value.trim().toUpperCase();
 
-            if (!playerName) {
-                showModal('تنبيه', 'الرجاء إدخال اسمك', [{text: 'حسناً', action: 'close'}]);
+            if (!name) {
+                showModal('تنبيه', 'الرجاء إدخال اسمك', [{text: 'حسناً'}]);
                 return;
             }
 
-            if (!roomCode) {
-                showModal('تنبيه', 'الرجاء إدخال كود الغرفة', [{text: 'حسناً', action: 'close'}]);
+            if (!code) {
+                showModal('تنبيه', 'الرجاء إدخال كود الغرفة', [{text: 'حسناً'}]);
                 return;
             }
 
             try {
-                const roomSnapshot = await database.ref('rooms/' + roomCode).once('value');
-                const roomData = roomSnapshot.val();
+                const snapshot = await database.ref('rooms/' + code).once('value');
+                const room = snapshot.val();
 
-                if (!roomData) {
-                    showModal('خطأ', 'الغرفة غير موجودة', [{text: 'حسناً', action: 'close'}]);
+                if (!room) {
+                    showModal('خطأ', 'الغرفة غير موجودة', [{text: 'حسناً'}]);
                     return;
                 }
 
-                if (roomData.status !== 'waiting') {
-                    showModal('خطأ', 'اللعبة قد بدأت بالفعل', [{text: 'حسناً', action: 'close'}]);
+                if (room.status !== 'waiting') {
+                    showModal('خطأ', 'اللعبة قد بدأت', [{text: 'حسناً'}]);
                     return;
                 }
 
                 const playerId = Date.now().toString();
-                gameState.roomCode = roomCode;
+                gameState.roomCode = code;
                 gameState.playerId = playerId;
-                gameState.playerName = playerName;
+                gameState.playerName = name;
                 gameState.isHost = false;
 
-                await database.ref('rooms/' + roomCode + '/players/' + playerId).set({
+                await database.ref('rooms/' + code + '/players/' + playerId).set({
                     id: playerId,
-                    name: playerName,
+                    name: name,
+                    isHost: false,
                     hand: [],
-                    wonCards: [],
-                    score: 0,
-                    isHost: false
+                    score: 0
                 });
 
                 showScreen('waitingScreen');
-                document.getElementById('displayRoomCode').textContent = roomCode;
+                document.getElementById('displayRoomCode').textContent = code;
                 document.getElementById('hostControls').style.display = 'none';
                 document.getElementById('waitingMessage').style.display = 'block';
-                listenToRoom(roomCode);
+                listenToRoom(code);
             } catch (error) {
-                console.error('Error joining room:', error);
-                showModal('خطأ', 'حدث خطأ أثناء الانضمام للغرفة', [{text: 'حسناً', action: 'close'}]);
+                console.error(error);
+                showModal('خطأ', 'حدث خطأ في الانضمام', [{text: 'حسناً'}]);
             }
         }
 
         function listenToRoom(roomCode) {
             database.ref('rooms/' + roomCode).on('value', (snapshot) => {
-                const roomData = snapshot.val();
-                if (!roomData) {
+                const room = snapshot.val();
+                if (!room) {
                     showModal('تنبيه', 'تم إغلاق الغرفة', [{
                         text: 'حسناً',
-                        action: () => {
-                            window.location.reload();
-                        }
+                        action: () => window.location.reload()
                     }]);
                     return;
                 }
 
-                gameState.currentRoom = roomData;
-
-                if (roomData.status === 'waiting') {
-                    updateWaitingScreen(roomData);
-                } else if (roomData.status === 'playing') {
-                    if (document.getElementById('gameScreen').classList.contains('active')) {
-                        updateGameScreen(roomData);
-                    } else {
+                if (room.status === 'waiting') {
+                    updateWaitingScreen(room);
+                } else if (room.status === 'playing') {
+                    if (!document.getElementById('gameScreen').classList.contains('active')) {
                         showScreen('gameScreen');
-                        initializeGameScreen(roomData);
                     }
+                    updateGameScreen(room);
                 }
             });
         }
 
-        function updateWaitingScreen(roomData) {
-            const playersDiv = document.getElementById('waitingPlayers');
-            const players = Object.values(roomData.players || {});
-            
-            playersDiv.innerHTML = '';
-            
+        function updateWaitingScreen(room) {
+            const players = Object.values(room.players);
+            const list = document.getElementById('playersList');
+            list.innerHTML = '';
+
             players.forEach(player => {
-                const playerItem = document.createElement('div');
-                playerItem.className = 'player-item';
-                playerItem.innerHTML = `
+                const div = document.createElement('div');
+                div.className = 'player-item';
+                div.innerHTML = `
                     <span class="player-name">${player.name}</span>
-                    ${player.isHost ? '<span class="player-badge">👑 المضيف</span>' : ''}
+                    ${player.isHost ? '<span class="host-badge">👑 المضيف</span>' : ''}
                 `;
-                playersDiv.appendChild(playerItem);
+                list.appendChild(div);
             });
 
             if (gameState.isHost) {
-                const startBtn = document.getElementById('startGameBtn');
+                const btn = document.getElementById('startBtn');
                 if (players.length >= 2) {
-                    startBtn.disabled = false;
-                    startBtn.innerHTML = `<span>بدء اللعبة (${players.length} لاعبين)</span>`;
+                    btn.disabled = false;
+                    btn.textContent = `بدء اللعبة (${players.length} لاعبين)`;
                 } else {
-                    startBtn.disabled = true;
-                    startBtn.innerHTML = '<span>بدء اللعبة (يلزم لاعبان على الأقل)</span>';
+                    btn.disabled = true;
+                    btn.textContent = 'بدء اللعبة (يلزم لاعبان)';
                 }
             }
         }
 
-        async function startGameAsHost() {
+        async function startGame() {
             if (!gameState.isHost) return;
 
-            const gameMode = document.getElementById('gameMode').value;
-            const roomData = gameState.currentRoom;
-            const players = Object.values(roomData.players);
+            const snapshot = await database.ref('rooms/' + gameState.roomCode).once('value');
+            const room = snapshot.val();
+            const players = Object.values(room.players);
 
             if (players.length < 2) {
-                showModal('تنبيه', 'يلزم لاعبان على الأقل لبدء اللعبة', [{text: 'حسناً', action: 'close'}]);
+                showModal('تنبيه', 'يلزم لاعبان على الأقل', [{text: 'حسناً'}]);
                 return;
             }
 
             const deck = createDeck(players.length);
             const updatedPlayers = {};
-            
+
             players.forEach(player => {
                 updatedPlayers[player.id] = {
                     ...player,
@@ -1359,386 +886,153 @@ const firebaseConfig = {
 
             await database.ref('rooms/' + gameState.roomCode).update({
                 status: 'playing',
-                gameMode: gameMode,
                 players: updatedPlayers,
                 deck: deck,
                 tableCards: tableCards,
                 currentPlayerIndex: 0,
-                phase: 'draw',
-                challenge: null,
-                log: [{
-                    message: 'بدأت اللعبة! حظاً موفقاً للجميع',
-                    time: Date.now(),
-                    highlight: true
-                }]
+                phase: 'draw'
             });
         }
 
-        function initializeGameScreen(roomData) {
-            document.getElementById('gameRoomCode').textContent = roomData.code;
-            updateGameScreen(roomData);
-        }
-
-        function updateGameScreen(roomData) {
-            const players = Object.values(roomData.players);
-            const currentPlayer = players[roomData.currentPlayerIndex];
-            const myPlayer = roomData.players[gameState.playerId];
+        function updateGameScreen(room) {
+            const players = Object.values(room.players);
+            const currentPlayer = players[room.currentPlayerIndex];
+            const myPlayer = room.players[gameState.playerId];
             const isMyTurn = currentPlayer && currentPlayer.id === gameState.playerId;
-            
-            // Update header
-            document.getElementById('currentTurnPlayer').textContent = currentPlayer ? currentPlayer.name : '-';
-            document.getElementById('gamePhase').textContent = roomData.phase === 'draw' ? 'سحب ورقة' : 'لعب ورقة';
-            document.getElementById('deckCount').textContent = roomData.deck.length;
 
-            // Update hint
-            const hintEl = document.getElementById('gameHint');
+            document.getElementById('currentTurn').textContent = currentPlayer ? currentPlayer.name : '-';
+            document.getElementById('gamePhase').textContent = room.phase === 'draw' ? 'سحب' : 'لعب';
+            document.getElementById('deckCount').textContent = room.deck ? room.deck.length : 0;
+
+            const hint = document.getElementById('gameHint');
             if (isMyTurn) {
-                if (roomData.phase === 'draw') {
-                    hintEl.textContent = 'اضغط على الرزمة لسحب ورقة!';
-                    hintEl.style.display = 'block';
-                } else {
-                    hintEl.textContent = 'اختر ورقة من يدك للعبها!';
-                    hintEl.style.display = 'block';
-                }
+                hint.textContent = room.phase === 'draw' ? 'اضغط على الرزمة!' : 'اختر ورقة!';
+                hint.style.display = 'block';
             } else {
-                hintEl.style.display = 'none';
+                hint.style.display = 'none';
             }
 
-            // Update table cards
-            updateTableCards(roomData.tableCards, roomData);
-
-            // Update players around table
-            updatePlayersAround(players, roomData.currentPlayerIndex, gameState.playerId);
-
-            // Update my hand
-            updatePlayerHand(myPlayer, roomData, isMyTurn);
-
-            // Update log
-            if (roomData.log && roomData.log.length > 0) {
-                const logDiv = document.getElementById('gameLogEntries');
-                logDiv.innerHTML = '';
-                roomData.log.slice(0, 15).forEach(entry => {
-                    const entryDiv = document.createElement('div');
-                    entryDiv.className = `log-entry ${entry.highlight ? 'highlight' : ''}`;
-                    const time = new Date(entry.time).toLocaleTimeString('ar-SA', {
-                        hour: '2-digit',
-                        minute: '2-digit'
-                    });
-                    entryDiv.innerHTML = `
-                        ${entry.message}
-                        <div class="log-time">${time}</div>
-                    `;
-                    logDiv.appendChild(entryDiv);
-                });
-            }
+            updateTableCards(room);
+            updatePlayerHand(myPlayer, isMyTurn, room);
         }
 
-        function updateTableCards(tableCards, roomData) {
-            const container = document.getElementById('tableCardsArea');
+        function updateTableCards(room) {
+            const container = document.getElementById('tableCards');
             container.innerHTML = '';
 
-            // Add deck
-            if (roomData.deck.length > 0) {
-                const deckStack = document.createElement('div');
-                deckStack.className = 'deck-stack';
-                deckStack.onclick = () => drawCard(roomData);
-                
-                for (let i = 0; i < 3; i++) {
-                    const cardDiv = document.createElement('div');
-                    cardDiv.className = 'card back';
-                    deckStack.appendChild(cardDiv);
-                }
-                
-                container.appendChild(deckStack);
+            // Deck
+            if (room.deck && room.deck.length > 0) {
+                const deck = document.createElement('div');
+                deck.className = 'card-item card-back';
+                deck.textContent = '🎴';
+                deck.onclick = () => drawCard(room);
+                container.appendChild(deck);
             }
 
-            // Add table cards
+            // Table cards
             RANKS.forEach(rank => {
-                const cardDiv = document.createElement('div');
-                
-                if (tableCards[rank]) {
-                    const card = tableCards[rank].card;
-                    cardDiv.className = `card ${card.isRed ? 'red' : 'black'} ${card.rank === 'JOKER' ? 'joker' : ''}`;
-                    
-                    if (card.rank === 'JOKER') {
-                        cardDiv.innerHTML = `
-                            <div>جوكر</div>
-                            <div class="card-suit">🃏</div>
-                        `;
-                    } else {
-                        const rankName = RANK_NAMES_AR[card.rank] || card.rank;
-                        cardDiv.innerHTML = `
-                            <div class="card-rank">${rankName}</div>
-                            <div class="card-suit">${card.suit}</div>
-                        `;
-                    }
-                } else {
-                    cardDiv.className = 'card';
-                    cardDiv.style.cssText = 'background: rgba(255, 255, 255, 0.05); border: 2px dashed rgba(212, 175, 55, 0.3);';
-                    const rankName = RANK_NAMES_AR[rank] || rank;
-                    cardDiv.innerHTML = `
-                        <div style="font-size: 0.9em; color: rgba(212, 175, 55, 0.5);">${rankName}</div>
+                const card = document.createElement('div');
+                if (room.tableCards && room.tableCards[rank]) {
+                    const c = room.tableCards[rank].card;
+                    card.className = `card-item ${c.isRed ? 'card-red' : 'card-black'}`;
+                    card.innerHTML = `
+                        <div class="card-rank">${rank}</div>
+                        <div class="card-suit">${c.suit}</div>
                     `;
+                } else {
+                    card.className = 'card-item card-empty';
+                    card.innerHTML = `<div style="font-size: 0.8em; color: rgba(255,255,255,0.5);">${rank}</div>`;
                 }
-                
-                container.appendChild(cardDiv);
+                container.appendChild(card);
             });
         }
 
-        function updatePlayersAround(players, currentPlayerIndex, myPlayerId) {
-            const container = document.getElementById('playersAround');
-            container.innerHTML = '';
+        function updatePlayerHand(player, isMyTurn, room) {
+            if (!player) return;
 
-            players.forEach((player, index) => {
-                const seatDiv = document.createElement('div');
-                seatDiv.className = `player-seat pos-${index}`;
-                
-                if (index === currentPlayerIndex) {
-                    seatDiv.classList.add('current-turn');
-                }
-                
-                if (player.id === myPlayerId) {
-                    seatDiv.classList.add('active');
-                }
-
-                seatDiv.innerHTML = `
-                    <div class="player-seat-name">${player.name}</div>
-                    <div class="player-seat-info">
-                        <div class="player-cards-badge">🎴 ${player.hand.length}</div>
-                        <div class="player-score-badge">⭐ ${player.score}</div>
-                    </div>
-                `;
-
-                container.appendChild(seatDiv);
-            });
-        }
-
-        function updatePlayerHand(myPlayer, roomData, isMyTurn) {
-            if (!myPlayer) return;
-
-            const container = document.getElementById('playerHandCards');
-            const handCount = document.getElementById('handCount');
+            const container = document.getElementById('playerHand');
+            const count = document.getElementById('handCount');
             
-            handCount.textContent = myPlayer.hand.length;
+            count.textContent = player.hand.length;
             container.innerHTML = '';
 
-            myPlayer.hand.forEach(card => {
-                const cardDiv = document.createElement('div');
-                cardDiv.className = `card ${card.isRed ? 'red' : 'black'} ${card.rank === 'JOKER' ? 'joker' : ''}`;
+            player.hand.forEach(card => {
+                const div = document.createElement('div');
+                div.className = `card-item ${card.isRed ? 'card-red' : 'card-black'}`;
+                div.innerHTML = `
+                    <div class="card-rank">${card.rank === 'JOKER' ? '🃏' : card.rank}</div>
+                    <div class="card-suit">${card.suit}</div>
+                `;
                 
-                if (gameState.selectedCard && gameState.selectedCard.id === card.id) {
-                    cardDiv.classList.add('selected');
+                if (isMyTurn && room.phase === 'play') {
+                    div.onclick = () => playCard(card, room);
                 }
-
-                if (card.rank === 'JOKER') {
-                    cardDiv.innerHTML = `
-                        <div>جوكر</div>
-                        <div class="card-suit">🃏</div>
-                    `;
-                } else {
-                    const rankName = RANK_NAMES_AR[card.rank] || card.rank;
-                    cardDiv.innerHTML = `
-                        <div class="card-rank">${rankName}</div>
-                        <div class="card-suit">${card.suit}</div>
-                    `;
-                }
-
-                if (isMyTurn && roomData.phase === 'play') {
-                    cardDiv.onclick = () => playCard(card, roomData);
-                }
-
-                container.appendChild(cardDiv);
+                
+                container.appendChild(div);
             });
         }
 
-        async function drawCard(roomData) {
-            const players = Object.values(roomData.players);
-            const currentPlayer = players[roomData.currentPlayerIndex];
+        async function drawCard(room) {
+            const players = Object.values(room.players);
+            const currentPlayer = players[room.currentPlayerIndex];
 
-            if (currentPlayer.id !== gameState.playerId || roomData.phase !== 'draw') {
-                showModal('تنبيه', 'ليس دورك لسحب ورقة', [{text: 'حسناً', action: 'close'}]);
+            if (currentPlayer.id !== gameState.playerId || room.phase !== 'draw') {
                 return;
             }
 
-            if (roomData.deck.length === 0) {
-                showModal('تنبيه', 'لا توجد أوراق متبقية', [{text: 'حسناً', action: 'close'}]);
+            if (!room.deck || room.deck.length === 0) {
                 return;
             }
 
-            const card = roomData.deck[roomData.deck.length - 1];
-            const newDeck = roomData.deck.slice(0, -1);
+            const card = room.deck[room.deck.length - 1];
+            const newDeck = room.deck.slice(0, -1);
             const newHand = [...currentPlayer.hand, card];
 
             await database.ref('rooms/' + gameState.roomCode).update({
                 [`players/${gameState.playerId}/hand`]: newHand,
                 deck: newDeck,
-                phase: 'play',
-                log: [
-                    {
-                        message: `${currentPlayer.name} سحب ورقة`,
-                        time: Date.now(),
-                        highlight: false
-                    },
-                    ...roomData.log
-                ]
+                phase: 'play'
             });
         }
 
-        async function playCard(card, roomData) {
-            const players = Object.values(roomData.players);
-            const currentPlayer = players[roomData.currentPlayerIndex];
+        async function playCard(card, room) {
+            const players = Object.values(room.players);
+            const currentPlayer = players[room.currentPlayerIndex];
 
-            if (currentPlayer.id !== gameState.playerId) {
+            if (currentPlayer.id !== gameState.playerId || room.phase !== 'play') {
                 return;
             }
 
-            if (roomData.phase !== 'play') {
-                return;
-            }
-
-            const myPlayer = roomData.players[gameState.playerId];
+            const myPlayer = room.players[gameState.playerId];
             const newHand = myPlayer.hand.filter(c => c.id !== card.id);
 
             if (card.rank === 'JOKER') {
-                // Show joker selection
-                showJokerSelection(card, newHand, roomData);
+                // TODO: Handle joker selection
+                showModal('جوكر', 'اختيار الجوكر قيد التطوير', [{text: 'حسناً'}]);
                 return;
             }
 
-            if (roomData.tableCards[card.rank] === null) {
-                // Place card on table
+            if (!room.tableCards[card.rank]) {
                 await database.ref('rooms/' + gameState.roomCode).update({
                     [`players/${gameState.playerId}/hand`]: newHand,
                     [`tableCards/${card.rank}`]: {
                         card: card,
                         owner: gameState.playerId
-                    },
-                    log: [
-                        {
-                            message: `${myPlayer.name} وضع ${getCardDisplay(card)} على الطاولة`,
-                            time: Date.now(),
-                            highlight: true
-                        },
-                        ...roomData.log
-                    ]
-                });
-
-                await nextTurn(roomData);
-            } else {
-                // Start challenge
-                await database.ref('rooms/' + gameState.roomCode).update({
-                    [`players/${gameState.playerId}/hand`]: newHand,
-                    challenge: {
-                        card: card,
-                        participants: [{
-                            playerId: gameState.playerId,
-                            playerName: myPlayer.name,
-                            cards: [card]
-                        }],
-                        startTime: Date.now()
-                    },
-                    log: [
-                        {
-                            message: `${myPlayer.name} بدأ تحدي على ${getCardDisplay(card)}!`,
-                            time: Date.now(),
-                            highlight: true
-                        },
-                        ...roomData.log
-                    ]
-                });
-            }
-        }
-
-        function showJokerSelection(jokerCard, newHand, roomData) {
-            const modalContent = document.getElementById('modalContent');
-            modalContent.innerHTML = '<div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; margin-top: 25px;" id="jokerOptions"></div>';
-
-            const optionsDiv = document.getElementById('jokerOptions');
-            RANKS.forEach(rank => {
-                const option = document.createElement('div');
-                option.style.cssText = 'padding: 18px; background: rgba(212, 175, 55, 0.2); border: 2px solid #d4af37; border-radius: 10px; cursor: pointer; transition: all 0.3s; font-size: 1.3em; font-weight: 700; text-align: center;';
-                option.textContent = RANK_NAMES_AR[rank] || rank;
-                option.onmouseover = () => {
-                    option.style.background = 'rgba(212, 175, 55, 0.4)';
-                    option.style.transform = 'scale(1.05)';
-                };
-                option.onmouseout = () => {
-                    option.style.background = 'rgba(212, 175, 55, 0.2)';
-                    option.style.transform = 'scale(1)';
-                };
-                option.onclick = async () => {
-                    closeModal();
-                    const myPlayer = roomData.players[gameState.playerId];
-                    
-                    if (roomData.tableCards[rank] === null) {
-                        await database.ref('rooms/' + gameState.roomCode).update({
-                            [`players/${gameState.playerId}/hand`]: newHand,
-                            [`tableCards/${rank}`]: {
-                                card: {...jokerCard, targetRank: rank},
-                                owner: gameState.playerId
-                            },
-                            log: [
-                                {
-                                    message: `${myPlayer.name} لعب جوكر على ${RANK_NAMES_AR[rank] || rank}`,
-                                    time: Date.now(),
-                                    highlight: true
-                                },
-                                ...roomData.log
-                            ]
-                        });
-                        await nextTurn(roomData);
-                    } else {
-                        await database.ref('rooms/' + gameState.roomCode).update({
-                            [`players/${gameState.playerId}/hand`]: newHand,
-                            challenge: {
-                                card: {...jokerCard, targetRank: rank},
-                                participants: [{
-                                    playerId: gameState.playerId,
-                                    playerName: myPlayer.name,
-                                    cards: [jokerCard]
-                                }],
-                                startTime: Date.now()
-                            },
-                            log: [
-                                {
-                                    message: `${myPlayer.name} بدأ تحدي بالجوكر على ${RANK_NAMES_AR[rank] || rank}!`,
-                                    time: Date.now(),
-                                    highlight: true
-                                },
-                                ...roomData.log
-                            ]
-                        });
                     }
-                };
-                optionsDiv.appendChild(option);
-            });
-
-            showModal('اختر الرقم للجوكر', 'أي رقم تريد استهدافه بالجوكر؟', []);
+                });
+                await nextTurn(room);
+            } else {
+                // TODO: Handle challenge
+                showModal('تحدي', 'نظام التحدي قيد التطوير', [{text: 'حسناً'}]);
+            }
         }
 
-        async function nextTurn(roomData) {
-            const players = Object.values(roomData.players);
-            const nextPlayerIndex = (roomData.currentPlayerIndex + 1) % players.length;
-
-            if (roomData.deck.length === 0 && players.every(p => p.hand.length === 0)) {
-                const winner = players.reduce((max, player) => 
-                    player.score > max.score ? player : max
-                );
-                
-                showModal('انتهت اللعبة!', `الفائز: ${winner.name} بـ ${winner.score} نقطة! 🎉`, 
-                    [{
-                        text: 'لعبة جديدة',
-                        action: () => {
-                            database.ref('rooms/' + gameState.roomCode).remove();
-                            window.location.reload();
-                        }
-                    }]
-                );
-                return;
-            }
+        async function nextTurn(room) {
+            const players = Object.values(room.players);
+            const nextIndex = (room.currentPlayerIndex + 1) % players.length;
 
             await database.ref('rooms/' + gameState.roomCode).update({
-                currentPlayerIndex: nextPlayerIndex,
+                currentPlayerIndex: nextIndex,
                 phase: 'draw'
             });
         }
@@ -1746,7 +1040,6 @@ const firebaseConfig = {
         function leaveRoom() {
             if (gameState.roomCode && gameState.playerId) {
                 database.ref('rooms/' + gameState.roomCode + '/players/' + gameState.playerId).remove();
-                
                 if (gameState.isHost) {
                     database.ref('rooms/' + gameState.roomCode).remove();
                 }
@@ -1754,8 +1047,8 @@ const firebaseConfig = {
             window.location.reload();
         }
 
-        // Auto-uppercase room code input
-        document.getElementById('roomCode').addEventListener('input', function(e) {
+        // Auto uppercase
+        document.getElementById('roomCode').addEventListener('input', function() {
             this.value = this.value.toUpperCase();
         });
     </script>
