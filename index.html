@@ -36,10 +36,11 @@
         .header h1 { font-size: 1.4em; color: #ffd700; }
 
         .card {
-            background: rgba(255,255,255,0.1);
+            background: linear-gradient(135deg, #1a237e 0%, #880e4f 100%);
             border-radius: 15px;
             padding: 15px;
             margin-bottom: 15px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.3);
         }
 
         input, select {
@@ -67,6 +68,7 @@
 
         button:hover { opacity: 0.9; }
         button:disabled { opacity: 0.4; cursor: not-allowed; }
+        button:active { transform: scale(0.98); }
 
         .btn-full { width: 100%; margin: 5px 0; }
         .btn-danger { background: linear-gradient(135deg, #e74c3c 0%, #c0392b 100%); }
@@ -396,10 +398,15 @@
                 <h1>🔍 المحقق المخادع 🔪</h1>
             </div>
             <div class="card">
-                <p style="text-align:center;margin-bottom:15px;font-size:0.9em;line-height:1.7;">
-                    جريمة قتل غامضة! القاتل يختار سلاحه ودليله، والشريك يساعده.
-                    الطبيب الشرعي يقدم الأدلة، والشاهد يعرف المتهمَين!
-                </p>
+                <div style="background:rgba(0,0,0,0.3);padding:15px;border-radius:10px;margin-bottom:20px;border-right:4px solid #ffd700;">
+                    <p style="text-align:right;font-size:0.85em;line-height:1.8;color:#fff;">
+                        <strong style="color:#ffd700;">📖 كيف تلعب:</strong><br><br>
+                        حدثت جريمة قتل، وهناك قاتل وشريك بين المحققين. يحتاج المحققون الحقيقيون إلى اكتشاف القاتل وأداة الجريمة والدليل. 
+                        يمكن التقدم في التحقيق عن طريق الطبيب الشرعي للمساعدة في كشف القاتل.<br><br>
+                        يوجد شاهد يعرف القاتل والشريك، ومهمته مساعدة المحققين في لفت الانتباه للقاتل من خلال تحرياته حول أداة الجريمة والدليل.<br><br>
+                        <strong style="color:#e74c3c;">⚠️ تنبيه:</strong> في حال اكتشف القاتل هوية الشاهد، ينتصر القاتل وشريكه ويخسر المحققون!
+                    </p>
+                </div>
                 <button onclick="showScreen('createRoomScreen')" class="btn-full">🏠 إنشاء غرفة</button>
                 <button onclick="showScreen('joinRoomScreen')" class="btn-full btn-secondary">🚪 انضمام</button>
             </div>
@@ -479,7 +486,8 @@
             </div>
 
             <div id="waitingMurderer" class="alert alert-warning hidden">
-                <p>⏳ القاتل يختار سلاح الجريمة...</p>
+                <p style="font-size:1.05em;margin-bottom:10px;">⏳ القاتل يختار سلاح الجريمة...</p>
+                <p style="font-size:0.9em;color:#f39c12;"><strong>👀 خل عينك على الجوال لما يخلص القاتل من اختيار السلاح والدليل</strong></p>
             </div>
 
             <div id="myItems" class="my-items hidden"></div>
@@ -526,212 +534,22 @@
 
     <script>
         // ========== Firebase ==========
-        firebase.initializeApp({
-            apiKey: "AIzaSyB88NCDQzsUzHZgH07B63e4Dpxc3LfXSyY",
-            authDomain: "detective-game-df960.firebaseapp.com",
-            databaseURL: "https://detective-game-df960-default-rtdb.europe-west1.firebasedatabase.app",
-            projectId: "detective-game-df960"
-        });
-        var db = firebase.database();
+        try {
+            firebase.initializeApp({
+                apiKey: "AIzaSyB88NCDQzsUzHZgH07B63e4Dpxc3LfXSyY",
+                authDomain: "detective-game-df960.firebaseapp.com",
+                databaseURL: "https://detective-game-df960-default-rtdb.europe-west1.firebasedatabase.app",
+                projectId: "detective-game-df960"
+            });
+            var db = firebase.database();
+            console.log('Firebase initialized successfully');
+        } catch (error) {
+            console.error('Firebase initialization error:', error);
+            alert('خطأ في الاتصال بقاعدة البيانات. يرجى التحقق من اتصالك بالإنترنت.');
+        }
 
-        var WEAPONS = [
-  '🔫 مسدس',
-  '🔪 سكين',
-  '🪓 فأس',
-  '🔨 مطرقة',
-  '🪢 حبل',
-  '☠️ سم',
-  '💉 حقنة',
-  '⚡ صاعق كهربائي',
-  '🔥 نار',
-  '🧊 ثلج حاد',
-  '⚔️ سيف',
-  '🗡️ خنجر',
-  '🏹 قوس وسهم',
-  '⛓️ سلسلة حديد',
-  '🔧 مفتاح ربط',
-  '🪛 مفك براغي',
-  '🔩 قضيب معدني',
-  '🪨 حجر صلب',
-  '🍳 مقلاة',
-  '🏏 عصا خشبية',
-  '⚾ مضرب بيسبول',
-  '✂️ مقص',
-  '🪚 منشار',
-  '🧯 مطفأة حريق',
-  '🪠 شفاط',
-  '🪝 خطاف',
-  '🛠️ أداة حادة',
-  '🪜 سلم معدني',
-  '🪑 كرسي',
-  '🛏️ لوح سرير',
-  '🧱 طوبة',
-  '🧨 متفجرات',
-  '💣 قنبلة',
-  '🪓 بلطة',
-  '🗜️ ملزمة',
-  '🔗 قيد حديدي',
-  '📎 مشبك معدني',
-  '🧲 مغناطيس قوي',
-  '🪞 مرآة مكسورة',
-  '🧹 عصا مكنسة',
-  '🪥 فرشاة حادة',
-  '🪒 موس حلاقة',
-  '🪫 بطارية محترقة',
-  '📌 دبوس كبير',
-  '🖊️ قلم معدني',
-  '🖋️ قلم حبر ثقيل',
-  '🧴 زجاجة كيميائية',
-  '🪔 مصباح زيت',
-  '🧂 ملح سام',
-  '🍾 زجاجة مكسورة',
-  '🥄 ملعقة حديد',
-  '🍴 شوكة حادة',
-  '🫙 مرطبان زجاج',
-  '📏 مسطرة معدنية',
-  '📐 زاوية حديد',
-  '🪪 بطاقة معدنية',
-  '📀 قرص حاد',
-  '💿 قرص مدمج',
-  '🧠 جهاز نفسي',
-  '🩸 مادة بيولوجية',
-  '🪟 زجاج نافذة',
-  '🧳 حقيبة ثقيلة',
-  '🪙 عملة معدنية',
-  '🛎️ جرس معدني',
-  '🪓 فأس جليد',
-  '🛠️ كماشة',
-  '🪝 سنارة',
-  '🧷 دبوس أمان',
-  '📡 جهاز صعق',
-  '🔋 بطارية متفجرة',
-  '🪫 شاحن كهربائي',
-  '📦 صندوق حديد',
-  '🪵 لوح خشبي',
-  '🧯 غاز خانق',
-  '🪬 حجر غامض',
-  '🧿 خرزة زرقاء صلبة',
-  '🧼 قالب صلب',
-  '🪶 ريشة مسمومة',
-  '🧵 خيط فولاذ',
-  '🪡 إبرة خياطة',
-  '🛢️ برميل زيت',
-  '🪤 فخ حديدي',
-  '🛑 حاجز معدني',
-  '📦 طرد مشبوه',
-  '🧪 مادة مختبرية',
-  '🩺 أداة طبية',
-  '🧠 جهاز صدمات',
-  '🪠 أداة ضغط',
-  '🧱 بلاطة إسمنت',
-  '🛠️ أداة صناعية'
-  '🐕‍🦺 كلب مسعور',
-  '🐝 نحلة قاتلة',
-  '🐅 مخلب نمر',
-
-];
-
-
-        var EVIDENCE = [
-  '👣 أثر أقدام',
-  '🩸 بقعة دم',
-  '💇 شعرة',
-  '👆 بصمة إصبع',
-  '🧵 قطعة قماش',
-  '📱 هاتف محمول',
-  '🔑 مفتاح',
-  '💍 خاتم',
-  '🎫 تذكرة',
-  '📝 رسالة مكتوبة',
-  '🧤 قفاز',
-  '👓 نظارة',
-  '⌚ ساعة يد',
-  '🎭 قناع',
-  '🧪 عينة كيميائية',
-  '📷 صورة فوتوغرافية',
-  '💳 بطاقة بنكية',
-  '🗝️ مفتاح قديم',
-  '📜 وثيقة رسمية',
-  '💊 حبوب دواء',
-  '🎵 تسجيل صوتي',
-  '📧 بريد إلكتروني',
-  '🖊️ قلم',
-  '👟 حذاء',
-  '🧢 قبعة',
-  '👕 قميص',
-  '👖 بنطال',
-  '👔 ربطة عنق',
-  '👗 فستان',
-  '👞 حذاء رسمي',
-  '🧦 جورب',
-  '🎒 حقيبة ظهر',
-  '👜 حقيبة يد',
-  '🧳 حقيبة سفر',
-  '📦 صندوق',
-  '📂 ملف',
-  '📁 مجلد',
-  '📎 مشبك ورق',
-  '🧷 دبوس أمان',
-  '📌 دبوس',
-  '🪪 بطاقة هوية',
-  '📄 عقد',
-  '📑 مستند ممزق',
-  '🗒️ ملاحظة',
-  '🧾 إيصال',
-  '📊 تقرير',
-  '📈 سجل بيانات',
-  '📉 كشف حساب',
-  '🖼️ لوحة',
-  '🪞 مرآة',
-  '🪟 زجاج مكسور',
-  '🚪 مقبض باب',
-  '🪑 كرسي',
-  '🛋️ أريكة',
-  '🛏️ سرير',
-  '🧸 دمية',
-  '🪀 لعبة',
-  '🎮 جهاز ألعاب',
-  '📀 قرص مدمج',
-  '💿 قرص بيانات',
-  '📼 شريط فيديو',
-  '📡 جهاز إرسال',
-  '🔌 قابس كهرباء',
-  '🔋 بطارية',
-  '💡 مصباح',
-  '🕯️ شمعة',
-  '🪔 مصباح زيتي',
-  '🧴 زجاجة',
-  '🧂 ملح',
-  '🍾 زجاجة مكسورة',
-  '🥃 كأس',
-  '☕ فنجان قهوة',
-  '🍽️ طبق',
-  '🥄 ملعقة',
-  '🍴 شوكة',
-  '🔪 سكين مطبخ',
-  '🧠 تقرير نفسي',
-  '🩺 تقرير طبي',
-  '📋 سجل ملاحظات',
-  '🧭 بوصلة',
-  '🗺️ خريطة',
-  '📍 دبوس موقع',
-  '⏱️ مؤقت',
-  '⏰ منبه',
-  '📹 تسجيل فيديو',
-  '🧪 أنبوب اختبار',
-  '🧫 عينة بيولوجية',
-  '🧬 حمض نووي',
-  '🪙 عملة معدنية',
-  '🛎️ جرس',
-  '🔔 منبه يدوي',
-  '🧿 خرزة',
-  '🪬 تميمة'
-  '🌲 اغصن شجرة',
-  '🍃 أوراق شجر عالقة',
-  '🪵 قطعة خشب مكسورة',
-
-];
-
+        var WEAPONS = ['🔫 مسدس','🔪 سكين','🪓 فأس','🔨 مطرقة','🪢 حبل','☠️ سم','💉 حقنة','⚡ صاعق كهربائي','🔥 نار','🧊 ثلج حاد','⚔️ سيف','🗡️ خنجر','🏹 قوس وسهم','⛓️ سلسلة حديد','🔧 مفتاح ربط','🪛 مفك براغي','🔩 قضيب معدني','🪨 حجر صلب','🍳 مقلاة','🏏 عصا خشبية','⚾ مضرب بيسبول','✂️ مقص','🪚 منشار','🧯 مطفأة حريق','🪠 شفاط','🪝 خطاف','🛠️ أداة حادة','🪜 سلم معدني','🪑 كرسي','🛏️ لوح سرير','🧱 طوبة','🧨 متفجرات','💣 قنبلة','🪓 بلطة','🗜️ ملزمة','🔗 قيد حديدي','📎 مشبك معدني','🧲 مغناطيس قوي','🪞 مرآة مكسورة','🧹 عصا مكنسة','🪥 فرشاة حادة','🪒 موس حلاقة','🪫 بطارية محترقة','📌 دبوس كبير','🖊️ قلم معدني','🖋️ قلم حبر ثقيل','🧴 زجاجة كيميائية','🪔 مصباح زيت','🧂 ملح سام','🍾 زجاجة مكسورة','🥄 ملعقة حديد','🍴 شوكة حادة','🫙 مرطبان زجاج','📏 مسطرة معدنية','📐 زاوية حديد','🪪 بطاقة معدنية','📀 قرص حاد','💿 قرص مدمج','🧠 جهاز نفسي','🩸 مادة بيولوجية','🪟 زجاج نافذة','🧳 حقيبة ثقيلة','🪙 عملة معدنية','🛎️ جرس معدني','🪓 فأس جليد','🛠️ كماشة','🪝 سنارة','🧷 دبوس أمان','📡 جهاز صعق','🔋 بطارية متفجرة','🪫 شاحن كهربائي','📦 صندوق حديد','🪵 لوح خشبي','🧯 غاز خانق','🪬 حجر غامض','🧿 خرزة زرقاء صلبة','🧼 قالب صلب','🪶 ريشة مسمومة','🧵 خيط فولاذ','🪡 إبرة خياطة','🛢️ برميل زيت','🪤 فخ حديدي','🛑 حاجز معدني','📦 طرد مشبوه','🧪 مادة مختبرية','🩺 أداة طبية','🧠 جهاز صدمات','🪠 أداة ضغط','🧱 بلاطة إسمنت','🛠️ أداة صناعية','🐕‍🦺 كلب مسعور','🐝 نحلة قاتلة','🐅 مخلب نمر'];
+        var EVIDENCE = ['👣 أثر أقدام','🩸 بقعة دم','💇 شعرة','👆 بصمة إصبع','🧵 قطعة قماش','📱 هاتف محمول','🔑 مفتاح','💍 خاتم','🎫 تذكرة','📝 رسالة مكتوبة','🧤 قفاز','👓 نظارة','⌚ ساعة يد','🎭 قناع','🧪 عينة كيميائية','📷 صورة فوتوغرافية','💳 بطاقة بنكية','🗝️ مفتاح قديم','📜 وثيقة رسمية','💊 حبوب دواء','🎵 تسجيل صوتي','📧 بريد إلكتروني','🖊️ قلم','👟 حذاء','🧢 قبعة','👕 قميص','👖 بنطال','👔 ربطة عنق','👗 فستان','👞 حذاء رسمي','🧦 جورب','🎒 حقيبة ظهر','👜 حقيبة يد','🧳 حقيبة سفر','📦 صندوق','📂 ملف','📁 مجلد','📎 مشبك ورق','🧷 دبوس أمان','📌 دبوس','🪪 بطاقة هوية','📄 عقد','📑 مستند ممزق','🗒️ ملاحظة','🧾 إيصال','📊 تقرير','📈 سجل بيانات','📉 كشف حساب','🖼️ لوحة','🪞 مرآة','🪟 زجاج مكسور','🚪 مقبض باب','🪑 كرسي','🛋️ أريكة','🛏️ سرير','🧸 دمية','🪀 لعبة','🎮 جهاز ألعاب','📀 قرص مدمج','💿 قرص بيانات','📼 شريط فيديو','📡 جهاز إرسال','🔌 قابس كهرباء','🔋 بطارية','💡 مصباح','🕯️ شمعة','🪔 مصباح زيتي','🧴 زجاجة','🧂 ملح','🍾 زجاجة مكسورة','🥃 كأس','☕ فنجان قهوة','🍽️ طبق','🥄 ملعقة','🍴 شوكة','🔪 سكين مطبخ','🧠 تقرير نفسي','🩺 تقرير طبي','📋 سجل ملاحظات','🧭 بوصلة','🗺️ خريطة','📍 دبوس موقع','⏱️ مؤقت','⏰ منبه','📹 تسجيل فيديو','🧪 أنبوب اختبار','🧫 عينة بيولوجية','🧬 حمض نووي','🪙 عملة معدنية','🛎️ جرس','🔔 منبه يدوي','🧿 خرزة','🪬 تميمة','🌲 اغصن شجرة','🍃 أوراق شجر عالقة','🪵 قطعة خشب مكسورة'];
 
         var CLUE_CARDS = [
             { title: '💀 سبب الوفاة', options: ['اختناق', 'إصابة بالغة', 'نزيف', 'مرض', 'تسمم', 'حادث'], fixed: true },
@@ -750,14 +568,12 @@
             { title: '🎒 أداة مساعدة', options: ['حقيبة', 'سيارة', 'قفازات', 'قناع', 'هاتف', 'مفتاح'] }
         ];
 
-        // بطاقات مواقع الجريمة (4 بطاقات)
         var LOCATION_CARDS = [
             { title: '📍 موقع الجريمة', options: ['غرفة نوم', 'مطبخ', 'حمام', 'غرفة جلوس', 'شرفه', 'غرفة تخزين'], isLocation: true },
             { title: '📍 موقع الجريمة', options: ['ملعب', 'صف', 'مهجع', 'كافتيريا', 'مصعد', 'مرحاض'], isLocation: true },
             { title: '📍 موقع الجريمة', options: ['حديقة', 'بيت العطلة', 'سوبر ماركت', 'غابة', 'مدرسة', 'بنك'], isLocation: true },
             { title: '📍 موقع الجريمة', options: ['حانة', 'فندق', 'مكتبة', 'مستشفى', 'ورشة بناء', 'فندق'], isLocation: true }
         ];
-
 
         // ========== State ==========
         var game = {
@@ -795,12 +611,16 @@
 
         // ========== Session ==========
         function saveSession() {
-            sessionStorage.setItem('dg', JSON.stringify({
-                roomCode: game.roomCode,
-                oderId: game.oderId,
-                name: game.name,
-                isHost: game.isHost
-            }));
+            try {
+                sessionStorage.setItem('dg', JSON.stringify({
+                    roomCode: game.roomCode,
+                    oderId: game.oderId,
+                    name: game.name,
+                    isHost: game.isHost
+                }));
+            } catch (e) {
+                console.error('Session save error:', e);
+            }
         }
 
         function loadSession() {
@@ -813,7 +633,9 @@
                     game.isHost = s.isHost;
                     return true;
                 }
-            } catch(e) {}
+            } catch(e) {
+                console.error('Session load error:', e);
+            }
             return false;
         }
 
@@ -834,7 +656,10 @@
         }
         function showScreen(id) {
             document.querySelectorAll('.screen').forEach(function(s) { s.classList.remove('active'); });
-            document.getElementById(id).classList.add('active');
+            var screen = document.getElementById(id);
+            if (screen) {
+                screen.classList.add('active');
+            }
         }
 
         // ========== Room ==========
@@ -927,7 +752,6 @@
             var roles = ['forensic', 'murderer', 'accomplice', 'witness'];
             for (var i = 4; i < shuffled.length; i++) roles.push('investigator');
 
-            // توزيع الأسلحة والأدلة بشكل فريد (بدون تكرار)
             var allWeapons = shuffle(WEAPONS.slice());
             var allEvidence = shuffle(EVIDENCE.slice());
             var weaponIndex = 0;
@@ -965,10 +789,9 @@
             game.phase = 'choosing';
             game.round = 1;
             
-            // البطاقات: سبب الوفاة (ثابت) + موقع جريمة عشوائي من الـ 4 + 4 بطاقات عشوائية
-            var causeOfDeath = CLUE_CARDS[0]; // سبب الوفاة (ثابت)
-            var randomLocation = LOCATION_CARDS[Math.floor(Math.random() * LOCATION_CARDS.length)]; // موقع عشوائي
-            var randomCards = shuffle(CLUE_CARDS.slice(1)).slice(0, 4); // 4 بطاقات عشوائية
+            var causeOfDeath = CLUE_CARDS[0];
+            var randomLocation = LOCATION_CARDS[Math.floor(Math.random() * LOCATION_CARDS.length)];
+            var randomCards = shuffle(CLUE_CARDS.slice(1)).slice(0, 4);
             game.cards = [causeOfDeath, randomLocation].concat(randomCards);
             game.locationChanged = false;
             game.replacedInRound = {};
@@ -976,14 +799,12 @@
             db.ref('rooms/' + game.roomCode).set(game);
         }
 
-        // إعادة اللعبة بنفس اللاعبين
         function restartGame() {
             if (!game.isHost) {
                 alert('فقط المضيف يمكنه إعادة اللعبة');
                 return;
             }
 
-            // إعادة تعيين بيانات اللاعبين
             var resetPlayers = game.players.map(function(p) {
                 return {
                     id: p.id,
@@ -995,7 +816,6 @@
                 };
             });
 
-            // إعادة تعيين حالة اللعبة بالكامل
             var resetGame = {
                 roomCode: game.roomCode,
                 maxPlayers: game.maxPlayers,
@@ -1022,7 +842,6 @@
             db.ref('rooms/' + game.roomCode).set(resetGame);
         }
 
-        // طرد لاعب
         function kickPlayer(playerId) {
             if (!game.isHost) return;
             if (game.started) {
@@ -1033,7 +852,6 @@
             db.ref('rooms/' + game.roomCode + '/players').set(game.players);
         }
 
-        // مغادرة الغرفة
         function leaveRoom() {
             if (game.started) {
                 alert('لا يمكن المغادرة أثناء اللعبة');
@@ -1041,14 +859,12 @@
             }
 
             if (game.isHost) {
-                // إذا كان المضيف، نسأله إذا يريد حذف الغرفة
                 if (confirm('أنت المضيف. هل تريد حذف الغرفة بالكامل؟')) {
                     db.ref('rooms/' + game.roomCode).remove();
                     sessionStorage.clear();
                     location.reload();
                 }
             } else {
-                // إذا كان لاعب عادي، نحذفه من القائمة
                 game.players = game.players.filter(function(p) { return p.id !== game.oderId; });
                 db.ref('rooms/' + game.roomCode + '/players').set(game.players).then(function() {
                     sessionStorage.clear();
@@ -1072,21 +888,19 @@
                     showMurdererSelection(me);
                 } else {
                     document.getElementById('waitingMurderer').classList.remove('hidden');
-                    // إظهار أسلحة وأدلة اللاعب أثناء انتظار القاتل
                     showMyItemsWhileWaiting(me);
                 }
             } else if (game.phase === 'playing') {
                 showPlaying(me);
             } else if (game.phase === 'witness_guess') {
                 showWitnessGuess();
-            } else if (game.phase === 'ended') {
+            } else if (game.phase === 'ended' || game.phase === 'murderer_wins' || game.phase === 'investigators_win' || game.phase === 'murderer_wins_all_wrong') {
                 showResult();
             }
         }
 
-        // إظهار أسلحة وأدلة اللاعب أثناء انتظار القاتل
         function showMyItemsWhileWaiting(me) {
-            if (me.role === 'forensic') return; // الطبيب الشرعي ليس لديه أسلحة
+            if (me.role === 'forensic') return;
             
             var itemsDiv = document.getElementById('myItems');
             itemsDiv.classList.remove('hidden');
@@ -1127,7 +941,6 @@
             title.textContent = r.t;
             desc.textContent = r.d;
 
-            // Secret info
             var sec = document.getElementById('secretInfo');
             var wit = document.getElementById('witnessInfo');
             sec.classList.add('hidden');
@@ -1156,7 +969,6 @@
             var sec = document.getElementById('murdererSelection');
             sec.classList.remove('hidden');
 
-            // عرض أسلحة وأدلة جميع اللاعبين
             var allDiv = document.getElementById('allPlayersItems');
             allDiv.innerHTML = '<h4 style="margin-bottom:10px;color:#f39c12;">👁️ أسلحة وأدلة جميع اللاعبين:</h4>';
             
@@ -1172,7 +984,6 @@
                 allDiv.innerHTML += itemHtml;
             });
 
-            // أسلحة وأدلة القاتل للاختيار
             var wDiv = document.getElementById('murdererWeapons');
             var eDiv = document.getElementById('murdererEvidence');
             wDiv.innerHTML = '';
@@ -1226,7 +1037,6 @@
             document.getElementById('murdererSelection').classList.add('hidden');
             document.getElementById('waitingMurderer').classList.add('hidden');
 
-            // My items (not forensic)
             if (me.role !== 'forensic') {
                 var items = document.getElementById('myItems');
                 items.classList.remove('hidden');
@@ -1239,7 +1049,6 @@
                 items.innerHTML = html;
             }
 
-            // Update accomplice secret
             if (me.role === 'accomplice') {
                 var sec = document.getElementById('secretInfo');
                 sec.classList.remove('hidden');
@@ -1248,15 +1057,12 @@
                     '<p>🔍 الدليل: <strong>' + game.evidence + '</strong></p>';
             }
 
-            // Players section
             document.getElementById('playersSection').classList.remove('hidden');
             renderPlayers();
 
-            // Clues bar
             document.getElementById('cluesBar').classList.remove('hidden');
             updateCluesBar();
 
-            // Forensic panel
             if (me.role === 'forensic') {
                 document.getElementById('forensicPanel').classList.remove('hidden');
                 document.getElementById('fMurderer').textContent = game.murderer;
@@ -1291,22 +1097,24 @@
                 });
             }
 
-            // Update forensic panel
             if (game.role === 'forensic') {
                 document.getElementById('currentRound').textContent = game.round;
                 document.getElementById('cluesInRound').textContent = game.clues.length;
                 
                 var btn = document.getElementById('nextRoundBtn');
-                if (game.clues.length >= 6 && game.round < 3) {
-                    btn.style.display = 'block';
-                } else {
-                    btn.style.display = 'none';
+                if (btn) {
+                    if (game.clues.length >= 6 && game.round < 3) {
+                        btn.style.display = 'block';
+                    } else {
+                        btn.style.display = 'none';
+                    }
                 }
             }
         }
 
         function renderForensicCards() {
             var container = document.getElementById('forensicCards');
+            if (!container) return;
             container.innerHTML = '';
 
             var alreadyReplacedThisRound = game.replacedInRound && game.replacedInRound[game.round];
@@ -1316,13 +1124,12 @@
                 var div = document.createElement('div');
                 div.className = 'clue-card' + (used ? ' used' : '');
                 
-                // تحديد إذا كان يمكن استبدال هذه البطاقة
                 var canReplace = false;
                 if (game.round > 1 && !alreadyReplacedThisRound && used) {
                     if (card.fixed) {
-                        canReplace = false; // سبب الوفاة لا يمكن استبداله أبداً
+                        canReplace = false;
                     } else if (card.isLocation) {
-                        canReplace = !game.locationChanged; // موقع الجريمة يمكن استبداله مرة واحدة فقط
+                        canReplace = !game.locationChanged;
                     } else {
                         canReplace = true;
                     }
@@ -1349,18 +1156,20 @@
                 container.appendChild(div);
             });
 
-            // إظهار البطاقة المحددة للاستبدال
             if (selectedCardToReplace !== null) {
                 var replaceCard = game.cards[selectedCardToReplace];
-                var replaceMsg = replaceCard.isLocation ? 
-                    'سيتم استبدالها ببطاقة موقع جريمة أخرى' : 
-                    'سيتم استبدالها ببطاقة عشوائية';
-                    
+                
                 container.innerHTML += '<div class="alert alert-warning" style="margin-top:10px;">' +
-                    '<p>استبدال: <strong>' + replaceCard.title + '</strong></p>' +
-                    '<p style="font-size:0.85em;opacity:0.8;">' + replaceMsg + '</p>' +
-                    '<button onclick="confirmReplace()" class="btn-small btn-danger">تأكيد</button> ' +
-                    '<button onclick="cancelReplace()" class="btn-small btn-secondary">إلغاء</button>' +
+                    '<p style="margin-bottom:10px;"><strong>استبدال: ' + replaceCard.title + '</strong></p>' +
+                    '<div style="display:flex;gap:8px;margin-bottom:12px;">' +
+                    '<button onclick="setReplaceMode(\'card\')" class="btn-small ' + (replaceMode === 'card' ? 'btn-danger' : 'btn-secondary') + '" style="flex:1;">🔄 تبديل البطاقة كاملة</button>' +
+                    '<button onclick="setReplaceMode(\'option\')" class="btn-small ' + (replaceMode === 'option' ? 'btn-danger' : 'btn-secondary') + '" style="flex:1;">✏️ تبديل خيار واحد</button>' +
+                    '</div>' +
+                    '<p style="font-size:0.85em;opacity:0.8;margin-bottom:10px;">' + 
+                    (replaceMode === 'card' ? '🔄 سيتم استبدال البطاقة كاملة ببطاقة أخرى' : '✏️ سيتم استبدال الخيار المختار فقط بخيار جديد') + 
+                    '</p>' +
+                    '<button onclick="confirmReplace()" class="btn-small btn-danger">✓ تأكيد</button> ' +
+                    '<button onclick="cancelReplace()" class="btn-small btn-secondary">✖ إلغاء</button>' +
                     '</div>';
             }
         }
@@ -1370,8 +1179,16 @@
             renderForensicCards();
         }
 
+        var replaceMode = 'card'; // 'card' أو 'option'
+
+        function setReplaceMode(mode) {
+            replaceMode = mode;
+            renderForensicCards();
+        }
+
         function cancelReplace() {
             selectedCardToReplace = null;
+            replaceMode = 'card';
             renderForensicCards();
         }
 
@@ -1380,44 +1197,65 @@
 
             var idx = selectedCardToReplace;
             var currentCard = game.cards[idx];
-            var newCard = null;
             
-            // إذا كانت بطاقة موقع الجريمة، نستبدلها ببطاقة موقع أخرى
-            if (currentCard.isLocation) {
-                var availableLocations = LOCATION_CARDS.filter(function(c) {
-                    return c.options.join() !== currentCard.options.join();
-                });
-                if (availableLocations.length > 0) {
-                    newCard = availableLocations[Math.floor(Math.random() * availableLocations.length)];
-                    game.locationChanged = true;
+            if (replaceMode === 'card') {
+                // استبدال البطاقة كاملة
+                var newCard = null;
+                
+                if (currentCard.isLocation) {
+                    var availableLocations = LOCATION_CARDS.filter(function(c) {
+                        return c.options.join() !== currentCard.options.join();
+                    });
+                    if (availableLocations.length > 0) {
+                        newCard = availableLocations[Math.floor(Math.random() * availableLocations.length)];
+                        game.locationChanged = true;
+                    }
+                } else {
+                    var usedTitles = game.cards.map(function(c) { return c.title; });
+                    var available = CLUE_CARDS.filter(function(c) { 
+                        return !usedTitles.includes(c.title) && !c.fixed && !c.isLocation; 
+                    });
+                    if (available.length > 0) {
+                        newCard = available[Math.floor(Math.random() * available.length)];
+                    }
+                }
+
+                if (newCard) {
+                    game.cards[idx] = newCard;
+                    game.clues = game.clues.filter(function(c) { return c.cardIndex !== idx; });
                 }
             } else {
-                // بطاقة عادية - نستبدلها ببطاقة عشوائية
-                var usedTitles = game.cards.map(function(c) { return c.title; });
-                var available = CLUE_CARDS.filter(function(c) { 
-                    return !usedTitles.includes(c.title) && !c.fixed && !c.isLocation; 
-                });
-                if (available.length > 0) {
-                    newCard = available[Math.floor(Math.random() * available.length)];
+                // استبدال خيار واحد فقط
+                var selectedClue = game.clues.find(function(c) { return c.cardIndex === idx; });
+                if (selectedClue) {
+                    // إزالة الخيار الحالي من البطاقة
+                    var currentOptions = currentCard.options.slice();
+                    var currentOption = selectedClue.option;
+                    var optionIndex = currentOptions.indexOf(currentOption);
+                    
+                    if (optionIndex > -1) {
+                        // استبدال بخيار عشوائي جديد (يمكن تحسينه لاحقاً)
+                        var newOption = 'خيار جديد ' + Math.floor(Math.random() * 100);
+                        currentOptions[optionIndex] = newOption;
+                        
+                        game.cards[idx].options = currentOptions;
+                        game.clues = game.clues.filter(function(c) { return c.cardIndex !== idx; });
+                    }
                 }
             }
+            
+            if (!game.replacedInRound) game.replacedInRound = {};
+            game.replacedInRound[game.round] = true;
 
-            if (newCard) {
-                game.cards[idx] = newCard;
-                game.clues = game.clues.filter(function(c) { return c.cardIndex !== idx; });
-                
-                if (!game.replacedInRound) game.replacedInRound = {};
-                game.replacedInRound[game.round] = true;
-
-                db.ref('rooms/' + game.roomCode).update({
-                    cards: game.cards,
-                    clues: game.clues,
-                    locationChanged: game.locationChanged,
-                    replacedInRound: game.replacedInRound
-                });
-            }
+            db.ref('rooms/' + game.roomCode).update({
+                cards: game.cards,
+                clues: game.clues,
+                locationChanged: game.locationChanged,
+                replacedInRound: game.replacedInRound
+            });
 
             selectedCardToReplace = null;
+            replaceMode = 'card';
             renderForensicCards();
             updateCluesBar();
         }
@@ -1440,7 +1278,6 @@
             if (game.round >= 3) return;
             game.round++;
             
-            // لا نستبدل تلقائياً - اللاعب يختار البطاقة للاستبدال
             db.ref('rooms/' + game.roomCode).update({
                 round: game.round
             });
@@ -1453,6 +1290,7 @@
         // ========== Players & Voting ==========
         function renderPlayers() {
             var container = document.getElementById('playersList');
+            if (!container) return;
             container.innerHTML = '';
 
             var myVote = game.votes.find(function(v) { return v.oderId === game.oderId; });
@@ -1460,10 +1298,8 @@
 
             var votesOnMe = game.votes.filter(function(v) { return v.suspect === game.name; });
 
-            // التحقق من انتهاء اللعبة (الكل صوّت خطأ)
             checkAllVotedWrong();
 
-            // إظهار التصويتات على اللاعب الحالي أولاً
             if (votesOnMe.length > 0) {
                 var alertDiv = document.createElement('div');
                 alertDiv.className = 'alert alert-danger';
@@ -1506,7 +1342,6 @@
                 }
                 html += '</div>';
 
-                // عرض أسلحة وأدلة اللاعب
                 html += '<div class="player-items">';
                 html += '<span style="width:100%;font-size:0.8em;color:#e74c3c;margin-bottom:3px;">⚔️ الأسلحة:</span>';
                 p.weapons.forEach(function(w) {
@@ -1531,7 +1366,6 @@
                 });
                 html += '</div>';
 
-                // زر التصويت
                 if (selectedSuspect === p.id && !hasVoted && game.role !== 'forensic') {
                     html += '<button class="vote-btn btn-danger" onclick="submitVote(\'' + p.id + '\',\'' + p.name + '\')">🗳️ تأكيد التصويت</button>';
                 } else if (!hasVoted && game.role !== 'forensic') {
@@ -1554,16 +1388,12 @@
             });
         }
 
-        // التحقق إذا صوّت الجميع بشكل خاطئ
         function checkAllVotedWrong() {
-            // عدد المحققين (الكل ما عدا الطبيب الشرعي)
             var investigators = game.players.filter(function(p) {
                 return p.role !== 'forensic';
             });
 
-            // التحقق إذا صوّت الجميع
             if (game.votes.length >= investigators.length) {
-                // التحقق إذا كل التصويتات خاطئة
                 var anyCorrect = game.votes.some(function(v) { return v.correct; });
                 
                 if (!anyCorrect && game.phase === 'playing') {
@@ -1577,12 +1407,10 @@
             if (game.role === 'forensic' || hasVoted) return;
             
             if (selectedSuspect === id) {
-                // Deselect
                 selectedSuspect = null;
                 selectedSuspectWeapon = null;
                 selectedSuspectEvidence = null;
             } else {
-                // Select new
                 selectedSuspect = id;
                 selectedSuspectWeapon = null;
                 selectedSuspectEvidence = null;
@@ -1593,7 +1421,6 @@
         function selectVoteItem(playerId, type, val) {
             if (game.role === 'forensic' || hasVoted) return;
             
-            // Auto-select this player if not selected
             if (selectedSuspect !== playerId) {
                 selectedSuspect = playerId;
                 selectedSuspectWeapon = null;
@@ -1650,7 +1477,6 @@
                 db.ref('rooms/' + game.roomCode + '/votes').set(game.votes);
             }
 
-            // Reset selection
             selectedSuspect = null;
             selectedSuspectWeapon = null;
             selectedSuspectEvidence = null;
@@ -1668,7 +1494,7 @@
 
             var res = document.getElementById('gameResults');
             res.classList.remove('hidden');
-            res.innerHTML = ''; // مسح المحتوى السابق
+            res.innerHTML = '';
 
             var box = document.createElement('div');
             box.className = 'results-box';
@@ -1729,8 +1555,6 @@
                 box.appendChild(waitDiv);
             }
         }
-
-        // حذف guessWitness القديمة لأننا نستخدم onclick مباشرة
 
         function showResult() {
             document.getElementById('playersSection').classList.add('hidden');
@@ -1797,9 +1621,7 @@
                 game.players = d.players || [];
                 game.maxPlayers = d.maxPlayers;
 
-                // التحقق من إعادة اللعبة
                 if (game.started && !d.started) {
-                    // تم إعادة اللعبة - إعادة تعيين كل شيء
                     game.started = false;
                     game.role = null;
                     game.weapon = null;
@@ -1819,7 +1641,6 @@
                     game.correctVoter = null;
                     game.witnessGuess = null;
                     
-                    // إعادة تعيين المتغيرات المحلية
                     hasVoted = false;
                     selectedWeapon = null;
                     selectedEvidence = null;
@@ -1828,7 +1649,6 @@
                     selectedSuspectEvidence = null;
                     selectedCardToReplace = null;
                     
-                    // إخفاء كل العناصر
                     document.getElementById('gameResults').classList.add('hidden');
                     document.getElementById('murdererSelection').classList.add('hidden');
                     document.getElementById('waitingMurderer').classList.add('hidden');
@@ -1871,7 +1691,6 @@
                 game.locationChanged = d.locationChanged || false;
                 game.replacedInRound = d.replacedInRound || {};
 
-                // إعادة تعيين hasVoted إذا لم يكن هناك تصويت سابق
                 if (!game.votes || game.votes.length === 0) {
                     hasVoted = false;
                 } else {
@@ -1880,7 +1699,6 @@
                 }
 
                 if (game.started) {
-                    // التحقق من مرحلة النهاية
                     if (game.phase === 'murderer_wins' || game.phase === 'investigators_win' || game.phase === 'murderer_wins_all_wrong') {
                         showResult();
                     } else {
@@ -1892,6 +1710,8 @@
 
         // ========== Init ==========
         window.onload = function() {
+            console.log('App initialized');
+            
             if (loadSession()) {
                 db.ref('rooms/' + game.roomCode).once('value').then(function(snap) {
                     if (snap.exists()) {
@@ -1925,12 +1745,10 @@
                             }
                             listen();
                         } else {
-                            // اللاعب غير موجود في الغرفة - مسح الجلسة
                             sessionStorage.clear();
                             showScreen('homeScreen');
                         }
                     } else {
-                        // الغرفة غير موجودة - مسح الجلسة
                         sessionStorage.clear();
                         showScreen('homeScreen');
                     }
@@ -1940,7 +1758,6 @@
                     showScreen('homeScreen');
                 });
             } else {
-                // لا توجد جلسة - عرض الشاشة الرئيسية
                 showScreen('homeScreen');
             }
         };
