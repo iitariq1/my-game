@@ -572,7 +572,7 @@
             { title: '📍 موقع الجريمة', options: ['غرفة نوم', 'مطبخ', 'حمام', 'غرفة جلوس', 'شرفه', 'غرفة تخزين'], isLocation: true },
             { title: '📍 موقع الجريمة', options: ['ملعب', 'صف', 'مهجع', 'كافتيريا', 'مصعد', 'مرحاض'], isLocation: true },
             { title: '📍 موقع الجريمة', options: ['حديقة', 'بيت العطلة', 'سوبر ماركت', 'غابة', 'مدرسة', 'بنك'], isLocation: true },
-            { title: '📍 موقع الجريمة', options: ['حانة', 'فندق', 'مكتبة', 'مستشفى', 'ورشة بناء', 'مطعم'], isLocation: true }
+            { title: '📍 موقع الجريمة', options: ['حانة', 'فندق', 'مكتبة', 'مستشفى', 'ورشة بناء', 'فندق'], isLocation: true }
         ];
 
         // ========== State ==========
@@ -1617,10 +1617,34 @@
             } else {
                 html += '<p style="margin-top:15px;opacity:0.7;">انتظر المضيف لبدء لعبة جديدة...</p>';
             }
-            html += '<button onclick="location.reload()" class="btn-full btn-secondary" style="margin-top:10px;">🚪 خروج</button>';
+            html += '<button onclick="exitGame()" class="btn-full btn-secondary" style="margin-top:10px;">🚪 خروج</button>';
             html += '</div>';
 
             res.innerHTML = html;
+        }
+
+        function exitGame() {
+            if (roomRef) roomRef.off();
+            sessionStorage.clear();
+            db.ref('rooms/' + game.roomCode + '/players').once('value').then(function(snap) {
+                if (snap.exists()) {
+                    var players = snap.val();
+                    var updatedPlayers = players.filter(function(p) { return p.id !== game.oderId; });
+                    
+                    if (updatedPlayers.length === 0 || game.isHost) {
+                        db.ref('rooms/' + game.roomCode).remove();
+                    } else {
+                        db.ref('rooms/' + game.roomCode + '/players').set(updatedPlayers);
+                    }
+                }
+                setTimeout(function() {
+                    window.location.href = window.location.origin + window.location.pathname;
+                }, 100);
+            }).catch(function() {
+                setTimeout(function() {
+                    window.location.href = window.location.origin + window.location.pathname;
+                }, 100);
+            });
         }
 
         // ========== Firebase Listener ==========
