@@ -136,6 +136,27 @@
             margin-top: 10px;
             font-size: 0.9em;
         }
+
+        .player-item {
+            background: rgba(255, 255, 255, 0.1);
+            padding: 8px 15px;
+            margin: 5px 0;
+            border-radius: 10px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 0.95em;
+        }
+
+        .player-item.host {
+            border-right: 3px solid #ffd700;
+            background: rgba(255, 215, 0, 0.15);
+        }
+
+        .player-item.me {
+            border-right: 3px solid #e74c3c;
+            background: rgba(231, 76, 60, 0.15);
+        }
     </style>
     <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;700;900&display=swap" rel="stylesheet">
 </head>
@@ -180,6 +201,10 @@
         <div style="font-size:0.9em;color:#ccc;margin-top:5px;">
             <span id="playerCount">0</span>/<span id="maxPlayers">4</span> لاعبين
         </div>
+        <div id="playersList" style="margin-top:15px;max-height:200px;overflow-y:auto;"></div>
+        <button id="startGameBtn" style="display:none;margin-top:15px;width:auto;padding:12px 30px;" onclick="startGamePlay()" class="btn-success">
+            🎮 بدء اللعبة
+        </button>
     </div>
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
@@ -509,17 +534,118 @@
                 createCard(i * 300);
             }
 
+            // Show start button if host
+            if (game.isHost) {
+                document.getElementById('startGameBtn').style.display = 'inline-block';
+            }
+
             // Listen to updates
             db.ref('rooms/' + game.roomCode).on('value', snap => {
                 if (snap.exists()) {
                     const data = snap.val();
                     game.players = data.players || [];
-                    document.getElementById('playerCount').textContent = game.players.length;
-                    document.getElementById('maxPlayers').textContent = game.maxPlayers;
+                    game.started = data.started || false;
+                    
+                    updatePlayersList();
+                    
+                    // Enable start button if enough players
+                    const startBtn = document.getElementById('startGameBtn');
+                    if (startBtn && game.isHost) {
+                        startBtn.disabled = game.players.length < 4;
+                    }
+
+                    // Handle game started
+                    if (game.started && data.players) {
+                        const me = data.players.find(p => p.id === game.playerId);
+                        if (me && me.role) {
+                            showRole(me);
+                        }
+                    }
                 }
             });
 
             console.log('🎮 Game started!');
+        }
+
+        function updatePlayersList() {
+            const container = document.getElementById('playersList');
+            container.innerHTML = '';
+            
+            document.getElementById('playerCount').textContent = game.players.length;
+            document.getElementById('maxPlayers').textContent = game.maxPlayers;
+
+            game.players.forEach(player => {
+                const div = document.createElement('div');
+                div.className = 'player-item';
+                if (player.isHost) div.classList.add('host');
+                if (player.id === game.playerId) div.classList.add('me');
+
+                const roleIcon = player.role === 'forensic' ? '🔬' :
+                                player.role === 'murderer' ? '🔪' :
+                                player.role === 'witness' ? '👁️' :
+                                player.role === 'accomplice' ? '🤝' :
+                                player.role === 'investigator' ? '🕵️' : '🎭';
+
+                div.innerHTML = `
+                    <span>${roleIcon} ${player.name}</span>
+                    <span>${player.isHost ? '👑' : ''}</span>
+                `;
+                container.appendChild(div);
+            });
+        }
+
+        function startGamePlay() {
+            if (game.players.length < 4) {
+                alert('يجب أن يكون هناك 4 لاعبين على الأقل');
+                return;
+            }
+
+            // Assign roles
+            const shuffled = game.players.slice().sort(() => Math.random() - 0.5);
+            const roles = ['forensic', 'murderer', 'accomplice', 'witness'];
+            for (let i = 4; i < shuffled.length; i++) {
+                roles.push('investigator');
+            }
+
+            shuffled.forEach((player, i) => {
+                player.role = roles[i];
+            });
+
+            // Update Firebase
+            db.ref('rooms/' + game.roomCode).update({
+                players: shuffled,
+                started: true
+            }).then(() => {
+                console.log('✅ Game roles assigned!');
+                document.getElementById('startGameBtn').style.display = 'none';
+            });
+        }
+
+        function showRole(player) {
+            const roles = {
+                murderer: { icon: '🔪', title: 'القاتل', desc: 'اختر سلاحك ودليلك!' },
+                accomplice: { icon: '🤝', title: 'الشريك', desc: 'ساعد القاتل!' },
+                witness: { icon: '👁️', title: 'الشاهد', desc: 'تعرف المتهمين!' },
+                forensic: { icon: '🔬', title: 'الطبيب الشرعي', desc: 'قدم الأدلة!' },
+                investigator: { icon: '🕵️', title: 'محقق', desc: 'اكشف الحقيقة!' }
+            };
+
+            const role = roles[player.role] || roles.investigator;
+            
+            // Update seat color
+            const seatIndex = game.players.findIndex(p => p.id === player.id);
+            if (playerSeats[seatIndex]) {
+                if (player.role === 'forensic') {
+                    playerSeats[seatIndex].material.color.setHex(0x3498db);
+                    playerSeats[seatIndex].material.emissive.setHex(0x3498db);
+                } else if (player.id === game.playerId) {
+                    playerSeats[seatIndex].material.color.setHex(0xe74c3c);
+                    playerSeats[seatIndex].material.emissive.setHex(0xe74c3c);
+                }
+            }
+
+            // Show role alert
+            alert(`${role.icon} أنت: ${role.title}\n\n${role.desc}`);
         }
 
         // Window resize
