@@ -536,6 +536,42 @@
             display: block;
         }
 
+        /* My Played Card Area */
+        .my-played-card-area {
+            position: fixed;
+            bottom: 200px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: rgba(0,0,0,0.8);
+            border: 3px solid var(--gold);
+            border-radius: 15px;
+            padding: 20px;
+            z-index: 150;
+            text-align: center;
+        }
+
+        .played-card-label {
+            color: var(--gold);
+            font-weight: 700;
+            font-size: 1.1em;
+            margin-bottom: 15px;
+        }
+
+        @keyframes cardPlayed {
+            0% {
+                transform: translateY(200px) scale(0.5);
+                opacity: 0;
+            }
+            100% {
+                transform: translateY(0) scale(1);
+                opacity: 1;
+            }
+        }
+
+        .my-played-card-area.show {
+            animation: cardPlayed 0.5s ease-out;
+        }
+
         .challenge-header {
             text-align: center;
             margin-bottom: 20px;
@@ -884,6 +920,12 @@
                 <div class="challenge-info-text" id="challengeInfoText"></div>
                 <div class="challenge-cards-display" id="challengeCardsDisplay"></div>
                 <div class="challenge-actions" id="challengeActionsArea"></div>
+            </div>
+
+            <!-- My Played Card - الورقة اللي لعبتها -->
+            <div class="my-played-card-area" id="myPlayedCard" style="display: none;">
+                <div class="played-card-label">ورقتك</div>
+                <div id="playedCardDisplay"></div>
             </div>
 
             <!-- Won Cards -->
@@ -1452,6 +1494,17 @@
 
             gameState.selectedCard = null;
 
+            // عرض الورقة بصرياً قدامك!
+            const myPlayedArea = document.getElementById('myPlayedCard');
+            const playedDisplay = document.getElementById('playedCardDisplay');
+            playedDisplay.innerHTML = '';
+            playedDisplay.appendChild(createCardElement(card));
+            myPlayedArea.style.display = 'block';
+            myPlayedArea.classList.add('show');
+
+            // انتظر 0.8 ثانية (الأنيميشن + وقت للرؤية)
+            await new Promise(resolve => setTimeout(resolve, 800));
+
             const myPlayer = freshRoom.players[gameState.playerId];
             const newHand = myPlayer.hand.filter(c => c.id !== card.id);
 
@@ -1483,10 +1536,17 @@
                         owner: gameState.playerId
                     }
                 });
+                
+                // إخفاء الورقة
+                document.getElementById('myPlayedCard').style.display = 'none';
+                
                 await nextTurn(freshRoom);
             } else {
                 // السيناريو B: الورقة موجودة - ابدأ التحدي!
                 const tableCard = freshRoom.tableCards[card.rank].card;
+                
+                // الورقة تبقى معروضة قدامك!
+                // (راح تنتقل لمنطقة التحدي)
                 
                 await database.ref('rooms/' + gameState.roomCode).update({
                     [`players/${gameState.playerId}/hand`]: newHand,
@@ -1503,6 +1563,9 @@
                         lastUpdateTime: Date.now()
                     }
                 });
+                
+                // إخفاء منطقة الورقة الملعوبة (راح تنتقل للتحدي)
+                document.getElementById('myPlayedCard').style.display = 'none';
             }
         }
 
