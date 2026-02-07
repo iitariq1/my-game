@@ -1334,47 +1334,35 @@
             sortedHand.forEach(card => {
                 const cardEl = createCardElement(card, false);
                 
-                // تخزين معلومات البطاقة في data attribute
-                cardEl.setAttribute('data-card-id', card.id);
-                cardEl.setAttribute('data-card-rank', card.rank);
-                cardEl.setAttribute('data-card-suit', card.suit);
-                
                 // إضافة selected class إذا كانت مختارة
-                if (gameState.selectedCard && gameState.selectedCard.id === card.id) {
+                const isSelected = gameState.selectedCard && gameState.selectedCard.id === card.id;
+                if (isSelected) {
                     cardEl.classList.add('card-selected');
                 }
                 
                 // نظام الضغط
                 if (isMyTurn && room.phase === 'play') {
                     cardEl.style.cursor = 'pointer';
-                    cardEl.classList.add('playable-card');
+                    cardEl.onclick = function(e) {
+                        e.stopPropagation();
+                        console.log('Card clicked:', card.rank, card.suit);
+                        console.log('Is selected:', isSelected);
+                        
+                        // إذا الورقة مختارة - العبها
+                        if (gameState.selectedCard && gameState.selectedCard.id === card.id) {
+                            console.log('Playing card...');
+                            playCard(card, room);
+                        } else {
+                            // اختر الورقة
+                            console.log('Selecting card...');
+                            gameState.selectedCard = card;
+                            updatePlayerHand(player, isMyTurn, room);
+                        }
+                    };
                 }
                 
                 container.appendChild(cardEl);
             });
-
-            // إضافة event listener واحد للـ container بدلاً من كل ورقة
-            if (isMyTurn && room.phase === 'play') {
-                container.onclick = (e) => {
-                    const cardEl = e.target.closest('.playable-card');
-                    if (!cardEl) return;
-
-                    const cardId = cardEl.getAttribute('data-card-id');
-                    const card = player.hand.find(c => c.id === cardId);
-                    if (!card) return;
-
-                    // إذا الورقة مختارة - العبها
-                    if (gameState.selectedCard && gameState.selectedCard.id === card.id) {
-                        playCard(card, room);
-                    } else {
-                        // اختر الورقة
-                        gameState.selectedCard = card;
-                        updatePlayerHand(player, isMyTurn, room);
-                    }
-                };
-            } else {
-                container.onclick = null;
-            }
 
             // تحديث عرض الأوراق المكسوبة
             updateWonCards(player);
