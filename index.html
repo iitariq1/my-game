@@ -398,13 +398,12 @@
     </div>
 
     <script>
-        function playGame(game) {
-            if (game === 'detective') {
-                window.location.href = 'detective.html';
-            } else if (game === 'kochina') {
-                window.location.href = 'kochina.html';
-            }
-        }
+        <script>
+  function playGame(game) {
+    window.location.href = game + "/";
+  }
+</script>
+
 
         // إضافة تأثيرات صوتية عند التمرير (اختياري)
         document.querySelectorAll('.game-card').forEach(card => {
