@@ -1357,15 +1357,22 @@
                     cardEl.onclick = function(e) {
                         e.stopPropagation();
                         
+                        console.log('=== CARD CLICKED ===');
+                        console.log('Card:', card.rank, card.suit);
+                        console.log('gameState.selectedCard:', gameState.selectedCard);
+                        
                         const isCurrentlySelected = gameState.selectedCard && gameState.selectedCard.id === card.id;
+                        console.log('isCurrentlySelected:', isCurrentlySelected);
                         
                         if (isCurrentlySelected) {
                             // ضغطة ثانية - لعب!
-                            playCard(card, room);
+                            console.log('>>> PLAYING CARD NOW! <<<');
+                            playCard(card, gameState.currentRoom); // استخدم currentRoom المحدث!
                         } else {
                             // ضغطة أولى - اختيار
+                            console.log('>>> SELECTING CARD <<<');
                             gameState.selectedCard = card;
-                            updatePlayerHand(player, isMyTurn, room);
+                            updatePlayerHand(player, isMyTurn, gameState.currentRoom);
                         }
                     };
                 }
