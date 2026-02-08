@@ -29,7 +29,7 @@
             width: 100%;
             height: 100%;
             pointer-events: none;
-            z-index: 0;
+            z-index: -1;
         }
 
         .star {
@@ -151,6 +151,9 @@
             margin-bottom: 15px;
             backdrop-filter: blur(10px);
             text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
+            position: relative;
+            z-index: 10;
+            cursor: text;
         }
 
         input:focus {
@@ -174,11 +177,17 @@
             transition: all 0.3s;
             font-family: 'Cairo', sans-serif;
             margin-bottom: 12px;
+            position: relative;
+            z-index: 10;
         }
 
         .btn:hover:not(:disabled) {
             transform: translateY(-3px);
             box-shadow: 0 12px 35px rgba(0, 0, 0, 0.3);
+        }
+
+        .btn:active:not(:disabled) {
+            transform: translateY(-1px);
         }
 
         .btn:disabled {
@@ -222,6 +231,13 @@
             backdrop-filter: blur(10px);
             transition: all 0.3s;
             text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
+            position: relative;
+            z-index: 10;
+        }
+
+        .category-btn:hover {
+            transform: scale(1.05);
+            border-color: rgba(212, 175, 55, 0.6);
         }
 
         .category-btn.active {
@@ -407,10 +423,6 @@
             <div class="emoji">🎭</div>
             <h1>مين برا السالفة؟</h1>
             <p>العب أونلاين مع أصدقائك!</p>
-
-            <div class="status success">
-                <p>✅ جاهز للعب - كود قصير 4 أرقام فقط!</p>
-            </div>
 
             <input type="text" id="playerName" placeholder="اسمك" maxlength="15">
 
@@ -606,16 +618,21 @@
         let db = null;
         let roomRef = null;
 
+        // تحميل Firebase بدون رسائل
         window.addEventListener('load', () => {
-            try {
-                if (typeof firebase !== 'undefined') {
-                    firebase.initializeApp(firebaseConfig);
-                    db = firebase.database();
-                    console.log('✅ Firebase جاهز');
+            setTimeout(() => {
+                try {
+                    if (typeof firebase !== 'undefined') {
+                        firebase.initializeApp(firebaseConfig);
+                        db = firebase.database();
+                        console.log('✅ Firebase جاهز');
+                    } else {
+                        console.log('⚠️ Firebase غير متوفر - يجب رفع الملف على موقع');
+                    }
+                } catch (e) {
+                    console.log('⚠️ Firebase:', e.message);
                 }
-            } catch (e) {
-                console.error('Firebase error:', e);
-            }
+            }, 500);
         });
 
         // الكلمات
@@ -674,7 +691,8 @@
             }
 
             if (!db) {
-                alert('يرجى الانتظار... جاري التحميل');
+                alert('⚠️ للعب أونلاين:\n\n1. ارفع الملف على موقع (Netlify)\n2. افتح الرابط من المتصفح\n\nالآن الملف مفتوح محلياً ❌');
+                console.log('💡 ارفع الملف على: https://app.netlify.com/drop');
                 return;
             }
 
@@ -704,7 +722,7 @@
                 listenToRoom();
                 showScreen('lobbyScreen');
             } catch (e) {
-                alert('خطأ في إنشاء الغرفة: ' + e.message);
+                alert('خطأ في إنشاء الغرفة!\n\n' + e.message);
             }
         });
 
