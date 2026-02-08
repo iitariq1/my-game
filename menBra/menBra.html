@@ -187,7 +187,7 @@
         }
 
         .btn:active:not(:disabled) {
-            transform: translateY(-1px);
+            transform: translateY(-1px) scale(0.98);
         }
 
         .btn:disabled {
@@ -211,7 +211,11 @@
 
         .btn-gold:hover:not(:disabled) {
             box-shadow: 0 12px 35px rgba(212, 175, 55, 0.7), 0 0 60px rgba(212, 175, 55, 0.5);
-            transform: translateY(-4px) scale(1.02);
+            transform: translateY(-4px) scale(1.03);
+        }
+        
+        .btn-gold:active:not(:disabled) {
+            transform: translateY(-2px) scale(0.99);
         }
 
         .btn-purple {
@@ -224,7 +228,11 @@
 
         .btn-purple:hover:not(:disabled) {
             box-shadow: 0 12px 35px rgba(139, 92, 246, 0.7), 0 0 60px rgba(139, 92, 246, 0.5);
-            transform: translateY(-4px) scale(1.02);
+            transform: translateY(-4px) scale(1.03);
+        }
+        
+        .btn-purple:active:not(:disabled) {
+            transform: translateY(-2px) scale(0.99);
         }
 
         .btn-green {
@@ -237,7 +245,11 @@
 
         .btn-green:hover:not(:disabled) {
             box-shadow: 0 12px 35px rgba(16, 185, 129, 0.7), 0 0 60px rgba(16, 185, 129, 0.5);
-            transform: translateY(-4px) scale(1.02);
+            transform: translateY(-4px) scale(1.03);
+        }
+        
+        .btn-green:active:not(:disabled) {
+            transform: translateY(-2px) scale(0.99);
         }
 
         .category-grid {
@@ -267,6 +279,10 @@
         .category-btn:hover {
             transform: scale(1.05);
             border-color: rgba(212, 175, 55, 0.6);
+        }
+        
+        .category-btn:active {
+            transform: scale(0.98);
         }
 
         .category-btn.active {
