@@ -1,0 +1,860 @@
+<!DOCTYPE html>
+
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>مين برا السالفة؟ - أونلاين</title>
+    <link href="https://fonts.googleapis.com/css2?family=Amiri:wght@400;700&family=Cairo:wght@400;600;700;800;900&display=swap" rel="stylesheet">
+    <script src="https://unpkg.com/peerjs@1.5.1/dist/peerjs.min.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+```
+    body {
+        font-family: 'Cairo', sans-serif;
+        background: linear-gradient(135deg, #1a1f3a 0%, #2d1f4a 50%, #3d2456 100%);
+        min-height: 100vh;
+        padding: 20px;
+        position: relative;
+    }
+
+    body::before {
+        content: '';
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background-image: 
+            radial-gradient(circle at 20% 30%, rgba(255, 215, 0, 0.1) 0%, transparent 50%),
+            radial-gradient(circle at 80% 70%, rgba(138, 43, 226, 0.1) 0%, transparent 50%);
+        pointer-events: none;
+        z-index: 0;
+    }
+
+    .stars {
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        pointer-events: none;
+        z-index: 0;
+    }
+
+    .star {
+        position: absolute;
+        background: white;
+        clip-path: polygon(50% 0%, 61% 35%, 98% 35%, 68% 57%, 79% 91%, 50% 70%, 21% 91%, 32% 57%, 2% 35%, 39% 35%);
+        animation: twinkle 3s infinite;
+    }
+
+    @keyframes twinkle {
+        0%, 100% { opacity: 0.3; }
+        50% { opacity: 1; }
+    }
+
+    .moon-decoration {
+        position: fixed;
+        font-size: 60px;
+        opacity: 0.15;
+        pointer-events: none;
+        z-index: 0;
+    }
+
+    .container {
+        max-width: 600px;
+        margin: 0 auto;
+        position: relative;
+        z-index: 1;
+    }
+
+    .card {
+        background: rgba(255, 255, 255, 0.95);
+        backdrop-filter: blur(10px);
+        border-radius: 30px;
+        padding: 40px;
+        box-shadow: 0 25px 50px rgba(0, 0, 0, 0.3);
+        animation: slideIn 0.5s ease-out;
+        border: 2px solid rgba(255, 215, 0, 0.3);
+    }
+
+    @keyframes slideIn {
+        from { opacity: 0; transform: translateY(20px); }
+        to { opacity: 1; transform: translateY(0); }
+    }
+
+    .ramadan-greeting {
+        font-family: 'Amiri', serif;
+        font-size: 24px;
+        color: #d4af37;
+        font-weight: 700;
+        text-align: center;
+        margin-bottom: 15px;
+    }
+
+    .emoji {
+        font-size: 80px;
+        text-align: center;
+        margin-bottom: 20px;
+    }
+
+    h1 {
+        font-size: 42px;
+        font-weight: 900;
+        background: linear-gradient(135deg, #d4af37, #f4e4b0, #d4af37);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        text-align: center;
+        margin-bottom: 10px;
+    }
+
+    h2 {
+        font-size: 32px;
+        font-weight: 900;
+        color: #1f2937;
+        text-align: center;
+        margin-bottom: 20px;
+    }
+
+    p {
+        text-align: center;
+        color: #6b7280;
+        font-size: 18px;
+        margin-bottom: 20px;
+    }
+
+    .status-box {
+        background: linear-gradient(135deg, #fef3c7, #fef9e7);
+        border: 3px solid #d4af37;
+        border-radius: 16px;
+        padding: 20px;
+        margin: 20px 0;
+        text-align: center;
+    }
+
+    .status-box.success {
+        background: linear-gradient(135deg, #d1fae5, #a7f3d0);
+        border-color: #10b981;
+    }
+
+    .status-box.error {
+        background: linear-gradient(135deg, #fee2e2, #fecaca);
+        border-color: #ef4444;
+    }
+
+    .status-box p {
+        color: #1f2937;
+        font-weight: 700;
+        margin: 5px 0;
+    }
+
+    .input-group {
+        margin-bottom: 20px;
+    }
+
+    input[type="text"] {
+        width: 100%;
+        padding: 18px 24px;
+        font-size: 24px;
+        font-weight: 700;
+        text-align: center;
+        background: linear-gradient(to bottom, #fefce8, #fef3c7);
+        border: 3px solid #d4af37;
+        border-radius: 16px;
+        color: #1f2937;
+        font-family: 'Cairo', sans-serif;
+    }
+
+    input:focus {
+        outline: none;
+        box-shadow: 0 0 0 4px rgba(212, 175, 55, 0.3);
+    }
+
+    input::placeholder {
+        color: #a0845f;
+    }
+
+    .btn {
+        width: 100%;
+        padding: 22px;
+        font-size: 24px;
+        font-weight: 900;
+        border: none;
+        border-radius: 18px;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 10px;
+        font-family: 'Cairo', sans-serif;
+        margin-bottom: 12px;
+    }
+
+    .btn:hover:not(:disabled) {
+        transform: translateY(-3px);
+        box-shadow: 0 12px 35px rgba(0, 0, 0, 0.25);
+    }
+
+    .btn:disabled {
+        background: #d1d5db !important;
+        color: #9ca3af !important;
+        cursor: not-allowed;
+    }
+
+    .btn-primary {
+        background: linear-gradient(135deg, #d4af37, #f4e4b0);
+        color: #1f2937;
+        box-shadow: 0 8px 25px rgba(212, 175, 55, 0.4);
+    }
+
+    .btn-secondary {
+        background: linear-gradient(135deg, #8b5cf6, #a78bfa);
+        color: white;
+    }
+
+    .btn-success {
+        background: linear-gradient(135deg, #059669, #10b981);
+        color: white;
+    }
+
+    .category-grid {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        gap: 12px;
+        margin-bottom: 20px;
+    }
+
+    .category-btn {
+        padding: 18px;
+        font-size: 18px;
+        font-weight: 700;
+        border: 3px solid #e5e7eb;
+        border-radius: 14px;
+        cursor: pointer;
+        font-family: 'Cairo', sans-serif;
+        background: white;
+        color: #374151;
+    }
+
+    .category-btn.active {
+        background: linear-gradient(135deg, #d4af37, #f4e4b0);
+        color: #1f2937;
+        border-color: #d4af37;
+    }
+
+    .room-code {
+        background: linear-gradient(135deg, #d4af37, #f4e4b0);
+        color: #1f2937;
+        padding: 24px;
+        border-radius: 20px;
+        text-align: center;
+        margin: 20px 0;
+    }
+
+    .room-code-number {
+        font-size: 52px;
+        font-weight: 900;
+        letter-spacing: 6px;
+    }
+
+    .player-list {
+        margin: 20px 0;
+    }
+
+    .player-item {
+        background: linear-gradient(to right, #fef3c7, #fef9e7);
+        border: 2px solid #d4af37;
+        border-radius: 14px;
+        padding: 18px;
+        margin: 12px 0;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+    }
+
+    .player-name {
+        font-size: 22px;
+        font-weight: 700;
+        color: #1f2937;
+    }
+
+    .host-badge {
+        background: #d4af37;
+        color: #1f2937;
+        padding: 6px 14px;
+        border-radius: 10px;
+        font-size: 14px;
+        font-weight: 800;
+    }
+
+    .hidden {
+        display: none !important;
+    }
+
+    .word-reveal {
+        background: linear-gradient(135deg, #d4af37, #f4e4b0);
+        color: #1f2937;
+        border-radius: 26px;
+        padding: 50px;
+        margin: 30px 0;
+        text-align: center;
+    }
+
+    .word-reveal-word {
+        font-size: 64px;
+        font-weight: 900;
+    }
+
+    .vote-grid {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        gap: 16px;
+        margin: 20px 0;
+    }
+
+    .vote-card {
+        background: linear-gradient(to bottom right, #fef3c7, #fef9e7);
+        border: 3px solid #d4af37;
+        border-radius: 18px;
+        padding: 26px;
+        text-align: center;
+        cursor: pointer;
+    }
+
+    .vote-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 15px 40px rgba(212, 175, 55, 0.4);
+    }
+
+    .divider {
+        position: relative;
+        margin: 24px 0;
+        text-align: center;
+    }
+
+    .divider::before {
+        content: '';
+        position: absolute;
+        top: 50%;
+        left: 0;
+        right: 0;
+        height: 2px;
+        background: linear-gradient(to right, transparent, #d4af37, transparent);
+    }
+
+    .divider span {
+        position: relative;
+        background: white;
+        padding: 0 20px;
+        color: #d4af37;
+        font-weight: 700;
+    }
+
+    .copy-btn {
+        background: white;
+        border: 2px solid #d4af37;
+        color: #1f2937;
+        padding: 12px 24px;
+        border-radius: 12px;
+        font-weight: 700;
+        cursor: pointer;
+        font-family: 'Cairo', sans-serif;
+        margin: 10px 5px;
+    }
+
+    .copy-btn:hover {
+        background: #fef3c7;
+    }
+</style>
+```
+
+</head>
+<body>
+    <div class="stars" id="stars"></div>
+    <div class="moon-decoration" style="top: 5%; left: 10%;">🌙</div>
+    <div class="moon-decoration" style="top: 15%; right: 8%;">⭐</div>
+    <div class="moon-decoration" style="bottom: 10%; left: 5%;">🕌</div>
+    <div class="moon-decoration" style="bottom: 20%; right: 12%;">🌙</div>
+
+```
+<div class="container">
+    <!-- Home Screen -->
+    <div id="homeScreen" class="card">
+        <div class="ramadan-greeting">رمضان كريم 🌙</div>
+        <div class="emoji">🎭</div>
+        <h1>مين برا السالفة؟</h1>
+        <p>العب أونلاين مع أصدقائك!</p>
+
+        <div class="status-box success">
+            <p>✅ جاهز للعب الأونلاين!</p>
+            <p style="font-size: 14px; opacity: 0.8;">لا يحتاج Firebase أو إعدادات</p>
+        </div>
+
+        <div class="input-group">
+            <input type="text" id="playerName" placeholder="اسمك" maxlength="15">
+        </div>
+
+        <div class="input-group">
+            <label style="display: block; text-align: center; font-weight: 700; color: #1f2937; margin-bottom: 12px;">اختر الفئة:</label>
+            <div class="category-grid">
+                <button class="category-btn active" data-category="حيوانات">🦁 حيوانات</button>
+                <button class="category-btn" data-category="أكل">🍕 أكل</button>
+                <button class="category-btn" data-category="أماكن">🏖️ أماكن</button>
+                <button class="category-btn" data-category="وظائف">👨‍⚕️ وظائف</button>
+            </div>
+        </div>
+
+        <button class="btn btn-primary" id="createRoomBtn">
+            <span>👥</span>
+            <span>إنشاء غرفة جديدة</span>
+        </button>
+
+        <div class="divider"><span>أو</span></div>
+
+        <div class="input-group">
+            <input type="text" id="joinCode" placeholder="كود الغرفة" maxlength="20">
+        </div>
+
+        <button class="btn btn-secondary" id="joinRoomBtn">
+            <span>🚪</span>
+            <span>انضم للغرفة</span>
+        </button>
+    </div>
+
+    <!-- Lobby Screen -->
+    <div id="lobbyScreen" class="card hidden">
+        <div class="ramadan-greeting">بارك الله فيكم 🌙</div>
+        <h2>الغرفة</h2>
+
+        <div class="room-code">
+            <p style="font-size: 16px; margin-bottom: 10px;">كود الغرفة:</p>
+            <div class="room-code-number" id="displayRoomCode">----</div>
+            <button class="copy-btn" id="copyCodeBtn">📋 نسخ الكود</button>
+        </div>
+
+        <div class="status-box">
+            <p>الفئة: <span id="displayCategory" style="color: #d4af37;">حيوانات</span></p>
+        </div>
+
+        <h2>اللاعبين (<span id="playerCount">0</span>)</h2>
+        <div class="player-list" id="playerList"></div>
+
+        <div id="minPlayersWarning" class="status-box error hidden">
+            <p>⚠️ تحتاج على الأقل 3 لاعبين للبدء</p>
+        </div>
+
+        <div id="hostControls" class="hidden">
+            <button class="btn btn-success" id="startGameBtn">
+                <span>▶️</span>
+                <span>ابدأ اللعبة</span>
+            </button>
+        </div>
+
+        <button class="btn" style="background: #e5e7eb; color: #374151;" id="leaveRoomBtn">مغادرة</button>
+    </div>
+
+    <!-- Waiting/Reveal Screen -->
+    <div id="waitingScreen" class="card hidden">
+        <div class="ramadan-greeting">تبارك الرحمن 🌙</div>
+        <h2>كلمتك</h2>
+
+        <div id="beforeReveal">
+            <div class="emoji" style="animation: bounce 1s infinite;">🎴</div>
+            <p>جاهز لرؤية كلمتك؟</p>
+            <button class="btn btn-primary" id="revealWordBtn">
+                <span>👁️</span>
+                <span>اكشف كلمتي</span>
+            </button>
+        </div>
+
+        <div id="afterReveal" class="hidden">
+            <div class="word-reveal">
+                <p style="font-size: 26px; margin-bottom: 18px;">كلمتك:</p>
+                <div class="word-reveal-word" id="myWord">---</div>
+                <div id="impostorBadge" style="background: #dc2626; border-radius: 16px; padding: 20px; margin-top: 20px;" class="hidden">
+                    <p style="color: white; font-size: 26px; font-weight: 700; margin: 0;">🎭 أنت المتطفل!</p>
+                </div>
+            </div>
+
+            <div class="status-box">
+                <p>💡 تكلم عن كلمتك بدون ما تقولها مباشرة!</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Vote Screen -->
+    <div id="voteScreen" class="card hidden">
+        <div class="ramadan-greeting">الله يوفقكم 🌙</div>
+        <h2>من تعتقد برا السالفة؟</h2>
+        <div class="vote-grid" id="voteGrid"></div>
+    </div>
+
+    <!-- Result Screen -->
+    <div id="resultScreen" class="card hidden">
+        <div class="ramadan-greeting">ما شاء الله 🌙</div>
+        <div class="emoji" id="resultEmoji">🎉</div>
+        <h2 id="resultTitle">النتيجة</h2>
+
+        <div class="word-reveal">
+            <p style="font-size: 22px; margin-bottom: 15px;">المتطفل كان:</p>
+            <p style="font-size: 48px; font-weight: 900; margin-bottom: 15px;"><span id="impostorName">---</span> 🎭</p>
+            <div style="background: rgba(255,255,255,0.4); border-radius: 16px; padding: 20px;">
+                <p style="margin: 8px 0;">الكلمة: <strong id="mainWord">---</strong></p>
+                <p style="margin: 8px 0;">كلمة المتطفل: <strong id="impostorWord">---</strong></p>
+            </div>
+        </div>
+
+        <div id="hostResetControls" class="hidden">
+            <button class="btn btn-primary" id="resetGameBtn">
+                <span>🔄</span>
+                <span>العب مرة ثانية</span>
+            </button>
+        </div>
+    </div>
+</div>
+
+<script>
+    // Add stars
+    const starsContainer = document.getElementById('stars');
+    for (let i = 0; i < 30; i++) {
+        const star = document.createElement('div');
+        star.className = 'star';
+        star.style.width = Math.random() * 15 + 8 + 'px';
+        star.style.height = star.style.width;
+        star.style.left = Math.random() * 100 + '%';
+        star.style.top = Math.random() * 100 + '%';
+        star.style.animationDelay = Math.random() * 3 + 's';
+        starsContainer.appendChild(star);
+    }
+
+    // Word sets
+    const wordSets = {
+        'حيوانات': [
+            { main: 'أسد', impostor: 'نمر' },
+            { main: 'فيل', impostor: 'وحيد القرن' },
+            { main: 'دولفين', impostor: 'حوت' },
+            { main: 'نسر', impostor: 'صقر' }
+        ],
+        'أكل': [
+            { main: 'بيتزا', impostor: 'باستا' },
+            { main: 'برجر', impostor: 'شاورما' },
+            { main: 'كبسة', impostor: 'مندي' },
+            { main: 'كنافة', impostor: 'بسبوسة' }
+        ],
+        'أماكن': [
+            { main: 'شاطئ', impostor: 'صحراء' },
+            { main: 'مطار', impostor: 'محطة قطار' },
+            { main: 'مدرسة', impostor: 'جامعة' },
+            { main: 'سوق', impostor: 'مول' }
+        ],
+        'وظائف': [
+            { main: 'طبيب', impostor: 'ممرض' },
+            { main: 'مهندس', impostor: 'معمار' },
+            { main: 'معلم', impostor: 'أستاذ' },
+            { main: 'طباخ', impostor: 'خباز' }
+        ]
+    };
+
+    // Game state
+    let peer = null;
+    let conn = null;
+    let connections = [];
+    let state = {
+        isHost: false,
+        myId: '',
+        myName: '',
+        roomCode: '',
+        category: 'حيوانات',
+        players: [],
+        gameData: null,
+        myWord: '',
+        isImpostor: false,
+        hasVoted: false
+    };
+
+    // Category selection
+    document.querySelectorAll('.category-btn').forEach(btn => {
+        btn.addEventListener('click', () => {
+            document.querySelectorAll('.category-btn').forEach(b => b.classList.remove('active'));
+            btn.classList.add('active');
+            state.category = btn.dataset.category;
+        });
+    });
+
+    // Initialize PeerJS
+    function initPeer() {
+        return new Promise((resolve) => {
+            peer = new Peer();
+            peer.on('open', (id) => {
+                state.myId = id;
+                console.log('My peer ID:', id);
+                resolve(id);
+            });
+        });
+    }
+
+    // Create room
+    document.getElementById('createRoomBtn').addEventListener('click', async () => {
+        const name = document.getElementById('playerName').value.trim();
+        if (!name) {
+            alert('الرجاء إدخال اسمك');
+            return;
+        }
+
+        state.myName = name;
+        state.isHost = true;
+
+        if (!peer) {
+            await initPeer();
+        }
+
+        state.roomCode = state.myId;
+        state.players = [{ id: state.myId, name: name }];
+
+        // Listen for connections
+        peer.on('connection', (connection) => {
+            setupConnection(connection);
+        });
+
+        updateLobby();
+        showScreen('lobbyScreen');
+    });
+
+    // Join room
+    document.getElementById('joinRoomBtn').addEventListener('click', async () => {
+        const name = document.getElementById('playerName').value.trim();
+        const code = document.getElementById('joinCode').value.trim();
+
+        if (!name || !code) {
+            alert('الرجاء إدخال اسمك وكود الغرفة');
+            return;
+        }
+
+        state.myName = name;
+        state.roomCode = code;
+
+        if (!peer) {
+            await initPeer();
+        }
+
+        // Connect to host
+        conn = peer.connect(code);
+        setupConnection(conn);
+
+        conn.on('open', () => {
+            conn.send({
+                type: 'join',
+                player: { id: state.myId, name: name }
+            });
+        });
+    });
+
+    function setupConnection(connection) {
+        connections.push(connection);
+
+        connection.on('data', (data) => {
+            console.log('Received:', data);
+            
+            if (data.type === 'join') {
+                if (state.isHost) {
+                    state.players.push(data.player);
+                    updateLobby();
+                    broadcast({ type: 'update', players: state.players, category: state.category });
+                }
+            } else if (data.type === 'update') {
+                state.players = data.players;
+                state.category = data.category;
+                updateLobby();
+                if (!state.isHost) {
+                    showScreen('lobbyScreen');
+                }
+            } else if (data.type === 'start') {
+                state.gameData = data.gameData;
+                const myData = data.gameData.playerWords[state.myId];
+                state.myWord = myData.word;
+                state.isImpostor = myData.isImpostor;
+                showScreen('waitingScreen');
+            } else if (data.type === 'startVote') {
+                showVoteScreen();
+            } else if (data.type === 'vote') {
+                if (state.isHost) {
+                    state.gameData.votes[data.voterId] = data.votedId;
+                    if (Object.keys(state.gameData.votes).length === state.players.length) {
+                        broadcast({ type: 'results', gameData: state.gameData });
+                        showResults();
+                    }
+                }
+            } else if (data.type === 'results') {
+                state.gameData = data.gameData;
+                showResults();
+            }
+        });
+    }
+
+    function broadcast(data) {
+        connections.forEach(conn => {
+            if (conn.open) {
+                conn.send(data);
+            }
+        });
+    }
+
+    function updateLobby() {
+        document.getElementById('displayRoomCode').textContent = state.roomCode;
+        document.getElementById('displayCategory').textContent = state.category;
+        document.getElementById('playerCount').textContent = state.players.length;
+
+        const playerList = document.getElementById('playerList');
+        playerList.innerHTML = '';
+        state.players.forEach(player => {
+            const div = document.createElement('div');
+            div.className = 'player-item';
+            div.innerHTML = `
+                <span class="player-name">👤 ${player.name}</span>
+                ${player.id === state.roomCode ? '<span class="host-badge">👑 مضيف</span>' : ''}
+            `;
+            playerList.appendChild(div);
+        });
+
+        document.getElementById('minPlayersWarning').classList.toggle('hidden', state.players.length >= 3);
+        document.getElementById('hostControls').classList.toggle('hidden', !state.isHost);
+        document.getElementById('startGameBtn').disabled = state.players.length < 3;
+    }
+
+    // Copy code
+    document.getElementById('copyCodeBtn').addEventListener('click', () => {
+        navigator.clipboard.writeText(state.roomCode);
+        alert('تم نسخ الكود! 🎉');
+    });
+
+    // Start game
+    document.getElementById('startGameBtn').addEventListener('click', () => {
+        const categoryWords = wordSets[state.category];
+        const words = categoryWords[Math.floor(Math.random() * categoryWords.length)];
+        const impostorIndex = Math.floor(Math.random() * state.players.length);
+
+        const gameData = {
+            mainWord: words.main,
+            impostorWord: words.impostor,
+            impostorId: state.players[impostorIndex].id,
+            playerWords: {},
+            votes: {}
+        };
+
+        state.players.forEach((player, idx) => {
+            gameData.playerWords[player.id] = {
+                word: idx === impostorIndex ? words.impostor : words.main,
+                isImpostor: idx === impostorIndex
+            };
+        });
+
+        state.gameData = gameData;
+        const myData = gameData.playerWords[state.myId];
+        state.myWord = myData.word;
+        state.isImpostor = myData.isImpostor;
+
+        broadcast({ type: 'start', gameData });
+        showScreen('waitingScreen');
+    });
+
+    // Reveal word
+    document.getElementById('revealWordBtn').addEventListener('click', () => {
+        document.getElementById('myWord').textContent = state.myWord;
+        document.getElementById('impostorBadge').classList.toggle('hidden', !state.isImpostor);
+        document.getElementById('beforeReveal').classList.add('hidden');
+        document.getElementById('afterReveal').classList.remove('hidden');
+
+        if (state.isHost) {
+            setTimeout(() => {
+                broadcast({ type: 'startVote' });
+                showVoteScreen();
+            }, 5000);
+        }
+    });
+
+    function showVoteScreen() {
+        const voteGrid = document.getElementById('voteGrid');
+        voteGrid.innerHTML = '';
+
+        state.players.forEach(player => {
+            if (player.id !== state.myId) {
+                const div = document.createElement('div');
+                div.className = 'vote-card';
+                div.innerHTML = `<div style="font-size: 48px; margin-bottom: 12px;">👤</div><p class="player-name">${player.name}</p>`;
+                div.addEventListener('click', () => vote(player.id));
+                voteGrid.appendChild(div);
+            }
+        });
+
+        showScreen('voteScreen');
+    }
+
+    function vote(votedId) {
+        if (state.hasVoted) return;
+        state.hasVoted = true;
+
+        if (state.isHost) {
+            state.gameData.votes[state.myId] = votedId;
+            if (Object.keys(state.gameData.votes).length === state.players.length) {
+                broadcast({ type: 'results', gameData: state.gameData });
+                showResults();
+            }
+        } else {
+            conn.send({ type: 'vote', voterId: state.myId, votedId });
+        }
+    }
+
+    function showResults() {
+        const voteCount = {};
+        Object.values(state.gameData.votes).forEach(vote => {
+            voteCount[vote] = (voteCount[vote] || 0) + 1;
+        });
+
+        const mostVoted = Object.keys(voteCount).reduce((a, b) => 
+            voteCount[a] > voteCount[b] ? a : b
+        );
+
+        const impostorCaught = mostVoted === state.gameData.impostorId;
+        const impostorPlayer = state.players.find(p => p.id === state.gameData.impostorId);
+
+        document.getElementById('resultEmoji').textContent = impostorCaught ? '🎉' : '😱';
+        document.getElementById('resultTitle').textContent = impostorCaught ? 'مبروك! اكتشفتوا المتطفل!' : 'المتطفل فاز!';
+        document.getElementById('impostorName').textContent = impostorPlayer.name;
+        document.getElementById('mainWord').textContent = state.gameData.mainWord;
+        document.getElementById('impostorWord').textContent = state.gameData.impostorWord;
+        document.getElementById('hostResetControls').classList.toggle('hidden', !state.isHost);
+
+        showScreen('resultScreen');
+    }
+
+    function showScreen(screenId) {
+        document.querySelectorAll('.card').forEach(card => card.classList.add('hidden'));
+        document.getElementById(screenId).classList.remove('hidden');
+    }
+
+    // Leave room
+    document.getElementById('leaveRoomBtn').addEventListener('click', () => {
+        if (peer) peer.destroy();
+        connections = [];
+        state = { isHost: false, myId: '', myName: '', roomCode: '', category: 'حيوانات', players: [], gameData: null };
+        showScreen('homeScreen');
+    });
+
+    document.getElementById('resetGameBtn').addEventListener('click', () => {
+        state.hasVoted = false;
+        state.gameData = null;
+        updateLobby();
+        showScreen('lobbyScreen');
+    });
+</script>
+```
+
+</body>
+</html>
