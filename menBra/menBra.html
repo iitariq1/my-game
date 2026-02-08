@@ -1520,34 +1520,6 @@
             document.getElementById('hostFreeControls').classList.toggle('hidden', !state.isHost);
         }
 
-        function showGuessScreen() {
-            const round = state.roomData.currentRound;
-            if (round.playerWords[state.playerId]?.isImpostor) {
-                showScreen('guessScreen');
-                if (round.impostorGuess) {
-                    document.getElementById('guessWait').classList.remove('hidden');
-                }
-            } else {
-                showScreen('wordScreen');
-                document.getElementById('afterReveal').classList.remove('hidden');
-                document.getElementById('waitingHost').classList.remove('hidden');
-            }
-        }
-
-        document.getElementById('submitGuess').addEventListener('click', async () => {
-            const guess = document.getElementById('guessInput').value.trim();
-            if (!guess) return;
-
-            await roomRef.child('currentRound/impostorGuess').set(guess);
-            document.getElementById('guessWait').classList.remove('hidden');
-
-            if (state.isHost) {
-                setTimeout(() => {
-                    roomRef.update({ state: 'results' });
-                }, 2000);
-            }
-        });
-
         function showResults() {
             showScreen('resultScreen');
 
