@@ -168,88 +168,119 @@
 
         .btn {
             width: 100%;
-            padding: 22px;
-            font-size: 24px;
-            font-weight: 900;
+            padding: 15px 20px;
+            font-size: 18px;
+            font-weight: 700;
             border: none;
-            border-radius: 18px;
+            border-radius: 10px;
             cursor: pointer;
-            transition: all 0.3s;
+            transition: all 0.2s;
             font-family: 'Cairo', sans-serif;
-            margin-bottom: 12px;
+            margin-bottom: 8px;
             position: relative;
             z-index: 10;
         }
 
         .btn:hover:not(:disabled) {
-            transform: translateY(-3px);
-            box-shadow: 0 12px 35px rgba(0, 0, 0, 0.3);
+            transform: translateY(-2px);
+            opacity: 0.9;
         }
 
         .btn:active:not(:disabled) {
-            transform: translateY(-1px) scale(0.98);
+            transform: translateY(0px) scale(0.98);
         }
 
         .btn:disabled {
-            background: #d1d5db !important;
-            color: #9ca3af !important;
+            opacity: 0.5;
             cursor: not-allowed;
+        }
+        
+        .btn-full { 
+            width: 100%; 
+            margin: 5px 0; 
         }
 
         .btn-gold {
-            background: linear-gradient(135deg, #d4af37, #f4e4b0, #d4af37);
-            background-size: 200% 200%;
-            color: #1f2937;
-            box-shadow: 0 8px 25px rgba(212, 175, 55, 0.5), 0 0 40px rgba(212, 175, 55, 0.3);
-            animation: gradientShift 3s ease infinite;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
         }
-
-        @keyframes gradientShift {
-            0%, 100% { background-position: 0% 50%; }
-            50% { background-position: 100% 50%; }
-        }
-
+        
         .btn-gold:hover:not(:disabled) {
-            box-shadow: 0 12px 35px rgba(212, 175, 55, 0.7), 0 0 60px rgba(212, 175, 55, 0.5);
-            transform: translateY(-4px) scale(1.03);
+            box-shadow: 0 6px 20px rgba(102, 126, 234, 0.6);
         }
         
         .btn-gold:active:not(:disabled) {
-            transform: translateY(-2px) scale(0.99);
+            transform: translateY(0px) scale(0.98);
         }
 
         .btn-purple {
-            background: linear-gradient(135deg, #8b5cf6, #a78bfa, #c4b5fd);
-            background-size: 200% 200%;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             color: white;
-            box-shadow: 0 8px 25px rgba(139, 92, 246, 0.5), 0 0 40px rgba(139, 92, 246, 0.3);
-            animation: gradientShift 3s ease infinite;
+            box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
         }
 
         .btn-purple:hover:not(:disabled) {
-            box-shadow: 0 12px 35px rgba(139, 92, 246, 0.7), 0 0 60px rgba(139, 92, 246, 0.5);
-            transform: translateY(-4px) scale(1.03);
+            box-shadow: 0 6px 20px rgba(102, 126, 234, 0.6);
         }
         
         .btn-purple:active:not(:disabled) {
-            transform: translateY(-2px) scale(0.99);
+            transform: translateY(0px) scale(0.98);
         }
 
         .btn-green {
-            background: linear-gradient(135deg, #059669, #10b981, #34d399);
-            background-size: 200% 200%;
+            background: linear-gradient(135deg, #27ae60 0%, #2ecc71 100%);
             color: white;
-            box-shadow: 0 8px 25px rgba(16, 185, 129, 0.5), 0 0 40px rgba(16, 185, 129, 0.3);
-            animation: gradientShift 3s ease infinite;
+            box-shadow: 0 4px 15px rgba(39, 174, 96, 0.4);
         }
 
         .btn-green:hover:not(:disabled) {
-            box-shadow: 0 12px 35px rgba(16, 185, 129, 0.7), 0 0 60px rgba(16, 185, 129, 0.5);
-            transform: translateY(-4px) scale(1.03);
+            box-shadow: 0 6px 20px rgba(39, 174, 96, 0.6);
         }
         
         .btn-green:active:not(:disabled) {
-            transform: translateY(-2px) scale(0.99);
+            transform: translateY(0px) scale(0.98);
+        }
+        
+        .btn-success {
+            background: linear-gradient(135deg, #27ae60 0%, #2ecc71 100%);
+            color: white;
+            box-shadow: 0 4px 15px rgba(39, 174, 96, 0.4);
+        }
+
+        .btn-success:hover:not(:disabled) {
+            box-shadow: 0 6px 20px rgba(39, 174, 96, 0.6);
+        }
+        
+        .btn-success:active:not(:disabled) {
+            transform: translateY(0px) scale(0.98);
+        }
+        
+        .btn-danger {
+            background: linear-gradient(135deg, #e74c3c 0%, #c0392b 100%);
+            color: white;
+            box-shadow: 0 4px 15px rgba(231, 76, 60, 0.4);
+        }
+        
+        .btn-danger:hover:not(:disabled) {
+            box-shadow: 0 6px 20px rgba(231, 76, 60, 0.6);
+        }
+        
+        .btn-danger:active:not(:disabled) {
+            transform: translateY(0px) scale(0.98);
+        }
+        
+        .btn-secondary {
+            background: #6c757d;
+            color: white;
+        }
+        
+        .btn-secondary:hover:not(:disabled) {
+            background: #5a6268;
+        }
+        
+        .btn-secondary:active:not(:disabled) {
+            transform: translateY(0px) scale(0.98);
         }
 
         .category-grid {
@@ -477,12 +508,12 @@
 
             <input type="text" id="playerName" placeholder="اسمك" maxlength="15">
 
-            <button class="btn btn-gold" id="createBtn">👥 إنشاء غرفة جديدة</button>
+            <button class="btn btn-full btn-gold" id="createBtn">👥 إنشاء غرفة جديدة</button>
 
             <div class="divider"><span>أو</span></div>
 
             <input type="text" id="joinCode" placeholder="كود الغرفة (4 أرقام)" maxlength="4">
-            <button class="btn btn-purple" id="joinBtn">🚪 انضم للغرفة</button>
+            <button class="btn btn-full btn-purple" id="joinBtn">🚪 انضم للغرفة</button>
         </div>
 
         <!-- غرفة الانتظار -->
@@ -518,11 +549,11 @@
             </div>
 
             <div id="hostControls" class="hidden">
-                <button class="btn btn-green" id="startBtn">▶️ ابدأ الجيم</button>
+                <button class="btn btn-full btn-success" id="startBtn">▶️ ابدأ الجيم</button>
             </div>
 
-            <button class="btn" style="background: linear-gradient(135deg, #ef4444, #f87171); color: white;" id="leaveBtn">🚪 مغادرة</button>
-            <button class="btn" style="background: linear-gradient(135deg, #6b7280, #9ca3af); color: white; margin-top: 8px;" id="backToHomeBtn">🏠 العودة للرئيسية</button>
+            <button class="btn btn-full btn-danger" id="leaveBtn">🚪 مغادرة</button>
+            <button class="btn btn-full btn-secondary" id="backToHomeBtn">🏠 العودة للرئيسية</button>
         </div>
 
         <!-- شاشة الكلمة -->
@@ -533,7 +564,7 @@
             <div id="beforeReveal">
                 <div class="emoji">🎴</div>
                 <p>جاهز تشوف كلمتك؟</p>
-                <button class="btn btn-gold" id="revealBtn">👁️ اكشف</button>
+                <button class="btn btn-full btn-gold" id="revealBtn">👁️ اكشف</button>
             </div>
 
             <div id="afterReveal" class="hidden">
@@ -551,7 +582,7 @@
                 </div>
 
                 <div id="hostNext" class="hidden">
-                    <button class="btn btn-green" id="nextPhaseBtn">➡️ التالي</button>
+                    <button class="btn btn-full btn-success" id="nextPhaseBtn">➡️ التالي</button>
                 </div>
 
                 <div id="waitingHost" class="status hidden">
@@ -580,7 +611,7 @@
             </div>
 
             <div id="hostQuestionControls" class="hidden">
-                <button class="btn btn-green" id="nextQuestionBtn">➡️ السؤال التالي</button>
+                <button class="btn btn-full btn-success" id="nextQuestionBtn">➡️ السؤال التالي</button>
             </div>
 
             <div id="waitQuestionHost" class="status hidden">
@@ -604,7 +635,7 @@
             </div>
 
             <div id="hostFreeControls" class="hidden">
-                <button class="btn btn-green" id="endFreeQuestionsBtn">✅ إنهاء وبدء التصويت</button>
+                <button class="btn btn-full btn-success" id="endFreeQuestionsBtn">✅ إنهاء وبدء التصويت</button>
             </div>
         </div>
 
@@ -621,7 +652,7 @@
             <div class="emoji">💭</div>
 
             <div id="hostDiscuss" class="hidden">
-                <button class="btn btn-green" id="startVoteBtn">🗳️ ابدأ التصويت</button>
+                <button class="btn btn-full btn-success" id="startVoteBtn">🗳️ ابدأ التصويت</button>
             </div>
 
             <div id="waitDiscuss" class="status hidden">
@@ -653,7 +684,7 @@
 
             <div class="guess-input">
                 <input type="text" id="guessInput" placeholder="اكتب تخمينك">
-                <button class="btn btn-gold" id="submitGuess">✅ إرسال</button>
+                <button class="btn btn-full btn-gold" id="submitGuess">✅ إرسال</button>
             </div>
 
             <div id="guessWait" class="status hidden">
@@ -687,8 +718,8 @@
             </div>
 
             <div id="hostResult" class="hidden">
-                <button class="btn btn-green" id="nextRoundBtn">🎮 جيم جديد</button>
-                <button class="btn btn-gold" id="newGameBtn">🔄 لعبة جديدة (صفر النقاط)</button>
+                <button class="btn btn-full btn-success" id="nextRoundBtn">🎮 جيم جديد</button>
+                <button class="btn btn-full btn-gold" id="newGameBtn">🔄 لعبة جديدة (صفر النقاط)</button>
             </div>
         </div>
     </div>
@@ -1420,15 +1451,38 @@
 
         document.getElementById('leaveBtn').addEventListener('click', async () => {
             if (roomRef) {
-                await roomRef.child(`players/${state.playerId}`).remove();
+                if (state.isHost) {
+                    // إذا كان الهوست، احذف الغرفة بالكامل
+                    await roomRef.remove();
+                } else {
+                    // إذا كان لاعب عادي، احذف اللاعب فقط
+                    await roomRef.child(`players/${state.playerId}`).remove();
+                    await roomRef.child(`scores/${state.playerId}`).remove();
+                }
                 roomRef.off();
             }
+            // إعادة تعيين الحالة
+            state = {
+                roomCode: '',
+                playerId: '',
+                playerName: '',
+                isHost: false,
+                category: 'حيوانات',
+                roomData: null
+            };
             showScreen('homeScreen');
         });
 
         document.getElementById('backToHomeBtn').addEventListener('click', async () => {
             if (roomRef) {
-                await roomRef.child(`players/${state.playerId}`).remove();
+                if (state.isHost) {
+                    // إذا كان الهوست، احذف الغرفة بالكامل
+                    await roomRef.remove();
+                } else {
+                    // إذا كان لاعب عادي، احذف اللاعب فقط
+                    await roomRef.child(`players/${state.playerId}`).remove();
+                    await roomRef.child(`scores/${state.playerId}`).remove();
+                }
                 roomRef.off();
                 roomRef = null;
             }
