@@ -167,65 +167,32 @@
         }
 
         .btn {
-            width: 100%;
-            padding: 15px 20px;
-            font-size: 18px;
-            font-weight: 700;
+            padding: 10px 15px;
             border: none;
-            border-radius: 10px;
+            border-radius: 8px;
+            font-size: 14px;
             cursor: pointer;
-            transition: all 0.2s;
             font-family: 'Cairo', sans-serif;
-            margin-bottom: 8px;
-            position: relative;
-            z-index: 10;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            margin: 3px;
+            transition: all 0.2s;
         }
 
-        .btn:hover:not(:disabled) {
-            transform: translateY(-2px);
-            opacity: 0.9;
-        }
-
-        .btn:active:not(:disabled) {
-            transform: translateY(0px) scale(0.98);
-        }
-
-        .btn:disabled {
-            opacity: 0.5;
-            cursor: not-allowed;
-        }
+        .btn:hover { opacity: 0.9; }
+        .btn:disabled { opacity: 0.4; cursor: not-allowed; }
+        .btn:active { transform: scale(0.98); }
         
-        .btn-full { 
-            width: 100%; 
-            margin: 5px 0; 
-        }
+        .btn-full { width: 100%; margin: 5px 0; }
 
         .btn-gold {
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             color: white;
-            box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
         }
         
-        .btn-gold:hover:not(:disabled) {
-            box-shadow: 0 6px 20px rgba(102, 126, 234, 0.6);
-        }
-        
-        .btn-gold:active:not(:disabled) {
-            transform: translateY(0px) scale(0.98);
-        }
-
         .btn-purple {
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             color: white;
-            box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
-        }
-
-        .btn-purple:hover:not(:disabled) {
-            box-shadow: 0 6px 20px rgba(102, 126, 234, 0.6);
-        }
-        
-        .btn-purple:active:not(:disabled) {
-            transform: translateY(0px) scale(0.98);
         }
 
         .btn-green {
@@ -245,29 +212,11 @@
         .btn-success {
             background: linear-gradient(135deg, #27ae60 0%, #2ecc71 100%);
             color: white;
-            box-shadow: 0 4px 15px rgba(39, 174, 96, 0.4);
-        }
-
-        .btn-success:hover:not(:disabled) {
-            box-shadow: 0 6px 20px rgba(39, 174, 96, 0.6);
-        }
-        
-        .btn-success:active:not(:disabled) {
-            transform: translateY(0px) scale(0.98);
         }
         
         .btn-danger {
             background: linear-gradient(135deg, #e74c3c 0%, #c0392b 100%);
             color: white;
-            box-shadow: 0 4px 15px rgba(231, 76, 60, 0.4);
-        }
-        
-        .btn-danger:hover:not(:disabled) {
-            box-shadow: 0 6px 20px rgba(231, 76, 60, 0.6);
-        }
-        
-        .btn-danger:active:not(:disabled) {
-            transform: translateY(0px) scale(0.98);
         }
         
         .btn-secondary {
@@ -275,13 +224,7 @@
             color: white;
         }
         
-        .btn-secondary:hover:not(:disabled) {
-            background: #5a6268;
-        }
-        
-        .btn-secondary:active:not(:disabled) {
-            transform: translateY(0px) scale(0.98);
-        }
+        .btn-small { padding: 6px 10px; font-size: 12px; }
 
         .category-grid {
             display: grid;
@@ -377,7 +320,7 @@
         }
 
         .word-box {
-            background: linear-gradient(135deg, #d4af37, #f4e4b0);
+            background: linear-gradient(135deg, #667eea, #764ba2);
             border-radius: 26px;
             padding: 50px;
             margin: 30px 0;
@@ -387,7 +330,8 @@
         .word-text {
             font-size: 64px;
             font-weight: 900;
-            color: #1f2937;
+            color: #ffffff;
+            text-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
         }
 
         .impostor-badge {
@@ -504,16 +448,52 @@
             <div class="ramadan">رمضان كريم 🌙</div>
             <div class="emoji">🎭</div>
             <h1>مين برا السالفة؟</h1>
-            <p>العب أونلاين مع أصدقائك!</p>
+            
+            <div style="background:rgba(0,0,0,0.3);padding:15px;border-radius:10px;margin:20px 0;border-right:4px solid #d4af37;">
+                <p style="text-align:right;font-size:0.9em;line-height:1.8;color:#fff;">
+                    <strong style="color:#d4af37;">📖 كيف تلعب:</strong><br><br>
+                    لعبة جماعية ممتعة! كل لاعب يحصل على كلمة من نفس الموضوع، إلا واحد... هو "برا السالفة"!<br><br>
+                    عبر جولات الأسئلة والأجوبة، حاول تكتشف مين الشخص اللي ما عنده نفس الموضوع. والمتطفل يحاول يخمن السالفة الأساسية!<br><br>
+                    <strong style="color:#d4af37;">🎯 الهدف:</strong> اكتشف المتطفل قبل ما يكتشف موضوعكم!
+                </p>
+            </div>
+            
+            <button class="btn btn-full btn-gold" id="goToCreateBtn">🏠 إنشاء غرفة جديدة</button>
+            <button class="btn btn-full btn-purple" id="goToJoinBtn">🚪 انضمام لغرفة</button>
+            <button class="btn btn-full btn-secondary" onclick="window.location.href='../index.html'" style="margin-top: 10px;">← العودة للقائمة</button>
+        </div>
 
-            <input type="text" id="playerName" placeholder="اسمك" maxlength="15">
+        <!-- شاشة إنشاء غرفة -->
+        <div id="createRoomScreen" class="card hidden">
+            <div class="ramadan">بارك الله فيك 🌙</div>
+            <h2>إنشاء غرفة جديدة</h2>
+            
+            <input type="text" id="hostName" placeholder="اسمك" maxlength="15">
+            
+            <div id="categorySection" style="margin: 20px 0;">
+                <label style="display: block; text-align: center; font-weight: 700; color: #ffffff; margin-bottom: 12px; text-shadow: 0 2px 4px rgba(0, 0, 0, 0.5);">اختر الفئة:</label>
+                <div class="category-grid">
+                    <button class="category-btn active" data-category="حيوانات">🦁 حيوانات</button>
+                    <button class="category-btn" data-category="أكل">🍕 أكل</button>
+                    <button class="category-btn" data-category="أماكن">🏖️ أماكن</button>
+                    <button class="category-btn" data-category="وظائف">👨‍⚕️ وظائف</button>
+                </div>
+            </div>
+            
+            <button class="btn btn-full btn-success" id="confirmCreateBtn">✅ إنشاء الغرفة</button>
+            <button class="btn btn-full btn-secondary" id="backFromCreate">🔙 رجوع</button>
+        </div>
 
-            <button class="btn btn-full btn-gold" id="createBtn">👥 إنشاء غرفة جديدة</button>
-
-            <div class="divider"><span>أو</span></div>
-
-            <input type="text" id="joinCode" placeholder="كود الغرفة (4 أرقام)" maxlength="4">
-            <button class="btn btn-full btn-purple" id="joinBtn">🚪 انضم للغرفة</button>
+        <!-- شاشة الانضمام -->
+        <div id="joinRoomScreen" class="card hidden">
+            <div class="ramadan">أهلاً وسهلاً 🌙</div>
+            <h2>انضمام لغرفة</h2>
+            
+            <input type="text" id="joinPlayerName" placeholder="اسمك" maxlength="15">
+            <input type="text" id="joinRoomCode" placeholder="كود الغرفة (4 أرقام)" maxlength="4" style="text-transform:uppercase;text-align:center;font-size:1.5em;letter-spacing:5px;">
+            
+            <button class="btn btn-full btn-success" id="confirmJoinBtn">✅ انضمام</button>
+            <button class="btn btn-full btn-secondary" id="backFromJoin">🔙 رجوع</button>
         </div>
 
         <!-- غرفة الانتظار -->
@@ -569,7 +549,7 @@
 
             <div id="afterReveal" class="hidden">
                 <div class="word-box">
-                    <p style="font-size: 26px; margin-bottom: 18px; color: #1f2937;">كلمتك:</p>
+                    <p style="font-size: 26px; margin-bottom: 18px; color: #ffffff;">كلمتك:</p>
                     <div class="word-text" id="myWord">---</div>
                     <div id="impostorBadge" class="impostor-badge hidden">
                         <p style="color: white; font-size: 28px; font-weight: 700; margin: 0; margin-bottom: 12px;">🎭 أنت برا السالفة!</p>
@@ -597,11 +577,11 @@
             <h2>جولة الأسئلة 🗣️</h2>
 
             <div id="currentQuestion" class="word-box" style="margin: 30px 0;">
-                <p style="font-size: 22px; color: #1f2937; margin-bottom: 15px; font-weight: 700;">السؤال <span id="questionNum">1</span>:</p>
-                <p style="font-size: 32px; color: #1f2937; font-weight: 900; margin: 10px 0;">
-                    <span id="askerName" style="color: #d4af37;">أحمد</span> → <span id="answererName" style="color: #8b5cf6;">سارة</span>
+                <p style="font-size: 22px; color: #ffffff; margin-bottom: 15px; font-weight: 700;">السؤال <span id="questionNum">1</span>:</p>
+                <p style="font-size: 32px; color: #ffffff; font-weight: 900; margin: 10px 0;">
+                    <span id="askerName" style="color: #ffd700;">أحمد</span> → <span id="answererName" style="color: #ffd700;">سارة</span>
                 </p>
-                <p style="font-size: 18px; color: #1f2937; margin-top: 15px; opacity: 0.8;">
+                <p style="font-size: 18px; color: #ffffff; margin-top: 15px; opacity: 0.9;">
                     <span id="askerName2">أحمد</span> يسأل <span id="answererName2">سارة</span> سؤال عن كلمتها
                 </p>
             </div>
@@ -625,8 +605,8 @@
             <h2>أسئلة حرة 💬</h2>
 
             <div class="word-box" style="margin: 30px 0;">
-                <p style="font-size: 48px; color: #1f2937; font-weight: 900; margin: 0;">⏰ <span id="freeTimer">60</span></p>
-                <p style="font-size: 20px; color: #1f2937; margin-top: 10px;">ثانية متبقية</p>
+                <p style="font-size: 48px; color: #ffffff; font-weight: 900; margin: 0;">⏰ <span id="freeTimer">60</span></p>
+                <p style="font-size: 20px; color: #ffffff; margin-top: 10px;">ثانية متبقية</p>
             </div>
 
             <div class="status">
@@ -699,10 +679,10 @@
             <h2 id="resultTitle">النتيجة</h2>
 
             <div class="word-box">
-                <p style="font-size: 22px; margin-bottom: 15px; color: #1f2937;">المتطفل: <span id="impostorName">---</span> 🎭</p>
-                <div style="background: rgba(255,255,255,0.4); border-radius: 16px; padding: 20px;">
-                    <p style="margin: 8px 0; color: #1f2937; font-weight: 700;">الكلمة: <strong id="mainWord">---</strong></p>
-                    <p style="margin: 8px 0; color: #1f2937; font-weight: 700;">كلمة المتطفل: <strong id="impostorWord">---</strong></p>
+                <p style="font-size: 22px; margin-bottom: 15px; color: #ffffff;">المتطفل: <span id="impostorName">---</span> 🎭</p>
+                <div style="background: rgba(255,255,255,0.2); border-radius: 16px; padding: 20px;">
+                    <p style="margin: 8px 0; color: #ffffff; font-weight: 700;">الكلمة: <strong id="mainWord">---</strong></p>
+                    <p style="margin: 8px 0; color: #ffffff; font-weight: 700;">كلمة المتطفل: <strong id="impostorWord">---</strong></p>
                 </div>
             </div>
 
@@ -804,72 +784,96 @@
             category: 'حيوانات',
             roomData: null
         };
+        
+        // متغير لتخزين الفئة المختارة مؤقتاً
+        let selectedCategory = 'حيوانات';
 
-        // إنشاء غرفة
-        const createBtn = document.getElementById('createBtn');
-        if (createBtn) {
-            createBtn.addEventListener('click', async (e) => {
-                e.preventDefault();
-                console.log('🔘 تم الضغط على زر إنشاء الغرفة');
-                
-                const name = document.getElementById('playerName').value.trim();
-                if (!name) {
-                    alert('أدخل اسمك أولاً!');
-                    return;
-                }
+        // أزرار التنقل للشاشات
+        document.getElementById('goToCreateBtn').addEventListener('click', () => {
+            showScreen('createRoomScreen');
+        });
 
-                console.log('👤 الاسم:', name);
+        document.getElementById('goToJoinBtn').addEventListener('click', () => {
+            showScreen('joinRoomScreen');
+        });
 
-                if (!db) {
-                    console.log('❌ Firebase غير جاهز');
-                    alert('⚠️ للعب أونلاين:\n\n1. ارفع الملف على موقع (Netlify)\n2. افتح الرابط من المتصفح\n\nالآن الملف مفتوح محلياً ❌');
-                    console.log('💡 ارفع الملف على: https://app.netlify.com/drop');
-                    return;
-                }
+        document.getElementById('backFromCreate').addEventListener('click', () => {
+            showScreen('homeScreen');
+        });
 
-                console.log('✅ Firebase جاهز - جاري إنشاء الغرفة...');
+        document.getElementById('backFromJoin').addEventListener('click', () => {
+            showScreen('homeScreen');
+        });
 
-                const code = Math.floor(1000 + Math.random() * 9000).toString();
-                const playerId = Date.now().toString();
-
-                const room = {
-                    code,
-                    host: playerId,
-                    category: 'حيوانات',
-                    state: 'lobby',
-                    players: {},
-                    scores: {},
-                    currentRound: null
-                };
-
-                room.players[playerId] = { name, ready: false };
-                room.scores[playerId] = 0;
-
-                try {
-                    await db.ref(`rooms/${code}`).set(room);
-                    console.log('✅ تم إنشاء الغرفة:', code);
-                    
-                    state.roomCode = code;
-                    state.playerId = playerId;
-                    state.playerName = name;
-                    state.isHost = true;
-                    state.category = 'حيوانات';
-
-                    listenToRoom();
-                    showScreen('lobbyScreen');
-                } catch (e) {
-                    console.error('❌ خطأ:', e);
-                    alert('خطأ في إنشاء الغرفة!\n\n' + e.message);
-                }
+        // أزرار الفئات في شاشة الإنشاء
+        document.querySelectorAll('#createRoomScreen .category-btn').forEach(btn => {
+            btn.addEventListener('click', function() {
+                document.querySelectorAll('#createRoomScreen .category-btn').forEach(b => b.classList.remove('active'));
+                this.classList.add('active');
+                selectedCategory = this.dataset.category;
             });
-        } else {
-            console.error('❌ لم يتم العثور على زر إنشاء الغرفة');
-        }
+        });
 
-        // الانضمام
-        document.getElementById('joinBtn').addEventListener('click', async () => {
-            const name = document.getElementById('playerName').value.trim();
-            const code = document.getElementById('joinCode').value.trim();
+        // زر تأكيد إنشاء الغرفة
+        document.getElementById('confirmCreateBtn').addEventListener('click', async (e) => {
+            e.preventDefault();
+            console.log('🔘 تم الضغط على زر إنشاء الغرفة');
+            
+            const name = document.getElementById('hostName').value.trim();
+            if (!name) {
+                alert('أدخل اسمك أولاً!');
+                return;
+            }
+
+            console.log('👤 الاسم:', name);
+
+            if (!db) {
+                console.log('❌ Firebase غير جاهز');
+                alert('⚠️ للعب أونلاين:\n\n1. ارفع الملف على موقع (Netlify)\n2. افتح الرابط من المتصفح\n\nالآن الملف مفتوح محلياً ❌');
+                console.log('💡 ارفع الملف على: https://app.netlify.com/drop');
+                return;
+            }
+
+            console.log('✅ Firebase جاهز - جاري إنشاء الغرفة...');
+
+            const code = Math.floor(1000 + Math.random() * 9000).toString();
+            const playerId = Date.now().toString();
+
+            const room = {
+                code,
+                host: playerId,
+                category: selectedCategory,
+                state: 'lobby',
+                players: {},
+                scores: {},
+                currentRound: null
+            };
+
+            room.players[playerId] = { name, ready: false };
+            room.scores[playerId] = 0;
+
+            try {
+                await db.ref(`rooms/${code}`).set(room);
+                console.log('✅ تم إنشاء الغرفة:', code);
+                
+                state.roomCode = code;
+                state.playerId = playerId;
+                state.playerName = name;
+                state.isHost = true;
+                state.category = selectedCategory;
+
+                listenToRoom();
+                showScreen('lobbyScreen');
+            } catch (e) {
+                console.error('❌ خطأ:', e);
+                alert('خطأ في إنشاء الغرفة!\n\n' + e.message);
+            }
+        });
+
+        // زر تأكيد الانضمام
+        document.getElementById('confirmJoinBtn').addEventListener('click', async () => {
+            const name = document.getElementById('joinPlayerName').value.trim();
+            const code = document.getElementById('joinRoomCode').value.trim();
 
             if (!name || !code) {
                 alert('أدخل اسمك وكود الغرفة!');
@@ -1270,9 +1274,10 @@
             const answererName = players[currentQ.answerer]?.name || 'لاعب';
             
             document.getElementById('questionNum').textContent = currentIndex + 1;
-            document.getElementById('totalQuestions').textContent = questions.length;
             document.getElementById('askerName').textContent = askerName;
             document.getElementById('answererName').textContent = answererName;
+            document.getElementById('askerName2').textContent = askerName;
+            document.getElementById('answererName2').textContent = answererName;
             
             document.getElementById('hostQuestionControls').classList.toggle('hidden', !state.isHost);
             document.getElementById('waitQuestionHost').classList.toggle('hidden', state.isHost);
