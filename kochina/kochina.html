@@ -344,12 +344,18 @@
             cursor: pointer;
             transition: all 0.3s;
             backdrop-filter: blur(10px);
+            min-height: 150px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
         }
 
         .vote-card:hover {
             transform: translateY(-5px);
             box-shadow: 0 15px 40px rgba(212, 175, 55, 0.5);
             border-color: rgba(212, 175, 55, 0.9);
+            background: linear-gradient(to bottom right, rgba(254, 243, 199, 0.5), rgba(254, 249, 231, 0.5));
         }
 
         .vote-card.selected {
@@ -794,7 +800,13 @@
                 document.getElementById('hostDiscuss').classList.toggle('hidden', !state.isHost);
                 document.getElementById('waitDiscuss').classList.toggle('hidden', state.isHost);
             } else if (currentState === 'voting') {
-                showVoteScreen();
+                // إعادة تحميل البيانات قبل عرض التصويت
+                if (state.roomData && state.roomData.players) {
+                    console.log('🗳️ عرض شاشة التصويت - عدد اللاعبين:', Object.keys(state.roomData.players).length);
+                    showVoteScreen();
+                } else {
+                    console.error('⚠️ لا توجد بيانات لاعبين!');
+                }
             } else if (currentState === 'guessing') {
                 showGuessScreen();
             } else if (currentState === 'results') {
@@ -932,13 +944,19 @@
             const grid = document.getElementById('voteGrid');
             grid.innerHTML = '';
 
+            console.log('عرض شاشة التصويت - اللاعبين:', state.roomData.players);
+
             Object.entries(state.roomData.players).forEach(([id, player]) => {
                 if (id !== state.playerId) {
                     const div = document.createElement('div');
                     div.className = 'vote-card';
-                    div.innerHTML = `<div style="font-size: 48px;">👤</div><p class="player-name">${player.name}</p>`;
+                    div.innerHTML = `
+                        <div style="font-size: 48px; margin-bottom: 10px;">👤</div>
+                        <p class="player-name" style="font-size: 22px; font-weight: 700; color: #ffffff; margin: 0;">${player.name}</p>
+                    `;
                     div.onclick = () => vote(id);
                     grid.appendChild(div);
+                    console.log('أضيف للتصويت:', player.name);
                 }
             });
         }
