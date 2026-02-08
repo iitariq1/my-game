@@ -1031,24 +1031,25 @@
                 const round = state.roomData.currentRound;
                 const players = state.roomData.players;
                 
-                // إذا الهوست وليس اللي برا السالفة، تحقق من جاهزية اللي برا السالفة للانتقال
-                if (state.isHost && state.playerId !== round.impostorId) {
-                    if (round.impostorGuessReady || round.impostorGuess) {
-                        console.log('🏠 الهوست يلاحظ أن اللي برا السالفة خمّن - ينتقل للنتائج');
-                        setTimeout(() => {
-                            roomRef.update({ state: 'results' });
-                        }, 1500);
-                        return;
-                    }
-                }
-                
                 if (state.playerId === round.impostorId) {
-                    // اللي برا السالفة يرى شاشة التخمين مع 6 خيارات
+                    // اللي برا السالفة يرى شاشة التخمين مع 6 خيارات (سواء كان هوست أو لا)
+                    console.log('🎯 عرض شاشة التخمين للمتطفل (هوست أو لا)');
                     showGuessScreen();
                 } else {
                     // الباقي يرون شاشة الانتظار
+                    console.log('⏳ عرض شاشة الانتظار');
                     showScreen('waitingGuessScreen');
                     document.getElementById('impostorNameWait').textContent = players[round.impostorId].name;
+                    
+                    // إذا الهوست (وليس المتطفل)، تحقق من جاهزية المتطفل للانتقال
+                    if (state.isHost) {
+                        if (round.impostorGuessReady || round.impostorGuess) {
+                            console.log('🏠 الهوست يلاحظ أن اللي برا السالفة خمّن - ينتقل للنتائج');
+                            setTimeout(() => {
+                                roomRef.update({ state: 'results' });
+                            }, 1500);
+                        }
+                    }
                 }
             } else if (currentState === 'results') {
                 showResults();
