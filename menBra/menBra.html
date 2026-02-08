@@ -486,8 +486,8 @@
                 <p style="text-align:right;font-size:0.9em;line-height:1.8;color:#fff;">
                     <strong style="color:#d4af37;">📖 كيف تلعب:</strong><br><br>
                     لعبة جماعية ممتعة! كل لاعب يحصل على كلمة من نفس الموضوع، إلا واحد... هو "برا السالفة"!<br><br>
-                    عبر جولات الأسئلة والأجوبة، حاول تكتشف مين الشخص اللي ما عنده نفس الموضوع. والمتطفل يحاول يخمن السالفة الأساسية!<br><br>
-                    <strong style="color:#d4af37;">🎯 الهدف:</strong> اكتشف المتطفل قبل ما يكتشف موضوعكم!
+                    عبر جولات الأسئلة والأجوبة، حاول تكتشف مين الشخص اللي ما عنده نفس الموضوع. وهو يحاول يخمن السالفة الأساسية!<br><br>
+                    <strong style="color:#d4af37;">🎯 الهدف:</strong> اكتشف اللي برا السالفة قبل ما يكتشف موضوعكم!
                 </p>
             </div>
             
@@ -644,7 +644,7 @@
 
             <div class="status">
                 <p>💬 أي واحد يقدر يسأل أي واحد!</p>
-                <p style="font-size: 16px; margin-top: 8px;">استغل الوقت لاكتشاف المتطفل</p>
+                <p style="font-size: 16px; margin-top: 8px;">استغل الوقت لاكتشاف اللي برا السالفة</p>
             </div>
 
             <div id="hostFreeControls" class="hidden">
@@ -686,7 +686,7 @@
             </div>
         </div>
 
-        <!-- شاشة تخمين المتطفل -->
+        <!-- شاشة تخمين اللي برا السالفة -->
         <div id="guessScreen" class="card hidden">
             <div class="ramadan">الله يوفقك 🌙</div>
             <h2>أنت برا السالفة! 🎭</h2>
@@ -706,18 +706,18 @@
             </div>
         </div>
         
-        <!-- شاشة انتظار تخمين المتطفل -->
+        <!-- شاشة انتظار تخمين اللي برا السالفة -->
         <div id="waitingGuessScreen" class="card hidden">
             <div class="ramadan">انتظروا 🌙</div>
             <div class="emoji">⏳</div>
-            <h2>المتطفل يخمّن الكلمة الصحيحة...</h2>
+            <h2>اللي برا السالفة يخمّن الكلمة الصحيحة...</h2>
             
             <div class="word-box">
-                <p style="font-size: 22px; margin-bottom: 15px; color: #ffffff;">المتطفل: <span id="impostorNameWait">---</span> 🎭</p>
+                <p style="font-size: 22px; margin-bottom: 15px; color: #ffffff;">اللي برا السالفة: <span id="impostorNameWait">---</span> 🎭</p>
             </div>
             
             <div class="status">
-                <p style="font-size: 18px;">💭 المتطفل الحين يختار من 6 خيارات...</p>
+                <p style="font-size: 18px;">💭 اللي برا السالفة الحين يختار من 6 خيارات...</p>
                 <p style="font-size: 16px; margin-top: 10px;">إذا خمّن صح، يكسب نقطة! 🎯</p>
             </div>
         </div>
@@ -729,10 +729,10 @@
             <h2 id="resultTitle">النتيجة</h2>
 
             <div class="word-box">
-                <p style="font-size: 22px; margin-bottom: 15px; color: #ffffff;">المتطفل: <span id="impostorName">---</span> 🎭</p>
+                <p style="font-size: 22px; margin-bottom: 15px; color: #ffffff;">اللي برا السالفة: <span id="impostorName">---</span> 🎭</p>
                 <div style="background: rgba(255,255,255,0.2); border-radius: 16px; padding: 20px;">
                     <p style="margin: 8px 0; color: #ffffff; font-weight: 700;">الكلمة الصحيحة: <strong id="mainWord">---</strong></p>
-                    <p style="margin: 8px 0; color: #ffffff; font-weight: 700;">كلمة المتطفل: <strong id="impostorWord">---</strong></p>
+                    <p style="margin: 8px 0; color: #ffffff; font-weight: 700;">كلمة اللي برا السالفة: <strong id="impostorWord">---</strong></p>
                 </div>
             </div>
 
@@ -1013,8 +1013,19 @@
                 const round = state.roomData.currentRound;
                 const players = state.roomData.players;
                 
+                // إذا الهوست وليس اللي برا السالفة، تحقق من جاهزية اللي برا السالفة للانتقال
+                if (state.isHost && state.playerId !== round.impostorId) {
+                    if (round.impostorGuessReady || round.impostorGuess) {
+                        console.log('🏠 الهوست يلاحظ أن اللي برا السالفة خمّن - ينتقل للنتائج');
+                        setTimeout(() => {
+                            roomRef.update({ state: 'results' });
+                        }, 1500);
+                        return;
+                    }
+                }
+                
                 if (state.playerId === round.impostorId) {
-                    // المتطفل يرى شاشة التخمين مع 6 خيارات
+                    // اللي برا السالفة يرى شاشة التخمين مع 6 خيارات
                     showGuessScreen();
                 } else {
                     // الباقي يرون شاشة الانتظار
@@ -1321,7 +1332,7 @@
 
             if (Object.keys(votes).length + 1 >= players.length) {
                 if (state.isHost) {
-                    // الانتقال لشاشة انتظار تخمين المتطفل
+                    // الانتقال لشاشة انتظار تخمين اللي برا السالفة
                     await roomRef.update({ state: 'waitingGuess' });
                 }
             }
@@ -1335,63 +1346,106 @@
             const round = state.roomData.currentRound;
             const category = state.roomData.category;
             
+            console.log('📂 الفئة:', category);
+            console.log('📝 الكلمة الرئيسية:', round.mainWord);
+            
             // البحث عن الكلمة المستخدمة في المجموعة
             const usedWordSet = wordSets[category].find(set => 
                 set.main === round.mainWord
             );
             
+            console.log('🔍 مجموعة الكلمات:', usedWordSet);
+            
             if (!usedWordSet || !usedWordSet.options) {
                 console.error('❌ لم يتم العثور على خيارات للكلمة');
+                alert('خطأ: لم يتم العثور على خيارات!');
                 return;
             }
+            
+            console.log('✅ الخيارات:', usedWordSet.options);
             
             // عرض الخيارات الـ 6
             const optionsDiv = document.getElementById('guessOptions');
             optionsDiv.innerHTML = '';
+            optionsDiv.style.display = 'grid'; // تأكد من الظهور
             
-            usedWordSet.options.forEach(option => {
+            usedWordSet.options.forEach((option, index) => {
+                console.log(`➕ إضافة خيار ${index + 1}:`, option);
+                
                 const card = document.createElement('div');
                 card.className = 'vote-card';
                 card.textContent = option;
+                
+                // تصميم واضح ومميز
                 card.style.cursor = 'pointer';
-                card.style.fontSize = '24px';
-                card.style.fontWeight = '700';
-                card.style.padding = '30px 20px';
+                card.style.fontSize = '28px';
+                card.style.fontWeight = '900';
+                card.style.padding = '40px 20px';
+                card.style.background = 'linear-gradient(135deg, #fbbf24 0%, #f59e0b 100%)';
+                card.style.border = '5px solid #d97706';
+                card.style.borderRadius = '20px';
+                card.style.color = '#1f2937';
+                card.style.textShadow = '1px 1px 2px rgba(255,255,255,0.5)';
+                card.style.minHeight = '120px';
+                card.style.display = 'flex';
+                card.style.alignItems = 'center';
+                card.style.justifyContent = 'center';
+                card.style.transition = 'all 0.3s';
                 
                 card.addEventListener('click', async function() {
-                    if (round.impostorGuess) return; // تم التخمين بالفعل
+                    if (round.impostorGuess) {
+                        console.log('⚠️ تم التخمين بالفعل');
+                        return; // تم التخمين بالفعل
+                    }
+                    
+                    console.log('🎯 تم اختيار:', option);
                     
                     // تحديد الاختيار
                     document.querySelectorAll('#guessOptions .vote-card').forEach(c => {
                         c.classList.remove('selected');
                         c.style.background = 'linear-gradient(135deg, #fbbf24 0%, #f59e0b 100%)';
                         c.style.borderColor = '#d97706';
+                        c.style.transform = 'scale(1)';
                     });
                     
                     this.classList.add('selected');
                     this.style.background = 'linear-gradient(135deg, #10b981 0%, #059669 100%)';
                     this.style.borderColor = '#047857';
+                    this.style.transform = 'scale(1.05)';
                     
                     // إرسال التخمين
+                    console.log('📤 إرسال التخمين إلى Firebase:', option);
                     await roomRef.child('currentRound/impostorGuess').set(option);
                     
                     // عرض شاشة الانتظار
                     document.getElementById('guessWait').classList.remove('hidden');
                     document.getElementById('guessOptions').style.display = 'none';
                     
-                    // الهوست ينتقل للنتائج
+                    console.log('✅ تم إرسال التخمين بنجاح');
+                    
+                    // اللي برا السالفة يخبر الهوست بأن ينتقل للنتائج
+                    // إذا اللي برا السالفة هو الهوست، ينتقل مباشرة
+                    // إذا اللي برا السالفة ليس الهوست، نضع علامة ليعرف الهوست
                     if (state.isHost) {
+                        console.log('🏠 اللي برا السالفة هو الهوست - ينتقل للنتائج...');
                         setTimeout(() => {
                             roomRef.update({ state: 'results' });
-                        }, 2000);
+                        }, 1500);
+                    } else {
+                        console.log('📢 اللي برا السالفة ليس الهوست - وضع علامة للانتقال...');
+                        // وضع علامة ليعرف الهوست أن اللي برا السالفة خمّن
+                        await roomRef.child('currentRound/impostorGuessReady').set(true);
                     }
                 });
                 
                 optionsDiv.appendChild(card);
             });
             
-            // إذا المتطفل خمّن بالفعل
+            console.log(`✅ تم إضافة ${usedWordSet.options.length} خيار بنجاح`);
+            
+            // إذا اللي برا السالفة خمّن بالفعل
             if (round.impostorGuess) {
+                console.log('ℹ️ اللي برا السالفة خمّن بالفعل:', round.impostorGuess);
                 document.getElementById('guessWait').classList.remove('hidden');
                 document.getElementById('guessOptions').style.display = 'none';
             }
@@ -1512,13 +1566,13 @@
 
             const impostorCaught = mostVoted === round.impostorId;
             
-            // التحقق من تخمين المتطفل
+            // التحقق من تخمين اللي برا السالفة
             const impostorGuessCorrect = round.impostorGuess === round.mainWord;
 
             // عرض النتائج
             document.getElementById('resultEmoji').textContent = impostorCaught ? '🎉' : '😱';
             document.getElementById('resultTitle').textContent = 
-                impostorCaught ? 'اللاعبون فازوا!' : 'المتطفل نجا!';
+                impostorCaught ? 'اللاعبون فازوا!' : 'اللي برا السالفة نجا!';
             document.getElementById('impostorName').textContent = players[round.impostorId].name;
             document.getElementById('mainWord').textContent = round.mainWord;
             document.getElementById('impostorWord').textContent = round.impostorWord;
@@ -1530,16 +1584,16 @@
 
             // نتيجة التصويت
             if (impostorCaught) {
-                resultsDiv.innerHTML += '<p style="color: #2ecc71; font-weight: 700; font-size: 18px; margin: 10px 0;">✅ اللاعبون اكتشفوا المتطفل - نقطة لكل من صوّت صح!</p>';
+                resultsDiv.innerHTML += '<p style="color: #2ecc71; font-weight: 700; font-size: 18px; margin: 10px 0;">✅ اللاعبون اكتشفوا اللي برا السالفة - نقطة لكل من صوّت صح!</p>';
             } else {
-                resultsDiv.innerHTML += '<p style="color: #e74c3c; font-weight: 700; font-size: 18px; margin: 10px 0;">❌ المتطفل نجا من التصويت!</p>';
+                resultsDiv.innerHTML += '<p style="color: #e74c3c; font-weight: 700; font-size: 18px; margin: 10px 0;">❌ اللي برا السالفة نجا من التصويت!</p>';
             }
 
-            // نتيجة تخمين المتطفل
+            // نتيجة تخمين اللي برا السالفة
             if (impostorGuessCorrect) {
-                resultsDiv.innerHTML += '<p style="color: #d4af37; font-weight: 700; font-size: 18px; margin: 10px 0;">🎯 المتطفل خمّن الكلمة صح: <strong>' + round.impostorGuess + '</strong> - نقطة له!</p>';
+                resultsDiv.innerHTML += '<p style="color: #d4af37; font-weight: 700; font-size: 18px; margin: 10px 0;">🎯 اللي برا السالفة خمّن الكلمة صح: <strong>' + round.impostorGuess + '</strong> - نقطة له!</p>';
             } else if (round.impostorGuess) {
-                resultsDiv.innerHTML += '<p style="color: #e74c3c; font-weight: 700; font-size: 18px; margin: 10px 0;">❌ المتطفل خمّن غلط: <strong>' + round.impostorGuess + '</strong> (الصحيحة: <strong>' + round.mainWord + '</strong>)</p>';
+                resultsDiv.innerHTML += '<p style="color: #e74c3c; font-weight: 700; font-size: 18px; margin: 10px 0;">❌ اللي برا السالفة خمّن غلط: <strong>' + round.impostorGuess + '</strong> (الصحيحة: <strong>' + round.mainWord + '</strong>)</p>';
             }
             
             resultsDiv.innerHTML += '</div>';
