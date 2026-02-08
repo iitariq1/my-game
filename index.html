@@ -159,6 +159,10 @@
             transform: translateY(-10px) scale(1.02);
             box-shadow: 0 20px 60px rgba(102, 126, 234, 0.4);
         }
+        
+        .game-card:active {
+            transform: translateY(-5px) scale(0.99);
+        }
 
         .game-card.detective::before {
             background: linear-gradient(135deg, #1a237e, #880e4f, #4a148c, #1a237e);
@@ -174,6 +178,11 @@
             font-size: 3em;
             filter: drop-shadow(0 5px 15px rgba(0, 0, 0, 0.5));
             flex-shrink: 0;
+            transition: transform 0.3s ease;
+        }
+        
+        .game-card:hover .game-icon {
+            transform: scale(1.1) rotate(5deg);
         }
 
         @keyframes iconFloat {
@@ -191,6 +200,12 @@
             font-weight: 700;
             margin-bottom: 8px;
             color: #ffd700;
+            transition: all 0.3s ease;
+        }
+        
+        .game-card:hover .game-title {
+            letter-spacing: 1px;
+            text-shadow: 0 0 20px rgba(255, 215, 0, 0.8);
         }
 
         .game-description {
@@ -198,6 +213,11 @@
             line-height: 1.5;
             color: #b8c5d6;
             margin-bottom: 0;
+            transition: color 0.3s ease;
+        }
+        
+        .game-card:hover .game-description {
+            color: #e0e7f0;
         }
 
         .footer {
@@ -264,7 +284,7 @@
                 <div class="game-content">
                     <h2 class="game-title">مين برا السالفة</h2>
                     <p class="game-description">
-                        لعبة ممتعة ومسلية! اكتشف من هو خارج الموضوع واستمتع بأجواء من الضحك والتحدي مع الأصدقاء
+                        العب مع اصحابك بدون الحاجه الى جهاز واحد واستمتعوا
                     </p>
                 </div>
             </div>
