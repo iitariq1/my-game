@@ -1005,6 +1005,24 @@
                 if (state.roomData && state.roomData.players) {
                     console.log('🗳️ عرض شاشة التصويت - عدد اللاعبين:', Object.keys(state.roomData.players).length);
                     showVoteScreen();
+                    
+                    // التحقق من اكتمال الأصوات (للهوست فقط)
+                    if (state.isHost) {
+                        const round = state.roomData.currentRound;
+                        const players = Object.keys(state.roomData.players);
+                        const votes = round.votes || {};
+                        const voteCount = Object.keys(votes).length;
+                        
+                        console.log(`📊 الأصوات: ${voteCount}/${players.length}`);
+                        
+                        // جميع اللاعبين صوّتوا؟
+                        if (voteCount >= players.length) {
+                            console.log('✅ جميع اللاعبين صوّتوا - الانتقال لشاشة التخمين');
+                            setTimeout(() => {
+                                roomRef.update({ state: 'waitingGuess' });
+                            }, 1000);
+                        }
+                    }
                 } else {
                     console.error('⚠️ لا توجد بيانات لاعبين!');
                 }
@@ -1324,18 +1342,12 @@
         }
 
         async function vote(votedId) {
+            console.log('🗳️ التصويت على:', votedId);
             await roomRef.child(`currentRound/votes/${state.playerId}`).set(votedId);
             document.getElementById('voteWaiting').classList.remove('hidden');
-
-            const players = Object.keys(state.roomData.players);
-            const votes = state.roomData.currentRound.votes || {};
-
-            if (Object.keys(votes).length + 1 >= players.length) {
-                if (state.isHost) {
-                    // الانتقال لشاشة انتظار تخمين اللي برا السالفة
-                    await roomRef.update({ state: 'waitingGuess' });
-                }
-            }
+            console.log('✅ تم إرسال الصوت');
+            
+            // الهوست سيتحقق من اكتمال الأصوات في updateUI تلقائياً
         }
         
         // دالة عرض شاشة التخمين للمتطفل مع 6 خيارات
