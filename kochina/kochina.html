@@ -426,16 +426,6 @@
 
             <input type="text" id="playerName" placeholder="اسمك" maxlength="15">
 
-            <div>
-                <label style="display: block; text-align: center; font-weight: 700; color: #ffffff; margin-bottom: 12px; text-shadow: 0 2px 4px rgba(0, 0, 0, 0.5);">اختر الفئة:</label>
-                <div class="category-grid">
-                    <button class="category-btn active" data-category="حيوانات">🦁 حيوانات</button>
-                    <button class="category-btn" data-category="أكل">🍕 أكل</button>
-                    <button class="category-btn" data-category="أماكن">🏖️ أماكن</button>
-                    <button class="category-btn" data-category="وظائف">👨‍⚕️ وظائف</button>
-                </div>
-            </div>
-
             <button class="btn btn-gold" id="createBtn">👥 إنشاء غرفة جديدة</button>
 
             <div class="divider"><span>أو</span></div>
@@ -455,8 +445,18 @@
                 <button class="btn btn-purple" id="copyBtn" style="width: auto; padding: 12px 24px; font-size: 18px; margin-top: 15px;">📋 نسخ</button>
             </div>
 
+            <div id="categorySection">
+                <label style="display: block; text-align: center; font-weight: 700; color: #ffffff; margin-bottom: 12px; text-shadow: 0 2px 4px rgba(0, 0, 0, 0.5);">اختر الفئة:</label>
+                <div class="category-grid">
+                    <button class="category-btn active" data-category="حيوانات">🦁 حيوانات</button>
+                    <button class="category-btn" data-category="أكل">🍕 أكل</button>
+                    <button class="category-btn" data-category="أماكن">🏖️ أماكن</button>
+                    <button class="category-btn" data-category="وظائف">👨‍⚕️ وظائف</button>
+                </div>
+            </div>
+
             <div class="status">
-                <p>الفئة: <span id="displayCategory" style="color: #d4af37;">حيوانات</span></p>
+                <p>الفئة المختارة: <span id="displayCategory" style="color: #fbbf24;">حيوانات</span></p>
             </div>
 
             <h2>اللاعبين (<span id="playerCount">0</span>)</h2>
@@ -617,23 +617,23 @@
 
         let db = null;
         let roomRef = null;
+        let firebaseReady = false;
 
-        // تحميل Firebase بدون رسائل
-        window.addEventListener('load', () => {
-            setTimeout(() => {
-                try {
-                    if (typeof firebase !== 'undefined') {
-                        firebase.initializeApp(firebaseConfig);
-                        db = firebase.database();
-                        console.log('✅ Firebase جاهز');
-                    } else {
-                        console.log('⚠️ Firebase غير متوفر - يجب رفع الملف على موقع');
-                    }
-                } catch (e) {
-                    console.log('⚠️ Firebase:', e.message);
+        // تحميل Firebase
+        setTimeout(() => {
+            try {
+                if (typeof firebase !== 'undefined') {
+                    firebase.initializeApp(firebaseConfig);
+                    db = firebase.database();
+                    firebaseReady = true;
+                    console.log('✅ Firebase جاهز');
+                } else {
+                    console.log('⚠️ Firebase غير متوفر');
                 }
-            }, 500);
-        });
+            } catch (e) {
+                console.log('⚠️ Firebase:', e.message);
+            }
+        }, 1000);
 
         // الكلمات
         const wordSets = {
@@ -673,58 +673,66 @@
             roomData: null
         };
 
-        // اختيار الفئة
-        document.querySelectorAll('.category-btn').forEach(btn => {
-            btn.addEventListener('click', () => {
-                document.querySelectorAll('.category-btn').forEach(b => b.classList.remove('active'));
-                btn.classList.add('active');
-                state.category = btn.dataset.category;
-            });
-        });
-
         // إنشاء غرفة
-        document.getElementById('createBtn').addEventListener('click', async () => {
-            const name = document.getElementById('playerName').value.trim();
-            if (!name) {
-                alert('أدخل اسمك أولاً!');
-                return;
-            }
+        const createBtn = document.getElementById('createBtn');
+        if (createBtn) {
+            createBtn.addEventListener('click', async (e) => {
+                e.preventDefault();
+                console.log('🔘 تم الضغط على زر إنشاء الغرفة');
+                
+                const name = document.getElementById('playerName').value.trim();
+                if (!name) {
+                    alert('أدخل اسمك أولاً!');
+                    return;
+                }
 
-            if (!db) {
-                alert('⚠️ للعب أونلاين:\n\n1. ارفع الملف على موقع (Netlify)\n2. افتح الرابط من المتصفح\n\nالآن الملف مفتوح محلياً ❌');
-                console.log('💡 ارفع الملف على: https://app.netlify.com/drop');
-                return;
-            }
+                console.log('👤 الاسم:', name);
 
-            const code = Math.floor(1000 + Math.random() * 9000).toString();
-            const playerId = Date.now().toString();
+                if (!db) {
+                    console.log('❌ Firebase غير جاهز');
+                    alert('⚠️ للعب أونلاين:\n\n1. ارفع الملف على موقع (Netlify)\n2. افتح الرابط من المتصفح\n\nالآن الملف مفتوح محلياً ❌');
+                    console.log('💡 ارفع الملف على: https://app.netlify.com/drop');
+                    return;
+                }
 
-            const room = {
-                code,
-                host: playerId,
-                category: state.category,
-                state: 'lobby',
-                players: {},
-                scores: {},
-                currentRound: null
-            };
+                console.log('✅ Firebase جاهز - جاري إنشاء الغرفة...');
 
-            room.players[playerId] = { name, ready: false };
-            room.scores[playerId] = 0;
+                const code = Math.floor(1000 + Math.random() * 9000).toString();
+                const playerId = Date.now().toString();
 
-            try {
-                await db.ref(`rooms/${code}`).set(room);
-                state.roomCode = code;
-                state.playerId = playerId;
-                state.playerName = name;
-                state.isHost = true;
+                const room = {
+                    code,
+                    host: playerId,
+                    category: 'حيوانات',
+                    state: 'lobby',
+                    players: {},
+                    scores: {},
+                    currentRound: null
+                };
 
-                listenToRoom();
-                showScreen('lobbyScreen');
-            } catch (e) {
-                alert('خطأ في إنشاء الغرفة!\n\n' + e.message);
-            }
-        });
+                room.players[playerId] = { name, ready: false };
+                room.scores[playerId] = 0;
+
+                try {
+                    await db.ref(`rooms/${code}`).set(room);
+                    console.log('✅ تم إنشاء الغرفة:', code);
+                    
+                    state.roomCode = code;
+                    state.playerId = playerId;
+                    state.playerName = name;
+                    state.isHost = true;
+                    state.category = 'حيوانات';
+
+                    listenToRoom();
+                    showScreen('lobbyScreen');
+                } catch (e) {
+                    console.error('❌ خطأ:', e);
+                    alert('خطأ في إنشاء الغرفة!\n\n' + e.message);
+                }
+            });
+        } else {
+            console.error('❌ لم يتم العثور على زر إنشاء الغرفة');
+        }
 
         // الانضمام
         document.getElementById('joinBtn').addEventListener('click', async () => {
@@ -819,7 +827,32 @@
 
             document.getElementById('minWarning').classList.toggle('hidden', players.length >= 3);
             document.getElementById('hostControls').classList.toggle('hidden', !state.isHost);
+            
+            // إظهار/إخفاء الفئات - فقط الهوست يشوفها
+            const categorySection = document.getElementById('categorySection');
+            if (categorySection) {
+                categorySection.style.display = state.isHost ? 'block' : 'none';
+            }
+
+            // تحديث الفئة المختارة
+            document.querySelectorAll('#lobbyScreen .category-btn').forEach(btn => {
+                btn.classList.toggle('active', btn.dataset.category === state.roomData.category);
+            });
         }
+
+        // اختيار الفئة في اللوبي
+        document.addEventListener('click', async (e) => {
+            if (e.target.closest('.category-btn') && state.isHost && state.roomData) {
+                const btn = e.target.closest('.category-btn');
+                const category = btn.dataset.category;
+                
+                document.querySelectorAll('.category-btn').forEach(b => b.classList.remove('active'));
+                btn.classList.add('active');
+                
+                // تحديث الفئة في Firebase
+                await roomRef.update({ category });
+            }
+        });
 
         document.getElementById('copyBtn').addEventListener('click', () => {
             navigator.clipboard.writeText(state.roomCode);
@@ -1045,6 +1078,7 @@
                 state: 'lobby',
                 currentRound: null
             });
+            // الهوست يقدر يغير الفئة الحين
         });
 
         document.getElementById('newGameBtn').addEventListener('click', async () => {
