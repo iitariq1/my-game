@@ -1534,11 +1534,13 @@
         }
 
         function showResults() {
-            showScreen('resultScreen');
+    showScreen('resultScreen');
 
-            const round = state.roomData.currentRound;
-            const players = state.roomData.players;
-
+    const round = state.roomData.currentRound;
+    const players = state.roomData.players;
+    
+    // ✨ إصلاح: تهيئة الفئة المختارة
+    selectedCategoryForNextRound = state.roomData.category || 'حيوانات';
             // حساب الأصوات
             const voteCount = {};
             Object.values(round.votes).forEach(v => {
@@ -1636,7 +1638,16 @@
                 }
             }
 
-            document.getElementById('hostResult').classList.toggle('hidden', !state.isHost);
+// ✨ إصلاح: تحديث أزرار الفئات
+    if (state.isHost) {
+        setTimeout(() => {
+            document.querySelectorAll('.category-btn-result').forEach(btn => {
+                btn.classList.toggle('active', btn.dataset.category === selectedCategoryForNextRound);
+            });
+        }, 100);
+    }
+
+    document.getElementById('hostResult').classList.toggle('hidden', !state.isHost);
         }
         
         // متغير لتخزين الفئة المختارة للجولة الجديدة
@@ -1659,29 +1670,48 @@
         });
 
         document.getElementById('nextRoundBtn').addEventListener('click', async () => {
-            console.log('🎮 بدء جولة جديدة مع الفئة:', selectedCategoryForNextRound);
-            
-            // تحديث الفئة والرجوع للوبي (الهوست يبدأ اللعبة من جديد)
-            await roomRef.update({
-                category: selectedCategoryForNextRound,
-                state: 'lobby',
-                currentRound: null
-                // النقاط تبقى كما هي!
-            });
+    console.log('🎮 بدء جولة جديدة مع الفئة:', selectedCategoryForNextRound);
+    
+    // ✨ إصلاح: التأكد من وجود قيمة
+    if (!selectedCategoryForNextRound) {
+        selectedCategoryForNextRound = state.roomData.category || 'حيوانات';
+    }
+    
+    try {
+        // تحديث الفئة والرجوع للوبي
+        await roomRef.update({
+            category: selectedCategoryForNextRound,
+            state: 'lobby',
+            currentRound: null
         });
+        console.log('✅ تم تحديث الغرفة بنجاح');
+    } catch (e) {
+        console.error('❌ خطأ:', e);
+        alert('حدث خطأ! حاول مرة أخرى.');
+    }
+});
 
         document.getElementById('newGameBtn').addEventListener('click', async () => {
-            const scores = {};
-            Object.keys(state.roomData.players).forEach(id => {
-                scores[id] = 0;
-            });
-
-            await roomRef.update({
-                state: 'lobby',
-                currentRound: null,
-                scores
-            });
+    console.log('🔄 بدء لعبة جديدة (صفر النقاط)');
+    
+    try {
+        const scores = {};
+        Object.keys(state.roomData.players).forEach(id => {
+            scores[id] = 0;
         });
+
+        await roomRef.update({
+            state: 'lobby',
+            currentRound: null,
+            category: state.roomData.category || 'حيوانات',
+            scores
+        });
+        console.log('✅ تم إعادة تعيين اللعبة بنجاح');
+    } catch (e) {
+        console.error('❌ خطأ:', e);
+        alert('حدث خطأ! حاول مرة أخرى.');
+    }
+});
 
         document.getElementById('leaveBtn').addEventListener('click', async () => {
             if (roomRef) {
