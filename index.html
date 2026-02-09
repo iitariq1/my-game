@@ -129,6 +129,10 @@
             animation-delay: 0.2s;
         }
 
+        .game-card:nth-child(3) {
+            animation-delay: 0.4s;
+        }
+
         .game-card::before {
             content: '';
             position: absolute;
@@ -171,6 +175,11 @@
 
         .game-card.menBra::before {
             background: linear-gradient(135deg, #1a472a, #d4af37, #2d5f3f, #1a472a);
+            background-size: 400% 400%;
+        }
+
+        .game-card.couch::before {
+            background: linear-gradient(135deg, #667eea, #764ba2, #f093fb, #667eea);
             background-size: 400% 400%;
         }
 
@@ -288,6 +297,17 @@
                     </p>
                 </div>
             </div>
+
+            <!-- لعبة الكنبة -->
+            <div class="game-card couch" onclick="playGame('couch')">
+                <div class="game-icon">🛋️</div>
+                <div class="game-content">
+                    <h2 class="game-title">لعبة الكنبة</h2>
+                    <p class="game-description">
+                        لعبة تنافسية مثيرة بين فريقين! أجب على الأسئلة بسرعة واحصل على مقعد في الفوز
+                    </p>
+                </div>
+            </div>
         </div>
 
         <div class="footer">
@@ -302,6 +322,8 @@
                 window.location.href = 'detective/detective.html';
             } else if (game === 'menBra') {
                 window.location.href = 'menBra/menBra.html';
+            } else if (game === 'couch') {
+                window.location.href = 'https://m7qqmkadee.com/team/team.html';
             }
         }
 
