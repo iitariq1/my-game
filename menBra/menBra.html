@@ -29,7 +29,7 @@
             width: 100%;
             height: 100%;
             pointer-events: none;
-            z-index: -1;
+            z-index: 0;
         }
 
         .star {
@@ -451,24 +451,72 @@
             margin: 20px 0;
         }
 
-        .winner-box {
-            background: linear-gradient(135deg, #fbbf24, #f59e0b);
-            border-radius: 26px;
-            padding: 40px;
-            margin: 30px 0;
+        /* تصميم احترافي للفائز */
+        .winner-announcement {
+            background: linear-gradient(135deg, rgba(255, 215, 0, 0.2), rgba(255, 193, 7, 0.2));
+            border: 3px solid rgba(255, 215, 0, 0.6);
+            border-radius: 20px;
+            padding: 30px 25px;
+            margin: 25px 0;
             text-align: center;
-            animation: pulse 1s infinite;
+            backdrop-filter: blur(15px);
+            box-shadow: 0 10px 40px rgba(255, 215, 0, 0.3);
+            animation: winnerGlow 2s ease-in-out infinite;
         }
 
-        @keyframes pulse {
-            0%, 100% { transform: scale(1); }
-            50% { transform: scale(1.05); }
+        @keyframes winnerGlow {
+            0%, 100% { 
+                box-shadow: 0 10px 40px rgba(255, 215, 0, 0.3);
+                transform: scale(1);
+            }
+            50% { 
+                box-shadow: 0 15px 50px rgba(255, 215, 0, 0.5);
+                transform: scale(1.02);
+            }
         }
 
-        .winner-box h2 {
-            color: white;
-            font-size: 48px;
-            text-shadow: 0 4px 6px rgba(0,0,0,0.2);
+        .winner-announcement .crown {
+            font-size: 70px;
+            margin-bottom: 15px;
+            animation: crownFloat 2s ease-in-out infinite;
+        }
+
+        @keyframes crownFloat {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-10px); }
+        }
+
+        .winner-announcement .winner-title {
+            font-size: 26px;
+            color: #fbbf24;
+            font-weight: 800;
+            margin-bottom: 12px;
+            text-shadow: 0 3px 8px rgba(0, 0, 0, 0.4);
+        }
+
+        .winner-announcement .winner-name-text {
+            font-size: 38px;
+            color: #ffffff;
+            font-weight: 900;
+            margin: 15px 0;
+            text-shadow: 0 4px 12px rgba(0, 0, 0, 0.5);
+            letter-spacing: 1px;
+        }
+
+        .winner-announcement .winner-score {
+            font-size: 20px;
+            color: #fef3c7;
+            font-weight: 700;
+            margin-top: 10px;
+            text-shadow: 0 2px 6px rgba(0, 0, 0, 0.4);
+        }
+
+        .winner-announcement .congrats {
+            font-size: 18px;
+            color: #d4af37;
+            font-weight: 600;
+            margin-top: 15px;
+            text-shadow: 0 2px 5px rgba(0, 0, 0, 0.3);
         }
     </style>
 </head>
@@ -741,10 +789,13 @@
             <h2>النقاط الإجمالية 🏆</h2>
             <div class="player-list" id="scoreList"></div>
 
-            <div id="winnerAnnounce" class="winner-box hidden">
-                <div class="emoji">👑</div>
-                <h2>الفائز: <span id="winnerName">---</span></h2>
-                <p style="color: white; font-size: 24px; margin-top: 10px;">وصل لـ 5 نقاط!</p>
+            <!-- إعلان الفائز الاحترافي -->
+            <div id="winnerAnnounce" class="winner-announcement hidden">
+                <div class="crown">👑</div>
+                <div class="winner-title">الفائز</div>
+                <div class="winner-name-text" id="winnerName">---</div>
+                <div class="winner-score">وصل لـ <span id="winnerPoints">5</span> نقاط!</div>
+                <div class="congrats">مبروك! 🎊</div>
             </div>
 
             <div id="hostResult" class="hidden">
@@ -759,6 +810,7 @@
                 </div>
                 <button class="btn btn-full btn-success" id="nextRoundBtn">🎮 جولة جديدة</button>
                 <button class="btn btn-full btn-gold" id="newGameBtn">🔄 لعبة جديدة (صفر النقاط)</button>
+                <button class="btn btn-full btn-secondary" id="backToMenuBtn">🏠 العودة للقائمة الرئيسية</button>
             </div>
         </div>
     </div>
@@ -854,6 +906,7 @@
         
         // متغير لتخزين الفئة المختارة مؤقتاً
         let selectedCategory = 'حيوانات';
+        let selectedCategoryForNextRound = 'حيوانات';
 
         // أزرار التنقل للشاشات
         document.getElementById('goToCreateBtn').addEventListener('click', () => {
@@ -1001,12 +1054,10 @@
                 document.getElementById('hostDiscuss').classList.toggle('hidden', !state.isHost);
                 document.getElementById('waitDiscuss').classList.toggle('hidden', state.isHost);
             } else if (currentState === 'voting') {
-                // إعادة تحميل البيانات قبل عرض التصويت
                 if (state.roomData && state.roomData.players) {
                     console.log('🗳️ عرض شاشة التصويت - عدد اللاعبين:', Object.keys(state.roomData.players).length);
                     showVoteScreen();
                     
-                    // التحقق من اكتمال الأصوات (للهوست فقط)
                     if (state.isHost) {
                         const round = state.roomData.currentRound;
                         const players = Object.keys(state.roomData.players);
@@ -1015,7 +1066,6 @@
                         
                         console.log(`📊 الأصوات: ${voteCount}/${players.length}`);
                         
-                        // جميع اللاعبين صوّتوا؟
                         if (voteCount >= players.length) {
                             console.log('✅ جميع اللاعبين صوّتوا - الانتقال لشاشة التخمين');
                             setTimeout(() => {
@@ -1027,21 +1077,17 @@
                     console.error('⚠️ لا توجد بيانات لاعبين!');
                 }
             } else if (currentState === 'waitingGuess') {
-                // بعد انتهاء التصويت
                 const round = state.roomData.currentRound;
                 const players = state.roomData.players;
                 
                 if (state.playerId === round.impostorId) {
-                    // اللي برا السالفة يرى شاشة التخمين مع 6 خيارات (سواء كان هوست أو لا)
-                    console.log('🎯 عرض شاشة التخمين للمتطفل (هوست أو لا)');
+                    console.log('🎯 عرض شاشة التخمين للمتطفل');
                     showGuessScreen();
                 } else {
-                    // الباقي يرون شاشة الانتظار
                     console.log('⏳ عرض شاشة الانتظار');
                     showScreen('waitingGuessScreen');
                     document.getElementById('impostorNameWait').textContent = players[round.impostorId].name;
                     
-                    // إذا الهوست (وليس المتطفل)، تحقق من جاهزية المتطفل للانتقال
                     if (state.isHost) {
                         if (round.impostorGuessReady || round.impostorGuess) {
                             console.log('🏠 الهوست يلاحظ أن اللي برا السالفة خمّن - ينتقل للنتائج');
@@ -1082,19 +1128,16 @@
             document.getElementById('minWarning').classList.toggle('hidden', players.length >= 3);
             document.getElementById('hostControls').classList.toggle('hidden', !state.isHost);
             
-            // إظهار/إخفاء الفئات - فقط الهوست يشوفها
             const categorySection = document.getElementById('categorySection');
             if (categorySection) {
                 categorySection.style.display = state.isHost ? 'block' : 'none';
             }
 
-            // تحديث الفئة المختارة
             document.querySelectorAll('#lobbyScreen .category-btn').forEach(btn => {
                 btn.classList.toggle('active', btn.dataset.category === state.roomData.category);
             });
         }
 
-        // اختيار الفئة في اللوبي
         document.addEventListener('click', async (e) => {
             if (e.target.closest('.category-btn') && state.isHost && state.roomData) {
                 const btn = e.target.closest('.category-btn');
@@ -1103,7 +1146,6 @@
                 document.querySelectorAll('.category-btn').forEach(b => b.classList.remove('active'));
                 btn.classList.add('active');
                 
-                // تحديث الفئة في Firebase
                 await roomRef.update({ category });
             }
         });
@@ -1169,10 +1211,8 @@
         document.getElementById('nextPhaseBtn').addEventListener('click', async () => {
             console.log('🎯 بدء نظام الأسئلة المنظمة');
             
-            // الحصول على قائمة اللاعبين
             const playerIds = Object.keys(state.roomData.players);
             
-            // دالة لخلط القائمة (Fisher-Yates shuffle)
             function shuffle(array) {
                 const shuffled = [...array];
                 for (let i = shuffled.length - 1; i > 0; i--) {
@@ -1182,17 +1222,13 @@
                 return shuffled;
             }
             
-            // خلط اللاعبين
             const shuffledAskers = shuffle(playerIds);
             const shuffledAnswerers = shuffle(playerIds);
             
-            // إنشاء قائمة أسئلة (كل واحد يسأل واحد ثاني)
             const questions = [];
             for (let i = 0; i < shuffledAskers.length; i++) {
-                // تأكد إن السائل ما يسأل نفسه
                 let answererIndex = i;
                 if (shuffledAskers[i] === shuffledAnswerers[answererIndex]) {
-                    // إذا نفس الشخص، خذ اللي بعده
                     answererIndex = (i + 1) % shuffledAnswerers.length;
                 }
                 
@@ -1211,7 +1247,6 @@
             });
         });
 
-        // زر السؤال التالي
         document.getElementById('nextQuestionBtn').addEventListener('click', async () => {
             console.log('➡️ الانتقال للسؤال التالي');
             const round = state.roomData.currentRound;
@@ -1223,7 +1258,6 @@
             });
         });
 
-        // زر إنهاء الأسئلة الحرة
         document.getElementById('endFreeQuestionsBtn').addEventListener('click', async () => {
             console.log('✅ إنهاء الأسئلة الحرة والانتقال للتصويت');
             await roomRef.update({ state: 'voting' });
@@ -1242,7 +1276,6 @@
 
             console.log('👥 البيانات الكاملة:', {players, round, myId: state.playerId});
 
-            // إذا صوّت بالفعل
             if (round.votes && round.votes[state.playerId]) {
                 console.log('✅ اللاعب صوّت بالفعل');
                 document.getElementById('voteWaiting').classList.remove('hidden');
@@ -1256,13 +1289,11 @@
 
             let count = 0;
 
-            // إنشاء بطاقة لكل لاعب - تصميم مضمون للجميع
             Object.entries(players).forEach(([playerId, playerData]) => {
                 if (playerId !== state.playerId) {
                     console.log(`➕ إضافة: ${playerData.name}`);
                     
                     const card = document.createElement('div');
-                    // استخدام أقوى styles ممكنة - تشتغل على كل المتصفحات
                     card.setAttribute('style', `
                         background: linear-gradient(135deg, #fbbf24 0%, #f59e0b 100%) !important;
                         border: 5px solid #d97706 !important;
@@ -1323,7 +1354,6 @@
                     
                     card.onclick = () => {
                         console.log(`🗳️ التصويت على: ${playerData.name}`);
-                        // إضافة تأثير بصري للتصويت
                         card.style.background = 'linear-gradient(135deg, #10b981 0%, #059669 100%)';
                         card.style.borderColor = '#047857';
                         vote(playerId);
@@ -1347,11 +1377,8 @@
             await roomRef.child(`currentRound/votes/${state.playerId}`).set(votedId);
             document.getElementById('voteWaiting').classList.remove('hidden');
             console.log('✅ تم إرسال الصوت');
-            
-            // الهوست سيتحقق من اكتمال الأصوات في updateUI تلقائياً
         }
         
-        // دالة عرض شاشة التخمين للمتطفل مع 6 خيارات
         function showGuessScreen() {
             console.log('🎯 عرض شاشة التخمين للمتطفل');
             showScreen('guessScreen');
@@ -1362,7 +1389,6 @@
             console.log('📂 الفئة:', category);
             console.log('📝 الكلمة الرئيسية:', round.mainWord);
             
-            // البحث عن الكلمة المستخدمة في المجموعة
             const usedWordSet = wordSets[category].find(set => 
                 set.main === round.mainWord
             );
@@ -1377,10 +1403,9 @@
             
             console.log('✅ الخيارات:', usedWordSet.options);
             
-            // عرض الخيارات الـ 6
             const optionsDiv = document.getElementById('guessOptions');
             optionsDiv.innerHTML = '';
-            optionsDiv.style.display = 'grid'; // تأكد من الظهور
+            optionsDiv.style.display = 'grid';
             
             usedWordSet.options.forEach((option, index) => {
                 console.log(`➕ إضافة خيار ${index + 1}:`, option);
@@ -1389,7 +1414,6 @@
                 card.className = 'vote-card';
                 card.textContent = option;
                 
-                // تصميم واضح ومميز
                 card.style.cursor = 'pointer';
                 card.style.fontSize = '28px';
                 card.style.fontWeight = '900';
@@ -1408,12 +1432,11 @@
                 card.addEventListener('click', async function() {
                     if (round.impostorGuess) {
                         console.log('⚠️ تم التخمين بالفعل');
-                        return; // تم التخمين بالفعل
+                        return;
                     }
                     
                     console.log('🎯 تم اختيار:', option);
                     
-                    // تحديد الاختيار
                     document.querySelectorAll('#guessOptions .vote-card').forEach(c => {
                         c.classList.remove('selected');
                         c.style.background = 'linear-gradient(135deg, #fbbf24 0%, #f59e0b 100%)';
@@ -1426,19 +1449,14 @@
                     this.style.borderColor = '#047857';
                     this.style.transform = 'scale(1.05)';
                     
-                    // إرسال التخمين
                     console.log('📤 إرسال التخمين إلى Firebase:', option);
                     await roomRef.child('currentRound/impostorGuess').set(option);
                     
-                    // عرض شاشة الانتظار
                     document.getElementById('guessWait').classList.remove('hidden');
                     document.getElementById('guessOptions').style.display = 'none';
                     
                     console.log('✅ تم إرسال التخمين بنجاح');
                     
-                    // اللي برا السالفة يخبر الهوست بأن ينتقل للنتائج
-                    // إذا اللي برا السالفة هو الهوست، ينتقل مباشرة
-                    // إذا اللي برا السالفة ليس الهوست، نضع علامة ليعرف الهوست
                     if (state.isHost) {
                         console.log('🏠 اللي برا السالفة هو الهوست - ينتقل للنتائج...');
                         setTimeout(() => {
@@ -1446,7 +1464,6 @@
                         }, 1500);
                     } else {
                         console.log('📢 اللي برا السالفة ليس الهوست - وضع علامة للانتقال...');
-                        // وضع علامة ليعرف الهوست أن اللي برا السالفة خمّن
                         await roomRef.child('currentRound/impostorGuessReady').set(true);
                     }
                 });
@@ -1456,7 +1473,6 @@
             
             console.log(`✅ تم إضافة ${usedWordSet.options.length} خيار بنجاح`);
             
-            // إذا اللي برا السالفة خمّن بالفعل
             if (round.impostorGuess) {
                 console.log('ℹ️ اللي برا السالفة خمّن بالفعل:', round.impostorGuess);
                 document.getElementById('guessWait').classList.remove('hidden');
@@ -1474,7 +1490,6 @@
             const currentIndex = round.currentQuestionIndex || 0;
             
             if (currentIndex >= questions.length) {
-                // انتهت الأسئلة المنظمة، ننتقل للأسئلة الحرة
                 console.log('✅ انتهت الأسئلة المنظمة');
                 if (state.isHost) {
                     roomRef.update({ 
@@ -1505,9 +1520,8 @@
             
             const round = state.roomData.currentRound;
             const startTime = round.freeQuestionsStartTime || Date.now();
-            const duration = 60; // 60 ثانية
+            const duration = 60;
             
-            // تحديث المؤقت
             const updateTimer = () => {
                 const elapsed = Math.floor((Date.now() - startTime) / 1000);
                 const remaining = Math.max(0, duration - elapsed);
@@ -1518,7 +1532,6 @@
                 }
                 
                 if (remaining === 0 && state.isHost) {
-                    // انتهى الوقت، ننتقل للتصويت
                     roomRef.update({ state: 'voting' });
                     return;
                 }
@@ -1534,13 +1547,14 @@
         }
 
         function showResults() {
-    showScreen('resultScreen');
+            showScreen('resultScreen');
 
-    const round = state.roomData.currentRound;
-    const players = state.roomData.players;
-    
-    // ✨ إصلاح: تهيئة الفئة المختارة
-    selectedCategoryForNextRound = state.roomData.category || 'حيوانات';
+            const round = state.roomData.currentRound;
+            const players = state.roomData.players;
+            
+            // ✨ إصلاح: تهيئة الفئة المختارة للجولة القادمة
+            selectedCategoryForNextRound = state.roomData.category || 'حيوانات';
+
             // حساب الأصوات
             const voteCount = {};
             Object.values(round.votes).forEach(v => {
@@ -1552,8 +1566,6 @@
             );
 
             const impostorCaught = mostVoted === round.impostorId;
-            
-            // التحقق من تخمين اللي برا السالفة
             const impostorGuessCorrect = round.impostorGuess === round.mainWord;
 
             // عرض النتائج
@@ -1569,14 +1581,12 @@
             resultsDiv.innerHTML = '<div class="status" style="background: rgba(255,255,255,0.1); padding: 20px; border-radius: 15px; margin: 20px 0;">';
             resultsDiv.innerHTML += '<h3 style="color: #ffffff; margin-bottom: 15px; font-size: 20px;">📊 نتائج هذه الجولة:</h3>';
 
-            // نتيجة التصويت
             if (impostorCaught) {
                 resultsDiv.innerHTML += '<p style="color: #2ecc71; font-weight: 700; font-size: 18px; margin: 10px 0;">✅ اللاعبون اكتشفوا اللي برا السالفة - نقطة لكل من صوّت صح!</p>';
             } else {
                 resultsDiv.innerHTML += '<p style="color: #e74c3c; font-weight: 700; font-size: 18px; margin: 10px 0;">❌ اللي برا السالفة نجا من التصويت!</p>';
             }
 
-            // نتيجة تخمين اللي برا السالفة
             if (impostorGuessCorrect) {
                 resultsDiv.innerHTML += '<p style="color: #d4af37; font-weight: 700; font-size: 18px; margin: 10px 0;">🎯 اللي برا السالفة خمّن الكلمة صح: <strong>' + round.impostorGuess + '</strong> - نقطة له!</p>';
             } else if (round.impostorGuess) {
@@ -1585,22 +1595,24 @@
             
             resultsDiv.innerHTML += '</div>';
 
-            // تحديث النقاط
+            // ✨ نظام النقاط المحدّث - نقطة واحدة فقط لمن خمّن صح
             if (state.isHost) {
                 const newScores = { ...state.roomData.scores };
 
-                // نقاط للاعبين اللي صوتوا صح
+                // نقطة واحدة فقط للاعبين اللي صوتوا على المتطفل بشكل صحيح
                 if (impostorCaught) {
                     Object.entries(round.votes).forEach(([voterId, votedId]) => {
                         if (votedId === round.impostorId) {
                             newScores[voterId] = (newScores[voterId] || 0) + 1;
+                            console.log(`✅ ${players[voterId].name} حصل على نقطة (صوّت صح)`);
                         }
                     });
                 }
 
-                // نقطة للمتطفل إذا خمّن صح
+                // نقطة واحدة فقط للمتطفل إذا خمّن الكلمة الصحيحة
                 if (impostorGuessCorrect) {
                     newScores[round.impostorId] = (newScores[round.impostorId] || 0) + 1;
+                    console.log(`✅ ${players[round.impostorId].name} (المتطفل) حصل على نقطة (خمّن صح)`);
                 }
 
                 roomRef.child('scores').set(newScores);
@@ -1628,30 +1640,26 @@
                 const winnerBox = document.getElementById('winnerAnnounce');
                 winnerBox.classList.remove('hidden');
                 document.getElementById('winnerName').textContent = players[winner[0]].name;
+                document.getElementById('winnerPoints').textContent = winner[1];
                 
-                // إخفاء اختيار الفئة إذا انتهت اللعبة
                 document.getElementById('categorySelectionForNextRound').classList.add('hidden');
             } else {
-                // إظهار اختيار الفئة للجولة الجديدة
                 if (state.isHost) {
                     document.getElementById('categorySelectionForNextRound').classList.remove('hidden');
                 }
             }
 
-// ✨ إصلاح: تحديث أزرار الفئات
-    if (state.isHost) {
-        setTimeout(() => {
-            document.querySelectorAll('.category-btn-result').forEach(btn => {
-                btn.classList.toggle('active', btn.dataset.category === selectedCategoryForNextRound);
-            });
-        }, 100);
-    }
+            // ✨ إصلاح: تحديث أزرار الفئات
+            if (state.isHost) {
+                setTimeout(() => {
+                    document.querySelectorAll('.category-btn-result').forEach(btn => {
+                        btn.classList.toggle('active', btn.dataset.category === selectedCategoryForNextRound);
+                    });
+                }, 100);
+            }
 
-    document.getElementById('hostResult').classList.toggle('hidden', !state.isHost);
+            document.getElementById('hostResult').classList.toggle('hidden', !state.isHost);
         }
-        
-        // متغير لتخزين الفئة المختارة للجولة الجديدة
-        let selectedCategoryForNextRound = 'حيوانات';
 
         // أزرار الفئات في شاشة النتائج
         document.addEventListener('click', (e) => {
@@ -1659,7 +1667,6 @@
                 const btn = e.target.closest('.category-btn-result');
                 selectedCategoryForNextRound = btn.dataset.category;
                 
-                // تحديث الأزرار
                 document.querySelectorAll('.category-btn-result').forEach(b => 
                     b.classList.remove('active')
                 );
@@ -1669,63 +1676,94 @@
             }
         });
 
+        // ✨ إصلاح: زر الجولة الجديدة
         document.getElementById('nextRoundBtn').addEventListener('click', async () => {
-    console.log('🎮 بدء جولة جديدة مع الفئة:', selectedCategoryForNextRound);
-    
-    // ✨ إصلاح: التأكد من وجود قيمة
-    if (!selectedCategoryForNextRound) {
-        selectedCategoryForNextRound = state.roomData.category || 'حيوانات';
-    }
-    
-    try {
-        // تحديث الفئة والرجوع للوبي
-        await roomRef.update({
-            category: selectedCategoryForNextRound,
-            state: 'lobby',
-            currentRound: null
+            console.log('🎮 بدء جولة جديدة مع الفئة:', selectedCategoryForNextRound);
+            
+            if (!selectedCategoryForNextRound) {
+                selectedCategoryForNextRound = state.roomData.category || 'حيوانات';
+            }
+            
+            try {
+                await roomRef.update({
+                    category: selectedCategoryForNextRound,
+                    state: 'lobby',
+                    currentRound: null
+                });
+                console.log('✅ تم تحديث الغرفة بنجاح');
+            } catch (e) {
+                console.error('❌ خطأ:', e);
+                alert('حدث خطأ! حاول مرة أخرى.');
+            }
         });
-        console.log('✅ تم تحديث الغرفة بنجاح');
-    } catch (e) {
-        console.error('❌ خطأ:', e);
-        alert('حدث خطأ! حاول مرة أخرى.');
-    }
-});
 
+        // ✨ إصلاح: زر اللعبة الجديدة
         document.getElementById('newGameBtn').addEventListener('click', async () => {
-    console.log('🔄 بدء لعبة جديدة (صفر النقاط)');
-    
-    try {
-        const scores = {};
-        Object.keys(state.roomData.players).forEach(id => {
-            scores[id] = 0;
+            console.log('🔄 بدء لعبة جديدة (صفر النقاط)');
+            
+            try {
+                const scores = {};
+                Object.keys(state.roomData.players).forEach(id => {
+                    scores[id] = 0;
+                });
+
+                await roomRef.update({
+                    state: 'lobby',
+                    currentRound: null,
+                    category: state.roomData.category || 'حيوانات',
+                    scores
+                });
+                console.log('✅ تم إعادة تعيين اللعبة بنجاح');
+            } catch (e) {
+                console.error('❌ خطأ:', e);
+                alert('حدث خطأ! حاول مرة أخرى.');
+            }
         });
 
-        await roomRef.update({
-            state: 'lobby',
-            currentRound: null,
-            category: state.roomData.category || 'حيوانات',
-            scores
+        // ✨ زر جديد: العودة للقائمة الرئيسية
+        document.getElementById('backToMenuBtn').addEventListener('click', async () => {
+            console.log('🏠 العودة للقائمة الرئيسية');
+            
+            if (confirm('هل أنت متأكد من العودة للقائمة؟ سيتم إنهاء اللعبة.')) {
+                try {
+                    if (roomRef) {
+                        if (state.isHost) {
+                            await roomRef.remove();
+                        } else {
+                            await roomRef.child(`players/${state.playerId}`).remove();
+                            await roomRef.child(`scores/${state.playerId}`).remove();
+                        }
+                        roomRef.off();
+                        roomRef = null;
+                    }
+                    
+                    state = {
+                        roomCode: '',
+                        playerId: '',
+                        playerName: '',
+                        isHost: false,
+                        category: 'حيوانات',
+                        roomData: null
+                    };
+                    
+                    showScreen('homeScreen');
+                } catch (e) {
+                    console.error('❌ خطأ:', e);
+                    alert('حدث خطأ! حاول مرة أخرى.');
+                }
+            }
         });
-        console.log('✅ تم إعادة تعيين اللعبة بنجاح');
-    } catch (e) {
-        console.error('❌ خطأ:', e);
-        alert('حدث خطأ! حاول مرة أخرى.');
-    }
-});
 
         document.getElementById('leaveBtn').addEventListener('click', async () => {
             if (roomRef) {
                 if (state.isHost) {
-                    // إذا كان الهوست، احذف الغرفة بالكامل
                     await roomRef.remove();
                 } else {
-                    // إذا كان لاعب عادي، احذف اللاعب فقط
                     await roomRef.child(`players/${state.playerId}`).remove();
                     await roomRef.child(`scores/${state.playerId}`).remove();
                 }
                 roomRef.off();
             }
-            // إعادة تعيين الحالة
             state = {
                 roomCode: '',
                 playerId: '',
@@ -1740,17 +1778,14 @@
         document.getElementById('backToHomeBtn').addEventListener('click', async () => {
             if (roomRef) {
                 if (state.isHost) {
-                    // إذا كان الهوست، احذف الغرفة بالكامل
                     await roomRef.remove();
                 } else {
-                    // إذا كان لاعب عادي، احذف اللاعب فقط
                     await roomRef.child(`players/${state.playerId}`).remove();
                     await roomRef.child(`scores/${state.playerId}`).remove();
                 }
                 roomRef.off();
                 roomRef = null;
             }
-            // إعادة تعيين الحالة
             state = {
                 roomCode: '',
                 playerId: '',
