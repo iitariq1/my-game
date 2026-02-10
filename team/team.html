@@ -713,7 +713,7 @@
             <input type="text" id="roomCode" placeholder="0000" maxlength="4" pattern="[0-9]*">
         </div>
         <button class="btn" onclick="joinRoom()">انضم</button>
-        <button class="btn secondary" onclick="showWelcome()">رجوع</button>
+        <button class="btn secondary" onclick="showWelcome()">العودة للقائمة الرئيسية</button>
     </div>
 
     <!-- Lobby Screen (for Host) -->
@@ -921,7 +921,64 @@
     let timerInterval = null;
     let roomData = null;
 
+    // Check if user was in a game before page refresh
+    window.addEventListener('load', function() {
+        const savedGameState = localStorage.getItem('couchGameState');
+        if (savedGameState) {
+            try {
+                const gameState = JSON.parse(savedGameState);
+                currentRoomCode = gameState.roomCode;
+                currentPlayerId = gameState.playerId;
+                currentPlayerName = gameState.playerName;
+                isHost = gameState.isHost;
+                currentTeam = gameState.team;
+                
+                // Reconnect to the room
+                listenToRoom();
+            } catch (e) {
+                console.error('Error restoring game state:', e);
+                localStorage.removeItem('couchGameState');
+            }
+        }
+    });
+
+    // Save game state whenever it changes
+    function saveGameState() {
+        if (currentRoomCode && currentPlayerId) {
+            const gameState = {
+                roomCode: currentRoomCode,
+                playerId: currentPlayerId,
+                playerName: currentPlayerName,
+                isHost: isHost,
+                team: currentTeam
+            };
+            localStorage.setItem('couchGameState', JSON.stringify(gameState));
+        }
+    }
+
+    // Clear game state when user intentionally leaves
+    function clearGameState() {
+        localStorage.removeItem('couchGameState');
+    }
+
     function showWelcome() {
+        // Clear game state when returning to welcome screen
+        clearGameState();
+        
+        // Remove player from Firebase if they were in a room
+        if (currentRoomCode && currentPlayerId) {
+            const playerRef = database.ref('rooms/' + currentRoomCode + '/players/' + currentPlayerId);
+            playerRef.remove();
+        }
+        
+        // Reset variables
+        currentRoomCode = null;
+        currentPlayerId = null;
+        currentPlayerName = null;
+        isHost = false;
+        currentTeam = null;
+        roomData = null;
+        
         hideAllScreens();
         document.getElementById('welcomeScreen').classList.add('active');
     }
@@ -992,6 +1049,7 @@
             choicePlayer: null
         });
 
+        saveGameState(); // Save state after creating room
         listenToRoom();
         showLobby();
     }
@@ -1029,6 +1087,7 @@
                 team: null
             });
 
+            saveGameState(); // Save state after joining
             listenToRoom();
             showTeamSelection();
         });
@@ -1096,7 +1155,7 @@
         const players = roomData.players || {};
         const playerCount = Object.keys(players).length;
         const teamSize = roomData.teamSize || 2;
-        const requiredPlayers = (teamSize * 2) + 1;
+        const requiredPlayers = (teamSize * 2); // Host counts as a player, so we need (teamSize * 2) total
 
         document.getElementById('playerCount').textContent = playerCount;
 
@@ -1194,6 +1253,8 @@
         const playerRef = database.ref('rooms/' + currentRoomCode + '/players/' + currentPlayerId);
         playerRef.update({ team: team });
         
+        saveGameState(); // Save state after selecting team
+        
         if (roomData.gameState === 'playing') {
             if (isHost) {
                 showHostGameScreen();
@@ -1209,6 +1270,8 @@
         currentTeam = team;
         const playerRef = database.ref('rooms/' + currentRoomCode + '/players/' + currentPlayerId);
         playerRef.update({ team: team });
+
+        saveGameState(); // Save state after selecting team
 
         // Update button styles
         const team1Btn = document.getElementById('hostTeam1Btn');
