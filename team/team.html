@@ -1043,22 +1043,30 @@
 
         // Check if user was in a game before page refresh
         window.addEventListener('load', function() {
-            const savedGameState = localStorage.getItem('couchGameState');
-            if (savedGameState) {
-                try {
-                    const gameState = JSON.parse(savedGameState);
-                    currentRoomCode = gameState.roomCode;
-                    currentPlayerId = gameState.playerId;
-                    currentPlayerName = gameState.playerName;
-                    isHost = gameState.isHost;
-                    currentTeam = gameState.team;
-                    
-                    // Reconnect to the room
-                    listenToRoom();
-                } catch (e) {
-                    console.error('Error restoring game state:', e);
-                    localStorage.removeItem('couchGameState');
+            // Only restore if we have a navigation type that indicates refresh
+            const isPageRefresh = performance.navigation && performance.navigation.type === 1;
+            
+            if (isPageRefresh) {
+                const savedGameState = localStorage.getItem('couchGameState');
+                if (savedGameState) {
+                    try {
+                        const gameState = JSON.parse(savedGameState);
+                        currentRoomCode = gameState.roomCode;
+                        currentPlayerId = gameState.playerId;
+                        currentPlayerName = gameState.playerName;
+                        isHost = gameState.isHost;
+                        currentTeam = gameState.team;
+                        
+                        // Reconnect to the room
+                        listenToRoom();
+                    } catch (e) {
+                        console.error('Error restoring game state:', e);
+                        localStorage.removeItem('couchGameState');
+                    }
                 }
+            } else {
+                // Clear saved state on normal page load
+                localStorage.removeItem('couchGameState');
             }
         });
 
