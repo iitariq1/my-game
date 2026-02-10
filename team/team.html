@@ -899,6 +899,14 @@
             <div id="hostControlsPlayer" style="display: none; margin-top: 20px;">
                 <button class="btn" onclick="nextQuestion()" id="nextQuestionBtnPlayer">السؤال التالي ▶️</button>
             </div>
+
+            <!-- Victory Screen for Players -->
+            <div class="victory-screen" id="victoryScreenPlayer" style="display: none;">
+                <div class="confetti">🎉🌙🎊✨🏆</div>
+                <h2 id="victoryMessagePlayer">فاز الفريق!</h2>
+                <div class="confetti">🏆✨🎊🌙🎉</div>
+                <button class="btn" onclick="location.reload()">لعب مرة أخرى</button>
+            </div>
         </div>
     </div>
 
@@ -1595,9 +1603,9 @@
                 questionStartTime: Date.now()
             });
 
-            document.getElementById('nextQuestionBtn').disabled = true;
-            document.getElementById('hostStatus').textContent = 'انتظر 30 ثانية أو حتى يضغط أحدهم الجرس...';
-            document.getElementById('hostStatus').className = 'status-message info';
+            // Disable next button for host
+            const nextBtn = document.getElementById('nextQuestionBtnPlayer');
+            if (nextBtn) nextBtn.disabled = true;
 
             startTimer(30);
         }
@@ -1607,17 +1615,21 @@
             let timeLeft = seconds;
             
             const timerElement = document.getElementById('timerDisplay');
-            timerElement.textContent = timeLeft;
-            timerElement.classList.remove('warning');
+            if (timerElement) {
+                timerElement.textContent = timeLeft;
+                timerElement.classList.remove('warning');
+            }
 
             timerInterval = setInterval(() => {
                 timeLeft--;
-                timerElement.textContent = timeLeft;
+                if (timerElement) {
+                    timerElement.textContent = timeLeft;
 
-                if (timeLeft <= 3) {
-                    timerElement.classList.add('warning');
-                } else {
-                    timerElement.classList.remove('warning');
+                    if (timeLeft <= 3) {
+                        timerElement.classList.add('warning');
+                    } else {
+                        timerElement.classList.remove('warning');
+                    }
                 }
 
                 if (timeLeft <= 0) {
@@ -1627,12 +1639,13 @@
                         const roomRef = database.ref('rooms/' + currentRoomCode);
                         roomRef.update({ showOptions: true });
                         
-                        document.getElementById('hostStatus').textContent = 'انتهى الوقت! لم يضغط أحد الجرس';
-                        document.getElementById('hostStatus').className = 'status-message warning';
-                        
-                        setTimeout(() => {
-                            document.getElementById('nextQuestionBtn').disabled = false;
-                        }, 3000);
+                        // Enable next button for host after timeout
+                        if (isHost) {
+                            setTimeout(() => {
+                                const nextBtn = document.getElementById('nextQuestionBtnPlayer');
+                                if (nextBtn) nextBtn.disabled = false;
+                            }, 2000);
+                        }
                     }
                 }
             }, 1000);
@@ -1646,6 +1659,16 @@
         function updatePlayerGameScreen() {
             if (document.getElementById('playerGameScreen').classList.contains('active') === false) {
                 showPlayerGameScreen();
+            }
+
+            // Update teams and players display
+            updateTeamsPlayersDisplay();
+
+            // Show host controls if user is host
+            if (isHost) {
+                document.getElementById('hostControlsPlayer').style.display = 'block';
+            } else {
+                document.getElementById('hostControlsPlayer').style.display = 'none';
             }
 
             const buzzButton = document.getElementById('buzzButton');
@@ -1678,7 +1701,7 @@
                 
                 if (roomData.questionStartTime && !roomData.showOptions) {
                     const elapsed = Math.floor((Date.now() - roomData.questionStartTime) / 1000);
-                    const timeLeft = Math.max(0, (roomData.buzzedPlayer ? 5 : 10) - elapsed);
+                    const timeLeft = Math.max(0, (roomData.buzzedPlayer ? 5 : 30) - elapsed);
                     playerTimer.style.display = 'block';
                     playerTimer.textContent = timeLeft;
                     
@@ -1742,8 +1765,26 @@
                 return;
             }
 
-            if (roomData.showOptions && roomData.buzzedPlayer === currentPlayerId && !roomData.correctAnswer) {
+            // Show options if showOptions is true and player is not from banned team
+            if (roomData.showOptions && !roomData.bannedTeam && roomData.buzzedPlayer === currentPlayerId && !roomData.correctAnswer) {
                 playerStatus.textContent = 'اختر الإجابة الصحيحة!';
+                playerStatus.className = 'status-message info';
+                buzzButton.disabled = true;
+                
+                playerAnswerOptions.innerHTML = '';
+                roomData.currentQuestion.options.forEach((option, index) => {
+                    const btn = document.createElement('button');
+                    btn.className = 'answer-btn';
+                    btn.textContent = option;
+                    btn.onclick = () => selectAnswer(index);
+                    playerAnswerOptions.appendChild(btn);
+                });
+                return;
+            }
+
+            // Show options for other team after wrong answer
+            if (roomData.showOptions && roomData.bannedTeam && roomData.bannedTeam !== playerTeam && !roomData.correctAnswer) {
+                playerStatus.textContent = 'اختر الإجابة الصحيحة! (فرصة فريقك)';
                 playerStatus.className = 'status-message info';
                 buzzButton.disabled = true;
                 
@@ -1784,15 +1825,27 @@
                 buzzButton.disabled = true;
                 playerAnswerOptions.innerHTML = '';
             } else if (roomData.showOptions && !roomData.buzzedPlayer) {
-                playerStatus.textContent = 'انتهى الوقت! انتظر السؤال التالي';
-                playerStatus.className = 'status-message error';
+                playerStatus.textContent = 'انتظر السؤال التالي';
+                playerStatus.className = 'status-message info';
                 buzzButton.disabled = true;
                 playerAnswerOptions.innerHTML = '';
+                
+                // Enable next button for host
+                if (isHost) {
+                    const nextBtn = document.getElementById('nextQuestionBtnPlayer');
+                    if (nextBtn) nextBtn.disabled = false;
+                }
             } else if (!roomData.currentQuestion) {
                 playerStatus.textContent = 'انتظر السؤال...';
                 playerStatus.className = 'status-message info';
                 buzzButton.disabled = true;
                 playerAnswerOptions.innerHTML = '';
+                
+                // Enable next button for host at start
+                if (isHost) {
+                    const nextBtn = document.getElementById('nextQuestionBtnPlayer');
+                    if (nextBtn) nextBtn.disabled = false;
+                }
             }
         }
 
@@ -1833,22 +1886,41 @@
                 if (hasOtherCouch) {
                     roomRef.update({
                         waitingForChoice: true,
-                        choicePlayer: currentPlayerId
+                        choicePlayer: currentPlayerId,
+                        bannedTeam: null // Clear banned team after correct answer
                     });
                 } else {
                     addToCouch();
+                    // Clear banned team
+                    roomRef.update({ bannedTeam: null });
                 }
             } else {
-                // Wrong answer - give other team 10 seconds
-                roomRef.update({
-                    bannedTeam: currentTeam,
-                    buzzedPlayer: null,
-                    showOptions: true,
-                    questionStartTime: Date.now()
-                });
-                
-                // Start 10 second timer for other team
-                startTimer(10);
+                // If this was from banned team's turn (second chance), move to next question
+                if (roomData.bannedTeam) {
+                    roomRef.update({
+                        showOptions: false,
+                        bannedTeam: null
+                    });
+                    
+                    // Enable next button for host
+                    if (isHost) {
+                        setTimeout(() => {
+                            const nextBtn = document.getElementById('nextQuestionBtnPlayer');
+                            if (nextBtn) nextBtn.disabled = false;
+                        }, 2000);
+                    }
+                } else {
+                    // Wrong answer - give other team 10 seconds
+                    roomRef.update({
+                        bannedTeam: currentTeam,
+                        buzzedPlayer: null,
+                        showOptions: true,
+                        questionStartTime: Date.now()
+                    });
+                    
+                    // Start 10 second timer for other team
+                    startTimer(10);
+                }
             }
         }
 
@@ -1876,8 +1948,10 @@
             });
 
             setTimeout(() => {
-                const nextBtn = document.getElementById('nextQuestionBtn');
-                if (nextBtn) nextBtn.disabled = false;
+                if (isHost) {
+                    const nextBtn = document.getElementById('nextQuestionBtnPlayer');
+                    if (nextBtn) nextBtn.disabled = false;
+                }
             }, 2000);
         }
 
@@ -1906,9 +1980,88 @@
             });
 
             setTimeout(() => {
-                const nextBtn = document.getElementById('nextQuestionBtn');
-                if (nextBtn) nextBtn.disabled = false;
+                if (isHost) {
+                    const nextBtn = document.getElementById('nextQuestionBtnPlayer');
+                    if (nextBtn) nextBtn.disabled = false;
+                }
             }, 2000);
+        }
+
+        function updateTeamsPlayersDisplay() {
+            if (!roomData || !roomData.players) return;
+
+            document.getElementById('playerTeam1Name').textContent = roomData.team1Name;
+            document.getElementById('playerTeam2Name').textContent = roomData.team2Name;
+            document.getElementById('playerCouchTeam1').textContent = roomData.team1Name;
+            document.getElementById('playerCouchTeam2').textContent = roomData.team2Name;
+
+            const team1Players = [];
+            const team2Players = [];
+
+            Object.entries(roomData.players).forEach(([id, player]) => {
+                if (player.team === 'team1') {
+                    team1Players.push({ id, ...player });
+                } else if (player.team === 'team2') {
+                    team2Players.push({ id, ...player });
+                }
+            });
+
+            const team1List = document.getElementById('team1PlayersList');
+            team1List.innerHTML = '';
+            team1Players.forEach(player => {
+                const div = document.createElement('div');
+                div.className = 'player-name-tag';
+                if (roomData.team1Couch?.includes(player.id)) {
+                    div.classList.add('on-couch');
+                }
+                div.textContent = player.name;
+                team1List.appendChild(div);
+            });
+
+            const team2List = document.getElementById('team2PlayersList');
+            team2List.innerHTML = '';
+            team2Players.forEach(player => {
+                const div = document.createElement('div');
+                div.className = 'player-name-tag';
+                if (roomData.team2Couch?.includes(player.id)) {
+                    div.classList.add('on-couch');
+                }
+                div.textContent = player.name;
+                team2List.appendChild(div);
+            });
+
+            const team1Couch = document.getElementById('playerTeam1Couch');
+            const team2Couch = document.getElementById('playerTeam2Couch');
+
+            team1Couch.innerHTML = '';
+            if (roomData.team1Couch && roomData.team1Couch.length > 0) {
+                roomData.team1Couch.forEach(playerId => {
+                    const player = roomData.players[playerId];
+                    if (player) {
+                        const div = document.createElement('div');
+                        div.className = 'couch-player';
+                        div.textContent = '🏆 ' + player.name;
+                        team1Couch.appendChild(div);
+                    }
+                });
+            } else {
+                team1Couch.innerHTML = '<div class="couch-empty">فارغة</div>';
+            }
+
+            team2Couch.innerHTML = '';
+            if (roomData.team2Couch && roomData.team2Couch.length > 0) {
+                roomData.team2Couch.forEach(playerId => {
+                    const player = roomData.players[playerId];
+                    if (player) {
+                        const div = document.createElement('div');
+                        div.className = 'couch-player';
+                        div.textContent = '🏆 ' + player.name;
+                        team2Couch.appendChild(div);
+                    }
+                });
+            } else {
+                team2Couch.innerHTML = '<div class="couch-empty">فارغة</div>';
+            }
         }
 
         function checkVictory() {
@@ -1923,9 +2076,34 @@
 
         function showVictory(teamName) {
             clearInterval(timerInterval);
-            document.getElementById('victoryScreen').style.display = 'block';
-            document.getElementById('victoryMessage').textContent = `🎉 ${teamName} فاز باللعبة! 🎉`;
-            document.getElementById('nextQuestionBtn').style.display = 'none';
+            
+            // Show victory for host (in host screen if exists)
+            const victoryScreen = document.getElementById('victoryScreen');
+            if (victoryScreen) {
+                victoryScreen.style.display = 'block';
+                document.getElementById('victoryMessage').textContent = `🎉 ${teamName} فاز باللعبة! 🎉`;
+            }
+            
+            // Show victory for players
+            const victoryScreenPlayer = document.getElementById('victoryScreenPlayer');
+            if (victoryScreenPlayer) {
+                victoryScreenPlayer.style.display = 'block';
+                document.getElementById('victoryMessagePlayer').textContent = `🎉 ${teamName} فاز باللعبة! 🎉`;
+                
+                // Hide game elements
+                document.getElementById('teamsPlayersDisplay').style.display = 'none';
+                document.getElementById('playerQuestionDisplay').style.display = 'none';
+                document.getElementById('playerTimer').style.display = 'none';
+                document.getElementById('playerStatus').style.display = 'none';
+                document.getElementById('buzzButton').style.display = 'none';
+                document.getElementById('hostControlsPlayer').style.display = 'none';
+            }
+            
+            const nextBtn = document.getElementById('nextQuestionBtn');
+            if (nextBtn) nextBtn.style.display = 'none';
+            
+            const nextBtnPlayer = document.getElementById('nextQuestionBtnPlayer');
+            if (nextBtnPlayer) nextBtnPlayer.style.display = 'none';
         }
 
         document.getElementById('roomCode')?.addEventListener('input', function(e) {
