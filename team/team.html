@@ -349,12 +349,12 @@
             padding: 20px;
             border-radius: 15px;
             margin-bottom: 15px;
-            min-height: 100px;
+            min-height: 80px;
             border: 2px solid #d4af37;
         }
 
         .question-text {
-            font-size: 1.4em;
+            font-size: 1.2em;
             color: #ffd700;
             text-align: center;
             margin-bottom: 10px;
@@ -363,13 +363,13 @@
 
         .timer-display {
             text-align: center;
-            font-size: 3.5em;
+            font-size: 2.5em;
             font-weight: bold;
             background: linear-gradient(135deg, #ffd700 0%, #ffed4e 100%);
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
             background-clip: text;
-            margin: 15px 0;
+            margin: 12px 0;
             text-shadow: 0 0 30px rgba(255, 215, 0, 0.8);
         }
 
@@ -435,28 +435,29 @@
             75% { transform: translateX(10px); }
         }
 
-        /* Player Screen Styles */
+        /* Player Screen Styles - IMPROVED */
         .buzz-button {
             width: 100%;
-            height: 200px;
-            font-size: 2.5em;
+            height: 120px;
+            font-size: 1.8em;
             background: linear-gradient(135deg, #ff6b35 0%, #f7931e 50%, #ff6b35 100%);
             color: white;
             border: none;
-            border-radius: 25px;
+            border-radius: 20px;
             font-weight: bold;
             cursor: pointer;
             transition: all 0.3s;
-            box-shadow: 0 15px 40px rgba(255, 107, 53, 0.5);
+            box-shadow: 0 10px 30px rgba(255, 107, 53, 0.5);
             border: 4px solid #ffd700;
             position: relative;
             overflow: hidden;
+            margin: 15px 0;
         }
 
         .buzz-button::before {
             content: '🔔';
             position: absolute;
-            font-size: 3em;
+            font-size: 2em;
             top: 50%;
             left: 50%;
             transform: translate(-50%, -50%);
@@ -465,7 +466,7 @@
 
         .buzz-button:active:not(:disabled) {
             transform: scale(0.95);
-            box-shadow: 0 10px 30px rgba(255, 107, 53, 0.7);
+            box-shadow: 0 8px 25px rgba(255, 107, 53, 0.7);
         }
 
         .buzz-button:disabled {
@@ -475,23 +476,29 @@
             border-color: #555;
         }
 
+        /* Improved Answer Options - 2x2 Grid */
         .answer-options {
             display: grid;
-            grid-template-columns: 1fr;
-            gap: 15px;
-            margin-top: 20px;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+            margin-top: 15px;
         }
 
         .answer-btn {
-            padding: 25px;
+            padding: 18px 12px;
             background: rgba(255, 255, 255, 0.95);
             border: 3px solid #d4af37;
-            border-radius: 15px;
-            font-size: 1.1em;
+            border-radius: 12px;
+            font-size: 1em;
             font-weight: bold;
             cursor: pointer;
             transition: all 0.3s;
             color: #2d1b4e;
+            min-height: 70px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
         }
 
         .answer-btn:hover:not(:disabled) {
@@ -508,10 +515,10 @@
 
         .status-message {
             text-align: center;
-            padding: 15px;
-            margin: 15px 0;
+            padding: 12px;
+            margin: 12px 0;
             border-radius: 12px;
-            font-size: 1.1em;
+            font-size: 1em;
             font-weight: bold;
             border: 2px solid;
         }
@@ -543,15 +550,15 @@
         .player-choice-buttons {
             display: grid;
             grid-template-columns: 1fr;
-            gap: 15px;
-            margin-top: 20px;
+            gap: 12px;
+            margin-top: 15px;
         }
 
         .choice-btn {
-            padding: 20px;
+            padding: 18px;
             border: none;
             border-radius: 15px;
-            font-size: 1.2em;
+            font-size: 1.1em;
             font-weight: bold;
             cursor: pointer;
             transition: all 0.3s;
@@ -603,53 +610,53 @@
 
         .buzzer-indicator {
             text-align: center;
-            padding: 12px;
-            margin: 12px 0;
+            padding: 10px;
+            margin: 10px 0;
             background: linear-gradient(135deg, rgba(255, 107, 53, 0.3) 0%, rgba(247, 147, 30, 0.3) 100%);
             border-radius: 12px;
             border: 2px solid #ff6b35;
             color: #ffd700;
             font-weight: bold;
-            font-size: 1em;
+            font-size: 0.95em;
         }
 
         /* Teams and Couch Display for Players */
         .teams-players-display {
             display: grid;
             grid-template-columns: 1fr 1fr;
-            gap: 15px;
-            margin-bottom: 15px;
+            gap: 12px;
+            margin-bottom: 12px;
         }
 
         .team-players-section {
             background: linear-gradient(135deg, rgba(212, 175, 55, 0.15) 0%, rgba(170, 137, 41, 0.15) 100%);
-            padding: 15px;
+            padding: 12px;
             border-radius: 15px;
             border: 2px solid rgba(212, 175, 55, 0.5);
         }
 
         .team-header {
             color: #ffd700;
-            font-size: 1.2em;
-            margin-bottom: 10px;
+            font-size: 1.1em;
+            margin-bottom: 8px;
             text-align: center;
         }
 
         .players-list-game {
             display: flex;
             flex-direction: column;
-            gap: 8px;
+            gap: 6px;
         }
 
         .player-name-tag {
             background: rgba(255, 255, 255, 0.9);
-            padding: 8px 12px;
+            padding: 6px 10px;
             border-radius: 8px;
             text-align: center;
             font-weight: bold;
             color: #2d1b4e;
             border: 2px solid #d4af37;
-            font-size: 0.95em;
+            font-size: 0.9em;
         }
 
         .player-name-tag.on-couch {
@@ -659,38 +666,67 @@
 
         .couch-display-player {
             background: linear-gradient(135deg, rgba(212, 175, 55, 0.3) 0%, rgba(170, 137, 41, 0.3) 100%);
-            padding: 15px;
+            padding: 12px;
             border-radius: 15px;
             border: 3px solid #ffd700;
-            margin-bottom: 15px;
+            margin-bottom: 12px;
             box-shadow: 0 0 20px rgba(255, 215, 0, 0.3);
         }
 
         .couch-display-player h3 {
             text-align: center;
             color: #ffd700;
-            font-size: 1.3em;
-            margin-bottom: 12px;
+            font-size: 1.2em;
+            margin-bottom: 10px;
         }
 
         .couch-seats-player {
             display: grid;
             grid-template-columns: 1fr 1fr;
-            gap: 12px;
+            gap: 10px;
         }
 
         .couch-team-player {
             background: rgba(255, 255, 255, 0.1);
-            padding: 10px;
+            padding: 8px;
             border-radius: 10px;
             border: 2px solid rgba(212, 175, 55, 0.5);
         }
 
         .couch-team-player h4 {
             color: #ffd700;
-            font-size: 0.95em;
-            margin-bottom: 8px;
+            font-size: 0.9em;
+            margin-bottom: 6px;
             text-align: center;
+        }
+
+        /* On Couch Message - IMPROVED */
+        .on-couch-message {
+            background: linear-gradient(135deg, rgba(0, 168, 107, 0.3) 0%, rgba(0, 140, 89, 0.3) 100%);
+            border: 3px solid #00a86b;
+            border-radius: 20px;
+            padding: 40px 20px;
+            margin: 20px 0;
+            text-align: center;
+        }
+
+        .on-couch-message .trophy-icon {
+            font-size: 5em;
+            margin-bottom: 15px;
+            animation: bounce 2s ease-in-out infinite;
+        }
+
+        .on-couch-message h2 {
+            color: #00a86b;
+            font-size: 2em;
+            margin-bottom: 15px;
+            text-shadow: 0 2px 10px rgba(0, 168, 107, 0.5);
+        }
+
+        .on-couch-message p {
+            color: #52c997;
+            font-size: 1.2em;
+            font-weight: bold;
         }
 
         @media (max-width: 768px) {
@@ -708,28 +744,22 @@
             }
 
             .question-text {
-                font-size: 1.3em;
+                font-size: 1.1em;
             }
 
             .timer-display {
-                font-size: 3em;
-            }
-
-            .options-display {
-                grid-template-columns: 1fr;
-            }
-
-            .score-display {
-                grid-template-columns: 1fr;
-            }
-
-            .center-couch {
-                min-width: auto;
+                font-size: 2em;
             }
 
             .buzz-button {
-                height: 150px;
-                font-size: 1.8em;
+                height: 100px;
+                font-size: 1.5em;
+            }
+
+            .answer-btn {
+                font-size: 0.9em;
+                padding: 15px 10px;
+                min-height: 60px;
             }
         }
     </style>
@@ -873,30 +903,40 @@
                 </div>
             </div>
 
-            <div class="question-display" id="playerQuestionDisplay" style="display: none;">
-                <div class="question-text" id="playerQuestionText"></div>
+            <!-- On Couch Message -->
+            <div class="on-couch-message" id="onCouchMessage" style="display: none;">
+                <div class="trophy-icon">🏆</div>
+                <h2>أنت على الكنبة!</h2>
+                <p>استرخِ وانتظر الفوز 🌟</p>
             </div>
 
-            <div class="timer-display" id="playerTimer" style="display: none;">--</div>
+            <!-- Game Elements (hidden when on couch) -->
+            <div id="gameElements">
+                <div class="question-display" id="playerQuestionDisplay" style="display: none;">
+                    <div class="question-text" id="playerQuestionText"></div>
+                </div>
 
-            <div id="buzzerIndicator"></div>
+                <div class="timer-display" id="playerTimer" style="display: none;">--</div>
 
-            <div class="status-message info" id="playerStatus">
-                انتظر السؤال...
+                <div id="buzzerIndicator"></div>
+
+                <div class="status-message info" id="playerStatus">
+                    انتظر السؤال...
+                </div>
+
+                <div class="player-controls">
+                    <button class="buzz-button" id="buzzButton" onclick="buzzIn()" disabled>
+                        اضغط الجرس! 🔔
+                    </button>
+                </div>
+
+                <div class="answer-options" id="playerAnswerOptions"></div>
+
+                <div class="player-choice-buttons" id="playerChoiceButtons"></div>
             </div>
-
-            <div class="player-controls">
-                <button class="buzz-button" id="buzzButton" onclick="buzzIn()" disabled>
-                    اضغط الجرس! 🔔
-                </button>
-            </div>
-
-            <div class="answer-options" id="playerAnswerOptions"></div>
-
-            <div class="player-choice-buttons" id="playerChoiceButtons"></div>
 
             <!-- Next Question Button (Only for Host) -->
-            <div id="hostControlsPlayer" style="display: none; margin-top: 20px;">
+            <div id="hostControlsPlayer" style="display: none; margin-top: 15px;">
                 <button class="btn" onclick="nextQuestion()" id="nextQuestionBtnPlayer">السؤال التالي ▶️</button>
             </div>
 
@@ -1043,7 +1083,6 @@
 
         // Check if user was in a game before page refresh
         window.addEventListener('load', function() {
-            // Only restore if we have a navigation type that indicates refresh
             const isPageRefresh = performance.navigation && performance.navigation.type === 1;
             
             if (isPageRefresh) {
@@ -1057,7 +1096,6 @@
                         isHost = gameState.isHost;
                         currentTeam = gameState.team;
                         
-                        // Reconnect to the room
                         listenToRoom();
                     } catch (e) {
                         console.error('Error restoring game state:', e);
@@ -1065,12 +1103,10 @@
                     }
                 }
             } else {
-                // Clear saved state on normal page load
                 localStorage.removeItem('couchGameState');
             }
         });
 
-        // Save game state whenever it changes
         function saveGameState() {
             if (currentRoomCode && currentPlayerId) {
                 const gameState = {
@@ -1084,22 +1120,18 @@
             }
         }
 
-        // Clear game state when user intentionally leaves
         function clearGameState() {
             localStorage.removeItem('couchGameState');
         }
 
         function showWelcome() {
-            // Clear game state when returning to welcome screen
             clearGameState();
             
-            // Remove player from Firebase if they were in a room
             if (currentRoomCode && currentPlayerId) {
                 const playerRef = database.ref('rooms/' + currentRoomCode + '/players/' + currentPlayerId);
                 playerRef.remove();
             }
             
-            // Reset variables
             currentRoomCode = null;
             currentPlayerId = null;
             currentPlayerName = null;
@@ -1112,16 +1144,13 @@
         }
 
         function goToMainPage() {
-            // Clear game state
             clearGameState();
             
-            // Remove player from Firebase if they were in a room
             if (currentRoomCode && currentPlayerId) {
                 const playerRef = database.ref('rooms/' + currentRoomCode + '/players/' + currentPlayerId);
                 playerRef.remove();
             }
             
-            // Redirect to main page (index.html)
             window.location.href = 'index.html';
         }
 
@@ -1191,7 +1220,7 @@
                 choicePlayer: null
             });
 
-            saveGameState(); // Save state after creating room
+            saveGameState();
             listenToRoom();
             showLobby();
         }
@@ -1229,7 +1258,7 @@
                     team: null
                 });
 
-                saveGameState(); // Save state after joining
+                saveGameState();
                 listenToRoom();
                 showTeamSelection();
             });
@@ -1252,12 +1281,12 @@
                 if (roomData.gameState === 'lobby') {
                     updateLobby();
                 } else if (roomData.gameState === 'playing') {
-                    updatePlayerGameScreen(); // Host plays like a regular player
+                    updatePlayerGameScreen();
                 }
             } else {
                 if (roomData.gameState === 'lobby' && !currentTeam) {
                     updateTeamSelection();
-                    showTeamSelection(); // Automatically show team selection
+                    showTeamSelection();
                 } else if (roomData.gameState === 'lobby' && currentTeam) {
                     updateWaitingScreen();
                 } else if (roomData.gameState === 'playing') {
@@ -1271,7 +1300,6 @@
             document.getElementById('lobbyScreen').classList.add('active');
             document.getElementById('displayRoomCode').textContent = currentRoomCode;
             
-            // Add host team selection buttons
             const hostTeamButtons = document.getElementById('hostTeamButtons');
             hostTeamButtons.innerHTML = '';
 
@@ -1294,7 +1322,7 @@
             const players = roomData.players || {};
             const playerCount = Object.keys(players).length;
             const teamSize = roomData.teamSize || 2;
-            const requiredPlayers = (teamSize * 2); // Host counts as a player, so we need (teamSize * 2) total
+            const requiredPlayers = (teamSize * 2);
 
             document.getElementById('playerCount').textContent = playerCount;
 
@@ -1330,7 +1358,6 @@
                 playersListContainer.appendChild(div);
             });
 
-            // Update host team button selection
             if (currentTeam) {
                 const team1Btn = document.getElementById('hostTeam1Btn');
                 const team2Btn = document.getElementById('hostTeam2Btn');
@@ -1351,7 +1378,6 @@
             }
 
             const startBtn = document.getElementById('startGameBtn');
-            // Host must select team to start
             if (playerCount >= requiredPlayers && currentTeam) {
                 startBtn.disabled = false;
                 startBtn.textContent = 'ابدأ اللعبة ▶️';
@@ -1392,7 +1418,7 @@
             const playerRef = database.ref('rooms/' + currentRoomCode + '/players/' + currentPlayerId);
             playerRef.update({ team: team });
             
-            saveGameState(); // Save state after selecting team
+            saveGameState();
             
             if (roomData.gameState === 'playing') {
                 if (isHost) {
@@ -1410,9 +1436,8 @@
             const playerRef = database.ref('rooms/' + currentRoomCode + '/players/' + currentPlayerId);
             playerRef.update({ team: team });
 
-            saveGameState(); // Save state after selecting team
+            saveGameState();
 
-            // Update button styles
             const team1Btn = document.getElementById('hostTeam1Btn');
             const team2Btn = document.getElementById('hostTeam2Btn');
             
@@ -1482,7 +1507,6 @@
                 gameState: 'playing'
             });
 
-            // Host goes to player screen like everyone else
             showPlayerGameScreen();
         }
 
@@ -1611,7 +1635,6 @@
                 questionStartTime: Date.now()
             });
 
-            // Disable next button for host
             const nextBtn = document.getElementById('nextQuestionBtnPlayer');
             if (nextBtn) nextBtn.disabled = true;
 
@@ -1647,7 +1670,6 @@
                         const roomRef = database.ref('rooms/' + currentRoomCode);
                         roomRef.update({ showOptions: true });
                         
-                        // Enable next button for host after timeout
                         if (isHost) {
                             setTimeout(() => {
                                 const nextBtn = document.getElementById('nextQuestionBtnPlayer');
@@ -1669,10 +1691,8 @@
                 showPlayerGameScreen();
             }
 
-            // Update teams and players display
             updateTeamsPlayersDisplay();
 
-            // Show host controls if user is host
             if (isHost) {
                 document.getElementById('hostControlsPlayer').style.display = 'block';
             } else {
@@ -1687,20 +1707,21 @@
             const playerQuestionText = document.getElementById('playerQuestionText');
             const playerTimer = document.getElementById('playerTimer');
             const buzzerIndicator = document.getElementById('buzzerIndicator');
+            const gameElements = document.getElementById('gameElements');
+            const onCouchMessage = document.getElementById('onCouchMessage');
 
             const isOnCouch = (currentTeam === 'team1' && roomData.team1Couch?.includes(currentPlayerId)) ||
                              (currentTeam === 'team2' && roomData.team2Couch?.includes(currentPlayerId));
 
+            // CRITICAL FIX: Hide ALL game elements when on couch
             if (isOnCouch) {
-                playerStatus.textContent = '🏆 أنت على الكنبة! لا يمكنك اللعب إلا إذا تم سحبك';
-                playerStatus.className = 'status-message success';
-                buzzButton.disabled = true;
-                playerAnswerOptions.innerHTML = '';
-                playerChoiceButtons.innerHTML = '';
-                playerQuestionDisplay.style.display = 'none';
-                playerTimer.style.display = 'none';
-                buzzerIndicator.innerHTML = '';
+                gameElements.style.display = 'none';
+                onCouchMessage.style.display = 'block';
+                checkVictory();
                 return;
+            } else {
+                gameElements.style.display = 'block';
+                onCouchMessage.style.display = 'none';
             }
 
             if (roomData.currentQuestion) {
@@ -1773,7 +1794,6 @@
                 return;
             }
 
-            // Show options if showOptions is true and player is not from banned team
             if (roomData.showOptions && !roomData.bannedTeam && roomData.buzzedPlayer === currentPlayerId && !roomData.correctAnswer) {
                 playerStatus.textContent = 'اختر الإجابة الصحيحة!';
                 playerStatus.className = 'status-message info';
@@ -1790,7 +1810,6 @@
                 return;
             }
 
-            // Show options for other team after wrong answer
             if (roomData.showOptions && roomData.bannedTeam && roomData.bannedTeam !== playerTeam && !roomData.correctAnswer) {
                 playerStatus.textContent = 'اختر الإجابة الصحيحة! (فرصة فريقك)';
                 playerStatus.className = 'status-message info';
@@ -1838,7 +1857,6 @@
                 buzzButton.disabled = true;
                 playerAnswerOptions.innerHTML = '';
                 
-                // Enable next button for host
                 if (isHost) {
                     const nextBtn = document.getElementById('nextQuestionBtnPlayer');
                     if (nextBtn) nextBtn.disabled = false;
@@ -1849,12 +1867,13 @@
                 buzzButton.disabled = true;
                 playerAnswerOptions.innerHTML = '';
                 
-                // Enable next button for host at start
                 if (isHost) {
                     const nextBtn = document.getElementById('nextQuestionBtnPlayer');
                     if (nextBtn) nextBtn.disabled = false;
                 }
             }
+
+            checkVictory();
         }
 
         function buzzIn() {
@@ -1895,22 +1914,19 @@
                     roomRef.update({
                         waitingForChoice: true,
                         choicePlayer: currentPlayerId,
-                        bannedTeam: null // Clear banned team after correct answer
+                        bannedTeam: null
                     });
                 } else {
                     addToCouch();
-                    // Clear banned team
                     roomRef.update({ bannedTeam: null });
                 }
             } else {
-                // If this was from banned team's turn (second chance), move to next question
                 if (roomData.bannedTeam) {
                     roomRef.update({
                         showOptions: false,
                         bannedTeam: null
                     });
                     
-                    // Enable next button for host
                     if (isHost) {
                         setTimeout(() => {
                             const nextBtn = document.getElementById('nextQuestionBtnPlayer');
@@ -1918,7 +1934,6 @@
                         }, 2000);
                     }
                 } else {
-                    // Wrong answer - give other team 10 seconds
                     roomRef.update({
                         bannedTeam: currentTeam,
                         buzzedPlayer: null,
@@ -1926,7 +1941,6 @@
                         questionStartTime: Date.now()
                     });
                     
-                    // Start 10 second timer for other team
                     startTimer(10);
                 }
             }
@@ -1955,12 +1969,13 @@
                 choicePlayer: null
             });
 
-            setTimeout(() => {
-                if (isHost) {
+            // CRITICAL FIX: Always enable next button after someone sits on couch
+            if (isHost) {
+                setTimeout(() => {
                     const nextBtn = document.getElementById('nextQuestionBtnPlayer');
                     if (nextBtn) nextBtn.disabled = false;
-                }
-            }, 2000);
+                }, 1000);
+            }
         }
 
         function stealFromCouch() {
@@ -1987,12 +2002,13 @@
                 choicePlayer: null
             });
 
-            setTimeout(() => {
-                if (isHost) {
+            // CRITICAL FIX: Always enable next button after someone steals from couch
+            if (isHost) {
+                setTimeout(() => {
                     const nextBtn = document.getElementById('nextQuestionBtnPlayer');
                     if (nextBtn) nextBtn.disabled = false;
-                }
-            }, 2000);
+                }, 1000);
+            }
         }
 
         function updateTeamsPlayersDisplay() {
@@ -2085,26 +2101,24 @@
         function showVictory(teamName) {
             clearInterval(timerInterval);
             
-            // Show victory for host (in host screen if exists)
             const victoryScreen = document.getElementById('victoryScreen');
             if (victoryScreen) {
                 victoryScreen.style.display = 'block';
                 document.getElementById('victoryMessage').textContent = `🎉 ${teamName} فاز باللعبة! 🎉`;
             }
             
-            // Show victory for players
             const victoryScreenPlayer = document.getElementById('victoryScreenPlayer');
             if (victoryScreenPlayer) {
                 victoryScreenPlayer.style.display = 'block';
                 document.getElementById('victoryMessagePlayer').textContent = `🎉 ${teamName} فاز باللعبة! 🎉`;
                 
-                // Hide game elements
                 document.getElementById('teamsPlayersDisplay').style.display = 'none';
-                document.getElementById('playerQuestionDisplay').style.display = 'none';
-                document.getElementById('playerTimer').style.display = 'none';
-                document.getElementById('playerStatus').style.display = 'none';
-                document.getElementById('buzzButton').style.display = 'none';
+                document.getElementById('gameElements').style.display = 'none';
                 document.getElementById('hostControlsPlayer').style.display = 'none';
+                document.getElementById('onCouchMessage').style.display = 'none';
+                
+                const couchDisplay = document.querySelector('.couch-display-player');
+                if (couchDisplay) couchDisplay.style.display = 'none';
             }
             
             const nextBtn = document.getElementById('nextQuestionBtn');
