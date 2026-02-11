@@ -7,25 +7,28 @@
     <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700;800;900&display=swap" rel="stylesheet">
     <style>
         :root {
-            --bg-dark: #1A1E2E;
-            --bg-card: #232840;
-            --bg-card-alt: #2A3050;
-            --border: #3A4065;
-            --gold: #E8B830;
-            --gold-dim: #A07D1C;
-            --gold-glow: rgba(232, 184, 48, 0.15);
-            --red: #E8443A;
-            --red-bg: rgba(232, 68, 58, 0.12);
-            --blue: #3A8BE8;
-            --blue-bg: rgba(58, 139, 232, 0.12);
-            --green: #2ECC71;
-            --green-bg: rgba(46, 204, 113, 0.12);
-            --text: #F0EDE6;
-            --text-dim: #7A7E8C;
-            --orange: #F39C12;
-            --orange-bg: rgba(243, 156, 18, 0.12);
-            --radius: 12px;
-            --radius-sm: 8px;
+            --bg-dark: #F5F0E8;
+            --bg-card: #FFFFFF;
+            --bg-card-alt: #FAF7F2;
+            --border: #E5DDD0;
+            --gold: #C8860A;
+            --gold-dim: #A07010;
+            --gold-glow: rgba(200, 134, 10, 0.08);
+            --red: #D94040;
+            --red-bg: rgba(217, 64, 64, 0.08);
+            --red-light: #FFF0F0;
+            --blue: #2E7DD6;
+            --blue-bg: rgba(46, 125, 214, 0.08);
+            --blue-light: #EFF6FF;
+            --green: #1DAA5C;
+            --green-bg: rgba(29, 170, 92, 0.08);
+            --text: #2C2416;
+            --text-dim: #8C8070;
+            --orange: #D98C20;
+            --orange-bg: rgba(217, 140, 32, 0.08);
+            --shadow: 0 2px 8px rgba(0,0,0,0.06);
+            --radius: 14px;
+            --radius-sm: 10px;
         }
 
         * { margin: 0; padding: 0; box-sizing: border-box; }
@@ -63,7 +66,7 @@
         .header h1 {
             font-size: 1.6em;
             font-weight: 900;
-            color: var(--gold);
+            color: var(--text);
             letter-spacing: 1px;
         }
         .header .sub {
@@ -79,6 +82,7 @@
             border-radius: var(--radius);
             padding: 16px;
             margin-bottom: 10px;
+            box-shadow: var(--shadow);
         }
 
         .card-title {
@@ -96,14 +100,14 @@
             display: block;
             font-size: 0.85em;
             font-weight: 700;
-            color: var(--gold);
+            color: var(--text);
             margin-bottom: 5px;
         }
         .field input, .field select {
             width: 100%;
             padding: 11px 14px;
-            background: var(--bg-card-alt);
-            border: 1px solid var(--border);
+            background: var(--bg-card);
+            border: 1.5px solid var(--border);
             border-radius: var(--radius-sm);
             color: var(--text);
             font-family: inherit;
@@ -111,12 +115,14 @@
             font-weight: 500;
             outline: none;
             transition: border 0.2s;
+            box-shadow: inset 0 1px 2px rgba(0,0,0,0.04);
         }
         .field input:focus, .field select:focus {
             border-color: var(--gold);
+            box-shadow: 0 0 0 3px var(--gold-glow);
         }
         .field input::placeholder { color: var(--text-dim); }
-        .field select option { background: var(--bg-card); }
+        .field select option { background: var(--bg-card); color: var(--text); }
 
         /* ═══ BUTTONS ═══ */
         .btn {
@@ -135,17 +141,18 @@
         .btn:disabled { opacity: 0.4; cursor: not-allowed; transform: none; }
 
         .btn-gold {
-            background: var(--gold);
-            color: var(--bg-dark);
+            background: linear-gradient(135deg, #F5A623, #E8900C);
+            color: #fff;
+            box-shadow: 0 2px 8px rgba(245,166,35,0.25);
         }
-        .btn-gold:hover:not(:disabled) { background: #F0C540; }
+        .btn-gold:hover:not(:disabled) { background: linear-gradient(135deg, #FFB833, #F5A020); }
 
         .btn-outline {
-            background: transparent;
+            background: var(--bg-card);
             border: 1.5px solid var(--border);
             color: var(--text-dim);
         }
-        .btn-outline:hover:not(:disabled) { border-color: var(--text-dim); color: var(--text); }
+        .btn-outline:hover:not(:disabled) { border-color: var(--text-dim); color: var(--text); background: var(--bg-card-alt); }
 
         .btn-green {
             background: var(--green);
@@ -164,10 +171,11 @@
         .room-code-display {
             text-align: center;
             padding: 14px;
-            background: var(--gold-glow);
-            border: 1.5px solid var(--gold-dim);
+            background: linear-gradient(135deg, #FFF8E8, #FFF3D6);
+            border: 1.5px solid #E8D5A0;
             border-radius: var(--radius);
             margin-bottom: 12px;
+            box-shadow: var(--shadow);
         }
         .room-code-display .label { font-size: 0.8em; color: var(--gold-dim); font-weight: 700; }
         .room-code-display .code {
@@ -190,6 +198,7 @@
             font-size: 0.82em;
             font-weight: 600;
             margin: 3px;
+            color: var(--text);
         }
         .player-chip .dot {
             width: 8px; height: 8px;
@@ -219,14 +228,14 @@
             text-align: center;
         }
         .team-select-btn.red-team {
-            background: var(--red-bg);
+            background: var(--red-light);
             color: var(--red);
-            border-color: rgba(232,68,58,0.3);
+            border-color: rgba(217,64,64,0.2);
         }
         .team-select-btn.blue-team {
-            background: var(--blue-bg);
+            background: var(--blue-light);
             color: var(--blue);
-            border-color: rgba(58,139,232,0.3);
+            border-color: rgba(46,125,214,0.2);
         }
         .team-select-btn.selected {
             border-color: var(--gold) !important;
@@ -246,9 +255,10 @@
             padding: 8px;
             border-radius: var(--radius-sm);
             text-align: center;
+            box-shadow: var(--shadow);
         }
-        .team-score-box.red { background: var(--red-bg); border: 1px solid rgba(232,68,58,0.25); }
-        .team-score-box.blue { background: var(--blue-bg); border: 1px solid rgba(58,139,232,0.25); }
+        .team-score-box.red { background: var(--red-light); border: 1.5px solid rgba(217,64,64,0.2); }
+        .team-score-box.blue { background: var(--blue-light); border: 1.5px solid rgba(46,125,214,0.2); }
         .team-score-box .t-name {
             font-size: 0.7em;
             font-weight: 700;
@@ -274,21 +284,23 @@
             border-radius: 20px;
             border: 1px solid var(--border);
             background: var(--bg-card);
+            box-shadow: var(--shadow);
         }
 
         /* ═══ COUCH ═══ */
         .couch-section {
-            background: var(--gold-glow);
-            border: 1.5px solid var(--gold-dim);
+            background: linear-gradient(135deg, #FFF8E8, #FFF3D6);
+            border: 1.5px solid #E8D5A0;
             border-radius: var(--radius);
             padding: 10px;
             margin-bottom: 8px;
+            box-shadow: var(--shadow);
         }
         .couch-label {
             text-align: center;
             font-size: 0.75em;
             font-weight: 800;
-            color: var(--gold);
+            color: var(--gold-dim);
             letter-spacing: 2px;
             margin-bottom: 6px;
         }
@@ -316,8 +328,8 @@
             font-size: 0.75em;
             font-weight: 700;
             margin: 2px;
-            background: var(--gold);
-            color: var(--bg-dark);
+            background: linear-gradient(135deg, #F5A623, #E8900C);
+            color: #fff;
         }
         .couch-empty-text {
             font-size: 0.7em;
@@ -327,13 +339,14 @@
         .seat-slot {
             width: 28px; height: 28px;
             border-radius: 50%;
-            border: 1.5px dashed var(--text-dim);
+            border: 1.5px dashed #D0C8B8;
             display: inline-flex;
             align-items: center;
             justify-content: center;
             margin: 2px;
             font-size: 0.65em;
-            opacity: 0.4;
+            color: #C0B8A8;
+            opacity: 0.6;
         }
 
         /* ═══ QUESTION AREA ═══ */
@@ -345,11 +358,12 @@
             margin-bottom: 8px;
             text-align: center;
             position: relative;
+            box-shadow: var(--shadow);
         }
         .q-category {
             font-size: 0.7em;
             font-weight: 700;
-            color: var(--gold-dim);
+            color: var(--gold);
             letter-spacing: 1px;
             margin-bottom: 6px;
         }
@@ -376,6 +390,8 @@
             font-weight: 900;
             color: var(--gold);
             transition: all 0.3s;
+            background: var(--bg-card);
+            box-shadow: var(--shadow);
         }
         .timer-circle.danger {
             border-color: var(--red);
@@ -407,18 +423,18 @@
             font-size: 1.2em;
             font-weight: 800;
             cursor: pointer;
-            background: linear-gradient(135deg, var(--orange) 0%, #E67E22 100%);
+            background: linear-gradient(135deg, #F5A623 0%, #E8900C 100%);
             color: #fff;
-            box-shadow: 0 4px 20px rgba(243,156,18,0.3);
+            box-shadow: 0 4px 16px rgba(245,166,35,0.3);
             transition: all 0.15s;
             margin-bottom: 8px;
             position: relative;
             overflow: hidden;
         }
-        .buzzer-btn:active:not(:disabled) { transform: scale(0.96); }
+        .buzzer-btn:active:not(:disabled) { transform: scale(0.96); box-shadow: 0 2px 8px rgba(245,166,35,0.3); }
         .buzzer-btn:disabled {
-            background: var(--bg-card-alt);
-            color: var(--text-dim);
+            background: #E0D8CC;
+            color: #A09888;
             box-shadow: none;
             cursor: not-allowed;
         }
@@ -432,10 +448,10 @@
             text-align: center;
             margin-bottom: 8px;
         }
-        .status-bar.info { background: var(--blue-bg); color: var(--blue); border: 1px solid rgba(58,139,232,0.2); }
-        .status-bar.success { background: var(--green-bg); color: var(--green); border: 1px solid rgba(46,204,113,0.2); }
-        .status-bar.error { background: var(--red-bg); color: var(--red); border: 1px solid rgba(232,68,58,0.2); }
-        .status-bar.warning { background: var(--orange-bg); color: var(--orange); border: 1px solid rgba(243,156,18,0.2); }
+        .status-bar.info { background: var(--blue-light); color: var(--blue); border: 1px solid rgba(46,125,214,0.15); }
+        .status-bar.success { background: #EFFFEF; color: var(--green); border: 1px solid rgba(29,170,92,0.15); }
+        .status-bar.error { background: var(--red-light); color: var(--red); border: 1px solid rgba(217,64,64,0.15); }
+        .status-bar.warning { background: #FFF8E8; color: var(--orange); border: 1px solid rgba(217,140,32,0.15); }
 
         /* ═══ OPTIONS GRID ═══ */
         .options-grid {
@@ -446,7 +462,7 @@
         }
         .option-btn {
             padding: 12px 8px;
-            background: var(--bg-card-alt);
+            background: var(--bg-card);
             border: 1.5px solid var(--border);
             border-radius: var(--radius-sm);
             font-family: inherit;
@@ -460,18 +476,19 @@
             display: flex;
             align-items: center;
             justify-content: center;
+            box-shadow: var(--shadow);
         }
         .option-btn:hover:not(:disabled) {
             border-color: var(--gold);
-            background: var(--gold-glow);
+            background: #FFF8E8;
         }
         .option-btn:active:not(:disabled) { transform: scale(0.96); }
         .option-btn:disabled {
             opacity: 0.35;
             cursor: not-allowed;
         }
-        .option-btn.correct { border-color: var(--green); background: var(--green-bg); color: var(--green); }
-        .option-btn.wrong { border-color: var(--red); background: var(--red-bg); color: var(--red); }
+        .option-btn.correct { border-color: var(--green); background: #EFFFEF; color: var(--green); }
+        .option-btn.wrong { border-color: var(--red); background: var(--red-light); color: var(--red); }
 
         /* ═══ ANSWER INPUT ═══ */
         .answer-input-area {
@@ -480,7 +497,7 @@
         .answer-input-area input {
             width: 100%;
             padding: 12px;
-            background: var(--bg-card-alt);
+            background: var(--bg-card);
             border: 2px solid var(--gold);
             border-radius: var(--radius-sm);
             color: var(--text);
@@ -490,6 +507,7 @@
             text-align: center;
             outline: none;
             margin-bottom: 6px;
+            box-shadow: 0 0 0 3px var(--gold-glow);
         }
         .answer-input-area input::placeholder { color: var(--text-dim); }
 
@@ -517,10 +535,11 @@
         .on-couch-banner {
             text-align: center;
             padding: 30px 16px;
-            background: var(--green-bg);
-            border: 1.5px solid rgba(46,204,113,0.3);
+            background: #EFFFEF;
+            border: 1.5px solid rgba(29,170,92,0.2);
             border-radius: var(--radius);
             margin-bottom: 8px;
+            box-shadow: var(--shadow);
         }
         .on-couch-banner .icon { font-size: 2.5em; margin-bottom: 8px; }
         .on-couch-banner h3 { color: var(--green); font-size: 1.2em; }
@@ -548,6 +567,7 @@
             font-weight: 900;
             color: var(--gold);
             margin-bottom: 20px;
+            text-shadow: none;
         }
 
         /* ═══ HOST BADGE ═══ */
@@ -568,8 +588,8 @@
         .buzzer-indicator-bar {
             padding: 6px 12px;
             border-radius: var(--radius-sm);
-            background: var(--orange-bg);
-            border: 1px solid rgba(243,156,18,0.2);
+            background: #FFF8E8;
+            border: 1px solid rgba(217,140,32,0.15);
             text-align: center;
             font-size: 0.82em;
             font-weight: 700;
@@ -589,7 +609,7 @@
             padding: 2px 6px;
             border-radius: 10px;
             font-weight: 600;
-            background: rgba(255,255,255,0.06);
+            background: rgba(0,0,0,0.04);
             color: var(--text-dim);
         }
         .mini-player.on-couch {
@@ -1538,9 +1558,8 @@ function submitTextAnswer() {
     clearInterval(answerTimerInterval);
 
     const correctOption = roomData.currentQuestion.options[roomData.currentQuestion.correct];
-    const correctNorm = normalizeArabic(correctOption);
 
-    const isCorrect = userAnswer === correctNorm;
+    const isCorrect = checkAnswerMatch(input.value.trim(), correctOption);
 
     const roomRef = database.ref('rooms/' + currentRoomCode);
 
@@ -1583,9 +1602,39 @@ function normalizeArabic(str) {
         .replace(/[\u064B-\u065F\u0670]/g, '') // remove tashkeel
         .replace(/ة/g, 'ه')  // taa marbuta → ha
         .replace(/ى/g, 'ي')  // alef maqsura → ya
-        .replace(/أ|إ|آ/g, 'ا') // normalize alef
+        .replace(/أ|إ|آ|ٱ/g, 'ا') // normalize alef
+        .replace(/ؤ/g, 'و')
+        .replace(/ئ/g, 'ي')
+        .replace(/[0-9٠-٩]/g, '') // remove numbers
         .replace(/\s+/g, ' ')
         .trim();
+}
+
+function checkAnswerMatch(userAnswer, correctAnswer) {
+    const user = normalizeArabic(userAnswer);
+    const correct = normalizeArabic(correctAnswer);
+    
+    // Exact match
+    if (user === correct) return true;
+    
+    // One contains the other
+    if (correct.includes(user) && user.length >= 3) return true;
+    if (user.includes(correct)) return true;
+    
+    // Split into words and check if key words match
+    const userWords = user.split(' ').filter(w => w.length > 2);
+    const correctWords = correct.split(' ').filter(w => w.length > 2);
+    
+    // If user typed a key word from the correct answer
+    for (const uw of userWords) {
+        for (const cw of correctWords) {
+            if (uw === cw) return true;
+            if (cw.includes(uw) && uw.length >= 3) return true;
+            if (uw.includes(cw) && cw.length >= 3) return true;
+        }
+    }
+    
+    return false;
 }
 
 // ══════ SELECT ANSWER (from options) ══════
