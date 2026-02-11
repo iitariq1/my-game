@@ -66,6 +66,7 @@
         position: relative;
         z-index: 1;
         border: 3px solid #d4af37;
+        margin: 0 auto;
     }
 
     h1 {
@@ -676,7 +677,7 @@
                 <button class="btn secondary" onclick="showJoinRoom()">🚪 الانضمام لغرفة</button>
             </div>
             <div class="input-group">
-                <button class="btn" style="background: linear-gradient(135deg, #6a4c93 0%, #533a71 100%); color: #ffd700;" onclick="window.location.href='m7qqmkadee/index.html">🏠 العودة للصفحة الرئيسية</button>
+                <button class="btn" style="background: linear-gradient(135deg, #6a4c93 0%, #533a71 100%); color: #ffd700;" onclick="goToMainPage()">🏠 العودة للصفحة الرئيسية</button>
             </div>
         </div>
 
@@ -1279,7 +1280,8 @@
             playerQuestionDisplay.style.display = 'block';
             playerQuestionText.textContent = roomData.currentQuestion.question;
             
-            if (roomData.questionStartTime && !roomData.showOptions && !roomData.waitingForTextAnswer) {
+            // عرض المؤقت 30 ثانية للجميع إذا لم تظهر الخيارات بعد
+            if (roomData.questionStartTime && !roomData.showOptions && !roomData.correctAnswer) {
                 const elapsed = Math.floor((Date.now() - roomData.questionStartTime) / 1000);
                 const timeLeft = Math.max(0, 30 - elapsed);
                 playerTimer.style.display = 'block';
@@ -1428,6 +1430,22 @@
             } else {
                 playerStatus.textContent = '❌ إجابة خاطئة!';
                 playerStatus.className = 'status-message error';
+            }
+            return;
+        }
+        
+        // إذا كانت الإجابة خاطئة من أي لاعب وتم إغلاق الخيارات
+        if (roomData.correctAnswer === false && !roomData.showOptions) {
+            playerStatus.textContent = 'إجابة خاطئة - انتظر السؤال التالي';
+            playerStatus.className = 'status-message error';
+            buzzButton.disabled = true;
+            playerAnswerOptions.innerHTML = '';
+            
+            if (isHost) {
+                setTimeout(() => {
+                    const nextBtn = document.getElementById('nextQuestionBtnPlayer');
+                    if (nextBtn) nextBtn.disabled = false;
+                }, 500);
             }
             return;
         }
@@ -1594,19 +1612,24 @@
 
             if (timeLeft <= 0) {
                 clearInterval(timerInterval);
+                clearInterval(answerTimerInterval); // إيقاف مؤقت الـ 5 ثواني أيضاً
                 
-                if (!roomData.buzzedPlayer && !roomData.showOptions) {
-                    database.ref('rooms/' + currentRoomCode).update({ 
+                // فتح الخيارات للجميع بعد انتهاء الـ 30 ثانية
+                if (!roomData.showOptions && roomData.correctAnswer === null) {
+                    const updateData = { 
                         showOptions: true,
-                        bannedTeam: null
-                    });
+                        waitingForTextAnswer: false
+                    };
                     
-                    if (isHost) {
-                        setTimeout(() => {
-                            const nextBtn = document.getElementById('nextQuestionBtnPlayer');
-                            if (nextBtn) nextBtn.disabled = false;
-                        }, 2000);
+                    // إذا كان هناك شخص ضغط الجرس، يتم منع فريقه من الإجابة
+                    if (roomData.buzzedPlayer) {
+                        const buzzedPlayerTeam = roomData.players[roomData.buzzedPlayer]?.team;
+                        updateData.bannedTeam = buzzedPlayerTeam;
+                    } else {
+                        updateData.bannedTeam = null;
                     }
+                    
+                    database.ref('rooms/' + currentRoomCode).update(updateData);
                 }
             }
         }, 1000);
@@ -1617,11 +1640,10 @@
 
         database.ref('rooms/' + currentRoomCode).update({
             buzzedPlayer: currentPlayerId,
-            waitingForTextAnswer: true,
-            questionStartTime: Date.now()
+            waitingForTextAnswer: true
         });
 
-        clearInterval(timerInterval);
+        // لا نوقف المؤقت 30 ثانية - يستمر في العمل عند الجميع
         startAnswerTimer(5);
     }
 
@@ -1717,6 +1739,7 @@
 
     function selectAnswer(answerIndex) {
         const isCorrect = answerIndex === roomData.currentQuestion.correct;
+        const playerTeam = roomData.players[currentPlayerId]?.team;
 
         database.ref('rooms/' + currentRoomCode).update({
             selectedAnswer: answerIndex,
@@ -1733,24 +1756,28 @@
                 database.ref('rooms/' + currentRoomCode).update({
                     waitingForChoice: true,
                     choicePlayer: currentPlayerId,
-                    bannedTeam: null
+                    bannedTeam: null,
+                    showOptions: false
                 });
             } else {
                 addToCouch();
-                database.ref('rooms/' + currentRoomCode).update({ bannedTeam: null });
+                database.ref('rooms/' + currentRoomCode).update({ 
+                    bannedTeam: null,
+                    showOptions: false 
+                });
             }
         } else {
+            // إجابة خاطئة من الخيارات - تفعيل زر السؤال التالي
             database.ref('rooms/' + currentRoomCode).update({
                 showOptions: false,
-                bannedTeam: null
+                bannedTeam: null,
+                correctAnswer: false
             });
             
-            if (isHost) {
-                setTimeout(() => {
-                    const nextBtn = document.getElementById('nextQuestionBtnPlayer');
-                    if (nextBtn) nextBtn.disabled = false;
-                }, 2000);
-            }
+            setTimeout(() => {
+                const nextBtn = document.getElementById('nextQuestionBtnPlayer');
+                if (nextBtn) nextBtn.disabled = false;
+            }, 1000);
         }
     }
 
