@@ -1,775 +1,629 @@
 <!DOCTYPE html>
+
 <html lang="ar" dir="rtl">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>لعبة الكنبة - أسئلة وأجوبة</title>
     <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-
-        body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background: linear-gradient(135deg, #1a0b2e 0%, #3d2463 50%, #1a0b2e 100%);
-            min-height: 100vh;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            padding: 20px;
-            position: relative;
-            overflow-x: hidden;
-        }
-
-        /* Ramadan decorations */
-        body::before {
-            content: '🌙✨🕌✨⭐✨🌙✨🕌✨⭐';
-            position: fixed;
-            top: 10px;
-            left: 0;
-            right: 0;
-            text-align: center;
-            font-size: 1.5em;
-            z-index: 0;
-            opacity: 0.6;
-            animation: twinkle 3s ease-in-out infinite;
-        }
-
-        body::after {
-            content: '⭐✨🌙✨🕌✨⭐✨🌙✨🕌';
-            position: fixed;
-            bottom: 10px;
-            left: 0;
-            right: 0;
-            text-align: center;
-            font-size: 1.5em;
-            z-index: 0;
-            opacity: 0.6;
-            animation: twinkle 3s ease-in-out infinite 1.5s;
-        }
-
-        @keyframes twinkle {
-            0%, 100% { opacity: 0.4; }
-            50% { opacity: 0.8; }
-        }
-
-        .container {
-            background: linear-gradient(135deg, #2d1b4e 0%, #4a2c6f 100%);
-            border-radius: 25px;
-            box-shadow: 0 20px 60px rgba(0,0,0,0.5), 0 0 30px rgba(212, 175, 55, 0.3);
-            max-width: 500px;
-            width: 100%;
-            padding: 40px;
-            position: relative;
-            z-index: 1;
-            border: 3px solid #d4af37;
-        }
-
-        .host-container {
-            max-width: 1400px;
-            background: linear-gradient(135deg, #2d1b4e 0%, #4a2c6f 100%);
-        }
-
-        h1 {
-            text-align: center;
-            background: linear-gradient(135deg, #ffd700 0%, #ffed4e 50%, #ffd700 100%);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
-            margin-bottom: 30px;
-            font-size: 2.5em;
-            text-shadow: 0 0 20px rgba(255, 215, 0, 0.5);
-            animation: glow 2s ease-in-out infinite;
-        }
-
-        @keyframes glow {
-            0%, 100% { filter: brightness(1); }
-            50% { filter: brightness(1.3); }
-        }
-
-        .screen {
-            display: none;
-        }
-
-        .screen.active {
-            display: block;
-        }
-
-        .input-group {
-            margin-bottom: 20px;
-        }
-
-        .input-group label {
-            display: block;
-            margin-bottom: 8px;
-            font-weight: bold;
-            color: #ffd700;
-        }
-
-        .input-group input, .input-group select {
-            width: 100%;
-            padding: 15px;
-            border: 2px solid #d4af37;
-            border-radius: 10px;
-            font-size: 16px;
-            transition: border-color 0.3s;
-            background: rgba(255, 255, 255, 0.95);
-        }
-
-        .input-group input:focus, .input-group select:focus {
-            outline: none;
-            border-color: #ffd700;
-            box-shadow: 0 0 10px rgba(255, 215, 0, 0.5);
-        }
-
-        .btn {
-            width: 100%;
-            padding: 15px;
-            background: linear-gradient(135deg, #d4af37 0%, #aa8929 100%);
-            color: #1a0b2e;
-            border: none;
-            border-radius: 10px;
-            font-size: 1.2em;
-            font-weight: bold;
-            cursor: pointer;
-            transition: all 0.3s;
-            margin-top: 10px;
-            box-shadow: 0 5px 15px rgba(212, 175, 55, 0.4);
-        }
-
-        .btn:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 8px 20px rgba(212, 175, 55, 0.6);
-        }
-
-        .btn:active {
-            transform: translateY(0);
-        }
-
-        .btn.secondary {
-            background: linear-gradient(135deg, #6a4c93 0%, #533a71 100%);
-            color: #ffd700;
-        }
-
-        .btn.success {
-            background: linear-gradient(135deg, #00a86b 0%, #008c59 100%);
-            color: white;
-        }
-
-        .btn:disabled {
-            opacity: 0.5;
-            cursor: not-allowed;
-        }
-
-        .room-code {
-            text-align: center;
-            padding: 25px;
-            background: linear-gradient(135deg, rgba(212, 175, 55, 0.2) 0%, rgba(170, 137, 41, 0.2) 100%);
-            border-radius: 20px;
-            margin: 20px 0;
-            border: 2px solid #d4af37;
-        }
-
-        .room-code h2 {
-            color: #ffd700;
-            font-size: 1.3em;
-            margin-bottom: 10px;
-        }
-
-        .code {
-            font-size: 3em;
-            font-weight: bold;
-            color: #ffd700;
-            letter-spacing: 10px;
-            font-family: monospace;
-            text-shadow: 0 0 20px rgba(255, 215, 0, 0.8);
-        }
-
-        .players-list {
-            background: linear-gradient(135deg, rgba(212, 175, 55, 0.15) 0%, rgba(170, 137, 41, 0.15) 100%);
-            border-radius: 20px;
-            padding: 20px;
-            margin: 20px 0;
-            border: 2px solid rgba(212, 175, 55, 0.5);
-        }
-
-        .players-list h3 {
-            color: #ffd700;
-            margin-bottom: 15px;
-        }
-
-        .player-item {
-            background: rgba(255, 255, 255, 0.95);
-            padding: 12px 15px;
-            margin-bottom: 10px;
-            border-radius: 10px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.2);
-            border: 1px solid #d4af37;
-        }
-
-        .player-name {
-            font-weight: bold;
-            color: #2d1b4e;
-        }
-
-        .team-badge {
-            padding: 5px 15px;
-            border-radius: 20px;
-            font-size: 0.9em;
-            font-weight: bold;
-            color: white;
-        }
-
-        .team-badge.team1 {
-            background: linear-gradient(135deg, #e74c3c 0%, #c0392b 100%);
-        }
-
-        .team-badge.team2 {
-            background: linear-gradient(135deg, #3498db 0%, #2980b9 100%);
-        }
-
-        .host-badge {
-            background: linear-gradient(135deg, #ffd700 0%, #aa8929 100%);
-            padding: 5px 15px;
-            border-radius: 20px;
-            font-size: 0.85em;
-            color: #1a0b2e;
-            font-weight: bold;
-        }
-
-        /* Host Screen Styles */
-        .score-display {
-            display: flex;
-            justify-content: space-between;
-            gap: 15px;
-            margin-bottom: 20px;
-            align-items: stretch;
-        }
-
-        .team-score {
-            flex: 1;
-            text-align: center;
-            padding: 15px;
-            background: linear-gradient(135deg, rgba(212, 175, 55, 0.2) 0%, rgba(170, 137, 41, 0.2) 100%);
-            border-radius: 15px;
-            border: 2px solid #d4af37;
-        }
-
-        .team-score h3 {
-            font-size: 1.2em;
-            margin-bottom: 5px;
-            color: #ffd700;
-        }
-
-        .team-score .score {
-            font-size: 2em;
-            font-weight: bold;
-            background: linear-gradient(135deg, #ffd700 0%, #ffed4e 100%);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
-        }
-
-        /* Center Couch Display */
-        .center-couch {
-            padding: 20px;
-            background: linear-gradient(135deg, rgba(212, 175, 55, 0.3) 0%, rgba(170, 137, 41, 0.3) 100%);
-            border-radius: 20px;
-            border: 3px solid #ffd700;
-            box-shadow: 0 0 20px rgba(255, 215, 0, 0.3);
-            margin-bottom: 20px;
-        }
-
-        .center-couch h3 {
-            text-align: center;
-            color: #ffd700;
-            font-size: 1.5em;
-            margin-bottom: 15px;
-            text-shadow: 0 0 10px rgba(255, 215, 0, 0.8);
-        }
-
-        .couch-seats-display {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 15px;
-        }
-
-        .couch-team-section {
-            background: rgba(255, 255, 255, 0.1);
-            padding: 12px;
-            border-radius: 12px;
-            border: 2px solid rgba(212, 175, 55, 0.5);
-        }
-
-        .couch-team-section h4 {
-            color: #ffd700;
-            margin-bottom: 8px;
-            font-size: 1em;
-            text-align: center;
-        }
-
-        .couch-player {
-            background: linear-gradient(135deg, #ffd700 0%, #d4af37 100%);
-            padding: 8px 12px;
-            margin-bottom: 6px;
-            border-radius: 8px;
-            text-align: center;
-            font-weight: bold;
-            color: #1a0b2e;
-            box-shadow: 0 2px 8px rgba(212, 175, 55, 0.4);
-            animation: slideIn 0.5s ease-out;
-            font-size: 0.95em;
-        }
-
-        @keyframes slideIn {
-            from {
-                opacity: 0;
-                transform: translateX(-20px);
-            }
-            to {
-                opacity: 1;
-                transform: translateX(0);
-            }
-        }
-
-        .couch-empty {
-            text-align: center;
-            color: rgba(255, 215, 0, 0.5);
-            font-style: italic;
-            padding: 10px;
-        }
-
-        .question-display {
-            background: linear-gradient(135deg, rgba(212, 175, 55, 0.2) 0%, rgba(170, 137, 41, 0.2) 100%);
-            padding: 20px;
-            border-radius: 15px;
-            margin-bottom: 15px;
-            min-height: 80px;
-            border: 2px solid #d4af37;
-        }
-
-        .question-text {
-            font-size: 1.2em;
-            color: #ffd700;
-            text-align: center;
-            margin-bottom: 10px;
-            text-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
-        }
-
-        .timer-display {
-            text-align: center;
-            font-size: 2.5em;
-            font-weight: bold;
-            background: linear-gradient(135deg, #ffd700 0%, #ffed4e 100%);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
-            margin: 12px 0;
-            text-shadow: 0 0 30px rgba(255, 215, 0, 0.8);
-        }
-
-        .timer-display.warning {
-            background: linear-gradient(135deg, #ff4444 0%, #cc0000 100%);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            animation: pulse 0.5s infinite;
-        }
-
-        @keyframes pulse {
-            0%, 100% { 
-                opacity: 1;
-                transform: scale(1);
-            }
-            50% { 
-                opacity: 0.7;
-                transform: scale(1.1);
-            }
-        }
-
-        .options-display {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 12px;
-            margin-top: 15px;
-        }
-
-        .option-box {
-            background: rgba(255, 255, 255, 0.95);
-            padding: 18px;
-            border-radius: 12px;
-            border: 3px solid #d4af37;
-            text-align: center;
-            font-size: 1.1em;
-            font-weight: bold;
-            color: #2d1b4e;
-            transition: all 0.3s;
-        }
-
-        .option-box.correct {
-            background: linear-gradient(135deg, #00a86b 0%, #008c59 100%);
-            color: white;
-            border-color: #00a86b;
-            animation: correctPulse 0.5s ease-out;
-        }
-
-        .option-box.incorrect {
-            background: linear-gradient(135deg, #e74c3c 0%, #c0392b 100%);
-            color: white;
-            border-color: #e74c3c;
-            animation: shake 0.5s ease-out;
-        }
-
-        @keyframes correctPulse {
-            0%, 100% { transform: scale(1); }
-            50% { transform: scale(1.05); }
-        }
-
-        @keyframes shake {
-            0%, 100% { transform: translateX(0); }
-            25% { transform: translateX(-10px); }
-            75% { transform: translateX(10px); }
-        }
-
-        /* Player Screen Styles - IMPROVED */
-        .buzz-button {
-            width: 100%;
-            height: 120px;
-            font-size: 1.8em;
-            background: linear-gradient(135deg, #ff6b35 0%, #f7931e 50%, #ff6b35 100%);
-            color: white;
-            border: none;
-            border-radius: 20px;
-            font-weight: bold;
-            cursor: pointer;
-            transition: all 0.3s;
-            box-shadow: 0 10px 30px rgba(255, 107, 53, 0.5);
-            border: 4px solid #ffd700;
-            position: relative;
-            overflow: hidden;
-            margin: 15px 0;
-        }
-
-        .buzz-button::before {
-            content: '🔔';
-            position: absolute;
-            font-size: 2em;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            opacity: 0.3;
-        }
-
-        .buzz-button:active:not(:disabled) {
-            transform: scale(0.95);
-            box-shadow: 0 8px 25px rgba(255, 107, 53, 0.7);
-        }
-
-        .buzz-button:disabled {
-            background: linear-gradient(135deg, #555 0%, #333 100%);
-            cursor: not-allowed;
-            box-shadow: none;
-            border-color: #555;
-        }
-
-        /* Improved Answer Options - 2x2 Grid */
-        .answer-options {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 12px;
-            margin-top: 15px;
-        }
-
-        .answer-btn {
-            padding: 18px 12px;
-            background: rgba(255, 255, 255, 0.95);
-            border: 3px solid #d4af37;
-            border-radius: 12px;
-            font-size: 1em;
-            font-weight: bold;
-            cursor: pointer;
-            transition: all 0.3s;
-            color: #2d1b4e;
-            min-height: 70px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            text-align: center;
-        }
-
-        .answer-btn:hover:not(:disabled) {
-            background: linear-gradient(135deg, #ffd700 0%, #d4af37 100%);
-            color: #1a0b2e;
-            transform: translateY(-3px);
-            box-shadow: 0 8px 20px rgba(212, 175, 55, 0.6);
-        }
-
-        .answer-btn:disabled {
-            opacity: 0.5;
-            cursor: not-allowed;
-        }
-
-        .status-message {
-            text-align: center;
-            padding: 12px;
-            margin: 12px 0;
-            border-radius: 12px;
-            font-size: 1em;
-            font-weight: bold;
-            border: 2px solid;
-        }
-
-        .status-message.info {
-            background: linear-gradient(135deg, rgba(52, 152, 219, 0.2) 0%, rgba(41, 128, 185, 0.2) 100%);
-            color: #5dade2;
-            border-color: #3498db;
-        }
-
-        .status-message.success {
-            background: linear-gradient(135deg, rgba(0, 168, 107, 0.2) 0%, rgba(0, 140, 89, 0.2) 100%);
-            color: #52c997;
-            border-color: #00a86b;
-        }
-
-        .status-message.error {
-            background: linear-gradient(135deg, rgba(231, 76, 60, 0.2) 0%, rgba(192, 57, 43, 0.2) 100%);
-            color: #ec7063;
-            border-color: #e74c3c;
-        }
-
-        .status-message.warning {
-            background: linear-gradient(135deg, rgba(243, 156, 18, 0.2) 0%, rgba(230, 126, 34, 0.2) 100%);
-            color: #f5b041;
-            border-color: #f39c12;
-        }
-
-        .player-choice-buttons {
-            display: grid;
-            grid-template-columns: 1fr;
-            gap: 12px;
-            margin-top: 15px;
-        }
-
-        .choice-btn {
-            padding: 18px;
-            border: none;
-            border-radius: 15px;
-            font-size: 1.1em;
-            font-weight: bold;
-            cursor: pointer;
-            transition: all 0.3s;
-            border: 3px solid;
-        }
-
-        .choice-btn.sit {
-            background: linear-gradient(135deg, #00a86b 0%, #008c59 100%);
-            color: white;
-            border-color: #00a86b;
-        }
-
-        .choice-btn.steal {
-            background: linear-gradient(135deg, #e74c3c 0%, #c0392b 100%);
-            color: white;
-            border-color: #c0392b;
-        }
-
-        .choice-btn:hover {
-            transform: translateY(-3px);
-            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.3);
-        }
-
-        .victory-screen {
-            text-align: center;
-            padding: 50px;
-        }
-
-        .victory-screen h2 {
-            font-size: 3em;
-            background: linear-gradient(135deg, #ffd700 0%, #ffed4e 100%);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
-            margin-bottom: 30px;
-            animation: glow 1s ease-in-out infinite;
-        }
-
-        .confetti {
-            font-size: 5em;
-            margin-bottom: 20px;
-            animation: bounce 1s ease-in-out infinite;
-        }
-
-        @keyframes bounce {
-            0%, 100% { transform: translateY(0); }
-            50% { transform: translateY(-20px); }
-        }
-
-        .buzzer-indicator {
-            text-align: center;
-            padding: 10px;
-            margin: 10px 0;
-            background: linear-gradient(135deg, rgba(255, 107, 53, 0.3) 0%, rgba(247, 147, 30, 0.3) 100%);
-            border-radius: 12px;
-            border: 2px solid #ff6b35;
-            color: #ffd700;
-            font-weight: bold;
-            font-size: 0.95em;
-        }
-
-        /* Teams and Couch Display for Players */
-        .teams-players-display {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 12px;
-            margin-bottom: 12px;
-        }
-
-        .team-players-section {
-            background: linear-gradient(135deg, rgba(212, 175, 55, 0.15) 0%, rgba(170, 137, 41, 0.15) 100%);
-            padding: 12px;
-            border-radius: 15px;
-            border: 2px solid rgba(212, 175, 55, 0.5);
-        }
-
-        .team-header {
-            color: #ffd700;
-            font-size: 1.1em;
-            margin-bottom: 8px;
-            text-align: center;
-        }
-
-        .players-list-game {
-            display: flex;
-            flex-direction: column;
-            gap: 6px;
-        }
-
-        .player-name-tag {
-            background: rgba(255, 255, 255, 0.9);
-            padding: 6px 10px;
-            border-radius: 8px;
-            text-align: center;
-            font-weight: bold;
-            color: #2d1b4e;
-            border: 2px solid #d4af37;
-            font-size: 0.9em;
-        }
-
-        .player-name-tag.on-couch {
-            opacity: 0.5;
-            text-decoration: line-through;
-        }
-
-        .couch-display-player {
-            background: linear-gradient(135deg, rgba(212, 175, 55, 0.3) 0%, rgba(170, 137, 41, 0.3) 100%);
-            padding: 12px;
-            border-radius: 15px;
-            border: 3px solid #ffd700;
-            margin-bottom: 12px;
-            box-shadow: 0 0 20px rgba(255, 215, 0, 0.3);
-        }
-
-        .couch-display-player h3 {
-            text-align: center;
-            color: #ffd700;
-            font-size: 1.2em;
-            margin-bottom: 10px;
-        }
-
-        .couch-seats-player {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 10px;
-        }
-
-        .couch-team-player {
-            background: rgba(255, 255, 255, 0.1);
-            padding: 8px;
-            border-radius: 10px;
-            border: 2px solid rgba(212, 175, 55, 0.5);
-        }
-
-        .couch-team-player h4 {
-            color: #ffd700;
-            font-size: 0.9em;
-            margin-bottom: 6px;
-            text-align: center;
-        }
-
-        /* On Couch Message - IMPROVED */
-        .on-couch-message {
-            background: linear-gradient(135deg, rgba(0, 168, 107, 0.3) 0%, rgba(0, 140, 89, 0.3) 100%);
-            border: 3px solid #00a86b;
-            border-radius: 20px;
-            padding: 40px 20px;
-            margin: 20px 0;
-            text-align: center;
-        }
-
-        .on-couch-message .trophy-icon {
-            font-size: 5em;
-            margin-bottom: 15px;
-            animation: bounce 2s ease-in-out infinite;
-        }
-
-        .on-couch-message h2 {
-            color: #00a86b;
-            font-size: 2em;
-            margin-bottom: 15px;
-            text-shadow: 0 2px 10px rgba(0, 168, 107, 0.5);
-        }
-
-        .on-couch-message p {
-            color: #52c997;
-            font-size: 1.2em;
-            font-weight: bold;
-        }
-
-        @media (max-width: 768px) {
-            .container {
-                padding: 20px;
-            }
-
-            h1 {
-                font-size: 1.8em;
-            }
-
-            .code {
-                font-size: 2em;
-                letter-spacing: 5px;
-            }
-
-            .question-text {
-                font-size: 1.1em;
-            }
-
-            .timer-display {
-                font-size: 2em;
-            }
-
-            .buzz-button {
-                height: 100px;
-                font-size: 1.5em;
-            }
-
-            .answer-btn {
-                font-size: 0.9em;
-                padding: 15px 10px;
-                min-height: 60px;
-            }
-        }
-    </style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+```
+    body {
+        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        background: linear-gradient(135deg, #1a0b2e 0%, #3d2463 50%, #1a0b2e 100%);
+        min-height: 100vh;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        padding: 20px;
+        position: relative;
+        overflow-x: hidden;
+    }
+
+    body::before {
+        content: '🌙✨🕌✨⭐✨🌙✨🕌✨⭐';
+        position: fixed;
+        top: 10px;
+        left: 0;
+        right: 0;
+        text-align: center;
+        font-size: 1.5em;
+        z-index: 0;
+        opacity: 0.6;
+        animation: twinkle 3s ease-in-out infinite;
+    }
+
+    body::after {
+        content: '⭐✨🌙✨🕌✨⭐✨🌙✨🕌';
+        position: fixed;
+        bottom: 10px;
+        left: 0;
+        right: 0;
+        text-align: center;
+        font-size: 1.5em;
+        z-index: 0;
+        opacity: 0.6;
+        animation: twinkle 3s ease-in-out infinite 1.5s;
+    }
+
+    @keyframes twinkle {
+        0%, 100% { opacity: 0.4; }
+        50% { opacity: 0.8; }
+    }
+
+    .container {
+        background: linear-gradient(135deg, #2d1b4e 0%, #4a2c6f 100%);
+        border-radius: 20px;
+        box-shadow: 0 20px 60px rgba(0,0,0,0.5), 0 0 30px rgba(212, 175, 55, 0.3);
+        max-width: 500px;
+        width: 100%;
+        padding: 25px;
+        position: relative;
+        z-index: 1;
+        border: 3px solid #d4af37;
+    }
+
+    h1 {
+        text-align: center;
+        background: linear-gradient(135deg, #ffd700 0%, #ffed4e 50%, #ffd700 100%);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+        margin-bottom: 20px;
+        font-size: 2em;
+        animation: glow 2s ease-in-out infinite;
+    }
+
+    @keyframes glow {
+        0%, 100% { filter: brightness(1); }
+        50% { filter: brightness(1.3); }
+    }
+
+    .screen { display: none; }
+    .screen.active { display: block; }
+
+    .input-group {
+        margin-bottom: 15px;
+    }
+
+    .input-group label {
+        display: block;
+        margin-bottom: 6px;
+        font-weight: bold;
+        color: #ffd700;
+        font-size: 0.95em;
+    }
+
+    .input-group input, .input-group select {
+        width: 100%;
+        padding: 12px;
+        border: 2px solid #d4af37;
+        border-radius: 10px;
+        font-size: 15px;
+        background: rgba(255, 255, 255, 0.95);
+    }
+
+    .btn {
+        width: 100%;
+        padding: 12px;
+        background: linear-gradient(135deg, #d4af37 0%, #aa8929 100%);
+        color: #1a0b2e;
+        border: none;
+        border-radius: 10px;
+        font-size: 1.1em;
+        font-weight: bold;
+        cursor: pointer;
+        transition: all 0.3s;
+        margin-top: 8px;
+        box-shadow: 0 4px 12px rgba(212, 175, 55, 0.4);
+    }
+
+    .btn:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 6px 16px rgba(212, 175, 55, 0.6);
+    }
+
+    .btn.secondary {
+        background: linear-gradient(135deg, #6a4c93 0%, #533a71 100%);
+        color: #ffd700;
+    }
+
+    .btn.success {
+        background: linear-gradient(135deg, #00a86b 0%, #008c59 100%);
+        color: white;
+    }
+
+    .btn:disabled {
+        opacity: 0.5;
+        cursor: not-allowed;
+    }
+
+    .room-code {
+        text-align: center;
+        padding: 20px;
+        background: linear-gradient(135deg, rgba(212, 175, 55, 0.2) 0%, rgba(170, 137, 41, 0.2) 100%);
+        border-radius: 15px;
+        margin: 15px 0;
+        border: 2px solid #d4af37;
+    }
+
+    .room-code h2 {
+        color: #ffd700;
+        font-size: 1.2em;
+        margin-bottom: 8px;
+    }
+
+    .code {
+        font-size: 2.5em;
+        font-weight: bold;
+        color: #ffd700;
+        letter-spacing: 8px;
+        font-family: monospace;
+        text-shadow: 0 0 15px rgba(255, 215, 0, 0.8);
+    }
+
+    .players-list {
+        background: linear-gradient(135deg, rgba(212, 175, 55, 0.15) 0%, rgba(170, 137, 41, 0.15) 100%);
+        border-radius: 15px;
+        padding: 15px;
+        margin: 15px 0;
+        border: 2px solid rgba(212, 175, 55, 0.5);
+    }
+
+    .players-list h3 {
+        color: #ffd700;
+        margin-bottom: 12px;
+        font-size: 1.1em;
+    }
+
+    .player-item {
+        background: rgba(255, 255, 255, 0.95);
+        padding: 10px 12px;
+        margin-bottom: 8px;
+        border-radius: 8px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        box-shadow: 0 2px 6px rgba(0,0,0,0.2);
+        border: 1px solid #d4af37;
+    }
+
+    .player-name {
+        font-weight: bold;
+        color: #2d1b4e;
+        font-size: 0.95em;
+    }
+
+    .team-badge {
+        padding: 4px 12px;
+        border-radius: 15px;
+        font-size: 0.85em;
+        font-weight: bold;
+        color: white;
+    }
+
+    .team-badge.team1 {
+        background: linear-gradient(135deg, #e74c3c 0%, #c0392b 100%);
+    }
+
+    .team-badge.team2 {
+        background: linear-gradient(135deg, #3498db 0%, #2980b9 100%);
+    }
+
+    .host-badge {
+        background: linear-gradient(135deg, #ffd700 0%, #aa8929 100%);
+        padding: 4px 12px;
+        border-radius: 15px;
+        font-size: 0.8em;
+        color: #1a0b2e;
+        font-weight: bold;
+    }
+
+    .teams-players-display {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 8px;
+        margin-bottom: 8px;
+    }
+
+    .team-players-section {
+        background: linear-gradient(135deg, rgba(212, 175, 55, 0.15) 0%, rgba(170, 137, 41, 0.15) 100%);
+        padding: 8px;
+        border-radius: 10px;
+        border: 2px solid rgba(212, 175, 55, 0.5);
+    }
+
+    .team-header {
+        color: #ffd700;
+        font-size: 0.95em;
+        margin-bottom: 5px;
+        text-align: center;
+    }
+
+    .players-list-game {
+        display: flex;
+        flex-direction: column;
+        gap: 4px;
+    }
+
+    .player-name-tag {
+        background: rgba(255, 255, 255, 0.9);
+        padding: 4px 6px;
+        border-radius: 5px;
+        text-align: center;
+        font-weight: bold;
+        color: #2d1b4e;
+        border: 2px solid #d4af37;
+        font-size: 0.8em;
+    }
+
+    .player-name-tag.on-couch {
+        opacity: 0.5;
+        text-decoration: line-through;
+    }
+
+    .couch-display-player {
+        background: linear-gradient(135deg, rgba(212, 175, 55, 0.3) 0%, rgba(170, 137, 41, 0.3) 100%);
+        padding: 8px;
+        border-radius: 10px;
+        border: 3px solid #ffd700;
+        margin-bottom: 8px;
+        box-shadow: 0 0 15px rgba(255, 215, 0, 0.3);
+    }
+
+    .couch-display-player h3 {
+        text-align: center;
+        color: #ffd700;
+        font-size: 1em;
+        margin-bottom: 6px;
+    }
+
+    .couch-seats-player {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 6px;
+    }
+
+    .couch-team-player {
+        background: rgba(255, 255, 255, 0.1);
+        padding: 5px;
+        border-radius: 6px;
+        border: 2px solid rgba(212, 175, 55, 0.5);
+    }
+
+    .couch-team-player h4 {
+        color: #ffd700;
+        font-size: 0.8em;
+        margin-bottom: 4px;
+        text-align: center;
+    }
+
+    .couch-player {
+        background: linear-gradient(135deg, #ffd700 0%, #d4af37 100%);
+        padding: 5px 8px;
+        margin-bottom: 4px;
+        border-radius: 6px;
+        text-align: center;
+        font-weight: bold;
+        color: #1a0b2e;
+        box-shadow: 0 2px 6px rgba(212, 175, 55, 0.4);
+        animation: slideIn 0.5s ease-out;
+        font-size: 0.8em;
+    }
+
+    @keyframes slideIn {
+        from { opacity: 0; transform: translateX(-20px); }
+        to { opacity: 1; transform: translateX(0); }
+    }
+
+    .couch-empty {
+        text-align: center;
+        color: rgba(255, 215, 0, 0.5);
+        font-style: italic;
+        padding: 6px;
+        font-size: 0.85em;
+    }
+
+    .on-couch-message {
+        background: linear-gradient(135deg, rgba(0, 168, 107, 0.3) 0%, rgba(0, 140, 89, 0.3) 100%);
+        border: 3px solid #00a86b;
+        border-radius: 12px;
+        padding: 25px 12px;
+        margin: 12px 0;
+        text-align: center;
+    }
+
+    .on-couch-message .trophy-icon {
+        font-size: 3.5em;
+        margin-bottom: 8px;
+        animation: bounce 2s ease-in-out infinite;
+    }
+
+    @keyframes bounce {
+        0%, 100% { transform: translateY(0); }
+        50% { transform: translateY(-15px); }
+    }
+
+    .on-couch-message h2 {
+        color: #00a86b;
+        font-size: 1.6em;
+        margin-bottom: 8px;
+    }
+
+    .on-couch-message p {
+        color: #52c997;
+        font-size: 1em;
+        font-weight: bold;
+    }
+
+    .question-display {
+        background: linear-gradient(135deg, rgba(212, 175, 55, 0.2) 0%, rgba(170, 137, 41, 0.2) 100%);
+        padding: 12px;
+        border-radius: 10px;
+        margin-bottom: 10px;
+        min-height: 50px;
+        border: 2px solid #d4af37;
+    }
+
+    .question-text {
+        font-size: 1em;
+        color: #ffd700;
+        text-align: center;
+        margin-bottom: 6px;
+    }
+
+    .timer-display {
+        text-align: center;
+        font-size: 1.8em;
+        font-weight: bold;
+        background: linear-gradient(135deg, #ffd700 0%, #ffed4e 100%);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+        margin: 8px 0;
+    }
+
+    .timer-display.warning {
+        background: linear-gradient(135deg, #ff4444 0%, #cc0000 100%);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        animation: pulse 0.5s infinite;
+    }
+
+    @keyframes pulse {
+        0%, 100% { opacity: 1; transform: scale(1); }
+        50% { opacity: 0.7; transform: scale(1.1); }
+    }
+
+    .buzzer-indicator {
+        text-align: center;
+        padding: 6px;
+        margin: 6px 0;
+        background: linear-gradient(135deg, rgba(255, 107, 53, 0.3) 0%, rgba(247, 147, 30, 0.3) 100%);
+        border-radius: 8px;
+        border: 2px solid #ff6b35;
+        color: #ffd700;
+        font-weight: bold;
+        font-size: 0.85em;
+    }
+
+    .status-message {
+        text-align: center;
+        padding: 8px;
+        margin: 8px 0;
+        border-radius: 8px;
+        font-size: 0.9em;
+        font-weight: bold;
+        border: 2px solid;
+    }
+
+    .status-message.info {
+        background: linear-gradient(135deg, rgba(52, 152, 219, 0.2) 0%, rgba(41, 128, 185, 0.2) 100%);
+        color: #5dade2;
+        border-color: #3498db;
+    }
+
+    .status-message.success {
+        background: linear-gradient(135deg, rgba(0, 168, 107, 0.2) 0%, rgba(0, 140, 89, 0.2) 100%);
+        color: #52c997;
+        border-color: #00a86b;
+    }
+
+    .status-message.error {
+        background: linear-gradient(135deg, rgba(231, 76, 60, 0.2) 0%, rgba(192, 57, 43, 0.2) 100%);
+        color: #ec7063;
+        border-color: #e74c3c;
+    }
+
+    .status-message.warning {
+        background: linear-gradient(135deg, rgba(243, 156, 18, 0.2) 0%, rgba(230, 126, 34, 0.2) 100%);
+        color: #f5b041;
+        border-color: #f39c12;
+    }
+
+    .buzz-button {
+        width: 100%;
+        height: 90px;
+        font-size: 1.5em;
+        background: linear-gradient(135deg, #ff6b35 0%, #f7931e 50%, #ff6b35 100%);
+        color: white;
+        border: none;
+        border-radius: 12px;
+        font-weight: bold;
+        cursor: pointer;
+        transition: all 0.3s;
+        box-shadow: 0 6px 20px rgba(255, 107, 53, 0.5);
+        border: 3px solid #ffd700;
+        position: relative;
+        overflow: hidden;
+        margin: 10px 0;
+    }
+
+    .buzz-button::before {
+        content: '🔔';
+        position: absolute;
+        font-size: 1.6em;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        opacity: 0.3;
+    }
+
+    .buzz-button:active:not(:disabled) {
+        transform: scale(0.95);
+    }
+
+    .buzz-button:disabled {
+        background: linear-gradient(135deg, #555 0%, #333 100%);
+        cursor: not-allowed;
+        box-shadow: none;
+        border-color: #555;
+    }
+
+    .answer-input-container {
+        margin: 12px 0;
+    }
+
+    .answer-input {
+        width: 100%;
+        padding: 12px;
+        border: 3px solid #ffd700;
+        border-radius: 10px;
+        font-size: 1em;
+        font-weight: bold;
+        text-align: center;
+        background: rgba(255, 255, 255, 0.95);
+        color: #2d1b4e;
+    }
+
+    .answer-input:focus {
+        outline: none;
+        box-shadow: 0 0 15px rgba(255, 215, 0, 0.6);
+    }
+
+    .submit-answer-btn {
+        width: 100%;
+        padding: 12px;
+        background: linear-gradient(135deg, #00a86b 0%, #008c59 100%);
+        color: white;
+        border: none;
+        border-radius: 10px;
+        font-size: 1.1em;
+        font-weight: bold;
+        cursor: pointer;
+        transition: all 0.3s;
+        margin-top: 8px;
+        box-shadow: 0 4px 12px rgba(0, 168, 107, 0.4);
+    }
+
+    .submit-answer-btn:hover:not(:disabled) {
+        transform: translateY(-2px);
+    }
+
+    .answer-options {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 8px;
+        margin-top: 10px;
+    }
+
+    .answer-btn {
+        padding: 12px 8px;
+        background: rgba(255, 255, 255, 0.95);
+        border: 3px solid #d4af37;
+        border-radius: 10px;
+        font-size: 0.9em;
+        font-weight: bold;
+        cursor: pointer;
+        transition: all 0.3s;
+        color: #2d1b4e;
+        min-height: 60px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        text-align: center;
+    }
+
+    .answer-btn:hover:not(:disabled) {
+        background: linear-gradient(135deg, #ffd700 0%, #d4af37 100%);
+        transform: translateY(-2px);
+    }
+
+    .player-choice-buttons {
+        display: grid;
+        grid-template-columns: 1fr;
+        gap: 10px;
+        margin-top: 12px;
+    }
+
+    .choice-btn {
+        padding: 15px;
+        border: none;
+        border-radius: 12px;
+        font-size: 1em;
+        font-weight: bold;
+        cursor: pointer;
+        transition: all 0.3s;
+        border: 3px solid;
+    }
+
+    .choice-btn.sit {
+        background: linear-gradient(135deg, #00a86b 0%, #008c59 100%);
+        color: white;
+        border-color: #00a86b;
+    }
+
+    .choice-btn.steal {
+        background: linear-gradient(135deg, #e74c3c 0%, #c0392b 100%);
+        color: white;
+        border-color: #c0392b;
+    }
+
+    .choice-btn:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 6px 16px rgba(0, 0, 0, 0.3);
+    }
+
+    .victory-screen {
+        text-align: center;
+        padding: 40px;
+    }
+
+    .victory-screen h2 {
+        font-size: 2.5em;
+        background: linear-gradient(135deg, #ffd700 0%, #ffed4e 100%);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        margin-bottom: 25px;
+        animation: glow 1s ease-in-out infinite;
+    }
+
+    .confetti {
+        font-size: 4em;
+        margin-bottom: 15px;
+        animation: bounce 1s ease-in-out infinite;
+    }
+
+    @media (max-width: 768px) {
+        .container { padding: 18px; }
+        h1 { font-size: 1.7em; }
+        .code { font-size: 2em; letter-spacing: 5px; }
+        .question-text { font-size: 0.95em; }
+        .timer-display { font-size: 1.6em; }
+        .buzz-button { height: 80px; font-size: 1.3em; }
+        .answer-btn { font-size: 0.8em; min-height: 50px; }
+    }
+</style>
+```
+
 </head>
 <body>
     <div class="container" id="mainContainer">
         <!-- Welcome Screen -->
         <div class="screen active" id="welcomeScreen">
             <h1>🛋️ لعبة الكنبة 🌙</h1>
-            <div style="text-align: center; color: #ffd700; margin-bottom: 30px; font-size: 1.1em;">
+            <div style="text-align: center; color: #ffd700; margin-bottom: 25px; font-size: 1em;">
                 ✨ رمضان كريم ✨
             </div>
             <div class="input-group">
@@ -783,1147 +637,896 @@
             </div>
         </div>
 
-        <!-- Create Room Screen -->
-        <div class="screen" id="createRoomScreen">
-            <h1>إنشاء غرفة جديدة 🌙</h1>
-            <div class="input-group">
-                <label>اسمك:</label>
-                <input type="text" id="hostName" placeholder="أدخل اسمك">
-            </div>
-            <div class="input-group">
-                <label>اسم الفريق الأول:</label>
-                <input type="text" id="team1NameInput" placeholder="مثال: الأبطال" value="الفريق الأحمر">
-            </div>
-            <div class="input-group">
-                <label>اسم الفريق الثاني:</label>
-                <input type="text" id="team2NameInput" placeholder="مثال: النجوم" value="الفريق الأزرق">
-            </div>
-            <div class="input-group">
-                <label>عدد اللاعبين في كل فريق:</label>
-                <select id="teamSizeInput">
-                    <option value="2">2 لاعبين</option>
-                    <option value="3">3 لاعبين</option>
-                    <option value="4">4 لاعبين</option>
-                    <option value="5">5 لاعبين</option>
-                </select>
-            </div>
-            <button class="btn" onclick="createRoom()">إنشاء الغرفة</button>
-            <button class="btn secondary" onclick="showWelcome()">رجوع</button>
+```
+    <!-- Create Room Screen -->
+    <div class="screen" id="createRoomScreen">
+        <h1>إنشاء غرفة جديدة 🌙</h1>
+        <div class="input-group">
+            <label>اسمك:</label>
+            <input type="text" id="hostName" placeholder="أدخل اسمك">
         </div>
-
-        <!-- Join Room Screen -->
-        <div class="screen" id="joinRoomScreen">
-            <h1>الانضمام لغرفة 🌙</h1>
-            <div class="input-group">
-                <label>اسمك:</label>
-                <input type="text" id="playerName" placeholder="أدخل اسمك">
-            </div>
-            <div class="input-group">
-                <label>كود الغرفة:</label>
-                <input type="text" id="roomCode" placeholder="0000" maxlength="4" pattern="[0-9]*">
-            </div>
-            <button class="btn" onclick="joinRoom()">انضم</button>
-            <button class="btn secondary" onclick="showWelcome()">العودة للقائمة الرئيسية</button>
+        <div class="input-group">
+            <label>اسم الفريق الأول:</label>
+            <input type="text" id="team1NameInput" placeholder="مثال: الأبطال" value="الفريق الأحمر">
         </div>
-
-        <!-- Lobby Screen (for Host) -->
-        <div class="screen" id="lobbyScreen">
-            <h1>غرفة الانتظار 🌙</h1>
-            <div class="room-code">
-                <h2>كود الغرفة:</h2>
-                <div class="code" id="displayRoomCode">0000</div>
-                <p style="margin-top: 10px; color: #ffd700;">شارك هذا الكود مع اللاعبين</p>
-            </div>
-
-            <div class="status-message info" style="margin-bottom: 20px;">
-                <p><strong>اختر فريقك للعب:</strong></p>
-            </div>
-
-            <div id="hostTeamButtons" style="margin-bottom: 20px;"></div>
-
-            <div class="players-list">
-                <h3>اللاعبين (<span id="playerCount">0</span>)</h3>
-                <div id="playersListContainer"></div>
-            </div>
-
-            <button class="btn success" onclick="startGame()" id="startGameBtn" disabled>ابدأ اللعبة ▶️</button>
+        <div class="input-group">
+            <label>اسم الفريق الثاني:</label>
+            <input type="text" id="team2NameInput" placeholder="مثال: النجوم" value="الفريق الأزرق">
         </div>
-
-        <!-- Team Selection Screen (for Players) -->
-        <div class="screen" id="teamSelectionScreen">
-            <h1>اختر فريقك 🌙</h1>
-            <div class="status-message info">
-                <p>مرحباً <strong><span id="welcomePlayerName"></span></strong></p>
-                <p>اختر الفريق الذي تريد الانضمام إليه</p>
-            </div>
-            <div id="teamButtons"></div>
+        <div class="input-group">
+            <label>عدد اللاعبين في كل فريق:</label>
+            <select id="teamSizeInput">
+                <option value="2">2 لاعبين</option>
+                <option value="3">3 لاعبين</option>
+                <option value="4">4 لاعبين</option>
+                <option value="5">5 لاعبين</option>
+            </select>
         </div>
+        <button class="btn" onclick="createRoom()">إنشاء الغرفة</button>
+        <button class="btn secondary" onclick="showWelcome()">رجوع</button>
+    </div>
 
-        <!-- Waiting Screen (for Players) -->
-        <div class="screen" id="waitingScreen">
-            <h1>في انتظار البدء... 🌙</h1>
-            <div class="status-message info">
-                <p>أنت في <strong><span id="playerTeamName"></span></strong></p>
-                <p>انتظر حتى يبدأ المضيف اللعبة</p>
-            </div>
-            <div class="players-list">
-                <h3>اللاعبين في الغرفة:</h3>
-                <div id="waitingPlayersListContainer"></div>
-            </div>
+    <!-- Join Room Screen -->
+    <div class="screen" id="joinRoomScreen">
+        <h1>الانضمام لغرفة 🌙</h1>
+        <div class="input-group">
+            <label>اسمك:</label>
+            <input type="text" id="playerName" placeholder="أدخل اسمك">
         </div>
+        <div class="input-group">
+            <label>كود الغرفة:</label>
+            <input type="text" id="roomCode" placeholder="0000" maxlength="4" pattern="[0-9]*">
+        </div>
+        <button class="btn" onclick="joinRoom()">انضم</button>
+        <button class="btn secondary" onclick="showWelcome()">العودة للقائمة الرئيسية</button>
+    </div>
 
-        <!-- Player Game Screen -->
-        <div class="screen" id="playerGameScreen">
-            <h1>🛋️ لعبة الكنبة 🌙</h1>
-            
-            <!-- Team Players Display -->
-            <div class="teams-players-display" id="teamsPlayersDisplay">
-                <div class="team-players-section">
-                    <h3 id="playerTeam1Name" class="team-header">الفريق الأول</h3>
-                    <div id="team1PlayersList" class="players-list-game"></div>
-                </div>
-                <div class="team-players-section">
-                    <h3 id="playerTeam2Name" class="team-header">الفريق الثاني</h3>
-                    <div id="team2PlayersList" class="players-list-game"></div>
-                </div>
-            </div>
+    <!-- Lobby Screen -->
+    <div class="screen" id="lobbyScreen">
+        <h1>غرفة الانتظار 🌙</h1>
+        <div class="room-code">
+            <h2>كود الغرفة:</h2>
+            <div class="code" id="displayRoomCode">0000</div>
+            <p style="margin-top: 8px; color: #ffd700; font-size: 0.9em;">شارك هذا الكود مع اللاعبين</p>
+        </div>
+        <div class="status-message info" style="margin-bottom: 15px;">
+            <p><strong>اختر فريقك للعب:</strong></p>
+        </div>
+        <div id="hostTeamButtons" style="margin-bottom: 15px;"></div>
+        <div class="players-list">
+            <h3>اللاعبين (<span id="playerCount">0</span>)</h3>
+            <div id="playersListContainer"></div>
+        </div>
+        <button class="btn success" onclick="startGame()" id="startGameBtn" disabled>ابدأ اللعبة ▶️</button>
+    </div>
 
-            <!-- Couch Display -->
-            <div class="couch-display-player">
-                <h3>🛋️ كنبة الفوز 🛋️</h3>
-                <div class="couch-seats-player">
-                    <div class="couch-team-player">
-                        <h4 id="playerCouchTeam1">الفريق الأول</h4>
-                        <div id="playerTeam1Couch"></div>
-                    </div>
-                    <div class="couch-team-player">
-                        <h4 id="playerCouchTeam2">الفريق الثاني</h4>
-                        <div id="playerTeam2Couch"></div>
-                    </div>
-                </div>
-            </div>
+    <!-- Team Selection Screen -->
+    <div class="screen" id="teamSelectionScreen">
+        <h1>اختر فريقك 🌙</h1>
+        <div class="status-message info">
+            <p>مرحباً <strong><span id="welcomePlayerName"></span></strong></p>
+            <p>اختر الفريق الذي تريد الانضمام إليه</p>
+        </div>
+        <div id="teamButtons"></div>
+    </div>
 
-            <!-- On Couch Message -->
-            <div class="on-couch-message" id="onCouchMessage" style="display: none;">
-                <div class="trophy-icon">🏆</div>
-                <h2>أنت على الكنبة!</h2>
-                <p>استرخِ وانتظر الفوز 🌟</p>
-            </div>
-
-            <!-- Game Elements (hidden when on couch) -->
-            <div id="gameElements">
-                <div class="question-display" id="playerQuestionDisplay" style="display: none;">
-                    <div class="question-text" id="playerQuestionText"></div>
-                </div>
-
-                <div class="timer-display" id="playerTimer" style="display: none;">--</div>
-
-                <div id="buzzerIndicator"></div>
-
-                <div class="status-message info" id="playerStatus">
-                    انتظر السؤال...
-                </div>
-
-                <div class="player-controls">
-                    <button class="buzz-button" id="buzzButton" onclick="buzzIn()" disabled>
-                        اضغط الجرس! 🔔
-                    </button>
-                </div>
-
-                <div class="answer-options" id="playerAnswerOptions"></div>
-
-                <div class="player-choice-buttons" id="playerChoiceButtons"></div>
-            </div>
-
-            <!-- Next Question Button (Only for Host) -->
-            <div id="hostControlsPlayer" style="display: none; margin-top: 15px;">
-                <button class="btn" onclick="nextQuestion()" id="nextQuestionBtnPlayer">السؤال التالي ▶️</button>
-            </div>
-
-            <!-- Victory Screen for Players -->
-            <div class="victory-screen" id="victoryScreenPlayer" style="display: none;">
-                <div class="confetti">🎉🌙🎊✨🏆</div>
-                <h2 id="victoryMessagePlayer">فاز الفريق!</h2>
-                <div class="confetti">🏆✨🎊🌙🎉</div>
-                <button class="btn" onclick="location.reload()">لعب مرة أخرى</button>
-            </div>
+    <!-- Waiting Screen -->
+    <div class="screen" id="waitingScreen">
+        <h1>في انتظار البدء... 🌙</h1>
+        <div class="status-message info">
+            <p>أنت في <strong><span id="playerTeamName"></span></strong></p>
+            <p>انتظر حتى يبدأ المضيف اللعبة</p>
+        </div>
+        <div class="players-list">
+            <h3>اللاعبين في الغرفة:</h3>
+            <div id="waitingPlayersListContainer"></div>
         </div>
     </div>
 
-    <!-- Host Game Screen -->
-    <div class="container host-container" id="hostGameContainer" style="display: none;">
+    <!-- Player Game Screen -->
+    <div class="screen" id="playerGameScreen">
         <h1>🛋️ لعبة الكنبة 🌙</h1>
         
-        <div class="score-display">
-            <div class="team-score">
-                <h3 id="displayTeam1Name">الفريق الأول</h3>
-                <div class="score" id="team1Score">0</div>
+        <div class="teams-players-display" id="teamsPlayersDisplay">
+            <div class="team-players-section">
+                <h3 id="playerTeam1Name" class="team-header">الفريق الأول</h3>
+                <div id="team1PlayersList" class="players-list-game"></div>
             </div>
-
-            <div class="team-score">
-                <h3 id="displayTeam2Name">الفريق الثاني</h3>
-                <div class="score" id="team2Score">0</div>
+            <div class="team-players-section">
+                <h3 id="playerTeam2Name" class="team-header">الفريق الثاني</h3>
+                <div id="team2PlayersList" class="players-list-game"></div>
             </div>
         </div>
 
-        <!-- Center Couch Display -->
-        <div class="center-couch">
+        <div class="couch-display-player">
             <h3>🛋️ كنبة الفوز 🛋️</h3>
-            <div class="couch-seats-display">
-                <div class="couch-team-section">
-                    <h4 id="couchTeam1Name">الفريق الأول</h4>
-                    <div id="team1CouchDisplay"></div>
+            <div class="couch-seats-player">
+                <div class="couch-team-player">
+                    <h4 id="playerCouchTeam1">الفريق الأول</h4>
+                    <div id="playerTeam1Couch"></div>
                 </div>
-                <div class="couch-team-section">
-                    <h4 id="couchTeam2Name">الفريق الثاني</h4>
-                    <div id="team2CouchDisplay"></div>
+                <div class="couch-team-player">
+                    <h4 id="playerCouchTeam2">الفريق الثاني</h4>
+                    <div id="playerTeam2Couch"></div>
                 </div>
             </div>
         </div>
 
-        <div class="question-display" id="questionDisplay">
-            <div class="question-text">اضغط "السؤال التالي" لبدء اللعبة</div>
+        <div class="on-couch-message" id="onCouchMessage" style="display: none;">
+            <div class="trophy-icon">🏆</div>
+            <h2>أنت على الكنبة!</h2>
+            <p>استرخِ وانتظر الفوز 🌟</p>
         </div>
 
-        <div class="timer-display" id="timerDisplay">--</div>
+        <div id="gameElements">
+            <div class="question-display" id="playerQuestionDisplay" style="display: none;">
+                <div class="question-text" id="playerQuestionText"></div>
+            </div>
 
-        <div id="hostBuzzerIndicator"></div>
+            <div class="timer-display" id="playerTimer" style="display: none;">--</div>
 
-        <div class="options-display" id="optionsDisplay"></div>
+            <div id="buzzerIndicator"></div>
 
-        <div class="status-message info" id="hostStatus">
-            جاهز للبدء! 🌙
+            <div class="status-message info" id="playerStatus">انتظر السؤال...</div>
+
+            <div class="player-controls">
+                <button class="buzz-button" id="buzzButton" onclick="buzzIn()" disabled>
+                    اضغط الجرس! 🔔
+                </button>
+            </div>
+
+            <div class="answer-input-container" id="answerInputContainer" style="display: none;">
+                <input type="text" class="answer-input" id="textAnswerInput" placeholder="اكتب إجابتك هنا..." autocomplete="off">
+                <button class="submit-answer-btn" id="submitAnswerBtn" onclick="submitTextAnswer()">إرسال الإجابة ✓</button>
+            </div>
+
+            <div class="answer-options" id="playerAnswerOptions"></div>
+
+            <div class="player-choice-buttons" id="playerChoiceButtons"></div>
         </div>
 
-        <button class="btn" onclick="nextQuestion()" id="nextQuestionBtn">السؤال التالي ▶️</button>
+        <div id="hostControlsPlayer" style="display: none; margin-top: 10px;">
+            <button class="btn" onclick="nextQuestion()" id="nextQuestionBtnPlayer">السؤال التالي ▶️</button>
+        </div>
 
-        <!-- Victory Screen -->
-        <div class="victory-screen" id="victoryScreen" style="display: none;">
+        <div class="victory-screen" id="victoryScreenPlayer" style="display: none;">
             <div class="confetti">🎉🌙🎊✨🏆</div>
-            <h2 id="victoryMessage">فاز الفريق!</h2>
+            <h2 id="victoryMessagePlayer">فاز الفريق!</h2>
             <div class="confetti">🏆✨🎊🌙🎉</div>
             <button class="btn" onclick="location.reload()">لعب مرة أخرى</button>
         </div>
     </div>
+</div>
 
-    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-database-compat.js"></script>
-    <script>
-        const firebaseConfig = {
-            apiKey: "AIzaSyBUXlgxP463b18dg9_Og_8EcMDLfLIr76o",
-            authDomain: "team-cc63c.firebaseapp.com",
-            databaseURL: "https://team-cc63c-default-rtdb.europe-west1.firebasedatabase.app/",
-            projectId: "team-cc63c",
-            storageBucket: "team-cc63c.firebasestorage.app",
-            messagingSenderId: "511582595742",
-            appId: "1:511582595742:web:3e21273dcf49bf26d7298f",
-            measurementId: "G-PSDJ9N34PH"
-        };
+<script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-database-compat.js"></script>
+<script>
+    const firebaseConfig = {
+        apiKey: "AIzaSyBUXlgxP463b18dg9_Og_8EcMDLfLIr76o",
+        authDomain: "team-cc63c.firebaseapp.com",
+        databaseURL: "https://team-cc63c-default-rtdb.europe-west1.firebasedatabase.app/",
+        projectId: "team-cc63c",
+        storageBucket: "team-cc63c.firebasestorage.app",
+        messagingSenderId: "511582595742",
+        appId: "1:511582595742:web:3e21273dcf49bf26d7298f",
+        measurementId: "G-PSDJ9N34PH"
+    };
 
-        firebase.initializeApp(firebaseConfig);
-        const database = firebase.database();
+    firebase.initializeApp(firebaseConfig);
+    const database = firebase.database();
 
-        // Questions Database
-        const questions = [
-            {category: "دينية", question: "كم عدد سور القرآن الكريم؟", options: ["114 سورة", "110 سورة", "120 سورة", "100 سورة"], correct: 0},
-            {category: "دينية", question: "ما هي أطول سورة في القرآن الكريم؟", options: ["سورة البقرة", "سورة آل عمران", "سورة النساء", "سورة الأعراف"], correct: 0},
-            {category: "دينية", question: "كم عدد أركان الإسلام؟", options: ["5 أركان", "4 أركان", "6 أركان", "7 أركان"], correct: 0},
-            {category: "دينية", question: "من هو خاتم الأنبياء؟", options: ["محمد ﷺ", "عيسى عليه السلام", "موسى عليه السلام", "إبراهيم عليه السلام"], correct: 0},
-            {category: "دينية", question: "في أي شهر فرض الصيام؟", options: ["رمضان", "شعبان", "رجب", "ذو القعدة"], correct: 0},
-            {category: "دينية", question: "كم عدد الصلوات المفروضة في اليوم؟", options: ["5 صلوات", "3 صلوات", "7 صلوات", "4 صلوات"], correct: 0},
-            {category: "دينية", question: "ما هي أول سورة نزلت في القرآن؟", options: ["سورة العلق", "سورة الفاتحة", "سورة البقرة", "سورة المدثر"], correct: 0},
-            {category: "دينية", question: "كم عدد أركان الإيمان؟", options: ["6 أركان", "5 أركان", "7 أركان", "4 أركان"], correct: 0},
-            {category: "دينية", question: "في أي عام هاجر الرسول ﷺ إلى المدينة؟", options: ["622 ميلادي", "610 ميلادي", "630 ميلادي", "615 ميلادي"], correct: 0},
-            {category: "دينية", question: "كم عدد آيات سورة الفاتحة؟", options: ["7 آيات", "5 آيات", "9 آيات", "6 آيات"], correct: 0},
-            
-            {category: "ثقافية", question: "من هو مؤلف رواية 'مئة عام من العزلة'؟", options: ["غابرييل غارسيا ماركيز", "بابلو نيرودا", "خورخي لويس بورخيس", "إيزابيل الليندي"], correct: 0},
-            {category: "ثقافية", question: "من هو الشاعر الملقب بأمير الشعراء؟", options: ["أحمد شوقي", "حافظ إبراهيم", "محمود درويش", "نزار قباني"], correct: 0},
-            {category: "ثقافية", question: "من هو مخترع المصباح الكهربائي؟", options: ["توماس إديسون", "نيكولا تسلا", "ألكسندر بيل", "بنجامين فرانكلين"], correct: 0},
-            {category: "ثقافية", question: "في أي عام سقطت الدولة العثمانية؟", options: ["1924", "1918", "1920", "1930"], correct: 0},
-            {category: "ثقافية", question: "من هو مؤسس علم الاجتماع الحديث؟", options: ["ابن خلدون", "أرسطو", "أفلاطون", "سقراط"], correct: 0},
-            
-            {category: "جغرافية", question: "ما هي عاصمة اليابان؟", options: ["طوكيو", "كيوتو", "أوساكا", "يوكوهاما"], correct: 0},
-            {category: "جغرافية", question: "ما هي أكبر قارة في العالم؟", options: ["آسيا", "أفريقيا", "أمريكا الشمالية", "أوروبا"], correct: 0},
-            {category: "جغرافية", question: "ما هو أطول نهر في العالم؟", options: ["نهر النيل", "نهر الأمازون", "نهر اليانغتسي", "نهر المسيسيبي"], correct: 0},
-            {category: "جغرافية", question: "كم عدد دول العالم تقريباً؟", options: ["195 دولة", "180 دولة", "210 دولة", "150 دولة"], correct: 0},
-            {category: "جغرافية", question: "ما هي أصغر دولة في العالم؟", options: ["الفاتيكان", "موناكو", "سان مارينو", "ليختنشتاين"], correct: 0},
-            {category: "جغرافية", question: "في أي قارة تقع صحراء الصحراء الكبرى؟", options: ["أفريقيا", "آسيا", "أمريكا الجنوبية", "أستراليا"], correct: 0},
-            
-            {category: "رياضية", question: "كم عدد لاعبي كرة القدم في الفريق الواحد؟", options: ["11 لاعباً", "10 لاعبين", "12 لاعباً", "9 لاعبين"], correct: 0},
-            {category: "رياضية", question: "من هو الملقب بـ'الدون'؟", options: ["دييغو مارادونا", "بيليه", "كريستيانو رونالدو", "ليونيل ميسي"], correct: 0},
-            {category: "رياضية", question: "كم عدد حلقات شعار الأولمبياد؟", options: ["5 حلقات", "4 حلقات", "6 حلقات", "7 حلقات"], correct: 0},
-            {category: "رياضية", question: "في أي بلد نشأت رياضة الكاراتيه؟", options: ["اليابان", "الصين", "كوريا", "تايلاند"], correct: 0},
-            {category: "رياضية", question: "كم يستغرق شوط كرة القدم؟", options: ["45 دقيقة", "40 دقيقة", "50 دقيقة", "60 دقيقة"], correct: 0},
-            
-            {category: "أفلام", question: "من هو بطل فيلم 'تايتانيك'؟", options: ["ليوناردو دي كابريو", "براد بيت", "توم كروز", "جوني ديب"], correct: 0},
-            {category: "أفلام", question: "ما هو أعلى فيلم إيراداً في التاريخ؟", options: ["أفاتار", "أفنجرز إند غيم", "تايتانيك", "حرب النجوم"], correct: 0},
-            {category: "أفلام", question: "من أخرج فيلم 'العراب'؟", options: ["فرانسيس فورد كوبولا", "مارتن سكورسيزي", "ستيفن سبيلبرغ", "كوينتن تارانتينو"], correct: 0},
-            
-            {category: "علمية", question: "كم عدد كواكب المجموعة الشمسية؟", options: ["8 كواكب", "9 كواكب", "7 كواكب", "10 كواكب"], correct: 0},
-            {category: "علمية", question: "ما هو الرمز الكيميائي للذهب؟", options: ["Au", "Ag", "Fe", "Cu"], correct: 0},
-            {category: "علمية", question: "ما هي سرعة الضوء؟", options: ["300,000 كم/ث", "200,000 كم/ث", "400,000 كم/ث", "250,000 كم/ث"], correct: 0},
-            {category: "علمية", question: "من هو مكتشف نظرية النسبية؟", options: ["ألبرت أينشتاين", "إسحاق نيوتن", "غاليليو غاليلي", "ستيفن هوكينغ"], correct: 0},
-            
-            {category: "عامة", question: "كم عدد ألوان قوس قزح؟", options: ["7 ألوان", "6 ألوان", "8 ألوان", "5 ألوان"], correct: 0},
-            {category: "عامة", question: "كم عدد أيام السنة الميلادية؟", options: ["365 يوم", "360 يوم", "366 يوم", "364 يوم"], correct: 0},
-            {category: "عامة", question: "ما هو أكبر حيوان في العالم؟", options: ["الحوت الأزرق", "الفيل الأفريقي", "الزرافة", "الدب القطبي"], correct: 0},
-            {category: "عامة", question: "كم عدد قلوب الأخطبوط؟", options: ["3 قلوب", "2 قلبان", "4 قلوب", "1 قلب"], correct: 0},
-            {category: "عامة", question: "ما هي أكبر دولة في العالم من حيث المساحة؟", options: ["روسيا", "كندا", "الصين", "الولايات المتحدة"], correct: 0},
-            {category: "عامة", question: "كم عدد أسنان الإنسان البالغ؟", options: ["32 سن", "28 سن", "30 سن", "34 سن"], correct: 0},
-            {category: "عامة", question: "ما هي عملة اليابان؟", options: ["الين", "اليوان", "الوون", "الروبية"], correct: 0}
-        ];
+    const questions = [
+        {category: "دينية", question: "كم عدد سور القرآن الكريم؟", options: ["114 سورة", "110 سورة", "120 سورة", "100 سورة"], correct: 0},
+        {category: "دينية", question: "ما هي أطول سورة في القرآن الكريم؟", options: ["سورة البقرة", "سورة آل عمران", "سورة النساء", "سورة الأعراف"], correct: 0},
+        {category: "دينية", question: "كم عدد أركان الإسلام؟", options: ["5 أركان", "4 أركان", "6 أركان", "7 أركان"], correct: 0},
+        {category: "دينية", question: "من هو خاتم الأنبياء؟", options: ["محمد ﷺ", "عيسى عليه السلام", "موسى عليه السلام", "إبراهيم عليه السلام"], correct: 0},
+        {category: "دينية", question: "في أي شهر فرض الصيام؟", options: ["رمضان", "شعبان", "رجب", "ذو القعدة"], correct: 0},
+        {category: "ثقافية", question: "من هو مؤلف رواية 'مئة عام من العزلة'؟", options: ["غابرييل غارسيا ماركيز", "بابلو نيرودا", "خورخي لويس بورخيس", "إيزابيل الليندي"], correct: 0},
+        {category: "جغرافية", question: "ما هي عاصمة اليابان؟", options: ["طوكيو", "كيوتو", "أوساكا", "يوكوهاما"], correct: 0},
+        {category: "رياضية", question: "كم عدد لاعبي كرة القدم في الفريق الواحد؟", options: ["11 لاعباً", "10 لاعبين", "12 لاعباً", "9 لاعبين"], correct: 0},
+        {category: "علمية", question: "كم عدد كواكب المجموعة الشمسية؟", options: ["8 كواكب", "9 كواكب", "7 كواكب", "10 كواكب"], correct: 0},
+        {category: "عامة", question: "كم عدد ألوان قوس قزح؟", options: ["7 ألوان", "6 ألوان", "8 ألوان", "5 ألوان"], correct: 0}
+    ];
 
-        let currentRoomCode = null;
-        let currentPlayerId = null;
-        let currentPlayerName = null;
-        let isHost = false;
-        let currentTeam = null;
-        let timerInterval = null;
-        let roomData = null;
+    let currentRoomCode = null;
+    let currentPlayerId = null;
+    let currentPlayerName = null;
+    let isHost = false;
+    let currentTeam = null;
+    let timerInterval = null;
+    let roomData = null;
+    let answerTimerInterval = null;
 
-        // Check if user was in a game before page refresh
-        window.addEventListener('load', function() {
-            const isPageRefresh = performance.navigation && performance.navigation.type === 1;
-            
-            if (isPageRefresh) {
-                const savedGameState = localStorage.getItem('couchGameState');
-                if (savedGameState) {
-                    try {
-                        const gameState = JSON.parse(savedGameState);
-                        currentRoomCode = gameState.roomCode;
-                        currentPlayerId = gameState.playerId;
-                        currentPlayerName = gameState.playerName;
-                        isHost = gameState.isHost;
-                        currentTeam = gameState.team;
-                        
-                        listenToRoom();
-                    } catch (e) {
-                        console.error('Error restoring game state:', e);
-                        localStorage.removeItem('couchGameState');
-                    }
-                }
-            } else {
-                localStorage.removeItem('couchGameState');
-            }
+    function showWelcome() {
+        if (currentRoomCode && currentPlayerId) {
+            database.ref('rooms/' + currentRoomCode + '/players/' + currentPlayerId).remove();
+        }
+        currentRoomCode = null;
+        currentPlayerId = null;
+        currentPlayerName = null;
+        isHost = false;
+        currentTeam = null;
+        roomData = null;
+        hideAllScreens();
+        document.getElementById('welcomeScreen').classList.add('active');
+    }
+
+    function goToMainPage() {
+        if (currentRoomCode && currentPlayerId) {
+            database.ref('rooms/' + currentRoomCode + '/players/' + currentPlayerId).remove();
+        }
+        window.location.href = 'index.html';
+    }
+
+    function showCreateRoom() {
+        hideAllScreens();
+        document.getElementById('createRoomScreen').classList.add('active');
+    }
+
+    function showJoinRoom() {
+        hideAllScreens();
+        document.getElementById('joinRoomScreen').classList.add('active');
+    }
+
+    function hideAllScreens() {
+        document.querySelectorAll('.screen').forEach(screen => screen.classList.remove('active'));
+    }
+
+    function generateRoomCode() {
+        return Math.floor(1000 + Math.random() * 9000).toString();
+    }
+
+    function createRoom() {
+        const hostName = document.getElementById('hostName').value.trim();
+        const team1Name = document.getElementById('team1NameInput').value.trim() || 'الفريق الأحمر';
+        const team2Name = document.getElementById('team2NameInput').value.trim() || 'الفريق الأزرق';
+        const teamSize = parseInt(document.getElementById('teamSizeInput').value);
+
+        if (!hostName) {
+            alert('الرجاء إدخال اسمك');
+            return;
+        }
+
+        currentRoomCode = generateRoomCode();
+        currentPlayerId = 'host-' + Date.now();
+        currentPlayerName = hostName;
+        isHost = true;
+
+        database.ref('rooms/' + currentRoomCode).set({
+            code: currentRoomCode,
+            host: currentPlayerId,
+            team1Name: team1Name,
+            team2Name: team2Name,
+            teamSize: teamSize,
+            players: {
+                [currentPlayerId]: { name: hostName, isHost: true, team: null }
+            },
+            gameState: 'lobby',
+            currentQuestion: null,
+            usedQuestions: [],
+            team1Couch: [],
+            team2Couch: [],
+            team1Score: 0,
+            team2Score: 0,
+            buzzedPlayer: null,
+            showOptions: false,
+            bannedTeam: null,
+            correctAnswer: null,
+            waitingForChoice: false,
+            choicePlayer: null,
+            waitingForTextAnswer: false
         });
 
-        function saveGameState() {
-            if (currentRoomCode && currentPlayerId) {
-                const gameState = {
-                    roomCode: currentRoomCode,
-                    playerId: currentPlayerId,
-                    playerName: currentPlayerName,
-                    isHost: isHost,
-                    team: currentTeam
-                };
-                localStorage.setItem('couchGameState', JSON.stringify(gameState));
-            }
+        listenToRoom();
+        showLobby();
+    }
+
+    function joinRoom() {
+        const playerName = document.getElementById('playerName').value.trim();
+        const roomCode = document.getElementById('roomCode').value.trim();
+
+        if (!playerName) {
+            alert('الرجاء إدخال اسمك');
+            return;
         }
 
-        function clearGameState() {
-            localStorage.removeItem('couchGameState');
+        if (!roomCode || roomCode.length !== 4) {
+            alert('الرجاء إدخال كود الغرفة (4 أرقام)');
+            return;
         }
 
-        function showWelcome() {
-            clearGameState();
-            
-            if (currentRoomCode && currentPlayerId) {
-                const playerRef = database.ref('rooms/' + currentRoomCode + '/players/' + currentPlayerId);
-                playerRef.remove();
+        database.ref('rooms/' + roomCode).once('value', (snapshot) => {
+            if (!snapshot.exists()) {
+                alert('الغرفة غير موجودة');
+                return;
             }
-            
-            currentRoomCode = null;
-            currentPlayerId = null;
-            currentPlayerName = null;
+
+            currentRoomCode = roomCode;
+            currentPlayerId = 'player-' + Date.now();
+            currentPlayerName = playerName;
             isHost = false;
-            currentTeam = null;
-            roomData = null;
-            
-            hideAllScreens();
-            document.getElementById('welcomeScreen').classList.add('active');
-        }
 
-        function goToMainPage() {
-            clearGameState();
-            
-            if (currentRoomCode && currentPlayerId) {
-                const playerRef = database.ref('rooms/' + currentRoomCode + '/players/' + currentPlayerId);
-                playerRef.remove();
-            }
-            
-            window.location.href = 'index.html';
-        }
-
-        function showCreateRoom() {
-            hideAllScreens();
-            document.getElementById('createRoomScreen').classList.add('active');
-        }
-
-        function showJoinRoom() {
-            hideAllScreens();
-            document.getElementById('joinRoomScreen').classList.add('active');
-        }
-
-        function hideAllScreens() {
-            document.querySelectorAll('.screen').forEach(screen => {
-                screen.classList.remove('active');
-            });
-        }
-
-        function generateRoomCode() {
-            return Math.floor(1000 + Math.random() * 9000).toString();
-        }
-
-        function createRoom() {
-            const hostName = document.getElementById('hostName').value.trim();
-            const team1Name = document.getElementById('team1NameInput').value.trim() || 'الفريق الأحمر';
-            const team2Name = document.getElementById('team2NameInput').value.trim() || 'الفريق الأزرق';
-            const teamSize = parseInt(document.getElementById('teamSizeInput').value);
-
-            if (!hostName) {
-                alert('الرجاء إدخال اسمك');
-                return;
-            }
-
-            currentRoomCode = generateRoomCode();
-            currentPlayerId = 'host-' + Date.now();
-            currentPlayerName = hostName;
-            isHost = true;
-
-            const roomRef = database.ref('rooms/' + currentRoomCode);
-            roomRef.set({
-                code: currentRoomCode,
-                host: currentPlayerId,
-                team1Name: team1Name,
-                team2Name: team2Name,
-                teamSize: teamSize,
-                players: {
-                    [currentPlayerId]: {
-                        name: hostName,
-                        isHost: true,
-                        team: null
-                    }
-                },
-                gameState: 'lobby',
-                currentQuestion: null,
-                usedQuestions: [],
-                team1Couch: [],
-                team2Couch: [],
-                team1Score: 0,
-                team2Score: 0,
-                buzzedPlayer: null,
-                showOptions: false,
-                waitingForAnswer: false,
-                bannedTeam: null,
-                correctAnswer: null,
-                waitingForChoice: false,
-                choicePlayer: null
+            database.ref('rooms/' + currentRoomCode + '/players/' + currentPlayerId).set({
+                name: playerName,
+                isHost: false,
+                team: null
             });
 
-            saveGameState();
             listenToRoom();
-            showLobby();
-        }
+            showTeamSelection();
+        });
+    }
 
-        function joinRoom() {
-            const playerName = document.getElementById('playerName').value.trim();
-            const roomCode = document.getElementById('roomCode').value.trim();
-
-            if (!playerName) {
-                alert('الرجاء إدخال اسمك');
-                return;
+    function listenToRoom() {
+        database.ref('rooms/' + currentRoomCode).on('value', (snapshot) => {
+            if (snapshot.exists()) {
+                roomData = snapshot.val();
+                updateUI();
             }
+        });
+    }
 
-            if (!roomCode || roomCode.length !== 4) {
-                alert('الرجاء إدخال كود الغرفة (4 أرقام)');
-                return;
+    function updateUI() {
+        if (!roomData) return;
+
+        if (isHost) {
+            if (roomData.gameState === 'lobby') {
+                updateLobby();
+            } else if (roomData.gameState === 'playing') {
+                updatePlayerGameScreen();
             }
-
-            const roomRef = database.ref('rooms/' + roomCode);
-            roomRef.once('value', (snapshot) => {
-                if (!snapshot.exists()) {
-                    alert('الغرفة غير موجودة');
-                    return;
-                }
-
-                currentRoomCode = roomCode;
-                currentPlayerId = 'player-' + Date.now();
-                currentPlayerName = playerName;
-                isHost = false;
-
-                const playerRef = database.ref('rooms/' + currentRoomCode + '/players/' + currentPlayerId);
-                playerRef.set({
-                    name: playerName,
-                    isHost: false,
-                    team: null
-                });
-
-                saveGameState();
-                listenToRoom();
+        } else {
+            if (roomData.gameState === 'lobby' && !currentTeam) {
+                updateTeamSelection();
                 showTeamSelection();
-            });
-        }
-
-        function listenToRoom() {
-            const roomRef = database.ref('rooms/' + currentRoomCode);
-            roomRef.on('value', (snapshot) => {
-                if (snapshot.exists()) {
-                    roomData = snapshot.val();
-                    updateUI();
-                }
-            });
-        }
-
-        function updateUI() {
-            if (!roomData) return;
-
-            if (isHost) {
-                if (roomData.gameState === 'lobby') {
-                    updateLobby();
-                } else if (roomData.gameState === 'playing') {
-                    updatePlayerGameScreen();
-                }
-            } else {
-                if (roomData.gameState === 'lobby' && !currentTeam) {
-                    updateTeamSelection();
-                    showTeamSelection();
-                } else if (roomData.gameState === 'lobby' && currentTeam) {
-                    updateWaitingScreen();
-                } else if (roomData.gameState === 'playing') {
-                    updatePlayerGameScreen();
-                }
+            } else if (roomData.gameState === 'lobby' && currentTeam) {
+                updateWaitingScreen();
+            } else if (roomData.gameState === 'playing') {
+                updatePlayerGameScreen();
             }
         }
+    }
 
-        function showLobby() {
-            hideAllScreens();
-            document.getElementById('lobbyScreen').classList.add('active');
-            document.getElementById('displayRoomCode').textContent = currentRoomCode;
+    function showLobby() {
+        hideAllScreens();
+        document.getElementById('lobbyScreen').classList.add('active');
+        document.getElementById('displayRoomCode').textContent = currentRoomCode;
+        
+        const hostTeamButtons = document.getElementById('hostTeamButtons');
+        hostTeamButtons.innerHTML = '';
+
+        const team1Btn = document.createElement('button');
+        team1Btn.className = 'btn';
+        team1Btn.textContent = '🔴 ' + roomData.team1Name;
+        team1Btn.id = 'hostTeam1Btn';
+        team1Btn.onclick = () => selectHostTeam('team1');
+        hostTeamButtons.appendChild(team1Btn);
+
+        const team2Btn = document.createElement('button');
+        team2Btn.className = 'btn secondary';
+        team2Btn.textContent = '🔵 ' + roomData.team2Name;
+        team2Btn.id = 'hostTeam2Btn';
+        team2Btn.onclick = () => selectHostTeam('team2');
+        hostTeamButtons.appendChild(team2Btn);
+    }
+
+    function updateLobby() {
+        const players = roomData.players || {};
+        const playerCount = Object.keys(players).length;
+        const teamSize = roomData.teamSize || 2;
+        const requiredPlayers = teamSize * 2;
+
+        document.getElementById('playerCount').textContent = playerCount;
+
+        const playersListContainer = document.getElementById('playersListContainer');
+        playersListContainer.innerHTML = '';
+
+        Object.entries(players).forEach(([id, player]) => {
+            const div = document.createElement('div');
+            div.className = 'player-item';
             
-            const hostTeamButtons = document.getElementById('hostTeamButtons');
-            hostTeamButtons.innerHTML = '';
-
-            const team1Btn = document.createElement('button');
-            team1Btn.className = 'btn';
-            team1Btn.textContent = '🔴 ' + roomData.team1Name;
-            team1Btn.id = 'hostTeam1Btn';
-            team1Btn.onclick = () => selectHostTeam('team1');
-            hostTeamButtons.appendChild(team1Btn);
-
-            const team2Btn = document.createElement('button');
-            team2Btn.className = 'btn secondary';
-            team2Btn.textContent = '🔵 ' + roomData.team2Name;
-            team2Btn.id = 'hostTeam2Btn';
-            team2Btn.onclick = () => selectHostTeam('team2');
-            hostTeamButtons.appendChild(team2Btn);
-        }
-
-        function updateLobby() {
-            const players = roomData.players || {};
-            const playerCount = Object.keys(players).length;
-            const teamSize = roomData.teamSize || 2;
-            const requiredPlayers = (teamSize * 2);
-
-            document.getElementById('playerCount').textContent = playerCount;
-
-            const playersListContainer = document.getElementById('playersListContainer');
-            playersListContainer.innerHTML = '';
-
-            Object.entries(players).forEach(([id, player]) => {
-                const div = document.createElement('div');
-                div.className = 'player-item';
-                
-                const nameSpan = document.createElement('span');
-                nameSpan.className = 'player-name';
-                nameSpan.textContent = player.name;
-                
-                const badgeContainer = document.createElement('div');
-                
-                if (player.isHost) {
-                    const hostBadge = document.createElement('span');
-                    hostBadge.className = 'host-badge';
-                    hostBadge.textContent = '👑 مضيف';
-                    badgeContainer.appendChild(hostBadge);
-                }
-                
-                if (player.team) {
-                    const teamBadge = document.createElement('span');
-                    teamBadge.className = 'team-badge ' + player.team;
-                    teamBadge.textContent = player.team === 'team1' ? roomData.team1Name : roomData.team2Name;
-                    badgeContainer.appendChild(teamBadge);
-                }
-                
-                div.appendChild(nameSpan);
-                div.appendChild(badgeContainer);
-                playersListContainer.appendChild(div);
-            });
-
-            if (currentTeam) {
-                const team1Btn = document.getElementById('hostTeam1Btn');
-                const team2Btn = document.getElementById('hostTeam2Btn');
-                
-                if (team1Btn && team2Btn) {
-                    if (currentTeam === 'team1') {
-                        team1Btn.style.opacity = '1';
-                        team1Btn.style.transform = 'scale(1.05)';
-                        team2Btn.style.opacity = '0.6';
-                        team2Btn.style.transform = 'scale(1)';
-                    } else {
-                        team2Btn.style.opacity = '1';
-                        team2Btn.style.transform = 'scale(1.05)';
-                        team1Btn.style.opacity = '0.6';
-                        team1Btn.style.transform = 'scale(1)';
-                    }
-                }
-            }
-
-            const startBtn = document.getElementById('startGameBtn');
-            if (playerCount >= requiredPlayers && currentTeam) {
-                startBtn.disabled = false;
-                startBtn.textContent = 'ابدأ اللعبة ▶️';
-            } else if (!currentTeam) {
-                startBtn.disabled = true;
-                startBtn.textContent = 'اختر فريقك أولاً';
-            } else {
-                startBtn.disabled = true;
-                startBtn.textContent = `بحاجة إلى ${requiredPlayers - playerCount} لاعبين`;
-            }
-        }
-
-        function showTeamSelection() {
-            hideAllScreens();
-            document.getElementById('teamSelectionScreen').classList.add('active');
-            document.getElementById('welcomePlayerName').textContent = currentPlayerName;
-        }
-
-        function updateTeamSelection() {
-            const teamButtons = document.getElementById('teamButtons');
-            teamButtons.innerHTML = '';
-
-            const team1Btn = document.createElement('button');
-            team1Btn.className = 'btn';
-            team1Btn.textContent = '🔴 ' + roomData.team1Name;
-            team1Btn.onclick = () => selectTeam('team1');
-            teamButtons.appendChild(team1Btn);
-
-            const team2Btn = document.createElement('button');
-            team2Btn.className = 'btn secondary';
-            team2Btn.textContent = '🔵 ' + roomData.team2Name;
-            team2Btn.onclick = () => selectTeam('team2');
-            teamButtons.appendChild(team2Btn);
-        }
-
-        function selectTeam(team) {
-            currentTeam = team;
-            const playerRef = database.ref('rooms/' + currentRoomCode + '/players/' + currentPlayerId);
-            playerRef.update({ team: team });
+            const nameSpan = document.createElement('span');
+            nameSpan.className = 'player-name';
+            nameSpan.textContent = player.name;
             
-            saveGameState();
+            const badgeContainer = document.createElement('div');
             
-            if (roomData.gameState === 'playing') {
-                if (isHost) {
-                    showHostGameScreen();
-                } else {
-                    showPlayerGameScreen();
-                }
-            } else {
-                showWaitingScreen();
+            if (player.isHost) {
+                const hostBadge = document.createElement('span');
+                hostBadge.className = 'host-badge';
+                hostBadge.textContent = '👑 مضيف';
+                badgeContainer.appendChild(hostBadge);
             }
-        }
+            
+            if (player.team) {
+                const teamBadge = document.createElement('span');
+                teamBadge.className = 'team-badge ' + player.team;
+                teamBadge.textContent = player.team === 'team1' ? roomData.team1Name : roomData.team2Name;
+                badgeContainer.appendChild(teamBadge);
+            }
+            
+            div.appendChild(nameSpan);
+            div.appendChild(badgeContainer);
+            playersListContainer.appendChild(div);
+        });
 
-        function selectHostTeam(team) {
-            currentTeam = team;
-            const playerRef = database.ref('rooms/' + currentRoomCode + '/players/' + currentPlayerId);
-            playerRef.update({ team: team });
-
-            saveGameState();
-
+        if (currentTeam) {
             const team1Btn = document.getElementById('hostTeam1Btn');
             const team2Btn = document.getElementById('hostTeam2Btn');
             
-            if (team === 'team1') {
-                team1Btn.style.opacity = '1';
-                team1Btn.style.transform = 'scale(1.05)';
-                team2Btn.style.opacity = '0.6';
-                team2Btn.style.transform = 'scale(1)';
-            } else {
-                team2Btn.style.opacity = '1';
-                team2Btn.style.transform = 'scale(1.05)';
-                team1Btn.style.opacity = '0.6';
-                team1Btn.style.transform = 'scale(1)';
+            if (team1Btn && team2Btn) {
+                if (currentTeam === 'team1') {
+                    team1Btn.style.opacity = '1';
+                    team1Btn.style.transform = 'scale(1.05)';
+                    team2Btn.style.opacity = '0.6';
+                    team2Btn.style.transform = 'scale(1)';
+                } else {
+                    team2Btn.style.opacity = '1';
+                    team2Btn.style.transform = 'scale(1.05)';
+                    team1Btn.style.opacity = '0.6';
+                    team1Btn.style.transform = 'scale(1)';
+                }
             }
         }
 
-        function showWaitingScreen() {
-            hideAllScreens();
-            document.getElementById('waitingScreen').classList.add('active');
-            const teamName = currentTeam === 'team1' ? roomData.team1Name : roomData.team2Name;
-            document.getElementById('playerTeamName').textContent = teamName;
+        const startBtn = document.getElementById('startGameBtn');
+        if (playerCount >= requiredPlayers && currentTeam) {
+            startBtn.disabled = false;
+            startBtn.textContent = 'ابدأ اللعبة ▶️';
+        } else if (!currentTeam) {
+            startBtn.disabled = true;
+            startBtn.textContent = 'اختر فريقك أولاً';
+        } else {
+            startBtn.disabled = true;
+            startBtn.textContent = `بحاجة إلى ${requiredPlayers - playerCount} لاعبين`;
         }
+    }
 
-        function updateWaitingScreen() {
-            const players = roomData.players || {};
-            const waitingPlayersListContainer = document.getElementById('waitingPlayersListContainer');
-            waitingPlayersListContainer.innerHTML = '';
+    function showTeamSelection() {
+        hideAllScreens();
+        document.getElementById('teamSelectionScreen').classList.add('active');
+        document.getElementById('welcomePlayerName').textContent = currentPlayerName;
+    }
 
-            Object.entries(players).forEach(([id, player]) => {
-                const div = document.createElement('div');
-                div.className = 'player-item';
-                
-                const nameSpan = document.createElement('span');
-                nameSpan.className = 'player-name';
-                nameSpan.textContent = player.name;
-                
-                const badgeContainer = document.createElement('div');
-                
-                if (player.isHost) {
-                    const hostBadge = document.createElement('span');
-                    hostBadge.className = 'host-badge';
-                    hostBadge.textContent = '👑';
-                    badgeContainer.appendChild(hostBadge);
-                }
-                
-                if (player.team) {
-                    const teamBadge = document.createElement('span');
-                    teamBadge.className = 'team-badge ' + player.team;
-                    teamBadge.textContent = player.team === 'team1' ? roomData.team1Name : roomData.team2Name;
-                    badgeContainer.appendChild(teamBadge);
-                }
-                
-                div.appendChild(nameSpan);
-                div.appendChild(badgeContainer);
-                waitingPlayersListContainer.appendChild(div);
-            });
+    function updateTeamSelection() {
+        const teamButtons = document.getElementById('teamButtons');
+        teamButtons.innerHTML = '';
+
+        const team1Btn = document.createElement('button');
+        team1Btn.className = 'btn';
+        team1Btn.textContent = '🔴 ' + roomData.team1Name;
+        team1Btn.onclick = () => selectTeam('team1');
+        teamButtons.appendChild(team1Btn);
+
+        const team2Btn = document.createElement('button');
+        team2Btn.className = 'btn secondary';
+        team2Btn.textContent = '🔵 ' + roomData.team2Name;
+        team2Btn.onclick = () => selectTeam('team2');
+        teamButtons.appendChild(team2Btn);
+    }
+
+    function selectTeam(team) {
+        currentTeam = team;
+        database.ref('rooms/' + currentRoomCode + '/players/' + currentPlayerId).update({ team: team });
+        
+        if (roomData.gameState === 'playing') {
+            showPlayerGameScreen();
+        } else {
+            showWaitingScreen();
         }
+    }
 
-        function startGame() {
-            if (!currentTeam) {
-                alert('الرجاء اختيار فريقك أولاً');
-                return;
+    function selectHostTeam(team) {
+        currentTeam = team;
+        database.ref('rooms/' + currentRoomCode + '/players/' + currentPlayerId).update({ team: team });
+
+        const team1Btn = document.getElementById('hostTeam1Btn');
+        const team2Btn = document.getElementById('hostTeam2Btn');
+        
+        if (team === 'team1') {
+            team1Btn.style.opacity = '1';
+            team1Btn.style.transform = 'scale(1.05)';
+            team2Btn.style.opacity = '0.6';
+            team2Btn.style.transform = 'scale(1)';
+        } else {
+            team2Btn.style.opacity = '1';
+            team2Btn.style.transform = 'scale(1.05)';
+            team1Btn.style.opacity = '0.6';
+            team1Btn.style.transform = 'scale(1)';
+        }
+    }
+
+    function showWaitingScreen() {
+        hideAllScreens();
+        document.getElementById('waitingScreen').classList.add('active');
+        const teamName = currentTeam === 'team1' ? roomData.team1Name : roomData.team2Name;
+        document.getElementById('playerTeamName').textContent = teamName;
+    }
+
+    function updateWaitingScreen() {
+        const players = roomData.players || {};
+        const waitingPlayersListContainer = document.getElementById('waitingPlayersListContainer');
+        waitingPlayersListContainer.innerHTML = '';
+
+        Object.entries(players).forEach(([id, player]) => {
+            const div = document.createElement('div');
+            div.className = 'player-item';
+            
+            const nameSpan = document.createElement('span');
+            nameSpan.className = 'player-name';
+            nameSpan.textContent = player.name;
+            
+            const badgeContainer = document.createElement('div');
+            
+            if (player.isHost) {
+                const hostBadge = document.createElement('span');
+                hostBadge.className = 'host-badge';
+                hostBadge.textContent = '👑';
+                badgeContainer.appendChild(hostBadge);
             }
+            
+            if (player.team) {
+                const teamBadge = document.createElement('span');
+                teamBadge.className = 'team-badge ' + player.team;
+                teamBadge.textContent = player.team === 'team1' ? roomData.team1Name : roomData.team2Name;
+                badgeContainer.appendChild(teamBadge);
+            }
+            
+            div.appendChild(nameSpan);
+            div.appendChild(badgeContainer);
+            waitingPlayersListContainer.appendChild(div);
+        });
+    }
 
-            const roomRef = database.ref('rooms/' + currentRoomCode);
-            roomRef.update({
-                gameState: 'playing'
-            });
+    function startGame() {
+        if (!currentTeam) {
+            alert('الرجاء اختيار فريقك أولاً');
+            return;
+        }
 
+        database.ref('rooms/' + currentRoomCode).update({ gameState: 'playing' });
+        showPlayerGameScreen();
+    }
+
+    function showPlayerGameScreen() {
+        hideAllScreens();
+        document.getElementById('playerGameScreen').classList.add('active');
+    }
+
+    function updatePlayerGameScreen() {
+        if (!document.getElementById('playerGameScreen').classList.contains('active')) {
             showPlayerGameScreen();
         }
 
-        function showHostGameScreen() {
-            document.getElementById('mainContainer').style.display = 'none';
-            document.getElementById('hostGameContainer').style.display = 'block';
-            
-            document.getElementById('displayTeam1Name').textContent = roomData.team1Name;
-            document.getElementById('displayTeam2Name').textContent = roomData.team2Name;
-            document.getElementById('couchTeam1Name').textContent = roomData.team1Name;
-            document.getElementById('couchTeam2Name').textContent = roomData.team2Name;
+        updateTeamsPlayersDisplay();
+
+        if (isHost) {
+            document.getElementById('hostControlsPlayer').style.display = 'block';
+        } else {
+            document.getElementById('hostControlsPlayer').style.display = 'none';
         }
 
-        function updateHostGameScreen() {
-            if (document.getElementById('hostGameContainer').style.display === 'none') {
-                showHostGameScreen();
-            }
+        const buzzButton = document.getElementById('buzzButton');
+        const playerAnswerOptions = document.getElementById('playerAnswerOptions');
+        const playerChoiceButtons = document.getElementById('playerChoiceButtons');
+        const playerStatus = document.getElementById('playerStatus');
+        const playerQuestionDisplay = document.getElementById('playerQuestionDisplay');
+        const playerQuestionText = document.getElementById('playerQuestionText');
+        const playerTimer = document.getElementById('playerTimer');
+        const buzzerIndicator = document.getElementById('buzzerIndicator');
+        const gameElements = document.getElementById('gameElements');
+        const onCouchMessage = document.getElementById('onCouchMessage');
+        const answerInputContainer = document.getElementById('answerInputContainer');
 
-            document.getElementById('team1Score').textContent = roomData.team1Score || 0;
-            document.getElementById('team2Score').textContent = roomData.team2Score || 0;
+        const isOnCouch = (currentTeam === 'team1' && roomData.team1Couch?.includes(currentPlayerId)) ||
+                         (currentTeam === 'team2' && roomData.team2Couch?.includes(currentPlayerId));
 
-            updateCouchDisplays();
-
-            if (roomData.currentQuestion) {
-                document.getElementById('questionDisplay').innerHTML = 
-                    `<div class="question-text">${roomData.currentQuestion.question}</div>`;
-                
-                if (roomData.showOptions) {
-                    const optionsDisplay = document.getElementById('optionsDisplay');
-                    optionsDisplay.innerHTML = '';
-                    
-                    roomData.currentQuestion.options.forEach((option, index) => {
-                        const div = document.createElement('div');
-                        div.className = 'option-box';
-                        div.textContent = option;
-                        
-                        if (roomData.correctAnswer !== null) {
-                            if (index === roomData.currentQuestion.correct) {
-                                div.classList.add('correct');
-                            } else if (roomData.selectedAnswer === index && roomData.correctAnswer === false) {
-                                div.classList.add('incorrect');
-                            }
-                        }
-                        
-                        optionsDisplay.appendChild(div);
-                    });
-                } else {
-                    document.getElementById('optionsDisplay').innerHTML = '';
-                }
-            }
-
-            if (roomData.buzzedPlayer) {
-                const player = roomData.players[roomData.buzzedPlayer];
-                const team = player.team === 'team1' ? roomData.team1Name : roomData.team2Name;
-                document.getElementById('hostBuzzerIndicator').innerHTML = 
-                    `<div class="buzzer-indicator">🔔 ${player.name} من ${team} ضغط الجرس!</div>`;
-            } else {
-                document.getElementById('hostBuzzerIndicator').innerHTML = '';
-            }
-
+        if (isOnCouch) {
+            gameElements.style.display = 'none';
+            onCouchMessage.style.display = 'block';
             checkVictory();
+            return;
+        } else {
+            gameElements.style.display = 'block';
+            onCouchMessage.style.display = 'none';
         }
 
-        function updateCouchDisplays() {
-            const team1Display = document.getElementById('team1CouchDisplay');
-            const team2Display = document.getElementById('team2CouchDisplay');
+        if (roomData.currentQuestion) {
+            playerQuestionDisplay.style.display = 'block';
+            playerQuestionText.textContent = roomData.currentQuestion.question;
             
-            team1Display.innerHTML = '';
-            team2Display.innerHTML = '';
-
-            if (roomData.team1Couch && roomData.team1Couch.length > 0) {
-                roomData.team1Couch.forEach(playerId => {
-                    const player = roomData.players[playerId];
-                    if (player) {
-                        const div = document.createElement('div');
-                        div.className = 'couch-player';
-                        div.textContent = '🏆 ' + player.name;
-                        team1Display.appendChild(div);
-                    }
-                });
-            } else {
-                team1Display.innerHTML = '<div class="couch-empty">فارغة</div>';
-            }
-
-            if (roomData.team2Couch && roomData.team2Couch.length > 0) {
-                roomData.team2Couch.forEach(playerId => {
-                    const player = roomData.players[playerId];
-                    if (player) {
-                        const div = document.createElement('div');
-                        div.className = 'couch-player';
-                        div.textContent = '🏆 ' + player.name;
-                        team2Display.appendChild(div);
-                    }
-                });
-            } else {
-                team2Display.innerHTML = '<div class="couch-empty">فارغة</div>';
-            }
-        }
-
-        function nextQuestion() {
-            clearInterval(timerInterval);
-
-            const usedQuestions = roomData.usedQuestions || [];
-            let availableQuestions = questions.filter(q => !usedQuestions.includes(q.question));
-            
-            if (availableQuestions.length === 0) {
-                availableQuestions = questions;
-                usedQuestions.length = 0;
-            }
-
-            const randomQuestion = availableQuestions[Math.floor(Math.random() * availableQuestions.length)];
-            usedQuestions.push(randomQuestion.question);
-
-            const roomRef = database.ref('rooms/' + currentRoomCode);
-            roomRef.update({
-                currentQuestion: randomQuestion,
-                usedQuestions: usedQuestions,
-                buzzedPlayer: null,
-                showOptions: false,
-                waitingForAnswer: false,
-                bannedTeam: null,
-                correctAnswer: null,
-                selectedAnswer: null,
-                waitingForChoice: false,
-                choicePlayer: null,
-                questionStartTime: Date.now()
-            });
-
-            const nextBtn = document.getElementById('nextQuestionBtnPlayer');
-            if (nextBtn) nextBtn.disabled = true;
-
-            startTimer(30);
-        }
-
-        function startTimer(seconds) {
-            clearInterval(timerInterval);
-            let timeLeft = seconds;
-            
-            const timerElement = document.getElementById('timerDisplay');
-            if (timerElement) {
-                timerElement.textContent = timeLeft;
-                timerElement.classList.remove('warning');
-            }
-
-            timerInterval = setInterval(() => {
-                timeLeft--;
-                if (timerElement) {
-                    timerElement.textContent = timeLeft;
-
-                    if (timeLeft <= 3) {
-                        timerElement.classList.add('warning');
-                    } else {
-                        timerElement.classList.remove('warning');
-                    }
-                }
-
-                if (timeLeft <= 0) {
-                    clearInterval(timerInterval);
-                    
-                    if (!roomData.buzzedPlayer && !roomData.showOptions) {
-                        const roomRef = database.ref('rooms/' + currentRoomCode);
-                        roomRef.update({ showOptions: true });
-                        
-                        if (isHost) {
-                            setTimeout(() => {
-                                const nextBtn = document.getElementById('nextQuestionBtnPlayer');
-                                if (nextBtn) nextBtn.disabled = false;
-                            }, 2000);
-                        }
-                    }
-                }
-            }, 1000);
-        }
-
-        function showPlayerGameScreen() {
-            hideAllScreens();
-            document.getElementById('playerGameScreen').classList.add('active');
-        }
-
-        function updatePlayerGameScreen() {
-            if (document.getElementById('playerGameScreen').classList.contains('active') === false) {
-                showPlayerGameScreen();
-            }
-
-            updateTeamsPlayersDisplay();
-
-            if (isHost) {
-                document.getElementById('hostControlsPlayer').style.display = 'block';
-            } else {
-                document.getElementById('hostControlsPlayer').style.display = 'none';
-            }
-
-            const buzzButton = document.getElementById('buzzButton');
-            const playerAnswerOptions = document.getElementById('playerAnswerOptions');
-            const playerChoiceButtons = document.getElementById('playerChoiceButtons');
-            const playerStatus = document.getElementById('playerStatus');
-            const playerQuestionDisplay = document.getElementById('playerQuestionDisplay');
-            const playerQuestionText = document.getElementById('playerQuestionText');
-            const playerTimer = document.getElementById('playerTimer');
-            const buzzerIndicator = document.getElementById('buzzerIndicator');
-            const gameElements = document.getElementById('gameElements');
-            const onCouchMessage = document.getElementById('onCouchMessage');
-
-            const isOnCouch = (currentTeam === 'team1' && roomData.team1Couch?.includes(currentPlayerId)) ||
-                             (currentTeam === 'team2' && roomData.team2Couch?.includes(currentPlayerId));
-
-            // CRITICAL FIX: Hide ALL game elements when on couch
-            if (isOnCouch) {
-                gameElements.style.display = 'none';
-                onCouchMessage.style.display = 'block';
-                checkVictory();
-                return;
-            } else {
-                gameElements.style.display = 'block';
-                onCouchMessage.style.display = 'none';
-            }
-
-            if (roomData.currentQuestion) {
-                playerQuestionDisplay.style.display = 'block';
-                playerQuestionText.textContent = roomData.currentQuestion.question;
+            if (roomData.questionStartTime && !roomData.showOptions && !roomData.waitingForTextAnswer) {
+                const elapsed = Math.floor((Date.now() - roomData.questionStartTime) / 1000);
+                const timeLeft = Math.max(0, 30 - elapsed);
+                playerTimer.style.display = 'block';
+                playerTimer.textContent = timeLeft;
                 
-                if (roomData.questionStartTime && !roomData.showOptions) {
-                    const elapsed = Math.floor((Date.now() - roomData.questionStartTime) / 1000);
-                    const timeLeft = Math.max(0, (roomData.buzzedPlayer ? 5 : 30) - elapsed);
-                    playerTimer.style.display = 'block';
-                    playerTimer.textContent = timeLeft;
-                    
-                    if (timeLeft <= 3) {
-                        playerTimer.classList.add('warning');
-                    } else {
-                        playerTimer.classList.remove('warning');
-                    }
+                if (timeLeft <= 3) {
+                    playerTimer.classList.add('warning');
                 } else {
-                    playerTimer.style.display = 'none';
+                    playerTimer.classList.remove('warning');
                 }
             } else {
-                playerQuestionDisplay.style.display = 'none';
                 playerTimer.style.display = 'none';
             }
-
-            if (roomData.buzzedPlayer) {
-                const player = roomData.players[roomData.buzzedPlayer];
-                const team = player.team === 'team1' ? roomData.team1Name : roomData.team2Name;
-                buzzerIndicator.innerHTML = `<div class="buzzer-indicator">🔔 ${player.name} من ${team} ضغط الجرس!</div>`;
-            } else {
-                buzzerIndicator.innerHTML = '';
-            }
-
-            if (roomData.waitingForChoice && roomData.choicePlayer === currentPlayerId) {
-                playerStatus.textContent = 'إجابة صحيحة! اختر:';
-                playerStatus.className = 'status-message success';
-                buzzButton.disabled = true;
-                playerAnswerOptions.innerHTML = '';
-                
-                const otherTeam = currentTeam === 'team1' ? 'team2' : 'team1';
-                const hasOtherCouch = roomData[otherTeam + 'Couch']?.length > 0;
-                
-                playerChoiceButtons.innerHTML = '';
-                
-                const sitBtn = document.createElement('button');
-                sitBtn.className = 'choice-btn sit';
-                sitBtn.textContent = '🛋️ اجلس على الكنبة';
-                sitBtn.onclick = () => makeChoice('sit');
-                playerChoiceButtons.appendChild(sitBtn);
-                
-                if (hasOtherCouch) {
-                    const stealBtn = document.createElement('button');
-                    stealBtn.className = 'choice-btn steal';
-                    stealBtn.textContent = '🎯 اسحب لاعب من الفريق الآخر';
-                    stealBtn.onclick = () => makeChoice('steal');
-                    playerChoiceButtons.appendChild(stealBtn);
-                }
-                
-                return;
-            } else {
-                playerChoiceButtons.innerHTML = '';
-            }
-
-            const playerTeam = roomData.players[currentPlayerId]?.team;
-            if (roomData.bannedTeam === playerTeam) {
-                playerStatus.textContent = 'فريقك ممنوع من الإجابة!';
-                playerStatus.className = 'status-message error';
-                buzzButton.disabled = true;
-                playerAnswerOptions.innerHTML = '';
-                return;
-            }
-
-            if (roomData.showOptions && !roomData.bannedTeam && roomData.buzzedPlayer === currentPlayerId && !roomData.correctAnswer) {
-                playerStatus.textContent = 'اختر الإجابة الصحيحة!';
-                playerStatus.className = 'status-message info';
-                buzzButton.disabled = true;
-                
-                playerAnswerOptions.innerHTML = '';
-                roomData.currentQuestion.options.forEach((option, index) => {
-                    const btn = document.createElement('button');
-                    btn.className = 'answer-btn';
-                    btn.textContent = option;
-                    btn.onclick = () => selectAnswer(index);
-                    playerAnswerOptions.appendChild(btn);
-                });
-                return;
-            }
-
-            if (roomData.showOptions && roomData.bannedTeam && roomData.bannedTeam !== playerTeam && !roomData.correctAnswer) {
-                playerStatus.textContent = 'اختر الإجابة الصحيحة! (فرصة فريقك)';
-                playerStatus.className = 'status-message info';
-                buzzButton.disabled = true;
-                
-                playerAnswerOptions.innerHTML = '';
-                roomData.currentQuestion.options.forEach((option, index) => {
-                    const btn = document.createElement('button');
-                    btn.className = 'answer-btn';
-                    btn.textContent = option;
-                    btn.onclick = () => selectAnswer(index);
-                    playerAnswerOptions.appendChild(btn);
-                });
-                return;
-            }
-
-            if (roomData.correctAnswer !== null && roomData.buzzedPlayer === currentPlayerId) {
-                playerAnswerOptions.innerHTML = '';
-                buzzButton.disabled = true;
-                
-                if (roomData.correctAnswer) {
-                    playerStatus.textContent = '✅ إجابة صحيحة!';
-                    playerStatus.className = 'status-message success';
-                } else {
-                    playerStatus.textContent = '❌ إجابة خاطئة!';
-                    playerStatus.className = 'status-message error';
-                }
-                return;
-            }
-
-            if (roomData.currentQuestion && !roomData.buzzedPlayer && !roomData.showOptions) {
-                playerStatus.textContent = 'اضغط الجرس للإجابة!';
-                playerStatus.className = 'status-message info';
-                buzzButton.disabled = false;
-                playerAnswerOptions.innerHTML = '';
-            } else if (roomData.buzzedPlayer && roomData.buzzedPlayer !== currentPlayerId) {
-                const buzzedPlayerData = roomData.players[roomData.buzzedPlayer];
-                playerStatus.textContent = `${buzzedPlayerData.name} يجيب الآن...`;
-                playerStatus.className = 'status-message warning';
-                buzzButton.disabled = true;
-                playerAnswerOptions.innerHTML = '';
-            } else if (roomData.showOptions && !roomData.buzzedPlayer) {
-                playerStatus.textContent = 'انتظر السؤال التالي';
-                playerStatus.className = 'status-message info';
-                buzzButton.disabled = true;
-                playerAnswerOptions.innerHTML = '';
-                
-                if (isHost) {
-                    const nextBtn = document.getElementById('nextQuestionBtnPlayer');
-                    if (nextBtn) nextBtn.disabled = false;
-                }
-            } else if (!roomData.currentQuestion) {
-                playerStatus.textContent = 'انتظر السؤال...';
-                playerStatus.className = 'status-message info';
-                buzzButton.disabled = true;
-                playerAnswerOptions.innerHTML = '';
-                
-                if (isHost) {
-                    const nextBtn = document.getElementById('nextQuestionBtnPlayer');
-                    if (nextBtn) nextBtn.disabled = false;
-                }
-            }
-
-            checkVictory();
+        } else {
+            playerQuestionDisplay.style.display = 'none';
+            playerTimer.style.display = 'none';
         }
 
-        function buzzIn() {
-            if (!roomData.currentQuestion || roomData.buzzedPlayer || roomData.showOptions) return;
+        if (roomData.buzzedPlayer && !roomData.showOptions && !roomData.correctAnswer) {
+            const player = roomData.players[roomData.buzzedPlayer];
+            const team = player.team === 'team1' ? roomData.team1Name : roomData.team2Name;
+            buzzerIndicator.innerHTML = `<div class="buzzer-indicator">🔔 ${player.name} من ${team} يكتب الإجابة...</div>`;
+        } else {
+            buzzerIndicator.innerHTML = '';
+        }
 
-            const roomRef = database.ref('rooms/' + currentRoomCode);
-            roomRef.update({
-                buzzedPlayer: currentPlayerId,
-                questionStartTime: Date.now()
-            });
-
-            clearInterval(timerInterval);
-            startTimer(5);
+        if (roomData.waitingForTextAnswer && roomData.buzzedPlayer === currentPlayerId && !roomData.correctAnswer) {
+            playerStatus.textContent = 'اكتب إجابتك بسرعة! (5 ثواني)';
+            playerStatus.className = 'status-message warning';
+            buzzButton.style.display = 'none';
+            answerInputContainer.style.display = 'block';
+            playerAnswerOptions.innerHTML = '';
+            playerChoiceButtons.innerHTML = '';
             
-            setTimeout(() => {
-                if (roomData.buzzedPlayer === currentPlayerId && !roomData.correctAnswer) {
-                    roomRef.update({ showOptions: true });
-                }
-            }, 5000);
+            const textInput = document.getElementById('textAnswerInput');
+            if (textInput) {
+                textInput.value = '';
+                textInput.focus();
+            }
+            
+            return;
+        } else {
+            answerInputContainer.style.display = 'none';
+            buzzButton.style.display = 'block';
         }
 
-        function selectAnswer(answerIndex) {
-            const roomRef = database.ref('rooms/' + currentRoomCode);
-            const isCorrect = answerIndex === roomData.currentQuestion.correct;
+        if (roomData.waitingForChoice && roomData.choicePlayer === currentPlayerId) {
+            playerStatus.textContent = 'إجابة صحيحة! اختر:';
+            playerStatus.className = 'status-message success';
+            buzzButton.disabled = true;
+            playerAnswerOptions.innerHTML = '';
+            
+            const otherTeam = currentTeam === 'team1' ? 'team2' : 'team1';
+            const hasOtherCouch = roomData[otherTeam + 'Couch']?.length > 0;
+            
+            playerChoiceButtons.innerHTML = '';
+            
+            const sitBtn = document.createElement('button');
+            sitBtn.className = 'choice-btn sit';
+            sitBtn.textContent = '🛋️ اجلس على الكنبة';
+            sitBtn.onclick = () => makeChoice('sit');
+            playerChoiceButtons.appendChild(sitBtn);
+            
+            if (hasOtherCouch) {
+                const stealBtn = document.createElement('button');
+                stealBtn.className = 'choice-btn steal';
+                stealBtn.textContent = '🎯 اسحب لاعب من الفريق الآخر';
+                stealBtn.onclick = () => makeChoice('steal');
+                playerChoiceButtons.appendChild(stealBtn);
+            }
+            
+            return;
+        } else {
+            playerChoiceButtons.innerHTML = '';
+        }
 
-            roomRef.update({
-                selectedAnswer: answerIndex,
-                correctAnswer: isCorrect
+        const playerTeam = roomData.players[currentPlayerId]?.team;
+        
+        if (roomData.showOptions && roomData.bannedTeam && roomData.bannedTeam !== playerTeam && !roomData.correctAnswer) {
+            playerStatus.textContent = 'فرصة فريقك! اختر الإجابة الصحيحة';
+            playerStatus.className = 'status-message info';
+            buzzButton.disabled = true;
+            
+            playerAnswerOptions.innerHTML = '';
+            roomData.currentQuestion.options.forEach((option, index) => {
+                const btn = document.createElement('button');
+                btn.className = 'answer-btn';
+                btn.textContent = option;
+                btn.onclick = () => selectAnswer(index);
+                playerAnswerOptions.appendChild(btn);
             });
+            return;
+        } else if (roomData.showOptions && roomData.bannedTeam === playerTeam) {
+            playerStatus.textContent = 'فريقك ممنوع من الإجابة - انتظر السؤال التالي';
+            playerStatus.className = 'status-message error';
+            buzzButton.disabled = true;
+            playerAnswerOptions.innerHTML = '';
+            return;
+        } else if (roomData.showOptions && !roomData.bannedTeam) {
+            playerStatus.textContent = 'لم يضغط أحد الجرس - انتظر السؤال التالي';
+            playerStatus.className = 'status-message info';
+            buzzButton.disabled = true;
+            playerAnswerOptions.innerHTML = '';
+            
+            if (isHost) {
+                const nextBtn = document.getElementById('nextQuestionBtnPlayer');
+                if (nextBtn) nextBtn.disabled = false;
+            }
+            return;
+        }
 
-            clearInterval(timerInterval);
-
-            if (isCorrect) {
-                const otherTeam = currentTeam === 'team1' ? 'team2' : 'team1';
-                const hasOtherCouch = roomData[otherTeam + 'Couch']?.length > 0;
-                
-                if (hasOtherCouch) {
-                    roomRef.update({
-                        waitingForChoice: true,
-                        choicePlayer: currentPlayerId,
-                        bannedTeam: null
-                    });
-                } else {
-                    addToCouch();
-                    roomRef.update({ bannedTeam: null });
-                }
+        if (roomData.correctAnswer !== null && roomData.buzzedPlayer === currentPlayerId) {
+            playerAnswerOptions.innerHTML = '';
+            buzzButton.disabled = true;
+            
+            if (roomData.correctAnswer) {
+                playerStatus.textContent = '✅ إجابة صحيحة!';
+                playerStatus.className = 'status-message success';
             } else {
-                if (roomData.bannedTeam) {
-                    roomRef.update({
-                        showOptions: false,
+                playerStatus.textContent = '❌ إجابة خاطئة!';
+                playerStatus.className = 'status-message error';
+            }
+            return;
+        }
+
+        if (roomData.currentQuestion && !roomData.buzzedPlayer && !roomData.showOptions) {
+            playerStatus.textContent = 'اضغط الجرس للإجابة!';
+            playerStatus.className = 'status-message info';
+            buzzButton.disabled = false;
+            playerAnswerOptions.innerHTML = '';
+        } else if (roomData.buzzedPlayer && roomData.buzzedPlayer !== currentPlayerId) {
+            const buzzedPlayerData = roomData.players[roomData.buzzedPlayer];
+            playerStatus.textContent = `${buzzedPlayerData.name} يجيب الآن...`;
+            playerStatus.className = 'status-message warning';
+            buzzButton.disabled = true;
+            playerAnswerOptions.innerHTML = '';
+        } else if (!roomData.currentQuestion) {
+            playerStatus.textContent = 'انتظر السؤال...';
+            playerStatus.className = 'status-message info';
+            buzzButton.disabled = true;
+            playerAnswerOptions.innerHTML = '';
+            
+            if (isHost) {
+                const nextBtn = document.getElementById('nextQuestionBtnPlayer');
+                if (nextBtn) nextBtn.disabled = false;
+            }
+        }
+
+        checkVictory();
+    }
+
+    function updateTeamsPlayersDisplay() {
+        if (!roomData || !roomData.players) return;
+
+        document.getElementById('playerTeam1Name').textContent = roomData.team1Name;
+        document.getElementById('playerTeam2Name').textContent = roomData.team2Name;
+        document.getElementById('playerCouchTeam1').textContent = roomData.team1Name;
+        document.getElementById('playerCouchTeam2').textContent = roomData.team2Name;
+
+        const team1Players = [];
+        const team2Players = [];
+
+        Object.entries(roomData.players).forEach(([id, player]) => {
+            if (player.team === 'team1') {
+                team1Players.push({ id, ...player });
+            } else if (player.team === 'team2') {
+                team2Players.push({ id, ...player });
+            }
+        });
+
+        const team1List = document.getElementById('team1PlayersList');
+        team1List.innerHTML = '';
+        team1Players.forEach(player => {
+            const div = document.createElement('div');
+            div.className = 'player-name-tag';
+            if (roomData.team1Couch?.includes(player.id)) {
+                div.classList.add('on-couch');
+            }
+            div.textContent = player.name;
+            team1List.appendChild(div);
+        });
+
+        const team2List = document.getElementById('team2PlayersList');
+        team2List.innerHTML = '';
+        team2Players.forEach(player => {
+            const div = document.createElement('div');
+            div.className = 'player-name-tag';
+            if (roomData.team2Couch?.includes(player.id)) {
+                div.classList.add('on-couch');
+            }
+            div.textContent = player.name;
+            team2List.appendChild(div);
+        });
+
+        const team1Couch = document.getElementById('playerTeam1Couch');
+        const team2Couch = document.getElementById('playerTeam2Couch');
+
+        team1Couch.innerHTML = '';
+        if (roomData.team1Couch && roomData.team1Couch.length > 0) {
+            roomData.team1Couch.forEach(playerId => {
+                const player = roomData.players[playerId];
+                if (player) {
+                    const div = document.createElement('div');
+                    div.className = 'couch-player';
+                    div.textContent = '🏆 ' + player.name;
+                    team1Couch.appendChild(div);
+                }
+            });
+        } else {
+            team1Couch.innerHTML = '<div class="couch-empty">فارغة</div>';
+        }
+
+        team2Couch.innerHTML = '';
+        if (roomData.team2Couch && roomData.team2Couch.length > 0) {
+            roomData.team2Couch.forEach(playerId => {
+                const player = roomData.players[playerId];
+                if (player) {
+                    const div = document.createElement('div');
+                    div.className = 'couch-player';
+                    div.textContent = '🏆 ' + player.name;
+                    team2Couch.appendChild(div);
+                }
+            });
+        } else {
+            team2Couch.innerHTML = '<div class="couch-empty">فارغة</div>';
+        }
+    }
+
+    function nextQuestion() {
+        clearInterval(timerInterval);
+        clearInterval(answerTimerInterval);
+
+        const usedQuestions = roomData.usedQuestions || [];
+        let availableQuestions = questions.filter(q => !usedQuestions.includes(q.question));
+        
+        if (availableQuestions.length === 0) {
+            availableQuestions = questions;
+            usedQuestions.length = 0;
+        }
+
+        const randomQuestion = availableQuestions[Math.floor(Math.random() * availableQuestions.length)];
+        usedQuestions.push(randomQuestion.question);
+
+        database.ref('rooms/' + currentRoomCode).update({
+            currentQuestion: randomQuestion,
+            usedQuestions: usedQuestions,
+            buzzedPlayer: null,
+            showOptions: false,
+            bannedTeam: null,
+            correctAnswer: null,
+            selectedAnswer: null,
+            waitingForChoice: false,
+            choicePlayer: null,
+            questionStartTime: Date.now(),
+            waitingForTextAnswer: false
+        });
+
+        const nextBtn = document.getElementById('nextQuestionBtnPlayer');
+        if (nextBtn) nextBtn.disabled = true;
+
+        startTimer(30);
+    }
+
+    function startTimer(seconds) {
+        clearInterval(timerInterval);
+        let timeLeft = seconds;
+        
+        const playerTimerElement = document.getElementById('playerTimer');
+        
+        if (playerTimerElement) {
+            playerTimerElement.style.display = 'block';
+            playerTimerElement.textContent = timeLeft;
+            playerTimerElement.classList.remove('warning');
+        }
+
+        timerInterval = setInterval(() => {
+            timeLeft--;
+            
+            if (playerTimerElement) {
+                playerTimerElement.textContent = timeLeft;
+                if (timeLeft <= 3) {
+                    playerTimerElement.classList.add('warning');
+                }
+            }
+
+            if (timeLeft <= 0) {
+                clearInterval(timerInterval);
+                
+                if (!roomData.buzzedPlayer && !roomData.showOptions) {
+                    database.ref('rooms/' + currentRoomCode).update({ 
+                        showOptions: true,
                         bannedTeam: null
                     });
                     
@@ -1933,204 +1536,238 @@
                             if (nextBtn) nextBtn.disabled = false;
                         }, 2000);
                     }
-                } else {
-                    roomRef.update({
-                        bannedTeam: currentTeam,
-                        buzzedPlayer: null,
-                        showOptions: true,
-                        questionStartTime: Date.now()
-                    });
-                    
-                    startTimer(10);
                 }
             }
-        }
+        }, 1000);
+    }
 
-        function makeChoice(choice) {
-            if (choice === 'sit') {
-                addToCouch();
-            } else if (choice === 'steal') {
-                stealFromCouch();
-            }
-        }
+    function buzzIn() {
+        if (!roomData.currentQuestion || roomData.buzzedPlayer || roomData.showOptions) return;
 
-        function addToCouch() {
-            const couchKey = currentTeam + 'Couch';
-            const scoreKey = currentTeam + 'Score';
-            
-            const newCouch = [...(roomData[couchKey] || []), currentPlayerId];
-            const newScore = (roomData[scoreKey] || 0) + 1;
-
-            const roomRef = database.ref('rooms/' + currentRoomCode);
-            roomRef.update({
-                [couchKey]: newCouch,
-                [scoreKey]: newScore,
-                waitingForChoice: false,
-                choicePlayer: null
-            });
-
-            // CRITICAL FIX: Always enable next button after someone sits on couch
-            if (isHost) {
-                setTimeout(() => {
-                    const nextBtn = document.getElementById('nextQuestionBtnPlayer');
-                    if (nextBtn) nextBtn.disabled = false;
-                }, 1000);
-            }
-        }
-
-        function stealFromCouch() {
-            const otherTeam = currentTeam === 'team1' ? 'team2' : 'team1';
-            const otherCouchKey = otherTeam + 'Couch';
-            const couchKey = currentTeam + 'Couch';
-            const scoreKey = currentTeam + 'Score';
-            const otherScoreKey = otherTeam + 'Score';
-            
-            const otherCouch = [...(roomData[otherCouchKey] || [])];
-            const stolenPlayer = otherCouch.pop();
-            
-            const newCouch = [...(roomData[couchKey] || []), currentPlayerId];
-            const newScore = (roomData[scoreKey] || 0) + 1;
-            const otherNewScore = Math.max(0, (roomData[otherScoreKey] || 0) - 1);
-
-            const roomRef = database.ref('rooms/' + currentRoomCode);
-            roomRef.update({
-                [couchKey]: newCouch,
-                [otherCouchKey]: otherCouch,
-                [scoreKey]: newScore,
-                [otherScoreKey]: otherNewScore,
-                waitingForChoice: false,
-                choicePlayer: null
-            });
-
-            // CRITICAL FIX: Always enable next button after someone steals from couch
-            if (isHost) {
-                setTimeout(() => {
-                    const nextBtn = document.getElementById('nextQuestionBtnPlayer');
-                    if (nextBtn) nextBtn.disabled = false;
-                }, 1000);
-            }
-        }
-
-        function updateTeamsPlayersDisplay() {
-            if (!roomData || !roomData.players) return;
-
-            document.getElementById('playerTeam1Name').textContent = roomData.team1Name;
-            document.getElementById('playerTeam2Name').textContent = roomData.team2Name;
-            document.getElementById('playerCouchTeam1').textContent = roomData.team1Name;
-            document.getElementById('playerCouchTeam2').textContent = roomData.team2Name;
-
-            const team1Players = [];
-            const team2Players = [];
-
-            Object.entries(roomData.players).forEach(([id, player]) => {
-                if (player.team === 'team1') {
-                    team1Players.push({ id, ...player });
-                } else if (player.team === 'team2') {
-                    team2Players.push({ id, ...player });
-                }
-            });
-
-            const team1List = document.getElementById('team1PlayersList');
-            team1List.innerHTML = '';
-            team1Players.forEach(player => {
-                const div = document.createElement('div');
-                div.className = 'player-name-tag';
-                if (roomData.team1Couch?.includes(player.id)) {
-                    div.classList.add('on-couch');
-                }
-                div.textContent = player.name;
-                team1List.appendChild(div);
-            });
-
-            const team2List = document.getElementById('team2PlayersList');
-            team2List.innerHTML = '';
-            team2Players.forEach(player => {
-                const div = document.createElement('div');
-                div.className = 'player-name-tag';
-                if (roomData.team2Couch?.includes(player.id)) {
-                    div.classList.add('on-couch');
-                }
-                div.textContent = player.name;
-                team2List.appendChild(div);
-            });
-
-            const team1Couch = document.getElementById('playerTeam1Couch');
-            const team2Couch = document.getElementById('playerTeam2Couch');
-
-            team1Couch.innerHTML = '';
-            if (roomData.team1Couch && roomData.team1Couch.length > 0) {
-                roomData.team1Couch.forEach(playerId => {
-                    const player = roomData.players[playerId];
-                    if (player) {
-                        const div = document.createElement('div');
-                        div.className = 'couch-player';
-                        div.textContent = '🏆 ' + player.name;
-                        team1Couch.appendChild(div);
-                    }
-                });
-            } else {
-                team1Couch.innerHTML = '<div class="couch-empty">فارغة</div>';
-            }
-
-            team2Couch.innerHTML = '';
-            if (roomData.team2Couch && roomData.team2Couch.length > 0) {
-                roomData.team2Couch.forEach(playerId => {
-                    const player = roomData.players[playerId];
-                    if (player) {
-                        const div = document.createElement('div');
-                        div.className = 'couch-player';
-                        div.textContent = '🏆 ' + player.name;
-                        team2Couch.appendChild(div);
-                    }
-                });
-            } else {
-                team2Couch.innerHTML = '<div class="couch-empty">فارغة</div>';
-            }
-        }
-
-        function checkVictory() {
-            const teamSize = roomData.teamSize || 2;
-            
-            if (roomData.team1Couch?.length >= teamSize) {
-                showVictory(roomData.team1Name);
-            } else if (roomData.team2Couch?.length >= teamSize) {
-                showVictory(roomData.team2Name);
-            }
-        }
-
-        function showVictory(teamName) {
-            clearInterval(timerInterval);
-            
-            const victoryScreen = document.getElementById('victoryScreen');
-            if (victoryScreen) {
-                victoryScreen.style.display = 'block';
-                document.getElementById('victoryMessage').textContent = `🎉 ${teamName} فاز باللعبة! 🎉`;
-            }
-            
-            const victoryScreenPlayer = document.getElementById('victoryScreenPlayer');
-            if (victoryScreenPlayer) {
-                victoryScreenPlayer.style.display = 'block';
-                document.getElementById('victoryMessagePlayer').textContent = `🎉 ${teamName} فاز باللعبة! 🎉`;
-                
-                document.getElementById('teamsPlayersDisplay').style.display = 'none';
-                document.getElementById('gameElements').style.display = 'none';
-                document.getElementById('hostControlsPlayer').style.display = 'none';
-                document.getElementById('onCouchMessage').style.display = 'none';
-                
-                const couchDisplay = document.querySelector('.couch-display-player');
-                if (couchDisplay) couchDisplay.style.display = 'none';
-            }
-            
-            const nextBtn = document.getElementById('nextQuestionBtn');
-            if (nextBtn) nextBtn.style.display = 'none';
-            
-            const nextBtnPlayer = document.getElementById('nextQuestionBtnPlayer');
-            if (nextBtnPlayer) nextBtnPlayer.style.display = 'none';
-        }
-
-        document.getElementById('roomCode')?.addEventListener('input', function(e) {
-            this.value = this.value.replace(/[^0-9]/g, '');
+        database.ref('rooms/' + currentRoomCode).update({
+            buzzedPlayer: currentPlayerId,
+            waitingForTextAnswer: true,
+            questionStartTime: Date.now()
         });
-    </script>
+
+        clearInterval(timerInterval);
+        startAnswerTimer(5);
+    }
+
+    function startAnswerTimer(seconds) {
+        clearInterval(answerTimerInterval);
+        let timeLeft = seconds;
+        
+        answerTimerInterval = setInterval(() => {
+            timeLeft--;
+
+            if (timeLeft <= 0) {
+                clearInterval(answerTimerInterval);
+                
+                if (roomData.buzzedPlayer === currentPlayerId && roomData.correctAnswer === null) {
+                    const playerTeam = roomData.players[currentPlayerId]?.team;
+                    database.ref('rooms/' + currentRoomCode).update({
+                        correctAnswer: false,
+                        waitingForTextAnswer: false,
+                        showOptions: true,
+                        bannedTeam: playerTeam
+                    });
+                }
+            }
+        }, 1000);
+    }
+
+    function submitTextAnswer() {
+        const textInput = document.getElementById('textAnswerInput');
+        const userAnswer = textInput.value.trim().toLowerCase();
+        
+        if (!userAnswer) {
+            alert('الرجاء كتابة إجابة!');
+            return;
+        }
+
+        clearInterval(answerTimerInterval);
+
+        const correctOption = roomData.currentQuestion.options[roomData.currentQuestion.correct];
+        const correctAnswer = correctOption.toLowerCase();
+        
+        const isCorrect = userAnswer === correctAnswer || 
+                         correctAnswer.includes(userAnswer) || 
+                         userAnswer.includes(correctAnswer.split(' ')[0]);
+
+        const roomRef = database.ref('rooms/' + currentRoomCode);
+        
+        if (isCorrect) {
+            roomRef.update({
+                correctAnswer: true,
+                waitingForTextAnswer: false
+            });
+
+            const otherTeam = currentTeam === 'team1' ? 'team2' : 'team1';
+            const hasOtherCouch = roomData[otherTeam + 'Couch']?.length > 0;
+            
+            if (hasOtherCouch) {
+                roomRef.update({
+                    waitingForChoice: true,
+                    choicePlayer: currentPlayerId
+                });
+            } else {
+                addToCouch();
+            }
+        } else {
+            const playerTeam = roomData.players[currentPlayerId]?.team;
+            roomRef.update({
+                correctAnswer: false,
+                waitingForTextAnswer: false,
+                showOptions: true,
+                bannedTeam: playerTeam
+            });
+        }
+    }
+
+    function selectAnswer(answerIndex) {
+        const isCorrect = answerIndex === roomData.currentQuestion.correct;
+
+        database.ref('rooms/' + currentRoomCode).update({
+            selectedAnswer: answerIndex,
+            correctAnswer: isCorrect
+        });
+
+        clearInterval(timerInterval);
+
+        if (isCorrect) {
+            const otherTeam = currentTeam === 'team1' ? 'team2' : 'team1';
+            const hasOtherCouch = roomData[otherTeam + 'Couch']?.length > 0;
+            
+            if (hasOtherCouch) {
+                database.ref('rooms/' + currentRoomCode).update({
+                    waitingForChoice: true,
+                    choicePlayer: currentPlayerId,
+                    bannedTeam: null
+                });
+            } else {
+                addToCouch();
+                database.ref('rooms/' + currentRoomCode).update({ bannedTeam: null });
+            }
+        } else {
+            database.ref('rooms/' + currentRoomCode).update({
+                showOptions: false,
+                bannedTeam: null
+            });
+            
+            if (isHost) {
+                setTimeout(() => {
+                    const nextBtn = document.getElementById('nextQuestionBtnPlayer');
+                    if (nextBtn) nextBtn.disabled = false;
+                }, 2000);
+            }
+        }
+    }
+
+    function makeChoice(choice) {
+        if (choice === 'sit') {
+            addToCouch();
+        } else if (choice === 'steal') {
+            stealFromCouch();
+        }
+    }
+
+    function addToCouch() {
+        const couchKey = currentTeam + 'Couch';
+        const scoreKey = currentTeam + 'Score';
+        
+        const newCouch = [...(roomData[couchKey] || []), currentPlayerId];
+        const newScore = (roomData[scoreKey] || 0) + 1;
+
+        database.ref('rooms/' + currentRoomCode).update({
+            [couchKey]: newCouch,
+            [scoreKey]: newScore,
+            waitingForChoice: false,
+            choicePlayer: null
+        });
+
+        if (isHost) {
+            setTimeout(() => {
+                const nextBtn = document.getElementById('nextQuestionBtnPlayer');
+                if (nextBtn) nextBtn.disabled = false;
+            }, 1000);
+        }
+    }
+
+    function stealFromCouch() {
+        const otherTeam = currentTeam === 'team1' ? 'team2' : 'team1';
+        const otherCouchKey = otherTeam + 'Couch';
+        const couchKey = currentTeam + 'Couch';
+        const scoreKey = currentTeam + 'Score';
+        const otherScoreKey = otherTeam + 'Score';
+        
+        const otherCouch = [...(roomData[otherCouchKey] || [])];
+        const stolenPlayer = otherCouch.pop();
+        
+        const newCouch = [...(roomData[couchKey] || []), currentPlayerId];
+        const newScore = (roomData[scoreKey] || 0) + 1;
+        const otherNewScore = Math.max(0, (roomData[otherScoreKey] || 0) - 1);
+
+        database.ref('rooms/' + currentRoomCode).update({
+            [couchKey]: newCouch,
+            [otherCouchKey]: otherCouch,
+            [scoreKey]: newScore,
+            [otherScoreKey]: otherNewScore,
+            waitingForChoice: false,
+            choicePlayer: null
+        });
+
+        if (isHost) {
+            setTimeout(() => {
+                const nextBtn = document.getElementById('nextQuestionBtnPlayer');
+                if (nextBtn) nextBtn.disabled = false;
+            }, 1000);
+        }
+    }
+
+    function checkVictory() {
+        const teamSize = roomData.teamSize || 2;
+        
+        if (roomData.team1Couch?.length >= teamSize) {
+            showVictory(roomData.team1Name);
+        } else if (roomData.team2Couch?.length >= teamSize) {
+            showVictory(roomData.team2Name);
+        }
+    }
+
+    function showVictory(teamName) {
+        clearInterval(timerInterval);
+        clearInterval(answerTimerInterval);
+        
+        const victoryScreenPlayer = document.getElementById('victoryScreenPlayer');
+        if (victoryScreenPlayer) {
+            victoryScreenPlayer.style.display = 'block';
+            document.getElementById('victoryMessagePlayer').textContent = `🎉 ${teamName} فاز باللعبة! 🎉`;
+            
+            document.getElementById('teamsPlayersDisplay').style.display = 'none';
+            document.getElementById('gameElements').style.display = 'none';
+            document.getElementById('hostControlsPlayer').style.display = 'none';
+            document.getElementById('onCouchMessage').style.display = 'none';
+            
+            const couchDisplay = document.querySelector('.couch-display-player');
+            if (couchDisplay) couchDisplay.style.display = 'none';
+        }
+        
+        const nextBtnPlayer = document.getElementById('nextQuestionBtnPlayer');
+        if (nextBtnPlayer) nextBtnPlayer.style.display = 'none';
+    }
+
+    document.getElementById('roomCode')?.addEventListener('input', function(e) {
+        this.value = this.value.replace(/[^0-9]/g, '');
+    });
+
+    document.getElementById('textAnswerInput')?.addEventListener('keypress', function(e) {
+        if (e.key === 'Enter') {
+            submitTextAnswer();
+        }
+    });
+</script>
+```
+
 </body>
 </html>
