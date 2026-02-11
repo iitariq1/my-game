@@ -1,1929 +1,1777 @@
 <!DOCTYPE html>
-
 <html lang="ar" dir="rtl">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>لعبة الكنبة - أسئلة وأجوبة</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>لعبة الكنبة</title>
+    <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700;800;900&display=swap" rel="stylesheet">
     <style>
+        :root {
+            --bg-dark: #0B0E17;
+            --bg-card: #141825;
+            --bg-card-alt: #1A1F33;
+            --border: #2A3050;
+            --gold: #E8B830;
+            --gold-dim: #A07D1C;
+            --gold-glow: rgba(232, 184, 48, 0.15);
+            --red: #E8443A;
+            --red-bg: rgba(232, 68, 58, 0.12);
+            --blue: #3A8BE8;
+            --blue-bg: rgba(58, 139, 232, 0.12);
+            --green: #2ECC71;
+            --green-bg: rgba(46, 204, 113, 0.12);
+            --text: #F0EDE6;
+            --text-dim: #7A7E8C;
+            --orange: #F39C12;
+            --orange-bg: rgba(243, 156, 18, 0.12);
+            --radius: 12px;
+            --radius-sm: 8px;
+        }
+
         * { margin: 0; padding: 0; box-sizing: border-box; }
 
-```
-    body {
-        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-        background: linear-gradient(135deg, #0f0520 0%, #1a0b2e 25%, #2d1850 50%, #1a0b2e 75%, #0f0520 100%);
-        min-height: 100vh;
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        padding: 20px;
-        position: relative;
-        overflow-x: hidden;
-    }
-    
-    html {
-        background: #0a0315;
-    }
-
-    body::before {
-        content: '🌙✨🕌✨⭐✨🌙✨🕌✨⭐';
-        position: fixed;
-        top: 10px;
-        left: 0;
-        right: 0;
-        text-align: center;
-        font-size: 1.5em;
-        z-index: 0;
-        opacity: 0.6;
-        animation: twinkle 3s ease-in-out infinite;
-    }
-
-    body::after {
-        content: '⭐✨🌙✨🕌✨⭐✨🌙✨🕌';
-        position: fixed;
-        bottom: 10px;
-        left: 0;
-        right: 0;
-        text-align: center;
-        font-size: 1.5em;
-        z-index: 0;
-        opacity: 0.6;
-        animation: twinkle 3s ease-in-out infinite 1.5s;
-    }
-
-    @keyframes twinkle {
-        0%, 100% { opacity: 0.4; }
-        50% { opacity: 0.8; }
-    }
-
-    .container {
-        background: linear-gradient(135deg, #2d1b4e 0%, #4a2c6f 100%);
-        border-radius: 20px;
-        box-shadow: 0 20px 60px rgba(0,0,0,0.5), 0 0 30px rgba(212, 175, 55, 0.3);
-        max-width: 500px;
-        width: 100%;
-        padding: 25px;
-        position: relative;
-        z-index: 1;
-        border: 3px solid #d4af37;
-        margin: 0 auto;
-    }
-
-    h1 {
-        text-align: center;
-        background: linear-gradient(135deg, #ffd700 0%, #ffed4e 50%, #ffd700 100%);
-        -webkit-background-clip: text;
-        -webkit-text-fill-color: transparent;
-        background-clip: text;
-        margin-bottom: 20px;
-        font-size: 2em;
-        animation: glow 2s ease-in-out infinite;
-    }
-
-    @keyframes glow {
-        0%, 100% { filter: brightness(1); }
-        50% { filter: brightness(1.3); }
-    }
-
-    .screen { display: none; }
-    .screen.active { display: block; }
-
-    .input-group {
-        margin-bottom: 15px;
-    }
-
-    .input-group label {
-        display: block;
-        margin-bottom: 6px;
-        font-weight: bold;
-        color: #ffd700;
-        font-size: 0.95em;
-    }
-
-    .input-group input, .input-group select {
-        width: 100%;
-        padding: 12px;
-        border: 2px solid #d4af37;
-        border-radius: 10px;
-        font-size: 15px;
-        background: rgba(45, 27, 78, 0.6);
-        color: #ffd700;
-        font-weight: bold;
-    }
-    
-    .input-group input::placeholder {
-        color: rgba(255, 215, 0, 0.5);
-    }
-    
-    .input-group select {
-        color: #ffd700;
-    }
-    
-    .input-group select option {
-        background: #2d1b4e;
-        color: #ffd700;
-    }
-
-    .btn {
-        width: 100%;
-        padding: 12px;
-        background: linear-gradient(135deg, #d4af37 0%, #aa8929 100%);
-        color: #1a0b2e;
-        border: none;
-        border-radius: 10px;
-        font-size: 1.1em;
-        font-weight: bold;
-        cursor: pointer;
-        transition: all 0.3s;
-        margin-top: 8px;
-        box-shadow: 0 4px 12px rgba(212, 175, 55, 0.4);
-    }
-
-    .btn:hover {
-        transform: translateY(-2px);
-        box-shadow: 0 6px 16px rgba(212, 175, 55, 0.6);
-    }
-
-    .btn.secondary {
-        background: linear-gradient(135deg, #6a4c93 0%, #533a71 100%);
-        color: #ffd700;
-    }
-
-    .btn.success {
-        background: linear-gradient(135deg, #00a86b 0%, #008c59 100%);
-        color: white;
-    }
-
-    .btn:disabled {
-        opacity: 0.5;
-        cursor: not-allowed;
-    }
-
-    .room-code {
-        text-align: center;
-        padding: 20px;
-        background: linear-gradient(135deg, rgba(212, 175, 55, 0.2) 0%, rgba(170, 137, 41, 0.2) 100%);
-        border-radius: 15px;
-        margin: 15px 0;
-        border: 2px solid #d4af37;
-    }
-
-    .room-code h2 {
-        color: #ffd700;
-        font-size: 1.2em;
-        margin-bottom: 8px;
-    }
-
-    .code {
-        font-size: 2.5em;
-        font-weight: bold;
-        color: #ffd700;
-        letter-spacing: 8px;
-        font-family: monospace;
-        text-shadow: 0 0 15px rgba(255, 215, 0, 0.8);
-    }
-
-    .players-list {
-        background: linear-gradient(135deg, rgba(212, 175, 55, 0.15) 0%, rgba(170, 137, 41, 0.15) 100%);
-        border-radius: 15px;
-        padding: 15px;
-        margin: 15px 0;
-        border: 2px solid rgba(212, 175, 55, 0.5);
-    }
-
-    .players-list h3 {
-        color: #ffd700;
-        margin-bottom: 12px;
-        font-size: 1.1em;
-    }
-
-    .player-item {
-        background: linear-gradient(135deg, rgba(74, 44, 111, 0.7) 0%, rgba(45, 27, 78, 0.7) 100%);
-        padding: 10px 12px;
-        margin-bottom: 8px;
-        border-radius: 8px;
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        box-shadow: 0 2px 6px rgba(0,0,0,0.2);
-        border: 1px solid #d4af37;
-    }
-
-    .player-name {
-        font-weight: bold;
-        color: #ffd700;
-        font-size: 0.95em;
-    }
-
-    .team-badge {
-        padding: 4px 12px;
-        border-radius: 15px;
-        font-size: 0.85em;
-        font-weight: bold;
-        color: white;
-    }
-
-    .team-badge.team1 {
-        background: linear-gradient(135deg, #e74c3c 0%, #c0392b 100%);
-    }
-
-    .team-badge.team2 {
-        background: linear-gradient(135deg, #3498db 0%, #2980b9 100%);
-    }
-
-    .host-badge {
-        background: linear-gradient(135deg, #ffd700 0%, #aa8929 100%);
-        padding: 4px 12px;
-        border-radius: 15px;
-        font-size: 0.8em;
-        color: #1a0b2e;
-        font-weight: bold;
-    }
-
-    .teams-players-display {
-        display: grid;
-        grid-template-columns: 1fr 1fr;
-        gap: 8px;
-        margin-bottom: 8px;
-    }
-
-    .team-players-section {
-        background: linear-gradient(135deg, rgba(212, 175, 55, 0.15) 0%, rgba(170, 137, 41, 0.15) 100%);
-        padding: 8px;
-        border-radius: 10px;
-        border: 2px solid rgba(212, 175, 55, 0.5);
-    }
-
-    .team-header {
-        color: #ffd700;
-        font-size: 0.95em;
-        margin-bottom: 5px;
-        text-align: center;
-    }
-
-    .players-list-game {
-        display: flex;
-        flex-direction: column;
-        gap: 4px;
-    }
-
-    .player-name-tag {
-        background: linear-gradient(135deg, rgba(74, 44, 111, 0.8) 0%, rgba(45, 27, 78, 0.8) 100%);
-        padding: 4px 6px;
-        border-radius: 5px;
-        text-align: center;
-        font-weight: bold;
-        color: #ffd700;
-        border: 2px solid #d4af37;
-        font-size: 0.8em;
-    }
-
-    .player-name-tag.on-couch {
-        opacity: 0.5;
-        text-decoration: line-through;
-    }
-
-    .couch-display-player {
-        background: linear-gradient(135deg, rgba(212, 175, 55, 0.3) 0%, rgba(170, 137, 41, 0.3) 100%);
-        padding: 8px;
-        border-radius: 10px;
-        border: 3px solid #ffd700;
-        margin-bottom: 8px;
-        box-shadow: 0 0 15px rgba(255, 215, 0, 0.3);
-    }
-
-    .couch-display-player h3 {
-        text-align: center;
-        color: #ffd700;
-        font-size: 1em;
-        margin-bottom: 6px;
-    }
-
-    .couch-seats-player {
-        display: grid;
-        grid-template-columns: 1fr 1fr;
-        gap: 6px;
-    }
-
-    .couch-team-player {
-        background: rgba(255, 255, 255, 0.1);
-        padding: 5px;
-        border-radius: 6px;
-        border: 2px solid rgba(212, 175, 55, 0.5);
-    }
-
-    .couch-team-player h4 {
-        color: #ffd700;
-        font-size: 0.8em;
-        margin-bottom: 4px;
-        text-align: center;
-    }
-
-    .couch-player {
-        background: linear-gradient(135deg, #ffd700 0%, #d4af37 100%);
-        padding: 5px 8px;
-        margin-bottom: 4px;
-        border-radius: 6px;
-        text-align: center;
-        font-weight: bold;
-        color: #1a0b2e;
-        box-shadow: 0 2px 6px rgba(212, 175, 55, 0.4);
-        animation: slideIn 0.5s ease-out;
-        font-size: 0.8em;
-    }
-
-    @keyframes slideIn {
-        from { opacity: 0; transform: translateX(-20px); }
-        to { opacity: 1; transform: translateX(0); }
-    }
-
-    .couch-empty {
-        text-align: center;
-        color: rgba(255, 215, 0, 0.5);
-        font-style: italic;
-        padding: 6px;
-        font-size: 0.85em;
-    }
-
-    .on-couch-message {
-        background: linear-gradient(135deg, rgba(0, 168, 107, 0.3) 0%, rgba(0, 140, 89, 0.3) 100%);
-        border: 3px solid #00a86b;
-        border-radius: 12px;
-        padding: 25px 12px;
-        margin: 12px 0;
-        text-align: center;
-    }
-
-    .on-couch-message .trophy-icon {
-        font-size: 3.5em;
-        margin-bottom: 8px;
-        animation: bounce 2s ease-in-out infinite;
-    }
-
-    @keyframes bounce {
-        0%, 100% { transform: translateY(0); }
-        50% { transform: translateY(-15px); }
-    }
-
-    .on-couch-message h2 {
-        color: #00a86b;
-        font-size: 1.6em;
-        margin-bottom: 8px;
-    }
-
-    .on-couch-message p {
-        color: #52c997;
-        font-size: 1em;
-        font-weight: bold;
-    }
-
-    .question-display {
-        background: linear-gradient(135deg, rgba(212, 175, 55, 0.2) 0%, rgba(170, 137, 41, 0.2) 100%);
-        padding: 12px;
-        border-radius: 10px;
-        margin-bottom: 10px;
-        min-height: 50px;
-        border: 2px solid #d4af37;
-    }
-
-    .question-text {
-        font-size: 1em;
-        color: #ffd700;
-        text-align: center;
-        margin-bottom: 6px;
-    }
-
-    .timer-display {
-        text-align: center;
-        font-size: 1.8em;
-        font-weight: bold;
-        background: linear-gradient(135deg, #ffd700 0%, #ffed4e 100%);
-        -webkit-background-clip: text;
-        -webkit-text-fill-color: transparent;
-        background-clip: text;
-        margin: 8px 0;
-    }
-
-    .timer-display.warning {
-        background: linear-gradient(135deg, #ff4444 0%, #cc0000 100%);
-        -webkit-background-clip: text;
-        -webkit-text-fill-color: transparent;
-        animation: pulse 0.5s infinite;
-    }
-
-    @keyframes pulse {
-        0%, 100% { opacity: 1; transform: scale(1); }
-        50% { opacity: 0.7; transform: scale(1.1); }
-    }
-
-    .buzzer-indicator {
-        text-align: center;
-        padding: 6px;
-        margin: 6px 0;
-        background: linear-gradient(135deg, rgba(255, 107, 53, 0.3) 0%, rgba(247, 147, 30, 0.3) 100%);
-        border-radius: 8px;
-        border: 2px solid #ff6b35;
-        color: #ffd700;
-        font-weight: bold;
-        font-size: 0.85em;
-    }
-
-    .status-message {
-        text-align: center;
-        padding: 8px;
-        margin: 8px 0;
-        border-radius: 8px;
-        font-size: 0.9em;
-        font-weight: bold;
-        border: 2px solid;
-    }
-
-    .status-message.info {
-        background: linear-gradient(135deg, rgba(52, 152, 219, 0.2) 0%, rgba(41, 128, 185, 0.2) 100%);
-        color: #5dade2;
-        border-color: #3498db;
-    }
-
-    .status-message.success {
-        background: linear-gradient(135deg, rgba(0, 168, 107, 0.2) 0%, rgba(0, 140, 89, 0.2) 100%);
-        color: #52c997;
-        border-color: #00a86b;
-    }
-
-    .status-message.error {
-        background: linear-gradient(135deg, rgba(231, 76, 60, 0.2) 0%, rgba(192, 57, 43, 0.2) 100%);
-        color: #ec7063;
-        border-color: #e74c3c;
-    }
-
-    .status-message.warning {
-        background: linear-gradient(135deg, rgba(243, 156, 18, 0.2) 0%, rgba(230, 126, 34, 0.2) 100%);
-        color: #f5b041;
-        border-color: #f39c12;
-    }
-
-    .buzz-button {
-        width: 100%;
-        height: 90px;
-        font-size: 1.5em;
-        background: linear-gradient(135deg, #ff6b35 0%, #f7931e 50%, #ff6b35 100%);
-        color: white;
-        border: none;
-        border-radius: 12px;
-        font-weight: bold;
-        cursor: pointer;
-        transition: all 0.3s;
-        box-shadow: 0 6px 20px rgba(255, 107, 53, 0.5);
-        border: 3px solid #ffd700;
-        position: relative;
-        overflow: hidden;
-        margin: 10px 0;
-    }
-
-    .buzz-button::before {
-        content: '🔔';
-        position: absolute;
-        font-size: 1.6em;
-        top: 50%;
-        left: 50%;
-        transform: translate(-50%, -50%);
-        opacity: 0.3;
-    }
-
-    .buzz-button:active:not(:disabled) {
-        transform: scale(0.95);
-    }
-
-    .buzz-button:disabled {
-        background: linear-gradient(135deg, #555 0%, #333 100%);
-        cursor: not-allowed;
-        box-shadow: none;
-        border-color: #555;
-    }
-
-    .answer-input-container {
-        margin: 12px 0;
-    }
-
-    .answer-timer {
-        text-align: center;
-        font-size: 2em;
-        font-weight: bold;
-        color: #ffd700;
-        margin: 8px 0;
-        background: linear-gradient(135deg, #ffd700 0%, #ffed4e 100%);
-        -webkit-background-clip: text;
-        -webkit-text-fill-color: transparent;
-        background-clip: text;
-    }
-
-    .answer-timer.warning {
-        background: linear-gradient(135deg, #ff4444 0%, #cc0000 100%);
-        -webkit-background-clip: text;
-        -webkit-text-fill-color: transparent;
-        animation: pulse 0.5s infinite;
-    }
-
-    .answer-input {
-        width: 100%;
-        padding: 12px;
-        border: 3px solid #ffd700;
-        border-radius: 10px;
-        font-size: 1em;
-        font-weight: bold;
-        text-align: center;
-        background: rgba(45, 27, 78, 0.6);
-        color: #ffd700;
-    }
-    
-    .answer-input::placeholder {
-        color: rgba(255, 215, 0, 0.5);
-    }
-
-    .answer-input:focus {
-        outline: none;
-        box-shadow: 0 0 15px rgba(255, 215, 0, 0.6);
-    }
-
-    .submit-answer-btn {
-        width: 100%;
-        padding: 12px;
-        background: linear-gradient(135deg, #00a86b 0%, #008c59 100%);
-        color: white;
-        border: none;
-        border-radius: 10px;
-        font-size: 1.1em;
-        font-weight: bold;
-        cursor: pointer;
-        transition: all 0.3s;
-        margin-top: 8px;
-        box-shadow: 0 4px 12px rgba(0, 168, 107, 0.4);
-    }
-
-    .submit-answer-btn:hover:not(:disabled) {
-        transform: translateY(-2px);
-    }
-
-    .answer-options {
-        display: grid;
-        grid-template-columns: 1fr 1fr;
-        gap: 8px;
-        margin-top: 10px;
-    }
-
-    .answer-btn {
-        padding: 12px 8px;
-        background: linear-gradient(135deg, rgba(74, 44, 111, 0.7) 0%, rgba(45, 27, 78, 0.7) 100%);
-        border: 3px solid #d4af37;
-        border-radius: 10px;
-        font-size: 0.9em;
-        font-weight: bold;
-        cursor: pointer;
-        transition: all 0.3s;
-        color: #ffd700;
-        min-height: 60px;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        text-align: center;
-    }
-
-    .answer-btn:hover:not(:disabled) {
-        background: linear-gradient(135deg, #ffd700 0%, #d4af37 100%);
-        color: #1a0b2e;
-        transform: translateY(-2px);
-    }
-
-    .player-choice-buttons {
-        display: grid;
-        grid-template-columns: 1fr;
-        gap: 10px;
-        margin-top: 12px;
-    }
-
-    .choice-btn {
-        padding: 15px;
-        border: none;
-        border-radius: 12px;
-        font-size: 1em;
-        font-weight: bold;
-        cursor: pointer;
-        transition: all 0.3s;
-        border: 3px solid;
-    }
-
-    .choice-btn.sit {
-        background: linear-gradient(135deg, #00a86b 0%, #008c59 100%);
-        color: white;
-        border-color: #00a86b;
-    }
-
-    .choice-btn.steal {
-        background: linear-gradient(135deg, #e74c3c 0%, #c0392b 100%);
-        color: white;
-        border-color: #c0392b;
-    }
-
-    .choice-btn:hover {
-        transform: translateY(-2px);
-        box-shadow: 0 6px 16px rgba(0, 0, 0, 0.3);
-    }
-
-    .victory-screen {
-        text-align: center;
-        padding: 40px;
-    }
-
-    .victory-screen h2 {
-        font-size: 2.5em;
-        background: linear-gradient(135deg, #ffd700 0%, #ffed4e 100%);
-        -webkit-background-clip: text;
-        -webkit-text-fill-color: transparent;
-        margin-bottom: 25px;
-        animation: glow 1s ease-in-out infinite;
-    }
-
-    .confetti {
-        font-size: 4em;
-        margin-bottom: 15px;
-        animation: bounce 1s ease-in-out infinite;
-    }
-
-    @media (max-width: 768px) {
-        .container { padding: 18px; }
-        h1 { font-size: 1.7em; }
-        .code { font-size: 2em; letter-spacing: 5px; }
-        .question-text { font-size: 0.95em; }
-        .timer-display { font-size: 1.6em; }
-        .buzz-button { height: 80px; font-size: 1.3em; }
-        .answer-btn { font-size: 0.8em; min-height: 50px; }
-    }
-</style>
-```
-
+        body {
+            font-family: 'Tajawal', sans-serif;
+            background: var(--bg-dark);
+            color: var(--text);
+            min-height: 100dvh;
+            display: flex;
+            justify-content: center;
+            align-items: flex-start;
+            padding: 12px;
+            overflow-x: hidden;
+        }
+
+        .app {
+            width: 100%;
+            max-width: 460px;
+            min-height: calc(100dvh - 24px);
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* ═══ SCREENS ═══ */
+        .screen { display: none; flex-direction: column; flex: 1; }
+        .screen.active { display: flex; }
+
+        /* ═══ HEADER ═══ */
+        .header {
+            text-align: center;
+            padding: 16px 0 12px;
+            position: relative;
+        }
+        .header h1 {
+            font-size: 1.6em;
+            font-weight: 900;
+            color: var(--gold);
+            letter-spacing: 1px;
+        }
+        .header .sub {
+            font-size: 0.8em;
+            color: var(--text-dim);
+            margin-top: 2px;
+        }
+
+        /* ═══ CARD ═══ */
+        .card {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            padding: 16px;
+            margin-bottom: 10px;
+        }
+
+        .card-title {
+            font-size: 0.8em;
+            font-weight: 700;
+            color: var(--text-dim);
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            margin-bottom: 10px;
+        }
+
+        /* ═══ INPUTS ═══ */
+        .field { margin-bottom: 12px; }
+        .field label {
+            display: block;
+            font-size: 0.85em;
+            font-weight: 700;
+            color: var(--gold);
+            margin-bottom: 5px;
+        }
+        .field input, .field select {
+            width: 100%;
+            padding: 11px 14px;
+            background: var(--bg-card-alt);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-sm);
+            color: var(--text);
+            font-family: inherit;
+            font-size: 0.95em;
+            font-weight: 500;
+            outline: none;
+            transition: border 0.2s;
+        }
+        .field input:focus, .field select:focus {
+            border-color: var(--gold);
+        }
+        .field input::placeholder { color: var(--text-dim); }
+        .field select option { background: var(--bg-card); }
+
+        /* ═══ BUTTONS ═══ */
+        .btn {
+            width: 100%;
+            padding: 12px;
+            border: none;
+            border-radius: var(--radius-sm);
+            font-family: inherit;
+            font-size: 1em;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.2s;
+            margin-top: 6px;
+        }
+        .btn:active { transform: scale(0.97); }
+        .btn:disabled { opacity: 0.4; cursor: not-allowed; transform: none; }
+
+        .btn-gold {
+            background: var(--gold);
+            color: var(--bg-dark);
+        }
+        .btn-gold:hover:not(:disabled) { background: #F0C540; }
+
+        .btn-outline {
+            background: transparent;
+            border: 1.5px solid var(--border);
+            color: var(--text-dim);
+        }
+        .btn-outline:hover:not(:disabled) { border-color: var(--text-dim); color: var(--text); }
+
+        .btn-green {
+            background: var(--green);
+            color: #fff;
+        }
+        .btn-red {
+            background: var(--red);
+            color: #fff;
+        }
+        .btn-blue {
+            background: var(--blue);
+            color: #fff;
+        }
+
+        /* ═══ ROOM CODE ═══ */
+        .room-code-display {
+            text-align: center;
+            padding: 14px;
+            background: var(--gold-glow);
+            border: 1.5px solid var(--gold-dim);
+            border-radius: var(--radius);
+            margin-bottom: 12px;
+        }
+        .room-code-display .label { font-size: 0.8em; color: var(--gold-dim); font-weight: 700; }
+        .room-code-display .code {
+            font-size: 2.4em;
+            font-weight: 900;
+            color: var(--gold);
+            letter-spacing: 10px;
+            font-variant-numeric: tabular-nums;
+        }
+
+        /* ═══ PLAYER LIST ═══ */
+        .player-chip {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            padding: 5px 10px;
+            background: var(--bg-card-alt);
+            border: 1px solid var(--border);
+            border-radius: 20px;
+            font-size: 0.82em;
+            font-weight: 600;
+            margin: 3px;
+        }
+        .player-chip .dot {
+            width: 8px; height: 8px;
+            border-radius: 50%;
+            flex-shrink: 0;
+        }
+        .dot-red { background: var(--red); }
+        .dot-blue { background: var(--blue); }
+        .dot-gold { background: var(--gold); }
+
+        /* ═══ TEAM SELECT BUTTONS ═══ */
+        .team-select-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 8px;
+            margin: 8px 0;
+        }
+        .team-select-btn {
+            padding: 14px 8px;
+            border-radius: var(--radius);
+            font-family: inherit;
+            font-size: 0.95em;
+            font-weight: 700;
+            cursor: pointer;
+            border: 2px solid transparent;
+            transition: all 0.2s;
+            text-align: center;
+        }
+        .team-select-btn.red-team {
+            background: var(--red-bg);
+            color: var(--red);
+            border-color: rgba(232,68,58,0.3);
+        }
+        .team-select-btn.blue-team {
+            background: var(--blue-bg);
+            color: var(--blue);
+            border-color: rgba(58,139,232,0.3);
+        }
+        .team-select-btn.selected {
+            border-color: var(--gold) !important;
+            box-shadow: 0 0 12px var(--gold-glow);
+        }
+        .team-select-btn:active { transform: scale(0.96); }
+
+        /* ═══ GAME SCREEN ═══ */
+        .game-top-bar {
+            display: grid;
+            grid-template-columns: 1fr auto 1fr;
+            align-items: center;
+            gap: 6px;
+            margin-bottom: 8px;
+        }
+        .team-score-box {
+            padding: 8px;
+            border-radius: var(--radius-sm);
+            text-align: center;
+        }
+        .team-score-box.red { background: var(--red-bg); border: 1px solid rgba(232,68,58,0.25); }
+        .team-score-box.blue { background: var(--blue-bg); border: 1px solid rgba(58,139,232,0.25); }
+        .team-score-box .t-name {
+            font-size: 0.7em;
+            font-weight: 700;
+            opacity: 0.8;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+        .team-score-box.red .t-name { color: var(--red); }
+        .team-score-box.blue .t-name { color: var(--blue); }
+        .team-score-box .t-score {
+            font-size: 1.5em;
+            font-weight: 900;
+            line-height: 1;
+        }
+        .team-score-box.red .t-score { color: var(--red); }
+        .team-score-box.blue .t-score { color: var(--blue); }
+        .vs-badge {
+            font-size: 0.75em;
+            font-weight: 900;
+            color: var(--text-dim);
+            padding: 4px 8px;
+            border-radius: 20px;
+            border: 1px solid var(--border);
+            background: var(--bg-card);
+        }
+
+        /* ═══ COUCH ═══ */
+        .couch-section {
+            background: var(--gold-glow);
+            border: 1.5px solid var(--gold-dim);
+            border-radius: var(--radius);
+            padding: 10px;
+            margin-bottom: 8px;
+        }
+        .couch-label {
+            text-align: center;
+            font-size: 0.75em;
+            font-weight: 800;
+            color: var(--gold);
+            letter-spacing: 2px;
+            margin-bottom: 6px;
+        }
+        .couch-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 8px;
+        }
+        .couch-col { text-align: center; }
+        .couch-col .col-label {
+            font-size: 0.7em;
+            font-weight: 700;
+            margin-bottom: 4px;
+            opacity: 0.7;
+        }
+        .couch-col.red .col-label { color: var(--red); }
+        .couch-col.blue .col-label { color: var(--blue); }
+        .couch-seat {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 4px;
+            padding: 4px 10px;
+            border-radius: 20px;
+            font-size: 0.75em;
+            font-weight: 700;
+            margin: 2px;
+            background: var(--gold);
+            color: var(--bg-dark);
+        }
+        .couch-empty-text {
+            font-size: 0.7em;
+            color: var(--text-dim);
+            font-style: italic;
+        }
+        .seat-slot {
+            width: 28px; height: 28px;
+            border-radius: 50%;
+            border: 1.5px dashed var(--text-dim);
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            margin: 2px;
+            font-size: 0.65em;
+            opacity: 0.4;
+        }
+
+        /* ═══ QUESTION AREA ═══ */
+        .question-card {
+            background: var(--bg-card);
+            border: 1.5px solid var(--border);
+            border-radius: var(--radius);
+            padding: 14px;
+            margin-bottom: 8px;
+            text-align: center;
+            position: relative;
+        }
+        .q-category {
+            font-size: 0.7em;
+            font-weight: 700;
+            color: var(--gold-dim);
+            letter-spacing: 1px;
+            margin-bottom: 6px;
+        }
+        .q-text {
+            font-size: 1.05em;
+            font-weight: 700;
+            line-height: 1.5;
+            color: var(--text);
+        }
+
+        /* ═══ TIMER ═══ */
+        .timer-bar {
+            text-align: center;
+            margin-bottom: 8px;
+        }
+        .timer-circle {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 56px; height: 56px;
+            border-radius: 50%;
+            border: 3px solid var(--gold);
+            font-size: 1.5em;
+            font-weight: 900;
+            color: var(--gold);
+            transition: all 0.3s;
+        }
+        .timer-circle.danger {
+            border-color: var(--red);
+            color: var(--red);
+            animation: timer-pulse 0.5s infinite;
+        }
+        .timer-circle.small {
+            width: 44px; height: 44px;
+            font-size: 1.2em;
+            border-color: var(--orange);
+            color: var(--orange);
+        }
+        .timer-circle.small.danger {
+            border-color: var(--red);
+            color: var(--red);
+        }
+        @keyframes timer-pulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.08); }
+        }
+
+        /* ═══ BUZZER ═══ */
+        .buzzer-btn {
+            width: 100%;
+            padding: 18px;
+            border: none;
+            border-radius: var(--radius);
+            font-family: inherit;
+            font-size: 1.2em;
+            font-weight: 800;
+            cursor: pointer;
+            background: linear-gradient(135deg, var(--orange) 0%, #E67E22 100%);
+            color: #fff;
+            box-shadow: 0 4px 20px rgba(243,156,18,0.3);
+            transition: all 0.15s;
+            margin-bottom: 8px;
+            position: relative;
+            overflow: hidden;
+        }
+        .buzzer-btn:active:not(:disabled) { transform: scale(0.96); }
+        .buzzer-btn:disabled {
+            background: var(--bg-card-alt);
+            color: var(--text-dim);
+            box-shadow: none;
+            cursor: not-allowed;
+        }
+
+        /* ═══ STATUS ═══ */
+        .status-bar {
+            padding: 8px 12px;
+            border-radius: var(--radius-sm);
+            font-size: 0.85em;
+            font-weight: 700;
+            text-align: center;
+            margin-bottom: 8px;
+        }
+        .status-bar.info { background: var(--blue-bg); color: var(--blue); border: 1px solid rgba(58,139,232,0.2); }
+        .status-bar.success { background: var(--green-bg); color: var(--green); border: 1px solid rgba(46,204,113,0.2); }
+        .status-bar.error { background: var(--red-bg); color: var(--red); border: 1px solid rgba(232,68,58,0.2); }
+        .status-bar.warning { background: var(--orange-bg); color: var(--orange); border: 1px solid rgba(243,156,18,0.2); }
+
+        /* ═══ OPTIONS GRID ═══ */
+        .options-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 8px;
+            margin-bottom: 8px;
+        }
+        .option-btn {
+            padding: 12px 8px;
+            background: var(--bg-card-alt);
+            border: 1.5px solid var(--border);
+            border-radius: var(--radius-sm);
+            font-family: inherit;
+            font-size: 0.88em;
+            font-weight: 700;
+            color: var(--text);
+            cursor: pointer;
+            transition: all 0.2s;
+            text-align: center;
+            min-height: 50px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .option-btn:hover:not(:disabled) {
+            border-color: var(--gold);
+            background: var(--gold-glow);
+        }
+        .option-btn:active:not(:disabled) { transform: scale(0.96); }
+        .option-btn:disabled {
+            opacity: 0.35;
+            cursor: not-allowed;
+        }
+        .option-btn.correct { border-color: var(--green); background: var(--green-bg); color: var(--green); }
+        .option-btn.wrong { border-color: var(--red); background: var(--red-bg); color: var(--red); }
+
+        /* ═══ ANSWER INPUT ═══ */
+        .answer-input-area {
+            margin-bottom: 8px;
+        }
+        .answer-input-area input {
+            width: 100%;
+            padding: 12px;
+            background: var(--bg-card-alt);
+            border: 2px solid var(--gold);
+            border-radius: var(--radius-sm);
+            color: var(--text);
+            font-family: inherit;
+            font-size: 1em;
+            font-weight: 700;
+            text-align: center;
+            outline: none;
+            margin-bottom: 6px;
+        }
+        .answer-input-area input::placeholder { color: var(--text-dim); }
+
+        /* ═══ CHOICE BUTTONS ═══ */
+        .choice-grid {
+            display: grid;
+            gap: 8px;
+            margin-bottom: 8px;
+        }
+        .choice-btn {
+            padding: 14px;
+            border: none;
+            border-radius: var(--radius-sm);
+            font-family: inherit;
+            font-size: 0.95em;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        .choice-btn:active { transform: scale(0.97); }
+        .choice-btn.sit { background: var(--green); color: #fff; }
+        .choice-btn.pull { background: var(--red); color: #fff; }
+
+        /* ═══ ON COUCH MESSAGE ═══ */
+        .on-couch-banner {
+            text-align: center;
+            padding: 30px 16px;
+            background: var(--green-bg);
+            border: 1.5px solid rgba(46,204,113,0.3);
+            border-radius: var(--radius);
+            margin-bottom: 8px;
+        }
+        .on-couch-banner .icon { font-size: 2.5em; margin-bottom: 8px; }
+        .on-couch-banner h3 { color: var(--green); font-size: 1.2em; }
+        .on-couch-banner p { color: var(--text-dim); font-size: 0.85em; margin-top: 4px; }
+
+        /* ═══ VICTORY ═══ */
+        .victory-overlay {
+            display: none;
+            text-align: center;
+            padding: 40px 16px;
+            flex: 1;
+            justify-content: center;
+            align-items: center;
+            flex-direction: column;
+        }
+        .victory-overlay.active { display: flex; }
+        .victory-overlay .trophy { font-size: 4em; margin-bottom: 12px; animation: bounce-trophy 1.5s infinite; }
+        @keyframes bounce-trophy {
+            0%, 100% { transform: translateY(0) rotate(0deg); }
+            25% { transform: translateY(-12px) rotate(-5deg); }
+            75% { transform: translateY(-12px) rotate(5deg); }
+        }
+        .victory-overlay h2 {
+            font-size: 1.8em;
+            font-weight: 900;
+            color: var(--gold);
+            margin-bottom: 20px;
+        }
+
+        /* ═══ HOST BADGE ═══ */
+        .host-next-btn {
+            margin-top: auto;
+            padding-top: 10px;
+            padding-bottom: 10px;
+        }
+
+        /* ═══ MISC ═══ */
+        .spacer { flex: 1; }
+        .text-center { text-align: center; }
+        .mt-8 { margin-top: 8px; }
+        .mb-8 { margin-bottom: 8px; }
+        .mb-12 { margin-bottom: 12px; }
+        .hidden { display: none !important; }
+
+        .buzzer-indicator-bar {
+            padding: 6px 12px;
+            border-radius: var(--radius-sm);
+            background: var(--orange-bg);
+            border: 1px solid rgba(243,156,18,0.2);
+            text-align: center;
+            font-size: 0.82em;
+            font-weight: 700;
+            color: var(--orange);
+            margin-bottom: 8px;
+        }
+
+        .players-in-team {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 3px;
+            justify-content: center;
+            margin-top: 4px;
+        }
+        .mini-player {
+            font-size: 0.65em;
+            padding: 2px 6px;
+            border-radius: 10px;
+            font-weight: 600;
+            background: rgba(255,255,255,0.06);
+            color: var(--text-dim);
+        }
+        .mini-player.on-couch {
+            opacity: 0.35;
+            text-decoration: line-through;
+        }
+    </style>
 </head>
 <body>
-    <div class="container" id="mainContainer">
-        <!-- Welcome Screen -->
-        <div class="screen active" id="welcomeScreen">
-            <h1>🛋️ لعبة الكنبة 🌙</h1>
-            <div style="text-align: center; color: #ffd700; margin-bottom: 25px; font-size: 1em;">
-                ✨ رمضان كريم ✨
+<div class="app" id="app">
+
+    <!-- ══════ WELCOME ══════ -->
+    <div class="screen active" id="welcomeScreen">
+        <div style="flex:1;display:flex;flex-direction:column;justify-content:center;">
+            <div class="header">
+                <h1>🛋️ لعبة الكنبة</h1>
+                <div class="sub">من يجلس على الكنبة أولاً يفوز!</div>
             </div>
-            <div class="input-group">
-                <button class="btn" onclick="showCreateRoom()">🎮 إنشاء غرفة جديدة</button>
-            </div>
-            <div class="input-group">
-                <button class="btn secondary" onclick="showJoinRoom()">🚪 الانضمام لغرفة</button>
-            </div>
-            <div class="input-group">
-                <button class="btn" style="background: linear-gradient(135deg, #6a4c93 0%, #533a71 100%); color: #ffd700;" onclick="goToMainPage()">🏠 العودة للصفحة الرئيسية</button>
+            <div style="padding:0 10px;">
+                <button class="btn btn-gold" onclick="showScreen('createRoomScreen')">إنشاء غرفة جديدة</button>
+                <button class="btn btn-outline mt-8" onclick="showScreen('joinRoomScreen')">الانضمام لغرفة</button>
+                <button class="btn btn-outline mt-8" onclick="goToMainPage()">العودة لقائمة الألعاب</button>
             </div>
         </div>
+    </div>
 
-```
-    <!-- Create Room Screen -->
+    <!-- ══════ CREATE ROOM ══════ -->
     <div class="screen" id="createRoomScreen">
-        <h1>إنشاء غرفة جديدة 🌙</h1>
-        <div class="input-group">
-            <label>اسمك:</label>
-            <input type="text" id="hostName" placeholder="أدخل اسمك">
+        <div class="header">
+            <h1>إنشاء غرفة</h1>
         </div>
-        <div class="input-group">
-            <label>اسم الفريق الأول:</label>
-            <input type="text" id="team1NameInput" placeholder="مثال: الأبطال" value="الفريق الأحمر">
+        <div class="card">
+            <div class="field">
+                <label>اسمك</label>
+                <input type="text" id="hostName" placeholder="أدخل اسمك">
+            </div>
+            <div class="field">
+                <label>اسم الفريق الأول</label>
+                <input type="text" id="team1NameInput" placeholder="الفريق الأحمر" value="الفريق الأحمر">
+            </div>
+            <div class="field">
+                <label>اسم الفريق الثاني</label>
+                <input type="text" id="team2NameInput" placeholder="الفريق الأزرق" value="الفريق الأزرق">
+            </div>
+            <div class="field">
+                <label>عدد اللاعبين في كل فريق</label>
+                <select id="teamSizeInput">
+                    <option value="2">2 لاعبين</option>
+                    <option value="3">3 لاعبين</option>
+                    <option value="4">4 لاعبين</option>
+                    <option value="5">5 لاعبين</option>
+                </select>
+            </div>
+            <button class="btn btn-gold" onclick="createRoom()">إنشاء الغرفة</button>
+            <button class="btn btn-outline mt-8" onclick="showScreen('welcomeScreen')">رجوع</button>
         </div>
-        <div class="input-group">
-            <label>اسم الفريق الثاني:</label>
-            <input type="text" id="team2NameInput" placeholder="مثال: النجوم" value="الفريق الأزرق">
-        </div>
-        <div class="input-group">
-            <label>عدد اللاعبين في كل فريق:</label>
-            <select id="teamSizeInput">
-                <option value="2">2 لاعبين</option>
-                <option value="3">3 لاعبين</option>
-                <option value="4">4 لاعبين</option>
-                <option value="5">5 لاعبين</option>
-            </select>
-        </div>
-        <button class="btn" onclick="createRoom()">إنشاء الغرفة</button>
-        <button class="btn secondary" onclick="showWelcome()">رجوع</button>
     </div>
 
-    <!-- Join Room Screen -->
+    <!-- ══════ JOIN ROOM ══════ -->
     <div class="screen" id="joinRoomScreen">
-        <h1>الانضمام لغرفة 🌙</h1>
-        <div class="input-group">
-            <label>اسمك:</label>
-            <input type="text" id="playerName" placeholder="أدخل اسمك">
+        <div class="header">
+            <h1>الانضمام لغرفة</h1>
         </div>
-        <div class="input-group">
-            <label>كود الغرفة:</label>
-            <input type="text" id="roomCode" placeholder="0000" maxlength="4" pattern="[0-9]*">
+        <div class="card">
+            <div class="field">
+                <label>اسمك</label>
+                <input type="text" id="playerName" placeholder="أدخل اسمك">
+            </div>
+            <div class="field">
+                <label>كود الغرفة</label>
+                <input type="text" id="roomCodeInput" placeholder="0000" maxlength="4" inputmode="numeric" pattern="[0-9]*">
+            </div>
+            <button class="btn btn-gold" onclick="joinRoom()">انضم</button>
+            <button class="btn btn-outline mt-8" onclick="showScreen('welcomeScreen')">رجوع</button>
         </div>
-        <button class="btn" onclick="joinRoom()">انضم</button>
-        <button class="btn secondary" onclick="showWelcome()">العودة للقائمة الرئيسية</button>
     </div>
 
-    <!-- Lobby Screen -->
-    <div class="screen" id="lobbyScreen">
-        <h1>غرفة الانتظار 🌙</h1>
-        <div class="room-code">
-            <h2>كود الغرفة:</h2>
-            <div class="code" id="displayRoomCode">0000</div>
-            <p style="margin-top: 8px; color: #ffd700; font-size: 0.9em;">شارك هذا الكود مع اللاعبين</p>
-        </div>
-        <div class="status-message info" style="margin-bottom: 15px;">
-            <p><strong>اختر فريقك للعب:</strong></p>
-        </div>
-        <div id="hostTeamButtons" style="margin-bottom: 15px;"></div>
-        <div class="players-list">
-            <h3>اللاعبين (<span id="playerCount">0</span>)</h3>
-            <div id="playersListContainer"></div>
-        </div>
-        <button class="btn success" onclick="startGame()" id="startGameBtn" disabled>ابدأ اللعبة ▶️</button>
-    </div>
-
-    <!-- Team Selection Screen -->
+    <!-- ══════ TEAM SELECTION (for joining players) ══════ -->
     <div class="screen" id="teamSelectionScreen">
-        <h1>اختر فريقك 🌙</h1>
-        <div class="status-message info">
-            <p>مرحباً <strong><span id="welcomePlayerName"></span></strong></p>
-            <p>اختر الفريق الذي تريد الانضمام إليه</p>
+        <div class="header">
+            <h1>اختر فريقك</h1>
+            <div class="sub">مرحباً <span id="welcomePlayerName"></span></div>
         </div>
-        <div id="teamButtons"></div>
+        <div class="card">
+            <div class="team-select-grid" id="teamSelectBtns"></div>
+        </div>
     </div>
 
-    <!-- Waiting Screen -->
+    <!-- ══════ LOBBY ══════ -->
+    <div class="screen" id="lobbyScreen">
+        <div class="header">
+            <h1>غرفة الانتظار</h1>
+        </div>
+        <div class="room-code-display">
+            <div class="label">كود الغرفة</div>
+            <div class="code" id="displayRoomCode">0000</div>
+        </div>
+        <div class="card">
+            <div class="card-title">اختر فريقك</div>
+            <div class="team-select-grid" id="hostTeamBtns"></div>
+        </div>
+        <div class="card">
+            <div class="card-title">اللاعبون (<span id="playerCount">0</span>)</div>
+            <div id="lobbyPlayersList" style="display:flex;flex-wrap:wrap;gap:4px;"></div>
+        </div>
+        <div class="spacer"></div>
+        <button class="btn btn-gold" onclick="startGame()" id="startGameBtn" disabled>ابدأ اللعبة</button>
+    </div>
+
+    <!-- ══════ WAITING ══════ -->
     <div class="screen" id="waitingScreen">
-        <h1>في انتظار البدء... 🌙</h1>
-        <div class="status-message info">
-            <p>أنت في <strong><span id="playerTeamName"></span></strong></p>
-            <p>انتظر حتى يبدأ المضيف اللعبة</p>
+        <div class="header">
+            <h1>في انتظار البدء</h1>
+            <div class="sub">أنت في <span id="waitingTeamName" style="color:var(--gold);font-weight:700;"></span></div>
         </div>
-        <div class="players-list">
-            <h3>اللاعبين في الغرفة:</h3>
-            <div id="waitingPlayersListContainer"></div>
+        <div class="card">
+            <div class="card-title">اللاعبون</div>
+            <div id="waitingPlayersList" style="display:flex;flex-wrap:wrap;gap:4px;"></div>
+        </div>
+    </div>
+
+    <!-- ══════ GAME SCREEN (UNIFIED for host & players) ══════ -->
+    <div class="screen" id="gameScreen">
+        <!-- Top bar: teams scores -->
+        <div class="game-top-bar" id="gameTopBar">
+            <div class="team-score-box red">
+                <div class="t-name" id="gTeam1Name">الفريق ١</div>
+                <div class="t-score" id="gTeam1Score">0</div>
+                <div class="players-in-team" id="gTeam1Players"></div>
+            </div>
+            <div class="vs-badge">VS</div>
+            <div class="team-score-box blue">
+                <div class="t-name" id="gTeam2Name">الفريق ٢</div>
+                <div class="t-score" id="gTeam2Score">0</div>
+                <div class="players-in-team" id="gTeam2Players"></div>
+            </div>
+        </div>
+
+        <!-- Couch -->
+        <div class="couch-section" id="couchSection">
+            <div class="couch-label">🛋️ كنبة الفوز</div>
+            <div class="couch-grid">
+                <div class="couch-col red">
+                    <div class="col-label" id="couchTeam1Label">الفريق ١</div>
+                    <div id="couchTeam1Seats"></div>
+                </div>
+                <div class="couch-col blue">
+                    <div class="col-label" id="couchTeam2Label">الفريق ٢</div>
+                    <div id="couchTeam2Seats"></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- On couch message -->
+        <div class="on-couch-banner hidden" id="onCouchBanner">
+            <div class="icon">🏆</div>
+            <h3>أنت على الكنبة!</h3>
+            <p>استرخِ وانتظر الفوز</p>
+        </div>
+
+        <!-- Game content area -->
+        <div id="gameContent">
+            <!-- Question -->
+            <div class="question-card hidden" id="questionCard">
+                <div class="q-category" id="qCategory"></div>
+                <div class="q-text" id="qText"></div>
+            </div>
+
+            <!-- Main Timer (30s) -->
+            <div class="timer-bar hidden" id="mainTimerBar">
+                <div class="timer-circle" id="mainTimerCircle">30</div>
+            </div>
+
+            <!-- Buzzer indicator -->
+            <div class="buzzer-indicator-bar hidden" id="buzzerIndicator"></div>
+
+            <!-- Status -->
+            <div class="status-bar info" id="gameStatus">انتظر السؤال...</div>
+
+            <!-- Buzzer button -->
+            <button class="buzzer-btn hidden" id="buzzerBtn" onclick="buzzIn()" disabled>🔔 اضغط الجرس!</button>
+
+            <!-- Answer input (5s text) -->
+            <div class="answer-input-area hidden" id="answerInputArea">
+                <div class="timer-bar">
+                    <div class="timer-circle small" id="answerTimerCircle">5</div>
+                </div>
+                <input type="text" id="textAnswerInput" placeholder="اكتب إجابتك..." autocomplete="off">
+                <button class="btn btn-green" onclick="submitTextAnswer()">إرسال الإجابة</button>
+            </div>
+
+            <!-- Options -->
+            <div class="options-grid hidden" id="optionsGrid"></div>
+
+            <!-- Choice buttons (sit/pull) -->
+            <div class="choice-grid hidden" id="choiceGrid"></div>
+        </div>
+
+        <!-- Victory overlay -->
+        <div class="victory-overlay" id="victoryOverlay">
+            <div class="trophy">🏆</div>
+            <h2 id="victoryMsg">الفريق فاز!</h2>
+            <button class="btn btn-gold" onclick="replayGame()">لعب مرة أخرى</button>
+            <button class="btn btn-outline mt-8" onclick="goToMainPage()">العودة لقائمة الألعاب</button>
+        </div>
+
+        <!-- Host: Next question (always at bottom) -->
+        <div class="spacer"></div>
+        <div class="host-next-btn hidden" id="hostNextBtn">
+            <button class="btn btn-gold" onclick="nextQuestion()" id="nextQBtn">السؤال التالي ▶️</button>
         </div>
     </div>
 
-    <!-- Player Game Screen -->
-    <div class="screen" id="playerGameScreen">
-        <h1>🛋️ لعبة الكنبة 🌙</h1>
-        
-        <div class="teams-players-display" id="teamsPlayersDisplay">
-            <div class="team-players-section">
-                <h3 id="playerTeam1Name" class="team-header">الفريق الأول</h3>
-                <div id="team1PlayersList" class="players-list-game"></div>
-            </div>
-            <div class="team-players-section">
-                <h3 id="playerTeam2Name" class="team-header">الفريق الثاني</h3>
-                <div id="team2PlayersList" class="players-list-game"></div>
-            </div>
-        </div>
-
-        <div class="couch-display-player">
-            <h3>🛋️ كنبة الفوز 🛋️</h3>
-            <div class="couch-seats-player">
-                <div class="couch-team-player">
-                    <h4 id="playerCouchTeam1">الفريق الأول</h4>
-                    <div id="playerTeam1Couch"></div>
-                </div>
-                <div class="couch-team-player">
-                    <h4 id="playerCouchTeam2">الفريق الثاني</h4>
-                    <div id="playerTeam2Couch"></div>
-                </div>
-            </div>
-        </div>
-
-        <div class="on-couch-message" id="onCouchMessage" style="display: none;">
-            <div class="trophy-icon">🏆</div>
-            <h2>أنت على الكنبة!</h2>
-            <p>استرخِ وانتظر الفوز 🌟</p>
-        </div>
-
-        <div id="gameElements">
-            <div class="question-display" id="playerQuestionDisplay" style="display: none;">
-                <div class="question-text" id="playerQuestionText"></div>
-            </div>
-
-            <div class="timer-display" id="playerTimer" style="display: none;">--</div>
-
-            <div id="buzzerIndicator"></div>
-
-            <div class="status-message info" id="playerStatus">انتظر السؤال...</div>
-
-            <div class="player-controls">
-                <button class="buzz-button" id="buzzButton" onclick="buzzIn()" disabled>
-                    اضغط الجرس! 🔔
-                </button>
-            </div>
-
-            <div class="answer-input-container" id="answerInputContainer" style="display: none;">
-                <div class="answer-timer" id="answerTimer" style="display: none;">5</div>
-                <input type="text" class="answer-input" id="textAnswerInput" placeholder="اكتب إجابتك هنا..." autocomplete="off">
-                <button class="submit-answer-btn" id="submitAnswerBtn" onclick="submitTextAnswer()">إرسال الإجابة ✓</button>
-            </div>
-
-            <div class="answer-options" id="playerAnswerOptions"></div>
-
-            <div class="player-choice-buttons" id="playerChoiceButtons"></div>
-        </div>
-
-        <div id="hostControlsPlayer" style="display: none; margin-top: 10px;">
-            <button class="btn" onclick="nextQuestion()" id="nextQuestionBtnPlayer">السؤال التالي ▶️</button>
-        </div>
-
-        <div class="victory-screen" id="victoryScreenPlayer" style="display: none;">
-            <div class="confetti">🎉🌙🎊✨🏆</div>
-            <h2 id="victoryMessagePlayer">فاز الفريق!</h2>
-            <div class="confetti">🏆✨🎊🌙🎉</div>
-            <button class="btn" onclick="location.reload()">لعب مرة أخرى</button>
-        </div>
-    </div>
 </div>
 
 <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-database-compat.js"></script>
 <script>
-    const firebaseConfig = {
-        apiKey: "AIzaSyBUXlgxP463b18dg9_Og_8EcMDLfLIr76o",
-        authDomain: "team-cc63c.firebaseapp.com",
-        databaseURL: "https://team-cc63c-default-rtdb.europe-west1.firebasedatabase.app/",
-        projectId: "team-cc63c",
-        storageBucket: "team-cc63c.firebasestorage.app",
-        messagingSenderId: "511582595742",
-        appId: "1:511582595742:web:3e21273dcf49bf26d7298f",
-        measurementId: "G-PSDJ9N34PH"
-    };
+// ══════ FIREBASE INIT ══════
+const firebaseConfig = {
+    apiKey: "AIzaSyBUXlgxP463b18dg9_Og_8EcMDLfLIr76o",
+    authDomain: "team-cc63c.firebaseapp.com",
+    databaseURL: "https://team-cc63c-default-rtdb.europe-west1.firebasedatabase.app/",
+    projectId: "team-cc63c",
+    storageBucket: "team-cc63c.firebasestorage.app",
+    messagingSenderId: "511582595742",
+    appId: "1:511582595742:web:3e21273dcf49bf26d7298f",
+    measurementId: "G-PSDJ9N34PH"
+};
+firebase.initializeApp(firebaseConfig);
+const database = firebase.database();
 
-    firebase.initializeApp(firebaseConfig);
-    const database = firebase.database();
+// ══════ QUESTIONS ══════
+const questions = [
+    {category: "دينية", question: "كم عدد سور القرآن الكريم؟", options: ["114 سورة", "110 سورة", "120 سورة", "100 سورة"], correct: 0},
+    {category: "دينية", question: "ما هي أطول سورة في القرآن الكريم؟", options: ["سورة البقرة", "سورة آل عمران", "سورة النساء", "سورة الأعراف"], correct: 0},
+    {category: "دينية", question: "كم عدد أركان الإسلام؟", options: ["5 أركان", "4 أركان", "6 أركان", "7 أركان"], correct: 0},
+    {category: "دينية", question: "من هو خاتم الأنبياء؟", options: ["محمد ﷺ", "عيسى عليه السلام", "موسى عليه السلام", "إبراهيم عليه السلام"], correct: 0},
+    {category: "دينية", question: "في أي شهر فرض الصيام؟", options: ["رمضان", "شعبان", "رجب", "ذو القعدة"], correct: 0},
+    {category: "ثقافية", question: "من هو مؤلف رواية 'مئة عام من العزلة'؟", options: ["غابرييل غارسيا ماركيز", "بابلو نيرودا", "خورخي لويس بورخيس", "إيزابيل الليندي"], correct: 0},
+    {category: "جغرافية", question: "ما هي عاصمة اليابان؟", options: ["طوكيو", "كيوتو", "أوساكا", "يوكوهاما"], correct: 0},
+    {category: "رياضية", question: "كم عدد لاعبي كرة القدم في الفريق الواحد؟", options: ["11 لاعباً", "10 لاعبين", "12 لاعباً", "9 لاعبين"], correct: 0},
+    {category: "علمية", question: "كم عدد كواكب المجموعة الشمسية؟", options: ["8 كواكب", "9 كواكب", "7 كواكب", "10 كواكب"], correct: 0},
+    {category: "عامة", question: "كم عدد ألوان قوس قزح؟", options: ["7 ألوان", "6 ألوان", "8 ألوان", "5 ألوان"], correct: 0}
+];
 
-    const questions = [
-        {category: "دينية", question: "كم عدد سور القرآن الكريم؟", options: ["114 سورة", "110 سورة", "120 سورة", "100 سورة"], correct: 0},
-        {category: "دينية", question: "ما هي أطول سورة في القرآن الكريم؟", options: ["سورة البقرة", "سورة آل عمران", "سورة النساء", "سورة الأعراف"], correct: 0},
-        {category: "دينية", question: "كم عدد أركان الإسلام؟", options: ["5 أركان", "4 أركان", "6 أركان", "7 أركان"], correct: 0},
-        {category: "دينية", question: "من هو خاتم الأنبياء؟", options: ["محمد ﷺ", "عيسى عليه السلام", "موسى عليه السلام", "إبراهيم عليه السلام"], correct: 0},
-        {category: "دينية", question: "في أي شهر فرض الصيام؟", options: ["رمضان", "شعبان", "رجب", "ذو القعدة"], correct: 0},
-        {category: "ثقافية", question: "من هو مؤلف رواية 'مئة عام من العزلة'؟", options: ["غابرييل غارسيا ماركيز", "بابلو نيرودا", "خورخي لويس بورخيس", "إيزابيل الليندي"], correct: 0},
-        {category: "جغرافية", question: "ما هي عاصمة اليابان؟", options: ["طوكيو", "كيوتو", "أوساكا", "يوكوهاما"], correct: 0},
-        {category: "رياضية", question: "كم عدد لاعبي كرة القدم في الفريق الواحد؟", options: ["11 لاعباً", "10 لاعبين", "12 لاعباً", "9 لاعبين"], correct: 0},
-        {category: "علمية", question: "كم عدد كواكب المجموعة الشمسية؟", options: ["8 كواكب", "9 كواكب", "7 كواكب", "10 كواكب"], correct: 0},
-        {category: "عامة", question: "كم عدد ألوان قوس قزح؟", options: ["7 ألوان", "6 ألوان", "8 ألوان", "5 ألوان"], correct: 0}
-    ];
+// ══════ STATE ══════
+let currentRoomCode = null;
+let currentPlayerId = null;
+let currentPlayerName = null;
+let isHost = false;
+let currentTeam = null;
+let roomData = null;
+let mainTimerInterval = null;
+let answerTimerInterval = null;
+let roomListener = null;
 
-    let currentRoomCode = null;
-    let currentPlayerId = null;
-    let currentPlayerName = null;
-    let isHost = false;
-    let currentTeam = null;
-    let timerInterval = null;
-    let roomData = null;
-    let answerTimerInterval = null;
+// ══════ SESSION PERSISTENCE ══════
+function saveSession() {
+    if (currentRoomCode && currentPlayerId) {
+        sessionStorage.setItem('gameSession', JSON.stringify({
+            roomCode: currentRoomCode,
+            playerId: currentPlayerId,
+            playerName: currentPlayerName,
+            isHost: isHost,
+            team: currentTeam
+        }));
+    }
+}
 
-    function showWelcome() {
-        if (currentRoomCode && currentPlayerId) {
-            database.ref('rooms/' + currentRoomCode + '/players/' + currentPlayerId).remove();
-        }
+function clearSession() {
+    sessionStorage.removeItem('gameSession');
+}
+
+function restoreSession() {
+    const saved = sessionStorage.getItem('gameSession');
+    if (!saved) return false;
+    
+    try {
+        const session = JSON.parse(saved);
+        // Check if room still exists
+        database.ref('rooms/' + session.roomCode).once('value', (snapshot) => {
+            if (!snapshot.exists()) {
+                clearSession();
+                return;
+            }
+            const data = snapshot.val();
+            // Check if player still in room
+            if (!data.players || !data.players[session.playerId]) {
+                clearSession();
+                return;
+            }
+            
+            currentRoomCode = session.roomCode;
+            currentPlayerId = session.playerId;
+            currentPlayerName = session.playerName;
+            isHost = session.isHost;
+            currentTeam = session.team;
+            
+            listenToRoom();
+        });
+        return true;
+    } catch (e) {
+        clearSession();
+        return false;
+    }
+}
+
+// ══════ SCREEN MANAGEMENT ══════
+function showScreen(id) {
+    document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+    document.getElementById(id).classList.add('active');
+}
+
+function goToMainPage() {
+    if (currentRoomCode && currentPlayerId) {
+        database.ref('rooms/' + currentRoomCode + '/players/' + currentPlayerId).remove();
+    }
+    clearSession();
+    clearTimers();
+    // Go to index or just reload to welcome
+    if (document.referrer && document.referrer.includes('index')) {
+        window.location.href = 'index.html';
+    } else {
         currentRoomCode = null;
         currentPlayerId = null;
         currentPlayerName = null;
         isHost = false;
         currentTeam = null;
         roomData = null;
-        hideAllScreens();
-        document.getElementById('welcomeScreen').classList.add('active');
-    }
-
-    function goToMainPage() {
-        if (currentRoomCode && currentPlayerId) {
-            database.ref('rooms/' + currentRoomCode + '/players/' + currentPlayerId).remove();
+        if (roomListener) {
+            database.ref('rooms/' + currentRoomCode).off('value', roomListener);
+            roomListener = null;
         }
-        window.location.href = 'index.html';
+        showScreen('welcomeScreen');
     }
+}
 
-    function showCreateRoom() {
-        hideAllScreens();
-        document.getElementById('createRoomScreen').classList.add('active');
-    }
+function clearTimers() {
+    clearInterval(mainTimerInterval);
+    clearInterval(answerTimerInterval);
+    mainTimerInterval = null;
+    answerTimerInterval = null;
+}
 
-    function showJoinRoom() {
-        hideAllScreens();
-        document.getElementById('joinRoomScreen').classList.add('active');
-    }
+// ══════ CREATE ROOM ══════
+function createRoom() {
+    const name = document.getElementById('hostName').value.trim();
+    if (!name) { alert('الرجاء إدخال اسمك'); return; }
 
-    function hideAllScreens() {
-        document.querySelectorAll('.screen').forEach(screen => screen.classList.remove('active'));
-    }
+    const team1Name = document.getElementById('team1NameInput').value.trim() || 'الفريق الأحمر';
+    const team2Name = document.getElementById('team2NameInput').value.trim() || 'الفريق الأزرق';
+    const teamSize = parseInt(document.getElementById('teamSizeInput').value);
 
-    function generateRoomCode() {
-        return Math.floor(1000 + Math.random() * 9000).toString();
-    }
+    currentRoomCode = Math.floor(1000 + Math.random() * 9000).toString();
+    currentPlayerId = 'host-' + Date.now();
+    currentPlayerName = name;
+    isHost = true;
 
-    function createRoom() {
-        const hostName = document.getElementById('hostName').value.trim();
-        const team1Name = document.getElementById('team1NameInput').value.trim() || 'الفريق الأحمر';
-        const team2Name = document.getElementById('team2NameInput').value.trim() || 'الفريق الأزرق';
-        const teamSize = parseInt(document.getElementById('teamSizeInput').value);
+    database.ref('rooms/' + currentRoomCode).set({
+        code: currentRoomCode,
+        host: currentPlayerId,
+        team1Name, team2Name, teamSize,
+        players: { [currentPlayerId]: { name, isHost: true, team: null } },
+        gameState: 'lobby',
+        currentQuestion: null,
+        usedQuestions: [],
+        team1Couch: [], team2Couch: [],
+        team1Score: 0, team2Score: 0,
+        buzzedPlayer: null,
+        showOptions: false,
+        bannedTeam: null,
+        correctAnswer: null,
+        selectedAnswer: null,
+        waitingForChoice: false,
+        choicePlayer: null,
+        waitingForTextAnswer: false,
+        questionStartTime: null,
+        buzzTime: null
+    });
 
-        if (!hostName) {
-            alert('الرجاء إدخال اسمك');
-            return;
-        }
+    saveSession();
+    listenToRoom();
+    showLobby();
+}
 
-        currentRoomCode = generateRoomCode();
-        currentPlayerId = 'host-' + Date.now();
-        currentPlayerName = hostName;
-        isHost = true;
+// ══════ JOIN ROOM ══════
+function joinRoom() {
+    const name = document.getElementById('playerName').value.trim();
+    const code = document.getElementById('roomCodeInput').value.trim();
+    if (!name) { alert('الرجاء إدخال اسمك'); return; }
+    if (!code || code.length !== 4) { alert('الرجاء إدخال كود الغرفة (4 أرقام)'); return; }
 
-        database.ref('rooms/' + currentRoomCode).set({
-            code: currentRoomCode,
-            host: currentPlayerId,
-            team1Name: team1Name,
-            team2Name: team2Name,
-            teamSize: teamSize,
-            players: {
-                [currentPlayerId]: { name: hostName, isHost: true, team: null }
-            },
-            gameState: 'lobby',
-            currentQuestion: null,
-            usedQuestions: [],
-            team1Couch: [],
-            team2Couch: [],
-            team1Score: 0,
-            team2Score: 0,
-            buzzedPlayer: null,
-            showOptions: false,
-            bannedTeam: null,
-            correctAnswer: null,
-            waitingForChoice: false,
-            choicePlayer: null,
-            waitingForTextAnswer: false
+    database.ref('rooms/' + code).once('value', (snapshot) => {
+        if (!snapshot.exists()) { alert('الغرفة غير موجودة'); return; }
+
+        currentRoomCode = code;
+        currentPlayerId = 'player-' + Date.now();
+        currentPlayerName = name;
+        isHost = false;
+
+        database.ref('rooms/' + currentRoomCode + '/players/' + currentPlayerId).set({
+            name, isHost: false, team: null
         });
 
+        saveSession();
         listenToRoom();
-        showLobby();
+        showScreen('teamSelectionScreen');
+        document.getElementById('welcomePlayerName').textContent = name;
+    });
+}
+
+// ══════ LISTEN TO ROOM ══════
+function listenToRoom() {
+    if (roomListener) {
+        database.ref('rooms/' + currentRoomCode).off('value', roomListener);
     }
-
-    function joinRoom() {
-        const playerName = document.getElementById('playerName').value.trim();
-        const roomCode = document.getElementById('roomCode').value.trim();
-
-        if (!playerName) {
-            alert('الرجاء إدخال اسمك');
+    roomListener = database.ref('rooms/' + currentRoomCode).on('value', (snapshot) => {
+        if (!snapshot.exists()) {
+            clearSession();
+            showScreen('welcomeScreen');
             return;
         }
-
-        if (!roomCode || roomCode.length !== 4) {
-            alert('الرجاء إدخال كود الغرفة (4 أرقام)');
+        roomData = snapshot.val();
+        // Make sure player still exists
+        if (!roomData.players || !roomData.players[currentPlayerId]) {
+            // Player was removed — if this was page refresh, re-add might be needed
+            // But we keep session, so just return
             return;
         }
+        // Sync team from DB in case of refresh
+        const myData = roomData.players[currentPlayerId];
+        if (myData.team && !currentTeam) {
+            currentTeam = myData.team;
+        }
+        updateUI();
+    });
+}
 
-        database.ref('rooms/' + roomCode).once('value', (snapshot) => {
-            if (!snapshot.exists()) {
-                alert('الغرفة غير موجودة');
-                return;
-            }
+// ══════ SHOW LOBBY ══════
+function showLobby() {
+    showScreen('lobbyScreen');
+    document.getElementById('displayRoomCode').textContent = currentRoomCode;
+    renderHostTeamBtns();
+}
 
-            currentRoomCode = roomCode;
-            currentPlayerId = 'player-' + Date.now();
-            currentPlayerName = playerName;
-            isHost = false;
+function renderHostTeamBtns() {
+    if (!roomData) return;
+    const container = document.getElementById('hostTeamBtns');
+    container.innerHTML = `
+        <button class="team-select-btn red-team ${currentTeam === 'team1' ? 'selected' : ''}" onclick="selectHostTeam('team1')">🔴 ${roomData.team1Name}</button>
+        <button class="team-select-btn blue-team ${currentTeam === 'team2' ? 'selected' : ''}" onclick="selectHostTeam('team2')">🔵 ${roomData.team2Name}</button>
+    `;
+}
 
-            database.ref('rooms/' + currentRoomCode + '/players/' + currentPlayerId).set({
-                name: playerName,
-                isHost: false,
-                team: null
-            });
+function selectHostTeam(team) {
+    currentTeam = team;
+    database.ref('rooms/' + currentRoomCode + '/players/' + currentPlayerId).update({ team });
+    saveSession();
+    renderHostTeamBtns();
+}
 
-            listenToRoom();
-            showTeamSelection();
-        });
+// ══════ TEAM SELECTION (joining players) ══════
+function renderTeamSelectBtns() {
+    if (!roomData) return;
+    const container = document.getElementById('teamSelectBtns');
+    container.innerHTML = `
+        <button class="team-select-btn red-team" onclick="selectTeam('team1')">🔴 ${roomData.team1Name}</button>
+        <button class="team-select-btn blue-team" onclick="selectTeam('team2')">🔵 ${roomData.team2Name}</button>
+    `;
+}
+
+function selectTeam(team) {
+    currentTeam = team;
+    database.ref('rooms/' + currentRoomCode + '/players/' + currentPlayerId).update({ team });
+    saveSession();
+    
+    if (roomData.gameState === 'playing') {
+        showScreen('gameScreen');
+    } else {
+        showScreen('waitingScreen');
     }
+}
 
-    function listenToRoom() {
-        database.ref('rooms/' + currentRoomCode).on('value', (snapshot) => {
-            if (snapshot.exists()) {
-                roomData = snapshot.val();
-                updateUI();
-            }
-        });
-    }
+// ══════ UPDATE UI ══════
+function updateUI() {
+    if (!roomData) return;
 
-    function updateUI() {
-        if (!roomData) return;
-
+    if (roomData.gameState === 'lobby') {
         if (isHost) {
-            if (roomData.gameState === 'lobby') {
-                updateLobby();
-            } else if (roomData.gameState === 'playing') {
-                updatePlayerGameScreen();
+            if (!document.getElementById('lobbyScreen').classList.contains('active')) {
+                showLobby();
             }
-        } else {
-            if (roomData.gameState === 'lobby' && !currentTeam) {
-                updateTeamSelection();
-                showTeamSelection();
-            } else if (roomData.gameState === 'lobby' && currentTeam) {
-                updateWaitingScreen();
-            } else if (roomData.gameState === 'playing') {
-                updatePlayerGameScreen();
-            }
-        }
-    }
-
-    function showLobby() {
-        hideAllScreens();
-        document.getElementById('lobbyScreen').classList.add('active');
-        document.getElementById('displayRoomCode').textContent = currentRoomCode;
-        
-        const hostTeamButtons = document.getElementById('hostTeamButtons');
-        hostTeamButtons.innerHTML = '';
-
-        const team1Btn = document.createElement('button');
-        team1Btn.className = 'btn';
-        team1Btn.textContent = '🔴 ' + roomData.team1Name;
-        team1Btn.id = 'hostTeam1Btn';
-        team1Btn.onclick = () => selectHostTeam('team1');
-        hostTeamButtons.appendChild(team1Btn);
-
-        const team2Btn = document.createElement('button');
-        team2Btn.className = 'btn secondary';
-        team2Btn.textContent = '🔵 ' + roomData.team2Name;
-        team2Btn.id = 'hostTeam2Btn';
-        team2Btn.onclick = () => selectHostTeam('team2');
-        hostTeamButtons.appendChild(team2Btn);
-    }
-
-    function updateLobby() {
-        const players = roomData.players || {};
-        const playerCount = Object.keys(players).length;
-        const teamSize = roomData.teamSize || 2;
-        const requiredPlayers = teamSize * 2;
-
-        document.getElementById('playerCount').textContent = playerCount;
-
-        const playersListContainer = document.getElementById('playersListContainer');
-        playersListContainer.innerHTML = '';
-
-        Object.entries(players).forEach(([id, player]) => {
-            const div = document.createElement('div');
-            div.className = 'player-item';
-            
-            const nameSpan = document.createElement('span');
-            nameSpan.className = 'player-name';
-            nameSpan.textContent = player.name;
-            
-            const badgeContainer = document.createElement('div');
-            
-            if (player.isHost) {
-                const hostBadge = document.createElement('span');
-                hostBadge.className = 'host-badge';
-                hostBadge.textContent = '👑 مضيف';
-                badgeContainer.appendChild(hostBadge);
-            }
-            
-            if (player.team) {
-                const teamBadge = document.createElement('span');
-                teamBadge.className = 'team-badge ' + player.team;
-                teamBadge.textContent = player.team === 'team1' ? roomData.team1Name : roomData.team2Name;
-                badgeContainer.appendChild(teamBadge);
-            }
-            
-            div.appendChild(nameSpan);
-            div.appendChild(badgeContainer);
-            playersListContainer.appendChild(div);
-        });
-
-        if (currentTeam) {
-            const team1Btn = document.getElementById('hostTeam1Btn');
-            const team2Btn = document.getElementById('hostTeam2Btn');
-            
-            if (team1Btn && team2Btn) {
-                if (currentTeam === 'team1') {
-                    team1Btn.style.opacity = '1';
-                    team1Btn.style.transform = 'scale(1.05)';
-                    team2Btn.style.opacity = '0.6';
-                    team2Btn.style.transform = 'scale(1)';
-                } else {
-                    team2Btn.style.opacity = '1';
-                    team2Btn.style.transform = 'scale(1.05)';
-                    team1Btn.style.opacity = '0.6';
-                    team1Btn.style.transform = 'scale(1)';
-                }
-            }
-        }
-
-        const startBtn = document.getElementById('startGameBtn');
-        if (playerCount >= requiredPlayers && currentTeam) {
-            startBtn.disabled = false;
-            startBtn.textContent = 'ابدأ اللعبة ▶️';
+            updateLobby();
         } else if (!currentTeam) {
-            startBtn.disabled = true;
-            startBtn.textContent = 'اختر فريقك أولاً';
-        } else {
-            startBtn.disabled = true;
-            startBtn.textContent = `بحاجة إلى ${requiredPlayers - playerCount} لاعبين`;
-        }
-    }
-
-    function showTeamSelection() {
-        hideAllScreens();
-        document.getElementById('teamSelectionScreen').classList.add('active');
-        document.getElementById('welcomePlayerName').textContent = currentPlayerName;
-    }
-
-    function updateTeamSelection() {
-        const teamButtons = document.getElementById('teamButtons');
-        teamButtons.innerHTML = '';
-
-        const team1Btn = document.createElement('button');
-        team1Btn.className = 'btn';
-        team1Btn.textContent = '🔴 ' + roomData.team1Name;
-        team1Btn.onclick = () => selectTeam('team1');
-        teamButtons.appendChild(team1Btn);
-
-        const team2Btn = document.createElement('button');
-        team2Btn.className = 'btn secondary';
-        team2Btn.textContent = '🔵 ' + roomData.team2Name;
-        team2Btn.onclick = () => selectTeam('team2');
-        teamButtons.appendChild(team2Btn);
-    }
-
-    function selectTeam(team) {
-        currentTeam = team;
-        database.ref('rooms/' + currentRoomCode + '/players/' + currentPlayerId).update({ team: team });
-        
-        if (roomData.gameState === 'playing') {
-            showPlayerGameScreen();
-        } else {
-            showWaitingScreen();
-        }
-    }
-
-    function selectHostTeam(team) {
-        currentTeam = team;
-        database.ref('rooms/' + currentRoomCode + '/players/' + currentPlayerId).update({ team: team });
-
-        const team1Btn = document.getElementById('hostTeam1Btn');
-        const team2Btn = document.getElementById('hostTeam2Btn');
-        
-        if (team === 'team1') {
-            team1Btn.style.opacity = '1';
-            team1Btn.style.transform = 'scale(1.05)';
-            team2Btn.style.opacity = '0.6';
-            team2Btn.style.transform = 'scale(1)';
-        } else {
-            team2Btn.style.opacity = '1';
-            team2Btn.style.transform = 'scale(1.05)';
-            team1Btn.style.opacity = '0.6';
-            team1Btn.style.transform = 'scale(1)';
-        }
-    }
-
-    function showWaitingScreen() {
-        hideAllScreens();
-        document.getElementById('waitingScreen').classList.add('active');
-        const teamName = currentTeam === 'team1' ? roomData.team1Name : roomData.team2Name;
-        document.getElementById('playerTeamName').textContent = teamName;
-    }
-
-    function updateWaitingScreen() {
-        const players = roomData.players || {};
-        const waitingPlayersListContainer = document.getElementById('waitingPlayersListContainer');
-        waitingPlayersListContainer.innerHTML = '';
-
-        Object.entries(players).forEach(([id, player]) => {
-            const div = document.createElement('div');
-            div.className = 'player-item';
-            
-            const nameSpan = document.createElement('span');
-            nameSpan.className = 'player-name';
-            nameSpan.textContent = player.name;
-            
-            const badgeContainer = document.createElement('div');
-            
-            if (player.isHost) {
-                const hostBadge = document.createElement('span');
-                hostBadge.className = 'host-badge';
-                hostBadge.textContent = '👑';
-                badgeContainer.appendChild(hostBadge);
+            if (!document.getElementById('teamSelectionScreen').classList.contains('active')) {
+                showScreen('teamSelectionScreen');
+                document.getElementById('welcomePlayerName').textContent = currentPlayerName;
             }
-            
-            if (player.team) {
-                const teamBadge = document.createElement('span');
-                teamBadge.className = 'team-badge ' + player.team;
-                teamBadge.textContent = player.team === 'team1' ? roomData.team1Name : roomData.team2Name;
-                badgeContainer.appendChild(teamBadge);
+            renderTeamSelectBtns();
+        } else {
+            if (!document.getElementById('waitingScreen').classList.contains('active')) {
+                showScreen('waitingScreen');
             }
-            
-            div.appendChild(nameSpan);
-            div.appendChild(badgeContainer);
-            waitingPlayersListContainer.appendChild(div);
-        });
-    }
-
-    function startGame() {
+            updateWaiting();
+        }
+    } else if (roomData.gameState === 'playing') {
         if (!currentTeam) {
-            alert('الرجاء اختيار فريقك أولاً');
-            return;
+            showScreen('teamSelectionScreen');
+            document.getElementById('welcomePlayerName').textContent = currentPlayerName;
+            renderTeamSelectBtns();
+        } else {
+            if (!document.getElementById('gameScreen').classList.contains('active')) {
+                showScreen('gameScreen');
+            }
+            updateGameScreen();
         }
+    }
+}
 
-        database.ref('rooms/' + currentRoomCode).update({ gameState: 'playing' });
-        showPlayerGameScreen();
+// ══════ UPDATE LOBBY ══════
+function updateLobby() {
+    const players = roomData.players || {};
+    const count = Object.keys(players).length;
+    const required = (roomData.teamSize || 2) * 2;
+
+    document.getElementById('playerCount').textContent = count;
+
+    const list = document.getElementById('lobbyPlayersList');
+    list.innerHTML = '';
+    Object.entries(players).forEach(([id, p]) => {
+        const chip = document.createElement('div');
+        chip.className = 'player-chip';
+        let dotClass = 'dot-gold';
+        if (p.team === 'team1') dotClass = 'dot-red';
+        if (p.team === 'team2') dotClass = 'dot-blue';
+        chip.innerHTML = `<span class="dot ${dotClass}"></span>${p.name}${p.isHost ? ' 👑' : ''}`;
+        list.appendChild(chip);
+    });
+
+    renderHostTeamBtns();
+
+    const startBtn = document.getElementById('startGameBtn');
+    if (count >= required && currentTeam) {
+        startBtn.disabled = false;
+        startBtn.textContent = 'ابدأ اللعبة ▶️';
+    } else if (!currentTeam) {
+        startBtn.disabled = true;
+        startBtn.textContent = 'اختر فريقك أولاً';
+    } else {
+        startBtn.disabled = true;
+        startBtn.textContent = `بحاجة إلى ${required - count} لاعبين إضافيين`;
+    }
+}
+
+// ══════ UPDATE WAITING ══════
+function updateWaiting() {
+    const teamName = currentTeam === 'team1' ? roomData.team1Name : roomData.team2Name;
+    document.getElementById('waitingTeamName').textContent = teamName;
+
+    const list = document.getElementById('waitingPlayersList');
+    list.innerHTML = '';
+    Object.entries(roomData.players || {}).forEach(([id, p]) => {
+        const chip = document.createElement('div');
+        chip.className = 'player-chip';
+        let dotClass = 'dot-gold';
+        if (p.team === 'team1') dotClass = 'dot-red';
+        if (p.team === 'team2') dotClass = 'dot-blue';
+        chip.innerHTML = `<span class="dot ${dotClass}"></span>${p.name}${p.isHost ? ' 👑' : ''}`;
+        list.appendChild(chip);
+    });
+}
+
+// ══════ START GAME ══════
+function startGame() {
+    if (!currentTeam) { alert('اختر فريقك أولاً'); return; }
+    database.ref('rooms/' + currentRoomCode).update({ gameState: 'playing' });
+    showScreen('gameScreen');
+}
+
+// ══════ GAME SCREEN UPDATE ══════
+function updateGameScreen() {
+    if (!roomData) return;
+
+    // Victory check first
+    const teamSize = roomData.teamSize || 2;
+    const t1c = roomData.team1Couch || [];
+    const t2c = roomData.team2Couch || [];
+
+    if (t1c.length >= teamSize || t2c.length >= teamSize) {
+        showVictory();
+        return;
     }
 
-    function showPlayerGameScreen() {
-        hideAllScreens();
-        document.getElementById('playerGameScreen').classList.add('active');
+    // Hide victory if not won
+    document.getElementById('victoryOverlay').classList.remove('active');
+
+    // Top bar
+    document.getElementById('gTeam1Name').textContent = roomData.team1Name;
+    document.getElementById('gTeam2Name').textContent = roomData.team2Name;
+    document.getElementById('gTeam1Score').textContent = t1c.length + '/' + teamSize;
+    document.getElementById('gTeam2Score').textContent = t2c.length + '/' + teamSize;
+
+    // Team players in top bar
+    renderTeamPlayers('gTeam1Players', 'team1');
+    renderTeamPlayers('gTeam2Players', 'team2');
+
+    // Couch
+    document.getElementById('couchTeam1Label').textContent = roomData.team1Name;
+    document.getElementById('couchTeam2Label').textContent = roomData.team2Name;
+    renderCouchSeats('couchTeam1Seats', t1c, teamSize);
+    renderCouchSeats('couchTeam2Seats', t2c, teamSize);
+
+    // Check if I'm on couch
+    const isOnCouch = (currentTeam === 'team1' && t1c.includes(currentPlayerId)) ||
+                      (currentTeam === 'team2' && t2c.includes(currentPlayerId));
+
+    const onCouchBanner = document.getElementById('onCouchBanner');
+    const gameContent = document.getElementById('gameContent');
+
+    if (isOnCouch) {
+        onCouchBanner.classList.remove('hidden');
+        gameContent.style.display = 'none';
+    } else {
+        onCouchBanner.classList.add('hidden');
+        gameContent.style.display = 'block';
+        renderGameContent();
     }
 
-    function updatePlayerGameScreen() {
-        if (!document.getElementById('playerGameScreen').classList.contains('active')) {
-            showPlayerGameScreen();
-        }
-
-        updateTeamsPlayersDisplay();
-
-        if (isHost) {
-            document.getElementById('hostControlsPlayer').style.display = 'block';
-        } else {
-            document.getElementById('hostControlsPlayer').style.display = 'none';
-        }
-
-        const buzzButton = document.getElementById('buzzButton');
-        const playerAnswerOptions = document.getElementById('playerAnswerOptions');
-        const playerChoiceButtons = document.getElementById('playerChoiceButtons');
-        const playerStatus = document.getElementById('playerStatus');
-        const playerQuestionDisplay = document.getElementById('playerQuestionDisplay');
-        const playerQuestionText = document.getElementById('playerQuestionText');
-        const playerTimer = document.getElementById('playerTimer');
-        const buzzerIndicator = document.getElementById('buzzerIndicator');
-        const gameElements = document.getElementById('gameElements');
-        const onCouchMessage = document.getElementById('onCouchMessage');
-        const answerInputContainer = document.getElementById('answerInputContainer');
-
-        const isOnCouch = (currentTeam === 'team1' && roomData.team1Couch?.includes(currentPlayerId)) ||
-                         (currentTeam === 'team2' && roomData.team2Couch?.includes(currentPlayerId));
-
-        if (isOnCouch) {
-            gameElements.style.display = 'none';
-            onCouchMessage.style.display = 'block';
-            checkVictory();
-            return;
-        } else {
-            gameElements.style.display = 'block';
-            onCouchMessage.style.display = 'none';
-        }
-
-        if (roomData.currentQuestion) {
-            playerQuestionDisplay.style.display = 'block';
-            playerQuestionText.textContent = roomData.currentQuestion.question;
-            
-            // عرض المؤقت 30 ثانية للجميع إذا لم تظهر الخيارات بعد
-            if (roomData.questionStartTime && !roomData.showOptions && !roomData.correctAnswer) {
-                const elapsed = Math.floor((Date.now() - roomData.questionStartTime) / 1000);
-                const timeLeft = Math.max(0, 30 - elapsed);
-                playerTimer.style.display = 'block';
-                playerTimer.textContent = timeLeft;
-                
-                if (timeLeft <= 3) {
-                    playerTimer.classList.add('warning');
-                } else {
-                    playerTimer.classList.remove('warning');
-                }
-            } else {
-                playerTimer.style.display = 'none';
-            }
-        } else {
-            playerQuestionDisplay.style.display = 'none';
-            playerTimer.style.display = 'none';
-        }
-
-        if (roomData.buzzedPlayer && !roomData.showOptions && !roomData.correctAnswer) {
-            const player = roomData.players[roomData.buzzedPlayer];
-            const team = player.team === 'team1' ? roomData.team1Name : roomData.team2Name;
-            buzzerIndicator.innerHTML = `<div class="buzzer-indicator">🔔 ${player.name} من ${team} يكتب الإجابة...</div>`;
-        } else {
-            buzzerIndicator.innerHTML = '';
-        }
-
-        if (roomData.waitingForTextAnswer && roomData.buzzedPlayer === currentPlayerId && !roomData.correctAnswer) {
-            playerStatus.textContent = 'اكتب إجابتك بسرعة! (5 ثواني)';
-            playerStatus.className = 'status-message warning';
-            buzzButton.style.display = 'none';
-            answerInputContainer.style.display = 'block';
-            playerAnswerOptions.innerHTML = '';
-            playerChoiceButtons.innerHTML = '';
-            
-            const textInput = document.getElementById('textAnswerInput');
-            if (textInput) {
-                textInput.value = '';
-                textInput.focus();
-            }
-            
-            return;
-        } else {
-            answerInputContainer.style.display = 'none';
-            buzzButton.style.display = 'block';
-        }
-
-        if (roomData.waitingForChoice && roomData.choicePlayer === currentPlayerId) {
-            playerStatus.textContent = 'إجابة صحيحة! اختر:';
-            playerStatus.className = 'status-message success';
-            buzzButton.disabled = true;
-            playerAnswerOptions.innerHTML = '';
-            
-            const otherTeam = currentTeam === 'team1' ? 'team2' : 'team1';
-            const myTeam = currentTeam;
-            const teamSize = roomData.teamSize || 2;
-            
-            const myCouch = roomData[myTeam + 'Couch'] || [];
-            const otherCouch = roomData[otherTeam + 'Couch'] || [];
-            
-            // التحقق إذا كانت كنبة فريقي ممتلئة
-            const myCouchFull = myCouch.length >= teamSize;
-            const hasOtherCouch = otherCouch.length > 0;
-            
-            playerChoiceButtons.innerHTML = '';
-            
-            // إذا كانت كنبة فريقي ممتلئة، الخيار الوحيد هو سرقة لاعب من الفريق الآخر
-            if (myCouchFull && hasOtherCouch) {
-                playerStatus.textContent = 'كنبة فريقك ممتلئة! يجب سحب لاعب من الفريق الآخر';
-                playerStatus.className = 'status-message warning';
-                
-                const stealBtn = document.createElement('button');
-                stealBtn.className = 'choice-btn steal';
-                stealBtn.textContent = '🎯 اسحب لاعب من الفريق الآخر';
-                stealBtn.onclick = () => makeChoice('steal');
-                playerChoiceButtons.appendChild(stealBtn);
-            } else if (!myCouchFull) {
-                // إذا لم تكن كنبة فريقي ممتلئة، اعرض خيار الجلوس
-                const sitBtn = document.createElement('button');
-                sitBtn.className = 'choice-btn sit';
-                sitBtn.textContent = '🛋️ اجلس على الكنبة';
-                sitBtn.onclick = () => makeChoice('sit');
-                playerChoiceButtons.appendChild(sitBtn);
-                
-                // واعرض خيار السرقة إذا كان هناك لاعبون على كنبة الفريق الآخر
-                if (hasOtherCouch) {
-                    const stealBtn = document.createElement('button');
-                    stealBtn.className = 'choice-btn steal';
-                    stealBtn.textContent = '🎯 اسحب لاعب من الفريق الآخر';
-                    stealBtn.onclick = () => makeChoice('steal');
-                    playerChoiceButtons.appendChild(stealBtn);
-                }
-            }
-            
-            return;
-        } else {
-            playerChoiceButtons.innerHTML = '';
-        }
-
-        const playerTeam = roomData.players[currentPlayerId]?.team;
-        
-        // إذا كانت الخيارات مفتوحة وهناك فريق محظور
-        if (roomData.showOptions && roomData.bannedTeam && roomData.bannedTeam !== playerTeam && !roomData.correctAnswer) {
-            playerStatus.textContent = 'فرصة فريقك! اختر الإجابة الصحيحة';
-            playerStatus.className = 'status-message info';
-            buzzButton.disabled = true;
-            
-            playerAnswerOptions.innerHTML = '';
-            roomData.currentQuestion.options.forEach((option, index) => {
-                const btn = document.createElement('button');
-                btn.className = 'answer-btn';
-                btn.textContent = option;
-                btn.onclick = () => selectAnswer(index);
-                playerAnswerOptions.appendChild(btn);
-            });
-            return;
-        } else if (roomData.showOptions && roomData.bannedTeam === playerTeam && !roomData.correctAnswer) {
-            playerStatus.textContent = 'فريقك ممنوع من الإجابة - انتظر السؤال التالي';
-            playerStatus.className = 'status-message error';
-            buzzButton.disabled = true;
-            playerAnswerOptions.innerHTML = '';
-            return;
-        } else if (roomData.showOptions && !roomData.bannedTeam && !roomData.correctAnswer) {
-            // لم يضغط أحد الجرس في الوقت المحدد - فتح الخيارات للجميع
-            playerStatus.textContent = 'لم يضغط أحد الجرس! اختر الإجابة الصحيحة';
-            playerStatus.className = 'status-message info';
-            buzzButton.disabled = true;
-            
-            playerAnswerOptions.innerHTML = '';
-            roomData.currentQuestion.options.forEach((option, index) => {
-                const btn = document.createElement('button');
-                btn.className = 'answer-btn';
-                btn.textContent = option;
-                btn.onclick = () => selectAnswer(index);
-                playerAnswerOptions.appendChild(btn);
-            });
-            return;
-        }
-
-        if (roomData.correctAnswer !== null && roomData.buzzedPlayer === currentPlayerId) {
-            playerAnswerOptions.innerHTML = '';
-            buzzButton.disabled = true;
-            
-            if (roomData.correctAnswer) {
-                playerStatus.textContent = '✅ إجابة صحيحة!';
-                playerStatus.className = 'status-message success';
-            } else {
-                playerStatus.textContent = '❌ إجابة خاطئة!';
-                playerStatus.className = 'status-message error';
-            }
-            return;
-        }
-        
-        // إذا كانت الإجابة خاطئة من أي لاعب وتم إغلاق الخيارات
-        if (roomData.correctAnswer === false && !roomData.showOptions) {
-            playerStatus.textContent = 'إجابة خاطئة - انتظر السؤال التالي';
-            playerStatus.className = 'status-message error';
-            buzzButton.disabled = true;
-            playerAnswerOptions.innerHTML = '';
-            
-            if (isHost) {
-                setTimeout(() => {
-                    const nextBtn = document.getElementById('nextQuestionBtnPlayer');
-                    if (nextBtn) nextBtn.disabled = false;
-                }, 500);
-            }
-            return;
-        }
-
-        if (roomData.currentQuestion && !roomData.buzzedPlayer && !roomData.showOptions) {
-            playerStatus.textContent = 'اضغط الجرس للإجابة!';
-            playerStatus.className = 'status-message info';
-            buzzButton.disabled = false;
-            playerAnswerOptions.innerHTML = '';
-        } else if (roomData.buzzedPlayer && roomData.buzzedPlayer !== currentPlayerId) {
-            const buzzedPlayerData = roomData.players[roomData.buzzedPlayer];
-            playerStatus.textContent = `${buzzedPlayerData.name} يجيب الآن...`;
-            playerStatus.className = 'status-message warning';
-            buzzButton.disabled = true;
-            playerAnswerOptions.innerHTML = '';
-        } else if (!roomData.currentQuestion) {
-            playerStatus.textContent = 'انتظر السؤال...';
-            playerStatus.className = 'status-message info';
-            buzzButton.disabled = true;
-            playerAnswerOptions.innerHTML = '';
-            
-            if (isHost) {
-                const nextBtn = document.getElementById('nextQuestionBtnPlayer');
-                if (nextBtn) nextBtn.disabled = false;
-            }
-        }
-
-        checkVictory();
+    // Host next button - ALWAYS visible and enabled for host
+    const hostNextBtn = document.getElementById('hostNextBtn');
+    if (isHost) {
+        hostNextBtn.classList.remove('hidden');
+    } else {
+        hostNextBtn.classList.add('hidden');
     }
+}
 
-    function updateTeamsPlayersDisplay() {
-        if (!roomData || !roomData.players) return;
+function renderTeamPlayers(containerId, team) {
+    const container = document.getElementById(containerId);
+    container.innerHTML = '';
+    const couch = roomData[team + 'Couch'] || [];
+    Object.entries(roomData.players || {}).forEach(([id, p]) => {
+        if (p.team === team) {
+            const span = document.createElement('span');
+            span.className = 'mini-player' + (couch.includes(id) ? ' on-couch' : '');
+            span.textContent = p.name;
+            container.appendChild(span);
+        }
+    });
+}
 
-        document.getElementById('playerTeam1Name').textContent = roomData.team1Name;
-        document.getElementById('playerTeam2Name').textContent = roomData.team2Name;
-        document.getElementById('playerCouchTeam1').textContent = roomData.team1Name;
-        document.getElementById('playerCouchTeam2').textContent = roomData.team2Name;
-
-        const team1Players = [];
-        const team2Players = [];
-
-        Object.entries(roomData.players).forEach(([id, player]) => {
-            if (player.team === 'team1') {
-                team1Players.push({ id, ...player });
-            } else if (player.team === 'team2') {
-                team2Players.push({ id, ...player });
+function renderCouchSeats(containerId, couchArr, teamSize) {
+    const container = document.getElementById(containerId);
+    container.innerHTML = '';
+    for (let i = 0; i < teamSize; i++) {
+        if (couchArr[i]) {
+            const player = roomData.players[couchArr[i]];
+            if (player) {
+                const div = document.createElement('div');
+                div.className = 'couch-seat';
+                div.textContent = '🏆 ' + player.name;
+                container.appendChild(div);
             }
-        });
-
-        const team1List = document.getElementById('team1PlayersList');
-        team1List.innerHTML = '';
-        team1Players.forEach(player => {
+        } else {
             const div = document.createElement('div');
-            div.className = 'player-name-tag';
-            if (roomData.team1Couch?.includes(player.id)) {
-                div.classList.add('on-couch');
+            div.className = 'seat-slot';
+            div.textContent = '—';
+            container.appendChild(div);
+        }
+    }
+}
+
+// ══════ GAME CONTENT RENDERING ══════
+function renderGameContent() {
+    const questionCard = document.getElementById('questionCard');
+    const mainTimerBar = document.getElementById('mainTimerBar');
+    const buzzerIndicator = document.getElementById('buzzerIndicator');
+    const gameStatus = document.getElementById('gameStatus');
+    const buzzerBtn = document.getElementById('buzzerBtn');
+    const answerInputArea = document.getElementById('answerInputArea');
+    const optionsGrid = document.getElementById('optionsGrid');
+    const choiceGrid = document.getElementById('choiceGrid');
+
+    // Reset all
+    questionCard.classList.add('hidden');
+    mainTimerBar.classList.add('hidden');
+    buzzerIndicator.classList.add('hidden');
+    buzzerBtn.classList.add('hidden');
+    answerInputArea.classList.add('hidden');
+    optionsGrid.classList.add('hidden');
+    choiceGrid.classList.add('hidden');
+    buzzerBtn.disabled = true;
+
+    const myTeam = roomData.players[currentPlayerId]?.team;
+
+    // ── STATE: Waiting for choice (sit/pull) ──
+    if (roomData.waitingForChoice && roomData.choicePlayer === currentPlayerId) {
+        gameStatus.textContent = '✅ إجابة صحيحة! اختر ماذا تريد أن تفعل:';
+        gameStatus.className = 'status-bar success';
+        renderChoiceButtons();
+        return;
+    }
+    if (roomData.waitingForChoice) {
+        const cp = roomData.players[roomData.choicePlayer];
+        gameStatus.textContent = `${cp?.name || ''} يختار الآن...`;
+        gameStatus.className = 'status-bar info';
+        return;
+    }
+
+    // ── STATE: No question yet ──
+    if (!roomData.currentQuestion) {
+        gameStatus.textContent = 'انتظر السؤال...';
+        gameStatus.className = 'status-bar info';
+        return;
+    }
+
+    // Show question
+    questionCard.classList.remove('hidden');
+    document.getElementById('qCategory').textContent = roomData.currentQuestion.category || '';
+    document.getElementById('qText').textContent = roomData.currentQuestion.question;
+
+    // ── STATE: Text answer input (5 seconds) ──
+    if (roomData.waitingForTextAnswer && roomData.buzzedPlayer === currentPlayerId && roomData.correctAnswer === null) {
+        gameStatus.textContent = 'اكتب إجابتك بسرعة!';
+        gameStatus.className = 'status-bar warning';
+        answerInputArea.classList.remove('hidden');
+        startAnswerTimerDisplay();
+        return;
+    }
+
+    // ── STATE: Someone else is typing ──
+    if (roomData.waitingForTextAnswer && roomData.buzzedPlayer && roomData.buzzedPlayer !== currentPlayerId && roomData.correctAnswer === null) {
+        const bp = roomData.players[roomData.buzzedPlayer];
+        const bTeam = bp?.team === 'team1' ? roomData.team1Name : roomData.team2Name;
+        buzzerIndicator.classList.remove('hidden');
+        buzzerIndicator.textContent = `🔔 ${bp?.name} من ${bTeam} يكتب الإجابة...`;
+        gameStatus.textContent = 'انتظر...';
+        gameStatus.className = 'status-bar info';
+        // Show synced timer
+        showSyncedMainTimer();
+        return;
+    }
+
+    // ── STATE: Options shown ──
+    if (roomData.showOptions && roomData.correctAnswer === null) {
+        showSyncedMainTimer(); // might still be visible
+
+        // Options visible to ALL
+        optionsGrid.classList.remove('hidden');
+        optionsGrid.innerHTML = '';
+
+        const isBanned = roomData.bannedTeam && roomData.bannedTeam === myTeam;
+
+        roomData.currentQuestion.options.forEach((opt, idx) => {
+            const btn = document.createElement('button');
+            btn.className = 'option-btn';
+            btn.textContent = opt;
+            if (isBanned) {
+                btn.disabled = true;
+            } else {
+                btn.onclick = () => selectAnswer(idx);
             }
-            div.textContent = player.name;
-            team1List.appendChild(div);
+            optionsGrid.appendChild(btn);
         });
 
-        const team2List = document.getElementById('team2PlayersList');
-        team2List.innerHTML = '';
-        team2Players.forEach(player => {
-            const div = document.createElement('div');
-            div.className = 'player-name-tag';
-            if (roomData.team2Couch?.includes(player.id)) {
-                div.classList.add('on-couch');
-            }
-            div.textContent = player.name;
-            team2List.appendChild(div);
-        });
-
-        const team1Couch = document.getElementById('playerTeam1Couch');
-        const team2Couch = document.getElementById('playerTeam2Couch');
-
-        team1Couch.innerHTML = '';
-        if (roomData.team1Couch && roomData.team1Couch.length > 0) {
-            roomData.team1Couch.forEach(playerId => {
-                const player = roomData.players[playerId];
-                if (player) {
-                    const div = document.createElement('div');
-                    div.className = 'couch-player';
-                    div.textContent = '🏆 ' + player.name;
-                    team1Couch.appendChild(div);
-                }
-            });
+        if (isBanned) {
+            gameStatus.textContent = 'فريقك ممنوع من الإجابة على هذا السؤال';
+            gameStatus.className = 'status-bar error';
+        } else if (roomData.bannedTeam) {
+            gameStatus.textContent = 'فرصة فريقك! اختر الإجابة الصحيحة';
+            gameStatus.className = 'status-bar info';
         } else {
-            team1Couch.innerHTML = '<div class="couch-empty">فارغة</div>';
+            gameStatus.textContent = 'لم يضغط أحد الجرس! اختر الإجابة';
+            gameStatus.className = 'status-bar info';
         }
+        return;
+    }
 
-        team2Couch.innerHTML = '';
-        if (roomData.team2Couch && roomData.team2Couch.length > 0) {
-            roomData.team2Couch.forEach(playerId => {
-                const player = roomData.players[playerId];
-                if (player) {
-                    const div = document.createElement('div');
-                    div.className = 'couch-player';
-                    div.textContent = '🏆 ' + player.name;
-                    team2Couch.appendChild(div);
-                }
-            });
+    // ── STATE: Correct/Wrong answer result ──
+    if (roomData.correctAnswer !== null) {
+        if (roomData.correctAnswer === true) {
+            gameStatus.textContent = '✅ إجابة صحيحة!';
+            gameStatus.className = 'status-bar success';
         } else {
-            team2Couch.innerHTML = '<div class="couch-empty">فارغة</div>';
+            gameStatus.textContent = '❌ إجابة خاطئة!';
+            gameStatus.className = 'status-bar error';
         }
+        return;
     }
 
-    function nextQuestion() {
-        clearInterval(timerInterval);
-        clearInterval(answerTimerInterval);
-
-        const usedQuestions = roomData.usedQuestions || [];
-        let availableQuestions = questions.filter(q => !usedQuestions.includes(q.question));
-        
-        if (availableQuestions.length === 0) {
-            availableQuestions = questions;
-            usedQuestions.length = 0;
-        }
-
-        const randomQuestion = availableQuestions[Math.floor(Math.random() * availableQuestions.length)];
-        usedQuestions.push(randomQuestion.question);
-
-        database.ref('rooms/' + currentRoomCode).update({
-            currentQuestion: randomQuestion,
-            usedQuestions: usedQuestions,
-            buzzedPlayer: null,
-            showOptions: false,
-            bannedTeam: null,
-            correctAnswer: null,
-            selectedAnswer: null,
-            waitingForChoice: false,
-            choicePlayer: null,
-            questionStartTime: Date.now(),
-            waitingForTextAnswer: false
-        });
-
-        const nextBtn = document.getElementById('nextQuestionBtnPlayer');
-        if (nextBtn) nextBtn.disabled = true;
-
-        startTimer(30);
+    // ── STATE: Question active, no buzz yet ──
+    if (!roomData.buzzedPlayer && !roomData.showOptions) {
+        showSyncedMainTimer();
+        buzzerBtn.classList.remove('hidden');
+        buzzerBtn.disabled = false;
+        gameStatus.textContent = 'اقرأ السؤال واضغط الجرس للإجابة!';
+        gameStatus.className = 'status-bar info';
+        return;
     }
 
-    function startTimer(seconds) {
-        clearInterval(timerInterval);
-        let timeLeft = seconds;
-        
-        const playerTimerElement = document.getElementById('playerTimer');
-        
-        if (playerTimerElement) {
-            playerTimerElement.style.display = 'block';
-            playerTimerElement.textContent = timeLeft;
-            playerTimerElement.classList.remove('warning');
-        }
-
-        timerInterval = setInterval(() => {
-            timeLeft--;
-            
-            if (playerTimerElement) {
-                playerTimerElement.textContent = timeLeft;
-                if (timeLeft <= 3) {
-                    playerTimerElement.classList.add('warning');
-                }
-            }
-
-            if (timeLeft <= 0) {
-                clearInterval(timerInterval);
-                clearInterval(answerTimerInterval); // إيقاف مؤقت الـ 5 ثواني أيضاً
-                
-                // فتح الخيارات للجميع بعد انتهاء الـ 30 ثانية
-                if (!roomData.showOptions && roomData.correctAnswer === null) {
-                    const updateData = { 
-                        showOptions: true,
-                        waitingForTextAnswer: false
-                    };
-                    
-                    // إذا كان هناك شخص ضغط الجرس، يتم منع فريقه من الإجابة
-                    if (roomData.buzzedPlayer) {
-                        const buzzedPlayerTeam = roomData.players[roomData.buzzedPlayer]?.team;
-                        updateData.bannedTeam = buzzedPlayerTeam;
-                    } else {
-                        updateData.bannedTeam = null;
-                    }
-                    
-                    database.ref('rooms/' + currentRoomCode).update(updateData);
-                }
-            }
-        }, 1000);
+    // ── STATE: Someone buzzed, result showed ──
+    if (roomData.buzzedPlayer && roomData.buzzedPlayer !== currentPlayerId) {
+        const bp = roomData.players[roomData.buzzedPlayer];
+        gameStatus.textContent = `${bp?.name || ''} يجيب الآن...`;
+        gameStatus.className = 'status-bar warning';
+        showSyncedMainTimer();
     }
+}
 
-    function buzzIn() {
-        if (!roomData.currentQuestion || roomData.buzzedPlayer || roomData.showOptions) return;
+// ══════ SYNCED TIMERS ══════
+function showSyncedMainTimer() {
+    if (!roomData.questionStartTime) return;
 
-        database.ref('rooms/' + currentRoomCode).update({
-            buzzedPlayer: currentPlayerId,
-            waitingForTextAnswer: true
-        });
+    const mainTimerBar = document.getElementById('mainTimerBar');
+    const circle = document.getElementById('mainTimerCircle');
+    mainTimerBar.classList.remove('hidden');
 
-        // لا نوقف المؤقت 30 ثانية - يستمر في العمل عند الجميع
-        startAnswerTimer(5);
+    // Calculate remaining from server time
+    const elapsed = Math.floor((Date.now() - roomData.questionStartTime) / 1000);
+    const timeLeft = Math.max(0, 30 - elapsed);
+    circle.textContent = timeLeft;
+    circle.classList.toggle('danger', timeLeft <= 3);
+
+    // If host, run the actual timer logic
+    if (isHost && !mainTimerInterval) {
+        runHostMainTimer();
     }
+}
 
-    function startAnswerTimer(seconds) {
-        clearInterval(answerTimerInterval);
-        let timeLeft = seconds;
-        
-        const answerTimerElement = document.getElementById('answerTimer');
-        if (answerTimerElement) {
-            answerTimerElement.style.display = 'block';
-            answerTimerElement.textContent = timeLeft;
-            answerTimerElement.classList.remove('warning');
-        }
-        
-        answerTimerInterval = setInterval(() => {
-            timeLeft--;
-            
-            if (answerTimerElement) {
-                answerTimerElement.textContent = timeLeft;
-                if (timeLeft <= 2) {
-                    answerTimerElement.classList.add('warning');
-                }
-            }
-
-            if (timeLeft <= 0) {
-                clearInterval(answerTimerInterval);
-                
-                if (roomData.buzzedPlayer === currentPlayerId && roomData.correctAnswer === null) {
-                    const playerTeam = roomData.players[currentPlayerId]?.team;
-                    database.ref('rooms/' + currentRoomCode).update({
-                        correctAnswer: false,
-                        waitingForTextAnswer: false,
-                        showOptions: true,
-                        bannedTeam: playerTeam
-                    });
-                }
-            }
-        }, 1000);
-    }
-
-    function submitTextAnswer() {
-        const textInput = document.getElementById('textAnswerInput');
-        const userAnswer = textInput.value.trim().toLowerCase();
-        
-        if (!userAnswer) {
-            alert('الرجاء كتابة إجابة!');
+function runHostMainTimer() {
+    clearInterval(mainTimerInterval);
+    mainTimerInterval = setInterval(() => {
+        if (!roomData || !roomData.questionStartTime) {
+            clearInterval(mainTimerInterval);
+            mainTimerInterval = null;
             return;
         }
+        const elapsed = Math.floor((Date.now() - roomData.questionStartTime) / 1000);
+        const timeLeft = Math.max(0, 30 - elapsed);
 
-        clearInterval(answerTimerInterval);
-        
-        const answerTimerElement = document.getElementById('answerTimer');
-        if (answerTimerElement) {
-            answerTimerElement.style.display = 'none';
+        const circle = document.getElementById('mainTimerCircle');
+        if (circle) {
+            circle.textContent = timeLeft;
+            circle.classList.toggle('danger', timeLeft <= 3);
         }
 
-        const correctOption = roomData.currentQuestion.options[roomData.currentQuestion.correct];
-        const correctAnswer = correctOption.toLowerCase();
-        
-        const isCorrect = userAnswer === correctAnswer || 
-                         correctAnswer.includes(userAnswer) || 
-                         userAnswer.includes(correctAnswer.split(' ')[0]);
-
-        const roomRef = database.ref('rooms/' + currentRoomCode);
-        
-        if (isCorrect) {
-            roomRef.update({
-                correctAnswer: true,
-                waitingForTextAnswer: false
-            });
-
-            const otherTeam = currentTeam === 'team1' ? 'team2' : 'team1';
-            const hasOtherCouch = roomData[otherTeam + 'Couch']?.length > 0;
-            
-            if (hasOtherCouch) {
-                roomRef.update({
-                    waitingForChoice: true,
-                    choicePlayer: currentPlayerId
-                });
-            } else {
-                addToCouch();
+        if (timeLeft <= 0) {
+            clearInterval(mainTimerInterval);
+            mainTimerInterval = null;
+            // Open options for everyone
+            if (roomData.correctAnswer === null && !roomData.showOptions) {
+                const updateData = { showOptions: true, waitingForTextAnswer: false };
+                if (roomData.buzzedPlayer) {
+                    updateData.bannedTeam = roomData.players[roomData.buzzedPlayer]?.team || null;
+                }
+                database.ref('rooms/' + currentRoomCode).update(updateData);
             }
-        } else {
-            const playerTeam = roomData.players[currentPlayerId]?.team;
-            roomRef.update({
-                correctAnswer: false,
-                waitingForTextAnswer: false,
-                showOptions: true,
-                bannedTeam: playerTeam
-            });
         }
-    }
+    }, 500);
+}
 
-    function selectAnswer(answerIndex) {
-        const isCorrect = answerIndex === roomData.currentQuestion.correct;
-        const playerTeam = roomData.players[currentPlayerId]?.team;
+function startAnswerTimerDisplay() {
+    if (!roomData.buzzTime) return;
+    clearInterval(answerTimerInterval);
 
-        database.ref('rooms/' + currentRoomCode).update({
-            selectedAnswer: answerIndex,
-            correctAnswer: isCorrect
-        });
+    const circle = document.getElementById('answerTimerCircle');
+    
+    answerTimerInterval = setInterval(() => {
+        if (!roomData.buzzTime) { clearInterval(answerTimerInterval); return; }
+        const elapsed = Math.floor((Date.now() - roomData.buzzTime) / 1000);
+        const timeLeft = Math.max(0, 5 - elapsed);
+        circle.textContent = timeLeft;
+        circle.classList.toggle('danger', timeLeft <= 2);
 
-        clearInterval(timerInterval);
-
-        if (isCorrect) {
-            const otherTeam = currentTeam === 'team1' ? 'team2' : 'team1';
-            const hasOtherCouch = roomData[otherTeam + 'Couch']?.length > 0;
-            
-            if (hasOtherCouch) {
+        if (timeLeft <= 0) {
+            clearInterval(answerTimerInterval);
+            // Time ran out for text answer — mark as wrong
+            if (roomData.buzzedPlayer === currentPlayerId && roomData.correctAnswer === null) {
+                const playerTeam = roomData.players[currentPlayerId]?.team;
                 database.ref('rooms/' + currentRoomCode).update({
-                    waitingForChoice: true,
-                    choicePlayer: currentPlayerId,
-                    bannedTeam: null,
-                    showOptions: false
-                });
-            } else {
-                addToCouch();
-                database.ref('rooms/' + currentRoomCode).update({ 
-                    bannedTeam: null,
-                    showOptions: false 
+                    correctAnswer: false,
+                    waitingForTextAnswer: false,
+                    showOptions: true,
+                    bannedTeam: playerTeam
                 });
             }
-        } else {
-            // إجابة خاطئة من الخيارات - تفعيل زر السؤال التالي
-            database.ref('rooms/' + currentRoomCode).update({
-                showOptions: false,
-                bannedTeam: null,
-                correctAnswer: false
-            });
-            
-            setTimeout(() => {
-                const nextBtn = document.getElementById('nextQuestionBtnPlayer');
-                if (nextBtn) nextBtn.disabled = false;
-            }, 1000);
         }
-    }
+    }, 300);
+}
 
-    function makeChoice(choice) {
-        if (choice === 'sit') {
-            addToCouch();
-        } else if (choice === 'steal') {
-            stealFromCouch();
-        }
-    }
+// ══════ BUZZER ══════
+function buzzIn() {
+    if (!roomData.currentQuestion || roomData.buzzedPlayer || roomData.showOptions) return;
+    database.ref('rooms/' + currentRoomCode).update({
+        buzzedPlayer: currentPlayerId,
+        waitingForTextAnswer: true,
+        buzzTime: Date.now()
+    });
+}
 
-    function addToCouch() {
-        const couchKey = currentTeam + 'Couch';
-        const scoreKey = currentTeam + 'Score';
-        const teamSize = roomData.teamSize || 2;
-        
-        const currentCouch = roomData[couchKey] || [];
-        
-        // التحقق من عدم تجاوز حجم الفريق
-        if (currentCouch.length >= teamSize) {
-            console.log('الكنبة ممتلئة! لا يمكن إضافة المزيد من اللاعبين.');
-            database.ref('rooms/' + currentRoomCode).update({
-                waitingForChoice: false,
-                choicePlayer: null
-            });
-            return;
-        }
-        
-        const newCouch = [...currentCouch, currentPlayerId];
-        const newScore = (roomData[scoreKey] || 0) + 1;
+// ══════ SUBMIT TEXT ANSWER ══════
+function submitTextAnswer() {
+    const input = document.getElementById('textAnswerInput');
+    const userAnswer = normalizeArabic(input.value.trim());
+    
+    if (!userAnswer) { alert('الرجاء كتابة إجابة!'); return; }
+    clearInterval(answerTimerInterval);
 
-        database.ref('rooms/' + currentRoomCode).update({
-            [couchKey]: newCouch,
-            [scoreKey]: newScore,
-            waitingForChoice: false,
-            choicePlayer: null
-        });
+    const correctOption = roomData.currentQuestion.options[roomData.currentQuestion.correct];
+    const correctNorm = normalizeArabic(correctOption);
 
-        if (isHost) {
-            setTimeout(() => {
-                const nextBtn = document.getElementById('nextQuestionBtnPlayer');
-                if (nextBtn) nextBtn.disabled = false;
-            }, 1000);
-        }
-    }
+    const isCorrect = userAnswer === correctNorm;
 
-    function stealFromCouch() {
+    const roomRef = database.ref('rooms/' + currentRoomCode);
+
+    if (isCorrect) {
+        roomRef.update({ correctAnswer: true, waitingForTextAnswer: false });
+        // Check if other team has couch players
         const otherTeam = currentTeam === 'team1' ? 'team2' : 'team1';
-        const otherCouchKey = otherTeam + 'Couch';
-        const couchKey = currentTeam + 'Couch';
-        const scoreKey = currentTeam + 'Score';
-        const otherScoreKey = otherTeam + 'Score';
+        const otherCouch = roomData[otherTeam + 'Couch'] || [];
+        const myCouch = roomData[currentTeam + 'Couch'] || [];
         const teamSize = roomData.teamSize || 2;
-        
-        const otherCouch = [...(roomData[otherCouchKey] || [])];
-        const myCouch = [...(roomData[couchKey] || [])];
-        
-        // إذا لم يكن هناك لاعبون على كنبة الفريق الآخر
-        if (otherCouch.length === 0) {
-            console.log('لا يوجد لاعبون على كنبة الفريق الآخر للسرقة');
-            database.ref('rooms/' + currentRoomCode).update({
-                waitingForChoice: false,
-                choicePlayer: null
-            });
-            return;
-        }
-        
-        // سحب آخر لاعب من كنبة الفريق الآخر (إعادته إلى اللعبة)
-        const stolenPlayer = otherCouch.pop();
-        const otherNewScore = Math.max(0, (roomData[otherScoreKey] || 0) - 1);
-        
-        // التحقق إذا كانت كنبة فريقي ممتلئة
-        if (myCouch.length >= teamSize) {
-            // إذا كانت ممتلئة، فقط أعد اللاعب الآخر إلى اللعبة دون الجلوس
-            database.ref('rooms/' + currentRoomCode).update({
-                [otherCouchKey]: otherCouch,
-                [otherScoreKey]: otherNewScore,
-                waitingForChoice: false,
-                choicePlayer: null
-            });
+
+        if (myCouch.length >= teamSize && otherCouch.length > 0) {
+            // Couch full, must pull
+            roomRef.update({ waitingForChoice: true, choicePlayer: currentPlayerId });
+        } else if (myCouch.length >= teamSize) {
+            // Couch full, no one to pull — do nothing special
+        } else if (otherCouch.length > 0) {
+            // Can sit or pull
+            roomRef.update({ waitingForChoice: true, choicePlayer: currentPlayerId });
         } else {
-            // إذا لم تكن ممتلئة، اجلس على الكنبة وأعد اللاعب الآخر
-            const newCouch = [...myCouch, currentPlayerId];
-            const newScore = (roomData[scoreKey] || 0) + 1;
-
-            database.ref('rooms/' + currentRoomCode).update({
-                [couchKey]: newCouch,
-                [otherCouchKey]: otherCouch,
-                [scoreKey]: newScore,
-                [otherScoreKey]: otherNewScore,
-                waitingForChoice: false,
-                choicePlayer: null
-            });
+            // Just sit
+            addToCouch();
         }
-
-        if (isHost) {
-            setTimeout(() => {
-                const nextBtn = document.getElementById('nextQuestionBtnPlayer');
-                if (nextBtn) nextBtn.disabled = false;
-            }, 1000);
-        }
+    } else {
+        const playerTeam = roomData.players[currentPlayerId]?.team;
+        roomRef.update({
+            correctAnswer: false,
+            waitingForTextAnswer: false,
+            showOptions: true,
+            bannedTeam: playerTeam
+        });
     }
+    input.value = '';
+}
 
-    function checkVictory() {
+// ══════ NORMALIZE ARABIC ══════
+function normalizeArabic(str) {
+    return str
+        .toLowerCase()
+        .replace(/[\u064B-\u065F\u0670]/g, '') // remove tashkeel
+        .replace(/ة/g, 'ه')  // taa marbuta → ha
+        .replace(/ى/g, 'ي')  // alef maqsura → ya
+        .replace(/أ|إ|آ/g, 'ا') // normalize alef
+        .replace(/\s+/g, ' ')
+        .trim();
+}
+
+// ══════ SELECT ANSWER (from options) ══════
+function selectAnswer(idx) {
+    const isCorrect = idx === roomData.currentQuestion.correct;
+    const playerTeam = roomData.players[currentPlayerId]?.team;
+
+    clearInterval(mainTimerInterval);
+    mainTimerInterval = null;
+
+    const roomRef = database.ref('rooms/' + currentRoomCode);
+
+    roomRef.update({
+        selectedAnswer: idx,
+        correctAnswer: isCorrect,
+        showOptions: false,
+        buzzedPlayer: roomData.buzzedPlayer || currentPlayerId
+    });
+
+    if (isCorrect) {
+        const otherTeam = currentTeam === 'team1' ? 'team2' : 'team1';
+        const otherCouch = roomData[otherTeam + 'Couch'] || [];
+        const myCouch = roomData[currentTeam + 'Couch'] || [];
         const teamSize = roomData.teamSize || 2;
-        
-        if (roomData.team1Couch?.length >= teamSize) {
-            showVictory(roomData.team1Name);
-        } else if (roomData.team2Couch?.length >= teamSize) {
-            showVictory(roomData.team2Name);
+
+        if (myCouch.length >= teamSize && otherCouch.length > 0) {
+            roomRef.update({ waitingForChoice: true, choicePlayer: currentPlayerId, bannedTeam: null });
+        } else if (myCouch.length >= teamSize) {
+            roomRef.update({ bannedTeam: null });
+        } else if (otherCouch.length > 0) {
+            roomRef.update({ waitingForChoice: true, choicePlayer: currentPlayerId, bannedTeam: null });
+        } else {
+            addToCouch();
+            roomRef.update({ bannedTeam: null });
         }
     }
+}
 
-    function showVictory(teamName) {
-        clearInterval(timerInterval);
-        clearInterval(answerTimerInterval);
-        
-        const victoryScreenPlayer = document.getElementById('victoryScreenPlayer');
-        if (victoryScreenPlayer) {
-            victoryScreenPlayer.style.display = 'block';
-            document.getElementById('victoryMessagePlayer').textContent = `🎉 ${teamName} فاز باللعبة! 🎉`;
-            
-            document.getElementById('teamsPlayersDisplay').style.display = 'none';
-            document.getElementById('gameElements').style.display = 'none';
-            document.getElementById('hostControlsPlayer').style.display = 'none';
-            document.getElementById('onCouchMessage').style.display = 'none';
-            
-            const couchDisplay = document.querySelector('.couch-display-player');
-            if (couchDisplay) couchDisplay.style.display = 'none';
+// ══════ CHOICE: SIT or PULL ══════
+function renderChoiceButtons() {
+    const choiceGrid = document.getElementById('choiceGrid');
+    choiceGrid.classList.remove('hidden');
+    choiceGrid.innerHTML = '';
+
+    const teamSize = roomData.teamSize || 2;
+    const myCouch = roomData[currentTeam + 'Couch'] || [];
+    const otherTeam = currentTeam === 'team1' ? 'team2' : 'team1';
+    const otherCouch = roomData[otherTeam + 'Couch'] || [];
+    const myCouchFull = myCouch.length >= teamSize;
+
+    if (myCouchFull && otherCouch.length > 0) {
+        const btn = document.createElement('button');
+        btn.className = 'choice-btn pull';
+        btn.textContent = '🎯 اسحب لاعب من الفريق الآخر';
+        btn.onclick = () => makeChoice('steal');
+        choiceGrid.appendChild(btn);
+    } else if (!myCouchFull) {
+        const sitBtn = document.createElement('button');
+        sitBtn.className = 'choice-btn sit';
+        sitBtn.textContent = '🛋️ اجلس على الكنبة';
+        sitBtn.onclick = () => makeChoice('sit');
+        choiceGrid.appendChild(sitBtn);
+
+        if (otherCouch.length > 0) {
+            const pullBtn = document.createElement('button');
+            pullBtn.className = 'choice-btn pull';
+            pullBtn.textContent = '🎯 اسحب لاعب من الفريق الآخر';
+            pullBtn.onclick = () => makeChoice('steal');
+            choiceGrid.appendChild(pullBtn);
         }
-        
-        const nextBtnPlayer = document.getElementById('nextQuestionBtnPlayer');
-        if (nextBtnPlayer) nextBtnPlayer.style.display = 'none';
+    }
+}
+
+function makeChoice(choice) {
+    if (choice === 'sit') {
+        addToCouch();
+    } else if (choice === 'steal') {
+        stealFromCouch();
+    }
+}
+
+function addToCouch() {
+    const couchKey = currentTeam + 'Couch';
+    const teamSize = roomData.teamSize || 2;
+    const currentCouch = roomData[couchKey] || [];
+
+    if (currentCouch.length >= teamSize) {
+        database.ref('rooms/' + currentRoomCode).update({
+            waitingForChoice: false, choicePlayer: null
+        });
+        return;
     }
 
-    document.getElementById('roomCode')?.addEventListener('input', function(e) {
-        this.value = this.value.replace(/[^0-9]/g, '');
+    const newCouch = [...currentCouch, currentPlayerId];
+    database.ref('rooms/' + currentRoomCode).update({
+        [couchKey]: newCouch,
+        waitingForChoice: false,
+        choicePlayer: null
     });
+}
 
-    document.getElementById('textAnswerInput')?.addEventListener('keypress', function(e) {
-        if (e.key === 'Enter') {
-            submitTextAnswer();
-        }
+function stealFromCouch() {
+    const otherTeam = currentTeam === 'team1' ? 'team2' : 'team1';
+    const otherCouchKey = otherTeam + 'Couch';
+    const couchKey = currentTeam + 'Couch';
+    const teamSize = roomData.teamSize || 2;
+
+    const otherCouch = [...(roomData[otherCouchKey] || [])];
+    const myCouch = [...(roomData[couchKey] || [])];
+
+    if (otherCouch.length === 0) {
+        database.ref('rooms/' + currentRoomCode).update({
+            waitingForChoice: false, choicePlayer: null
+        });
+        return;
+    }
+
+    // Pull last player from other team's couch
+    otherCouch.pop();
+
+    const updates = {
+        [otherCouchKey]: otherCouch,
+        waitingForChoice: false,
+        choicePlayer: null
+    };
+
+    // If my couch not full, I also sit
+    if (myCouch.length < teamSize) {
+        updates[couchKey] = [...myCouch, currentPlayerId];
+    }
+
+    database.ref('rooms/' + currentRoomCode).update(updates);
+}
+
+// ══════ NEXT QUESTION ══════
+function nextQuestion() {
+    clearTimers();
+
+    const usedQuestions = roomData.usedQuestions || [];
+    let available = questions.filter(q => !usedQuestions.includes(q.question));
+    if (available.length === 0) {
+        available = questions;
+        usedQuestions.length = 0;
+    }
+
+    const q = available[Math.floor(Math.random() * available.length)];
+    usedQuestions.push(q.question);
+
+    database.ref('rooms/' + currentRoomCode).update({
+        currentQuestion: q,
+        usedQuestions: usedQuestions,
+        buzzedPlayer: null,
+        showOptions: false,
+        bannedTeam: null,
+        correctAnswer: null,
+        selectedAnswer: null,
+        waitingForChoice: false,
+        choicePlayer: null,
+        questionStartTime: Date.now(),
+        waitingForTextAnswer: false,
+        buzzTime: null
     });
+}
+
+// ══════ VICTORY ══════
+function showVictory() {
+    const teamSize = roomData.teamSize || 2;
+    const t1c = (roomData.team1Couch || []).length;
+    const t2c = (roomData.team2Couch || []).length;
+
+    clearTimers();
+
+    let winner = '';
+    if (t1c >= teamSize) winner = roomData.team1Name;
+    if (t2c >= teamSize) winner = roomData.team2Name;
+
+    document.getElementById('victoryOverlay').classList.add('active');
+    document.getElementById('victoryMsg').textContent = `🎉 ${winner} فاز باللعبة! 🎉`;
+    
+    // Hide game content
+    document.getElementById('gameContent').style.display = 'none';
+    document.getElementById('onCouchBanner').classList.add('hidden');
+    document.getElementById('hostNextBtn').classList.add('hidden');
+    document.getElementById('gameTopBar').style.display = 'none';
+    document.getElementById('couchSection').style.display = 'none';
+}
+
+function replayGame() {
+    database.ref('rooms/' + currentRoomCode).update({
+        gameState: 'playing',
+        currentQuestion: null,
+        usedQuestions: [],
+        team1Couch: [], team2Couch: [],
+        team1Score: 0, team2Score: 0,
+        buzzedPlayer: null,
+        showOptions: false,
+        bannedTeam: null,
+        correctAnswer: null,
+        selectedAnswer: null,
+        waitingForChoice: false,
+        choicePlayer: null,
+        waitingForTextAnswer: false,
+        questionStartTime: null,
+        buzzTime: null
+    });
+    // Re-show elements
+    document.getElementById('gameTopBar').style.display = '';
+    document.getElementById('couchSection').style.display = '';
+    document.getElementById('victoryOverlay').classList.remove('active');
+}
+
+// ══════ INPUT LISTENERS ══════
+document.getElementById('roomCodeInput')?.addEventListener('input', function() {
+    this.value = this.value.replace(/[^0-9]/g, '');
+});
+
+document.getElementById('textAnswerInput')?.addEventListener('keypress', function(e) {
+    if (e.key === 'Enter') submitTextAnswer();
+});
+
+// ══════ INIT: Try restore session ══════
+if (!restoreSession()) {
+    showScreen('welcomeScreen');
+}
 </script>
-```
-
 </body>
 </html>
