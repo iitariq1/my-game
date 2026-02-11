@@ -11,7 +11,7 @@
 ```
     body {
         font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-        background: linear-gradient(135deg, #1a0b2e 0%, #3d2463 50%, #1a0b2e 100%);
+        background: linear-gradient(135deg, #0f0520 0%, #1a0b2e 25%, #2d1850 50%, #1a0b2e 75%, #0f0520 100%);
         min-height: 100vh;
         display: flex;
         justify-content: center;
@@ -19,6 +19,10 @@
         padding: 20px;
         position: relative;
         overflow-x: hidden;
+    }
+    
+    html {
+        background: #0a0315;
     }
 
     body::before {
@@ -101,7 +105,22 @@
         border: 2px solid #d4af37;
         border-radius: 10px;
         font-size: 15px;
-        background: rgba(255, 255, 255, 0.95);
+        background: rgba(45, 27, 78, 0.6);
+        color: #ffd700;
+        font-weight: bold;
+    }
+    
+    .input-group input::placeholder {
+        color: rgba(255, 215, 0, 0.5);
+    }
+    
+    .input-group select {
+        color: #ffd700;
+    }
+    
+    .input-group select option {
+        background: #2d1b4e;
+        color: #ffd700;
     }
 
     .btn {
@@ -178,7 +197,7 @@
     }
 
     .player-item {
-        background: rgba(255, 255, 255, 0.95);
+        background: linear-gradient(135deg, rgba(74, 44, 111, 0.7) 0%, rgba(45, 27, 78, 0.7) 100%);
         padding: 10px 12px;
         margin-bottom: 8px;
         border-radius: 8px;
@@ -191,7 +210,7 @@
 
     .player-name {
         font-weight: bold;
-        color: #2d1b4e;
+        color: #ffd700;
         font-size: 0.95em;
     }
 
@@ -248,12 +267,12 @@
     }
 
     .player-name-tag {
-        background: rgba(255, 255, 255, 0.9);
+        background: linear-gradient(135deg, rgba(74, 44, 111, 0.8) 0%, rgba(45, 27, 78, 0.8) 100%);
         padding: 4px 6px;
         border-radius: 5px;
         text-align: center;
         font-weight: bold;
-        color: #2d1b4e;
+        color: #ffd700;
         border: 2px solid #d4af37;
         font-size: 0.8em;
     }
@@ -485,6 +504,25 @@
         margin: 12px 0;
     }
 
+    .answer-timer {
+        text-align: center;
+        font-size: 2em;
+        font-weight: bold;
+        color: #ffd700;
+        margin: 8px 0;
+        background: linear-gradient(135deg, #ffd700 0%, #ffed4e 100%);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+    }
+
+    .answer-timer.warning {
+        background: linear-gradient(135deg, #ff4444 0%, #cc0000 100%);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        animation: pulse 0.5s infinite;
+    }
+
     .answer-input {
         width: 100%;
         padding: 12px;
@@ -493,8 +531,12 @@
         font-size: 1em;
         font-weight: bold;
         text-align: center;
-        background: rgba(255, 255, 255, 0.95);
-        color: #2d1b4e;
+        background: rgba(45, 27, 78, 0.6);
+        color: #ffd700;
+    }
+    
+    .answer-input::placeholder {
+        color: rgba(255, 215, 0, 0.5);
     }
 
     .answer-input:focus {
@@ -530,14 +572,14 @@
 
     .answer-btn {
         padding: 12px 8px;
-        background: rgba(255, 255, 255, 0.95);
+        background: linear-gradient(135deg, rgba(74, 44, 111, 0.7) 0%, rgba(45, 27, 78, 0.7) 100%);
         border: 3px solid #d4af37;
         border-radius: 10px;
         font-size: 0.9em;
         font-weight: bold;
         cursor: pointer;
         transition: all 0.3s;
-        color: #2d1b4e;
+        color: #ffd700;
         min-height: 60px;
         display: flex;
         align-items: center;
@@ -547,6 +589,7 @@
 
     .answer-btn:hover:not(:disabled) {
         background: linear-gradient(135deg, #ffd700 0%, #d4af37 100%);
+        color: #1a0b2e;
         transform: translateY(-2px);
     }
 
@@ -776,6 +819,7 @@
             </div>
 
             <div class="answer-input-container" id="answerInputContainer" style="display: none;">
+                <div class="answer-timer" id="answerTimer" style="display: none;">5</div>
                 <input type="text" class="answer-input" id="textAnswerInput" placeholder="اكتب إجابتك هنا..." autocomplete="off">
                 <button class="submit-answer-btn" id="submitAnswerBtn" onclick="submitTextAnswer()">إرسال الإجابة ✓</button>
             </div>
@@ -1289,22 +1333,44 @@
             playerAnswerOptions.innerHTML = '';
             
             const otherTeam = currentTeam === 'team1' ? 'team2' : 'team1';
-            const hasOtherCouch = roomData[otherTeam + 'Couch']?.length > 0;
+            const myTeam = currentTeam;
+            const teamSize = roomData.teamSize || 2;
+            
+            const myCouch = roomData[myTeam + 'Couch'] || [];
+            const otherCouch = roomData[otherTeam + 'Couch'] || [];
+            
+            // التحقق إذا كانت كنبة فريقي ممتلئة
+            const myCouchFull = myCouch.length >= teamSize;
+            const hasOtherCouch = otherCouch.length > 0;
             
             playerChoiceButtons.innerHTML = '';
             
-            const sitBtn = document.createElement('button');
-            sitBtn.className = 'choice-btn sit';
-            sitBtn.textContent = '🛋️ اجلس على الكنبة';
-            sitBtn.onclick = () => makeChoice('sit');
-            playerChoiceButtons.appendChild(sitBtn);
-            
-            if (hasOtherCouch) {
+            // إذا كانت كنبة فريقي ممتلئة، الخيار الوحيد هو سرقة لاعب من الفريق الآخر
+            if (myCouchFull && hasOtherCouch) {
+                playerStatus.textContent = 'كنبة فريقك ممتلئة! يجب سحب لاعب من الفريق الآخر';
+                playerStatus.className = 'status-message warning';
+                
                 const stealBtn = document.createElement('button');
                 stealBtn.className = 'choice-btn steal';
                 stealBtn.textContent = '🎯 اسحب لاعب من الفريق الآخر';
                 stealBtn.onclick = () => makeChoice('steal');
                 playerChoiceButtons.appendChild(stealBtn);
+            } else if (!myCouchFull) {
+                // إذا لم تكن كنبة فريقي ممتلئة، اعرض خيار الجلوس
+                const sitBtn = document.createElement('button');
+                sitBtn.className = 'choice-btn sit';
+                sitBtn.textContent = '🛋️ اجلس على الكنبة';
+                sitBtn.onclick = () => makeChoice('sit');
+                playerChoiceButtons.appendChild(sitBtn);
+                
+                // واعرض خيار السرقة إذا كان هناك لاعبون على كنبة الفريق الآخر
+                if (hasOtherCouch) {
+                    const stealBtn = document.createElement('button');
+                    stealBtn.className = 'choice-btn steal';
+                    stealBtn.textContent = '🎯 اسحب لاعب من الفريق الآخر';
+                    stealBtn.onclick = () => makeChoice('steal');
+                    playerChoiceButtons.appendChild(stealBtn);
+                }
             }
             
             return;
@@ -1314,6 +1380,7 @@
 
         const playerTeam = roomData.players[currentPlayerId]?.team;
         
+        // إذا كانت الخيارات مفتوحة وهناك فريق محظور
         if (roomData.showOptions && roomData.bannedTeam && roomData.bannedTeam !== playerTeam && !roomData.correctAnswer) {
             playerStatus.textContent = 'فرصة فريقك! اختر الإجابة الصحيحة';
             playerStatus.className = 'status-message info';
@@ -1328,22 +1395,26 @@
                 playerAnswerOptions.appendChild(btn);
             });
             return;
-        } else if (roomData.showOptions && roomData.bannedTeam === playerTeam) {
+        } else if (roomData.showOptions && roomData.bannedTeam === playerTeam && !roomData.correctAnswer) {
             playerStatus.textContent = 'فريقك ممنوع من الإجابة - انتظر السؤال التالي';
             playerStatus.className = 'status-message error';
             buzzButton.disabled = true;
             playerAnswerOptions.innerHTML = '';
             return;
-        } else if (roomData.showOptions && !roomData.bannedTeam) {
-            playerStatus.textContent = 'لم يضغط أحد الجرس - انتظر السؤال التالي';
+        } else if (roomData.showOptions && !roomData.bannedTeam && !roomData.correctAnswer) {
+            // لم يضغط أحد الجرس في الوقت المحدد - فتح الخيارات للجميع
+            playerStatus.textContent = 'لم يضغط أحد الجرس! اختر الإجابة الصحيحة';
             playerStatus.className = 'status-message info';
             buzzButton.disabled = true;
-            playerAnswerOptions.innerHTML = '';
             
-            if (isHost) {
-                const nextBtn = document.getElementById('nextQuestionBtnPlayer');
-                if (nextBtn) nextBtn.disabled = false;
-            }
+            playerAnswerOptions.innerHTML = '';
+            roomData.currentQuestion.options.forEach((option, index) => {
+                const btn = document.createElement('button');
+                btn.className = 'answer-btn';
+                btn.textContent = option;
+                btn.onclick = () => selectAnswer(index);
+                playerAnswerOptions.appendChild(btn);
+            });
             return;
         }
 
@@ -1558,8 +1629,22 @@
         clearInterval(answerTimerInterval);
         let timeLeft = seconds;
         
+        const answerTimerElement = document.getElementById('answerTimer');
+        if (answerTimerElement) {
+            answerTimerElement.style.display = 'block';
+            answerTimerElement.textContent = timeLeft;
+            answerTimerElement.classList.remove('warning');
+        }
+        
         answerTimerInterval = setInterval(() => {
             timeLeft--;
+            
+            if (answerTimerElement) {
+                answerTimerElement.textContent = timeLeft;
+                if (timeLeft <= 2) {
+                    answerTimerElement.classList.add('warning');
+                }
+            }
 
             if (timeLeft <= 0) {
                 clearInterval(answerTimerInterval);
@@ -1587,6 +1672,11 @@
         }
 
         clearInterval(answerTimerInterval);
+        
+        const answerTimerElement = document.getElementById('answerTimer');
+        if (answerTimerElement) {
+            answerTimerElement.style.display = 'none';
+        }
 
         const correctOption = roomData.currentQuestion.options[roomData.currentQuestion.correct];
         const correctAnswer = correctOption.toLowerCase();
@@ -1675,8 +1765,21 @@
     function addToCouch() {
         const couchKey = currentTeam + 'Couch';
         const scoreKey = currentTeam + 'Score';
+        const teamSize = roomData.teamSize || 2;
         
-        const newCouch = [...(roomData[couchKey] || []), currentPlayerId];
+        const currentCouch = roomData[couchKey] || [];
+        
+        // التحقق من عدم تجاوز حجم الفريق
+        if (currentCouch.length >= teamSize) {
+            console.log('الكنبة ممتلئة! لا يمكن إضافة المزيد من اللاعبين.');
+            database.ref('rooms/' + currentRoomCode).update({
+                waitingForChoice: false,
+                choicePlayer: null
+            });
+            return;
+        }
+        
+        const newCouch = [...currentCouch, currentPlayerId];
         const newScore = (roomData[scoreKey] || 0) + 1;
 
         database.ref('rooms/' + currentRoomCode).update({
@@ -1700,22 +1803,48 @@
         const couchKey = currentTeam + 'Couch';
         const scoreKey = currentTeam + 'Score';
         const otherScoreKey = otherTeam + 'Score';
+        const teamSize = roomData.teamSize || 2;
         
         const otherCouch = [...(roomData[otherCouchKey] || [])];
-        const stolenPlayer = otherCouch.pop();
+        const myCouch = [...(roomData[couchKey] || [])];
         
-        const newCouch = [...(roomData[couchKey] || []), currentPlayerId];
-        const newScore = (roomData[scoreKey] || 0) + 1;
+        // إذا لم يكن هناك لاعبون على كنبة الفريق الآخر
+        if (otherCouch.length === 0) {
+            console.log('لا يوجد لاعبون على كنبة الفريق الآخر للسرقة');
+            database.ref('rooms/' + currentRoomCode).update({
+                waitingForChoice: false,
+                choicePlayer: null
+            });
+            return;
+        }
+        
+        // سحب آخر لاعب من كنبة الفريق الآخر (إعادته إلى اللعبة)
+        const stolenPlayer = otherCouch.pop();
         const otherNewScore = Math.max(0, (roomData[otherScoreKey] || 0) - 1);
+        
+        // التحقق إذا كانت كنبة فريقي ممتلئة
+        if (myCouch.length >= teamSize) {
+            // إذا كانت ممتلئة، فقط أعد اللاعب الآخر إلى اللعبة دون الجلوس
+            database.ref('rooms/' + currentRoomCode).update({
+                [otherCouchKey]: otherCouch,
+                [otherScoreKey]: otherNewScore,
+                waitingForChoice: false,
+                choicePlayer: null
+            });
+        } else {
+            // إذا لم تكن ممتلئة، اجلس على الكنبة وأعد اللاعب الآخر
+            const newCouch = [...myCouch, currentPlayerId];
+            const newScore = (roomData[scoreKey] || 0) + 1;
 
-        database.ref('rooms/' + currentRoomCode).update({
-            [couchKey]: newCouch,
-            [otherCouchKey]: otherCouch,
-            [scoreKey]: newScore,
-            [otherScoreKey]: otherNewScore,
-            waitingForChoice: false,
-            choicePlayer: null
-        });
+            database.ref('rooms/' + currentRoomCode).update({
+                [couchKey]: newCouch,
+                [otherCouchKey]: otherCouch,
+                [scoreKey]: newScore,
+                [otherScoreKey]: otherNewScore,
+                waitingForChoice: false,
+                choicePlayer: null
+            });
+        }
 
         if (isHost) {
             setTimeout(() => {
