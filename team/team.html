@@ -7,10 +7,10 @@
     <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700;800;900&display=swap" rel="stylesheet">
     <style>
         :root {
-            --bg-dark: #0B0E17;
-            --bg-card: #141825;
-            --bg-card-alt: #1A1F33;
-            --border: #2A3050;
+            --bg-dark: #1A1E2E;
+            --bg-card: #232840;
+            --bg-card-alt: #2A3050;
+            --border: #3A4065;
             --gold: #E8B830;
             --gold-dim: #A07D1C;
             --gold-glow: rgba(232, 184, 48, 0.15);
@@ -905,34 +905,34 @@ function showScreen(id) {
 }
 
 function goToMainPage() {
+    clearTimers();
+    // Remove player from room first
     if (currentRoomCode && currentPlayerId) {
         database.ref('rooms/' + currentRoomCode + '/players/' + currentPlayerId).remove();
     }
-    clearSession();
-    clearTimers();
-    // Go to index or just reload to welcome
-    if (document.referrer && document.referrer.includes('index')) {
-        window.location.href = 'index.html';
-    } else {
-        currentRoomCode = null;
-        currentPlayerId = null;
-        currentPlayerName = null;
-        isHost = false;
-        currentTeam = null;
-        roomData = null;
-        if (roomListener) {
-            database.ref('rooms/' + currentRoomCode).off('value', roomListener);
-            roomListener = null;
-        }
-        showScreen('welcomeScreen');
+    // Remove listener
+    if (currentRoomCode && roomListener) {
+        database.ref('rooms/' + currentRoomCode).off('value', roomListener);
+        roomListener = null;
     }
+    clearSession();
+    // Reset state
+    currentRoomCode = null;
+    currentPlayerId = null;
+    currentPlayerName = null;
+    isHost = false;
+    currentTeam = null;
+    roomData = null;
+    showScreen('welcomeScreen');
 }
 
 function clearTimers() {
     clearInterval(mainTimerInterval);
     clearInterval(answerTimerInterval);
+    if (typeof localDisplayInterval !== 'undefined') clearInterval(localDisplayInterval);
     mainTimerInterval = null;
     answerTimerInterval = null;
+    if (typeof localDisplayInterval !== 'undefined') localDisplayInterval = null;
 }
 
 // ══════ CREATE ROOM ══════
@@ -953,22 +953,22 @@ function createRoom() {
         code: currentRoomCode,
         host: currentPlayerId,
         team1Name, team2Name, teamSize,
-        players: { [currentPlayerId]: { name, isHost: true, team: null } },
+        players: { [currentPlayerId]: { name, isHost: true, team: '' } },
         gameState: 'lobby',
-        currentQuestion: null,
+        currentQuestion: '',
         usedQuestions: [],
         team1Couch: [], team2Couch: [],
         team1Score: 0, team2Score: 0,
-        buzzedPlayer: null,
+        buzzedPlayer: '',
         showOptions: false,
-        bannedTeam: null,
-        correctAnswer: null,
-        selectedAnswer: null,
+        bannedTeam: '',
+        correctAnswer: '',
+        selectedAnswer: '',
         waitingForChoice: false,
-        choicePlayer: null,
+        choicePlayer: '',
         waitingForTextAnswer: false,
-        questionStartTime: null,
-        buzzTime: null
+        questionStartTime: '',
+        buzzTime: ''
     });
 
     saveSession();
@@ -992,7 +992,7 @@ function joinRoom() {
         isHost = false;
 
         database.ref('rooms/' + currentRoomCode + '/players/' + currentPlayerId).set({
-            name, isHost: false, team: null
+            name, isHost: false, team: ''
         });
 
         saveSession();
@@ -1263,6 +1263,12 @@ function renderCouchSeats(containerId, couchArr, teamSize) {
     }
 }
 
+// ══════ HELPER: Firebase removes null keys, so we use '' as "no value" ══════
+function hasAnswer() {
+    // correctAnswer is set to '' when no answer, true when correct, false when wrong
+    return roomData.correctAnswer === true || roomData.correctAnswer === false;
+}
+
 // ══════ GAME CONTENT RENDERING ══════
 function renderGameContent() {
     const questionCard = document.getElementById('questionCard');
@@ -1288,6 +1294,11 @@ function renderGameContent() {
 
     // ── STATE: Waiting for choice (sit/pull) ──
     if (roomData.waitingForChoice && roomData.choicePlayer === currentPlayerId) {
+        questionCard.classList.remove('hidden');
+        if (roomData.currentQuestion) {
+            document.getElementById('qCategory').textContent = roomData.currentQuestion.category || '';
+            document.getElementById('qText').textContent = roomData.currentQuestion.question;
+        }
         gameStatus.textContent = '✅ إجابة صحيحة! اختر ماذا تريد أن تفعل:';
         gameStatus.className = 'status-bar success';
         renderChoiceButtons();
@@ -1295,6 +1306,11 @@ function renderGameContent() {
     }
     if (roomData.waitingForChoice) {
         const cp = roomData.players[roomData.choicePlayer];
+        questionCard.classList.remove('hidden');
+        if (roomData.currentQuestion) {
+            document.getElementById('qCategory').textContent = roomData.currentQuestion.category || '';
+            document.getElementById('qText').textContent = roomData.currentQuestion.question;
+        }
         gameStatus.textContent = `${cp?.name || ''} يختار الآن...`;
         gameStatus.className = 'status-bar info';
         return;
@@ -1307,37 +1323,35 @@ function renderGameContent() {
         return;
     }
 
-    // Show question
+    // Show question always when there is one
     questionCard.classList.remove('hidden');
     document.getElementById('qCategory').textContent = roomData.currentQuestion.category || '';
     document.getElementById('qText').textContent = roomData.currentQuestion.question;
 
     // ── STATE: Text answer input (5 seconds) ──
-    if (roomData.waitingForTextAnswer && roomData.buzzedPlayer === currentPlayerId && roomData.correctAnswer === null) {
+    if (roomData.waitingForTextAnswer && roomData.buzzedPlayer === currentPlayerId && !hasAnswer()) {
         gameStatus.textContent = 'اكتب إجابتك بسرعة!';
         gameStatus.className = 'status-bar warning';
         answerInputArea.classList.remove('hidden');
+        showSyncedMainTimer();
         startAnswerTimerDisplay();
         return;
     }
 
     // ── STATE: Someone else is typing ──
-    if (roomData.waitingForTextAnswer && roomData.buzzedPlayer && roomData.buzzedPlayer !== currentPlayerId && roomData.correctAnswer === null) {
+    if (roomData.waitingForTextAnswer && roomData.buzzedPlayer && roomData.buzzedPlayer !== currentPlayerId && !hasAnswer()) {
         const bp = roomData.players[roomData.buzzedPlayer];
         const bTeam = bp?.team === 'team1' ? roomData.team1Name : roomData.team2Name;
         buzzerIndicator.classList.remove('hidden');
         buzzerIndicator.textContent = `🔔 ${bp?.name} من ${bTeam} يكتب الإجابة...`;
         gameStatus.textContent = 'انتظر...';
         gameStatus.className = 'status-bar info';
-        // Show synced timer
         showSyncedMainTimer();
         return;
     }
 
-    // ── STATE: Options shown ──
-    if (roomData.showOptions && roomData.correctAnswer === null) {
-        showSyncedMainTimer(); // might still be visible
-
+    // ── STATE: Options shown (no answer yet) ──
+    if (roomData.showOptions && !hasAnswer()) {
         // Options visible to ALL
         optionsGrid.classList.remove('hidden');
         optionsGrid.innerHTML = '';
@@ -1370,7 +1384,7 @@ function renderGameContent() {
     }
 
     // ── STATE: Correct/Wrong answer result ──
-    if (roomData.correctAnswer !== null) {
+    if (hasAnswer()) {
         if (roomData.correctAnswer === true) {
             gameStatus.textContent = '✅ إجابة صحيحة!';
             gameStatus.className = 'status-bar success';
@@ -1381,7 +1395,7 @@ function renderGameContent() {
         return;
     }
 
-    // ── STATE: Question active, no buzz yet ──
+    // ── STATE: Question active, no buzz yet, timer running ──
     if (!roomData.buzzedPlayer && !roomData.showOptions) {
         showSyncedMainTimer();
         buzzerBtn.classList.remove('hidden');
@@ -1391,7 +1405,7 @@ function renderGameContent() {
         return;
     }
 
-    // ── STATE: Someone buzzed, result showed ──
+    // ── STATE: Someone buzzed but not me ──
     if (roomData.buzzedPlayer && roomData.buzzedPlayer !== currentPlayerId) {
         const bp = roomData.players[roomData.buzzedPlayer];
         gameStatus.textContent = `${bp?.name || ''} يجيب الآن...`;
@@ -1401,6 +1415,8 @@ function renderGameContent() {
 }
 
 // ══════ SYNCED TIMERS ══════
+let localDisplayInterval = null;
+
 function showSyncedMainTimer() {
     if (!roomData.questionStartTime) return;
 
@@ -1414,7 +1430,29 @@ function showSyncedMainTimer() {
     circle.textContent = timeLeft;
     circle.classList.toggle('danger', timeLeft <= 3);
 
-    // If host, run the actual timer logic
+    // Start local display interval for smooth countdown (all players)
+    if (!localDisplayInterval) {
+        localDisplayInterval = setInterval(() => {
+            if (!roomData || !roomData.questionStartTime) {
+                clearInterval(localDisplayInterval);
+                localDisplayInterval = null;
+                return;
+            }
+            const el = Math.floor((Date.now() - roomData.questionStartTime) / 1000);
+            const tl = Math.max(0, 30 - el);
+            const c = document.getElementById('mainTimerCircle');
+            if (c) {
+                c.textContent = tl;
+                c.classList.toggle('danger', tl <= 3);
+            }
+            if (tl <= 0) {
+                clearInterval(localDisplayInterval);
+                localDisplayInterval = null;
+            }
+        }, 500);
+    }
+
+    // If host, also run the authoritative timer logic
     if (isHost && !mainTimerInterval) {
         runHostMainTimer();
     }
@@ -1441,10 +1479,10 @@ function runHostMainTimer() {
             clearInterval(mainTimerInterval);
             mainTimerInterval = null;
             // Open options for everyone
-            if (roomData.correctAnswer === null && !roomData.showOptions) {
+            if (!hasAnswer() && !roomData.showOptions) {
                 const updateData = { showOptions: true, waitingForTextAnswer: false };
                 if (roomData.buzzedPlayer) {
-                    updateData.bannedTeam = roomData.players[roomData.buzzedPlayer]?.team || null;
+                    updateData.bannedTeam = roomData.players[roomData.buzzedPlayer]?.team || '';
                 }
                 database.ref('rooms/' + currentRoomCode).update(updateData);
             }
@@ -1468,7 +1506,7 @@ function startAnswerTimerDisplay() {
         if (timeLeft <= 0) {
             clearInterval(answerTimerInterval);
             // Time ran out for text answer — mark as wrong
-            if (roomData.buzzedPlayer === currentPlayerId && roomData.correctAnswer === null) {
+            if (roomData.buzzedPlayer === currentPlayerId && !hasAnswer()) {
                 const playerTeam = roomData.players[currentPlayerId]?.team;
                 database.ref('rooms/' + currentRoomCode).update({
                     correctAnswer: false,
@@ -1553,10 +1591,11 @@ function normalizeArabic(str) {
 // ══════ SELECT ANSWER (from options) ══════
 function selectAnswer(idx) {
     const isCorrect = idx === roomData.currentQuestion.correct;
-    const playerTeam = roomData.players[currentPlayerId]?.team;
 
     clearInterval(mainTimerInterval);
+    clearInterval(localDisplayInterval);
     mainTimerInterval = null;
+    localDisplayInterval = null;
 
     const roomRef = database.ref('rooms/' + currentRoomCode);
 
@@ -1574,14 +1613,14 @@ function selectAnswer(idx) {
         const teamSize = roomData.teamSize || 2;
 
         if (myCouch.length >= teamSize && otherCouch.length > 0) {
-            roomRef.update({ waitingForChoice: true, choicePlayer: currentPlayerId, bannedTeam: null });
+            roomRef.update({ waitingForChoice: true, choicePlayer: currentPlayerId, bannedTeam: '' });
         } else if (myCouch.length >= teamSize) {
-            roomRef.update({ bannedTeam: null });
+            roomRef.update({ bannedTeam: '' });
         } else if (otherCouch.length > 0) {
-            roomRef.update({ waitingForChoice: true, choicePlayer: currentPlayerId, bannedTeam: null });
+            roomRef.update({ waitingForChoice: true, choicePlayer: currentPlayerId, bannedTeam: '' });
         } else {
             addToCouch();
-            roomRef.update({ bannedTeam: null });
+            roomRef.update({ bannedTeam: '' });
         }
     }
 }
@@ -1636,7 +1675,7 @@ function addToCouch() {
 
     if (currentCouch.length >= teamSize) {
         database.ref('rooms/' + currentRoomCode).update({
-            waitingForChoice: false, choicePlayer: null
+            waitingForChoice: false, choicePlayer: ''
         });
         return;
     }
@@ -1645,7 +1684,7 @@ function addToCouch() {
     database.ref('rooms/' + currentRoomCode).update({
         [couchKey]: newCouch,
         waitingForChoice: false,
-        choicePlayer: null
+        choicePlayer: ''
     });
 }
 
@@ -1660,7 +1699,7 @@ function stealFromCouch() {
 
     if (otherCouch.length === 0) {
         database.ref('rooms/' + currentRoomCode).update({
-            waitingForChoice: false, choicePlayer: null
+            waitingForChoice: false, choicePlayer: ''
         });
         return;
     }
@@ -1671,7 +1710,7 @@ function stealFromCouch() {
     const updates = {
         [otherCouchKey]: otherCouch,
         waitingForChoice: false,
-        choicePlayer: null
+        choicePlayer: ''
     };
 
     // If my couch not full, I also sit
@@ -1689,26 +1728,27 @@ function nextQuestion() {
     const usedQuestions = roomData.usedQuestions || [];
     let available = questions.filter(q => !usedQuestions.includes(q.question));
     if (available.length === 0) {
-        available = questions;
+        available = [...questions];
         usedQuestions.length = 0;
     }
 
     const q = available[Math.floor(Math.random() * available.length)];
     usedQuestions.push(q.question);
 
+    // Use empty string instead of null for Firebase (null deletes the key)
     database.ref('rooms/' + currentRoomCode).update({
         currentQuestion: q,
         usedQuestions: usedQuestions,
-        buzzedPlayer: null,
+        buzzedPlayer: '',
         showOptions: false,
-        bannedTeam: null,
-        correctAnswer: null,
-        selectedAnswer: null,
+        bannedTeam: '',
+        correctAnswer: '',  // empty = no answer yet
+        selectedAnswer: '',
         waitingForChoice: false,
-        choicePlayer: null,
+        choicePlayer: '',
         questionStartTime: Date.now(),
         waitingForTextAnswer: false,
-        buzzTime: null
+        buzzTime: ''
     });
 }
 
@@ -1738,24 +1778,25 @@ function showVictory() {
 function replayGame() {
     database.ref('rooms/' + currentRoomCode).update({
         gameState: 'playing',
-        currentQuestion: null,
+        currentQuestion: '',
         usedQuestions: [],
         team1Couch: [], team2Couch: [],
         team1Score: 0, team2Score: 0,
-        buzzedPlayer: null,
+        buzzedPlayer: '',
         showOptions: false,
-        bannedTeam: null,
-        correctAnswer: null,
-        selectedAnswer: null,
+        bannedTeam: '',
+        correctAnswer: '',
+        selectedAnswer: '',
         waitingForChoice: false,
-        choicePlayer: null,
+        choicePlayer: '',
         waitingForTextAnswer: false,
-        questionStartTime: null,
-        buzzTime: null
+        questionStartTime: '',
+        buzzTime: ''
     });
     // Re-show elements
     document.getElementById('gameTopBar').style.display = '';
     document.getElementById('couchSection').style.display = '';
+    document.getElementById('gameContent').style.display = '';
     document.getElementById('victoryOverlay').classList.remove('active');
 }
 
