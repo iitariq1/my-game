@@ -97,7 +97,7 @@ body{font-family:'Tajawal',sans-serif;background:var(--bg);color:var(--txt);min-
 <div style="padding:0 10px">
 <button class="btn bp" onclick="showScr('scrCreate')">إنشاء غرفة جديدة</button>
 <button class="btn bo" onclick="showScr('scrJoin')">الانضمام لغرفة</button>
-<button class="btn bo" onclick="showScr('scrWelcome')">رجوع</button>
+<button class="btn bo" onclick="window.location.href='index.html'">رجوع</button>
 </div></div></div>
 
 <!-- CREATE -->
@@ -682,6 +682,12 @@ function confirmReplay(){
   document.getElementById('replayOv').classList.remove('on');
   document.getElementById('gTop').style.display='';document.getElementById('couchSec').style.display='';
   document.getElementById('gContent').style.display='';document.getElementById('vicOv').classList.remove('on')}
+
+/* ═══════ SCREEN NAVIGATION ═══════ */
+function showScr(id){
+  document.querySelectorAll('.scr').forEach(s=>s.classList.remove('on'));
+  document.getElementById(id)?.classList.add('on');
+}
 
 /* ═══════ INPUT ═══════ */
 document.getElementById('pCode')?.addEventListener('input',function(){this.value=this.value.replace(/[^0-9]/g,'')});
