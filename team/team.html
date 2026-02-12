@@ -252,7 +252,7 @@ function createRoom(){
   const t2=document.getElementById('t2n').value.trim()||'الفريق الأزرق';
   const sz=parseInt(document.getElementById('tsz').value);
   RC=Math.floor(1000+Math.random()*9000).toString();PID='h-'+Date.now();PN=n;isH=true;
-  db.ref('rooms/'+RC).set({code:RC,host:PID,t1Name:t1,t2Name:t2,tSize:sz,
+  db.ref('rooms/'+RC).set({oneShotOpts:false,code:RC,host:PID,t1Name:t1,t2Name:t2,tSize:sz,
     players:{[PID]:{name:n,isHost:true,team:''}},state:'lobby',
     curQ:'',usedQ:[],couch:[],buzzP:'',showOpts:false,banTeam:'',
     corAns:'',selAns:'',waitChoice:false,choiceP:'',waitText:false,qStart:'',buzzTime:''});
@@ -453,8 +453,17 @@ function startAnsTimer(){if(!RD.buzzTime)return;clearInterval(tmrAns);const ci=d
   tmrAns=setInterval(()=>{if(!RD||!RD.buzzTime){clearInterval(tmrAns);tmrAns=null;return}
     const tl=Math.max(0,5-Math.floor((Date.now()-RD.buzzTime)/1000));
     ci.textContent=tl;ci.classList.toggle('dng',tl<=2);
-    if(tl<=0){clearInterval(tmrAns);tmrAns=null;
-      if(RD.buzzP===PID&&!hasAns())db.ref('rooms/'+RC).update({corAns:false,waitText:false,showOpts:true,banTeam:RD.players[PID]?.team||''})}},300)}
+    if(RD.buzzP===PID && !hasAns()){
+  db.ref('rooms/'+RC).update({
+    corAns:'',
+    waitText:false,
+    showOpts:true,
+    banTeam: RD.players[PID]?.team || '',
+    oneShotOpts:true,       // ✅ محاولة واحدة للخصم
+    buzzTime:''
+  });
+}}}
+
 
 /* ═══════ BUZZER ═══════ */
 function buzzIn(){if(!RD.curQ||RD.curQ===''||RD.buzzP||RD.showOpts)return;
@@ -465,13 +474,77 @@ function submitAns(){const inp=document.getElementById('tAns');const v=inp.value
   if(!v){alert('اكتب إجابة!');return}clearInterval(tmrAns);tmrAns=null;
   const ok=checkAns(v,RD.curQ.opts[RD.curQ.c]);const ref=db.ref('rooms/'+RC);
   if(ok){ref.update({corAns:true,waitText:false});handleCorrect()}
-  else{ref.update({corAns:false,waitText:false,showOpts:true,banTeam:RD.players[PID]?.team||''})}
-  inp.value=''}
+  else{
+  ref.update({
+    corAns:'',                 // لا ننهي السؤال هنا
+    waitText:false,
+    showOpts:true,             // افتح الخيارات
+    banTeam: RD.players[PID]?.team || '', // امنع فريق اللي ضغط الجرس
+    oneShotOpts:true,          // ✅ محاولة واحدة للخصم
+    buzzTime:''
+  });
+}
+                    }
 
 /* ═══════ SELECT OPTION ═══════ */
-function selAns(i){const ok=i===RD.curQ.c;clearT();
-  db.ref('rooms/'+RC).update({selAns:i,corAns:ok,showOpts:false,buzzP:RD.buzzP||PID});
-  if(ok)handleCorrect()}
+function selAns(i){
+  // ✅ ممنوع اللي على كنبة الفوز يجاوب
+  if((RD.couch || []).includes(PID)) return;
+
+  const ok = i === RD.curQ.c;
+  clearT();
+
+  const ref = db.ref('rooms/'+RC);
+  const myTeam = RD.players[PID]?.team || '';
+  const disabled = RD.disabledOpts || [];
+
+  // ✅ لا تسمح بالضغط على خيار مقفّل
+  if(disabled.includes(i)) return;
+
+  if(ok){
+    // ✅ صحيح: انهِ الخيارات وكمّل منطق الكنبة
+    ref.update({
+      selAns: i,
+      corAns: true,
+      showOpts: false,
+      buzzP: RD.buzzP || PID,
+      oneShotOpts: false,
+      banTeam: '',
+      disabledOpts: []
+    });
+    handleCorrect();
+    return;
+  }
+
+  // ❌ خطأ
+  if(RD.oneShotOpts){
+    // ✅ هذا سيناريو "بعد فشل الجرس": الخصم له محاولة واحدة فقط
+    // لو غلط => تنتهي فرصة الفريقين فوراً بدون كشف الجواب
+    ref.update({
+      selAns: i,
+      corAns: false,      // ينهي السؤال للطرفين
+      showOpts: false,    // يقفل الخيارات
+      oneShotOpts: false,
+      banTeam: '',
+      waitText: false,
+      buzzTime: ''
+    });
+    return;
+  }
+
+  // ✅ وضع الخيارات الطبيعي (بعد 30 ثانية):
+  // اقفل الخيار اللي اختاره + امنع فريقه وخلي الفرصة للخصم
+  ref.update({
+    selAns: i,
+    corAns: '', // لا ننهي السؤال
+    showOpts: true,
+    banTeam: myTeam, // فريقه ممنوع
+    disabledOpts: [...new Set([...disabled, i])],
+    waitText: false,
+    buzzTime: ''
+  });
+}
+
 
 /* ═══════ CORRECT ANSWER ═══════ */
 function handleCorrect(){
@@ -526,7 +599,7 @@ function nextQ(){clearT();
   if(avail.length===0){avail=[...ALL_Q];used.length=0}
   for(let i=avail.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[avail[i],avail[j]]=[avail[j],avail[i]]}
   const q=avail[0];used.push(q.q);
-  db.ref('rooms/'+RC).update({curQ:{cat:q.cat,q:q.q,opts:q.opts,c:q.c},usedQ:used,
+  db.ref('rooms/'+RC).update({oneShotOpts:false,curQ:{cat:q.cat,q:q.q,opts:q.opts,c:q.c},usedQ:used,
     buzzP:'',showOpts:false,banTeam:'',corAns:'',selAns:'',
     waitChoice:false,choiceP:'',qStart:Date.now(),waitText:false,buzzTime:''})}
 
