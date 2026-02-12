@@ -683,12 +683,6 @@ function confirmReplay(){
   document.getElementById('gTop').style.display='';document.getElementById('couchSec').style.display='';
   document.getElementById('gContent').style.display='';document.getElementById('vicOv').classList.remove('on')}
 
-/* ═══════ SCREEN NAVIGATION ═══════ */
-function showScr(id){
-  document.querySelectorAll('.scr').forEach(s=>s.classList.remove('on'));
-  document.getElementById(id)?.classList.add('on');
-}
-
 /* ═══════ INPUT ═══════ */
 document.getElementById('pCode')?.addEventListener('input',function(){this.value=this.value.replace(/[^0-9]/g,'')});
 document.getElementById('tAns')?.addEventListener('keypress',function(e){if(e.key==='Enter')submitAns()});
