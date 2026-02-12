@@ -41,13 +41,14 @@ body{font-family:'Tajawal',sans-serif;background:var(--bg);color:var(--txt);min-
 .tsc .tv{font-size:1.4em;font-weight:900;line-height:1}.tsc.r .tv{color:var(--red)}.tsc.b .tv{color:var(--blue)}
 .vb{font-size:.75em;font-weight:900;color:var(--txtD);padding:4px 8px;border-radius:20px;border:1px solid var(--bdr);background:var(--card)}
 .mpl{display:flex;flex-wrap:wrap;gap:3px;justify-content:center;margin-top:3px}
-.mp{font-size:.63em;padding:2px 5px;border-radius:8px;font-weight:600;background:rgba(0,0,0,.04);color:var(--txtD)}.mp.oc{opacity:.35;text-decoration:line-through}
+.mp{font-size:.63em;padding:2px 5px;border-radius:8px;font-weight:600;background:rgba(0,0,0,.04);color:var(--txtD)}.mp.oc{opacity:.5;background:var(--goldL);color:var(--gold)}
 .couch{background:var(--goldL);border:1.5px solid #E8D5A0;border-radius:var(--R);padding:12px;margin-bottom:8px;box-shadow:var(--sh)}
 .couch .clb{text-align:center;font-size:.78em;font-weight:800;color:var(--gold);letter-spacing:2px;margin-bottom:8px}
 .cseats{display:flex;justify-content:center;gap:8px;flex-wrap:wrap}
 .cseat{display:inline-flex;align-items:center;justify-content:center;gap:4px;padding:5px 12px;border-radius:20px;font-size:.78em;font-weight:700}
 .cseat.fr{background:var(--red);color:#fff}.cseat.fb{background:var(--blue);color:#fff}
 .cseat.empty{width:36px;height:36px;border-radius:50%;border:2px dashed #D0C4B4;color:#C0B4A4;font-size:.7em;padding:0}
+.cseat.me{box-shadow:0 0 0 3px rgba(196,127,23,.4)}
 .qcard{background:var(--card);border:1.5px solid var(--bdr);border-radius:var(--R);padding:16px;margin-bottom:8px;text-align:center;box-shadow:var(--sh)}
 .qcat{font-size:.72em;font-weight:700;color:var(--gold);letter-spacing:1px;margin-bottom:6px}
 .qtxt{font-size:1.08em;font-weight:700;line-height:1.5}
@@ -73,8 +74,6 @@ body{font-family:'Tajawal',sans-serif;background:var(--bg);color:var(--txt);min-
 .chg{display:grid;gap:8px;margin-bottom:8px}
 .chb{padding:14px;border:none;border-radius:var(--r);font-family:inherit;font-size:.95em;font-weight:700;cursor:pointer;transition:all .2s}
 .chb:active{transform:scale(.97)}.chb.sit{background:var(--grn);color:#fff}.chb.pull{background:var(--red);color:#fff}
-.ocb{text-align:center;padding:30px 16px;background:var(--grnL);border:1.5px solid rgba(30,132,73,.15);border-radius:var(--R);margin-bottom:8px;box-shadow:var(--sh)}
-.ocb .ic{font-size:2.5em;margin-bottom:8px}.ocb h3{color:var(--grn);font-size:1.2em}.ocb p{color:var(--txtD);font-size:.85em;margin-top:4px}
 .bzi{padding:6px 12px;border-radius:var(--r);background:var(--orgL);text-align:center;font-size:.82em;font-weight:700;color:var(--org);margin-bottom:8px}
 .vic{display:none;text-align:center;padding:40px 16px;flex:1;justify-content:center;align-items:center;flex-direction:column}
 .vic.on{display:flex}
@@ -82,6 +81,10 @@ body{font-family:'Tajawal',sans-serif;background:var(--bg);color:var(--txt);min-
 @keyframes bnc{0%,100%{transform:translateY(0)}50%{transform:translateY(-12px)}}
 .vic h2{font-size:1.6em;font-weight:900;color:var(--gold);margin-bottom:20px}
 .spc{flex:1}.hid{display:none!important}
+/* Replay team select overlay */
+.rto{display:none;position:fixed;inset:0;background:rgba(0,0,0,.4);z-index:100;justify-content:center;align-items:center}
+.rto.on{display:flex}
+.rto .inner{background:var(--card);border-radius:var(--R);padding:24px;width:90%;max-width:380px;box-shadow:0 8px 30px rgba(0,0,0,.15)}
 </style>
 </head>
 <body>
@@ -94,6 +97,7 @@ body{font-family:'Tajawal',sans-serif;background:var(--bg);color:var(--txt);min-
 <div style="padding:0 10px">
 <button class="btn bp" onclick="showScr('scrCreate')">إنشاء غرفة جديدة</button>
 <button class="btn bo" onclick="showScr('scrJoin')">الانضمام لغرفة</button>
+<button class="btn bo" onclick="window.location.href='index.html'">العودة لقائمة الألعاب ↩️</button>
 </div></div></div>
 
 <!-- CREATE -->
@@ -103,7 +107,7 @@ body{font-family:'Tajawal',sans-serif;background:var(--bg);color:var(--txt);min-
 <div class="fld"><label>اسمك</label><input id="hostName" placeholder="أدخل اسمك"></div>
 <div class="fld"><label>اسم الفريق الأول</label><input id="t1n" value="الفريق الأحمر"></div>
 <div class="fld"><label>اسم الفريق الثاني</label><input id="t2n" value="الفريق الأزرق"></div>
-<div class="fld"><label>عدد اللاعبين في كل فريق (= حجم الكنبة)</label><select id="tsz"><option value="2">2</option><option value="3">3</option><option value="4">4</option><option value="5">5</option></select></div>
+<div class="fld"><label>عدد لاعبي كل فريق (= حجم الكنبة)</label><select id="tsz"><option value="2">2</option><option value="3">3</option><option value="4">4</option><option value="5">5</option></select></div>
 <button class="btn bp" onclick="createRoom()">إنشاء الغرفة</button>
 <button class="btn bo" onclick="showScr('scrWelcome')">رجوع</button>
 </div></div>
@@ -146,7 +150,6 @@ body{font-family:'Tajawal',sans-serif;background:var(--bg);color:var(--txt);min-
 <div class="tsc b"><div class="tn" id="gt2n"></div><div class="tv" id="gt2s">0</div><div class="mpl" id="gt2p"></div></div>
 </div>
 <div class="couch" id="couchSec"><div class="clb">🛋️ كنبة الفوز (<span id="couchCnt">0</span>/<span id="couchMax">2</span>)</div><div class="cseats" id="couchSeats"></div></div>
-<div class="ocb hid" id="ocBanner"><div class="ic">🏆</div><h3>أنت على الكنبة!</h3><p>استرخِ وانتظر الفوز</p></div>
 <div id="gContent">
 <div class="qcard hid" id="qCard"><div class="qcat" id="qCat"></div><div class="qtxt" id="qTxt"></div></div>
 <div class="tbar hid" id="tBar"><div class="tc" id="tCirc">30</div></div>
@@ -157,10 +160,23 @@ body{font-family:'Tajawal',sans-serif;background:var(--bg);color:var(--txt);min-
 <div class="opts hid" id="optsG"></div>
 <div class="chg hid" id="chG"></div>
 </div>
-<div class="vic" id="vicOv"><div class="tr">🏆</div><h2 id="vicMsg"></h2><button class="btn bp" onclick="replay()">لعب مرة أخرى 🔄</button></div>
+<div class="vic" id="vicOv"><div class="tr">🏆</div><h2 id="vicMsg"></h2>
+<button class="btn bp" onclick="askReplay()">إعادة اللعب 🔄</button>
+<button class="btn bo" onclick="window.location.href='index.html'">الخروج ↩️</button>
+</div>
 <div class="spc"></div>
 <div class="hid" id="hNext"><button class="btn bp" onclick="nextQ()">السؤال التالي ▶️</button></div>
 </div>
+
+<!-- REPLAY TEAM SELECT OVERLAY -->
+<div class="rto" id="replayOv">
+<div class="inner">
+<div class="hdr"><h1>اختر فريقك</h1><div class="sub">يمكنك تغيير فريقك قبل بداية الجولة الجديدة</div></div>
+<div class="tsg" id="rpBtns"></div>
+<button class="btn bp" id="rpStart" onclick="confirmReplay()" style="margin-top:10px">تأكيد وبدء اللعبة ▶️</button>
+<div style="text-align:center;margin-top:8px;font-size:.75em;color:var(--txtD)" id="rpWait" class="hid">في انتظار المضيف...</div>
+</div></div>
+
 </div>
 
 <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
@@ -177,7 +193,7 @@ firebase.initializeApp({
 });
 const db = firebase.database();
 
-/* ═══════════════════ QUESTIONS ═══════════════════ */
+/* ═══════ QUESTIONS ═══════ */
 const ALL_Q = [
   {cat:"دينية",q:"كم عدد سور القرآن الكريم؟",opts:["114 سورة","110 سورة","120 سورة","100 سورة"],c:0},
   {cat:"دينية",q:"ما هي أطول سورة في القرآن الكريم؟",opts:["سورة البقرة","سورة آل عمران","سورة النساء","سورة الأعراف"],c:0},
@@ -185,8 +201,9 @@ const ALL_Q = [
   {cat:"دينية",q:"من هو خاتم الأنبياء؟",opts:["محمد ﷺ","عيسى عليه السلام","موسى عليه السلام","إبراهيم عليه السلام"],c:0},
   {cat:"دينية",q:"في أي شهر فُرض الصيام؟",opts:["رمضان","شعبان","رجب","ذو القعدة"],c:0},
   {cat:"دينية",q:"كم عدد أركان الإيمان؟",opts:["6","5","7","4"],c:0},
-  {cat:"دينية",q:"ما أول ما نزل من القرآن الكريم؟",opts:["اقرأ","الفاتحة","المدثر","العلق"],c:0},
+  {cat:"دينية",q:"ما أول ما نزل من القرآن الكريم؟",opts:["اقرأ","الفاتحة","المدثر","البسملة"],c:0},
   {cat:"دينية",q:"كم عدد الأنبياء المذكورين في القرآن؟",opts:["25","24","26","30"],c:0},
+  {cat:"دينية",q:"ما هي السورة التي تعدل ثلث القرآن؟",opts:["الإخلاص","الفاتحة","البقرة","يس"],c:0},
   {cat:"ثقافية",q:"من هو مخترع المصباح الكهربائي؟",opts:["توماس إديسون","نيكولا تسلا","بنجامين فرانكلين","ألكسندر بيل"],c:0},
   {cat:"ثقافية",q:"ما هي أكبر دولة عربية مساحة؟",opts:["الجزائر","السعودية","السودان","ليبيا"],c:0},
   {cat:"ثقافية",q:"كم عدد قارات العالم؟",opts:["7","6","5","8"],c:0},
@@ -194,587 +211,364 @@ const ALL_Q = [
   {cat:"جغرافية",q:"ما هي عاصمة اليابان؟",opts:["طوكيو","كيوتو","أوساكا","يوكوهاما"],c:0},
   {cat:"جغرافية",q:"ما هو أطول نهر في العالم؟",opts:["نهر النيل","نهر الأمازون","نهر المسيسيبي","نهر اليانغتسي"],c:0},
   {cat:"جغرافية",q:"كم عدد دول مجلس التعاون الخليجي؟",opts:["6","5","7","8"],c:0},
-  {cat:"جغرافية",q:"ما هي أكبر صحراء في العالم؟",opts:["الصحراء الكبرى","صحراء الربع الخالي","صحراء غوبي","صحراء كالاهاري"],c:0},
-  {cat:"رياضية",q:"كم عدد لاعبي كرة القدم في الفريق الواحد؟",opts:["11","10","12","9"],c:0},
+  {cat:"جغرافية",q:"ما هي أكبر صحراء في العالم؟",opts:["الصحراء الكبرى","الربع الخالي","غوبي","كالاهاري"],c:0},
+  {cat:"جغرافية",q:"ما هي أصغر دولة في العالم؟",opts:["الفاتيكان","موناكو","سان مارينو","ليختنشتاين"],c:0},
+  {cat:"رياضية",q:"كم عدد لاعبي كرة القدم في الفريق؟",opts:["11","10","12","9"],c:0},
   {cat:"رياضية",q:"في أي عام أقيمت أول بطولة كأس عالم؟",opts:["1930","1928","1934","1926"],c:0},
   {cat:"رياضية",q:"كم مدة الشوط الواحد في كرة القدم؟",opts:["45 دقيقة","40 دقيقة","50 دقيقة","30 دقيقة"],c:0},
   {cat:"علمية",q:"كم عدد كواكب المجموعة الشمسية؟",opts:["8","9","7","10"],c:0},
   {cat:"علمية",q:"ما هو العنصر الأكثر وفرة في الكون؟",opts:["الهيدروجين","الأكسجين","الكربون","الهيليوم"],c:0},
   {cat:"علمية",q:"كم عدد عظام جسم الإنسان البالغ؟",opts:["206","205","208","200"],c:0},
+  {cat:"علمية",q:"ما هو أصلب معدن على وجه الأرض؟",opts:["الألماس","الحديد","التيتانيوم","الذهب"],c:0},
   {cat:"عامة",q:"كم عدد ألوان قوس قزح؟",opts:["7","6","8","5"],c:0},
   {cat:"عامة",q:"ما هي العملة الرسمية لليابان؟",opts:["الين","الوون","اليوان","الدولار"],c:0},
-  {cat:"عامة",q:"كم عدد أيام السنة الكبيسة؟",opts:["366","365","364","367"],c:0},
-  {cat:"عامة",q:"ما هو الحيوان الأسرع في العالم؟",opts:["الفهد","الأسد","الحصان","النسر"],c:0},
   {cat:"عامة",q:"كم عدد حروف اللغة العربية؟",opts:["28","26","30","27"],c:0},
-  {cat:"عامة",q:"ما هي أصغر دولة في العالم؟",opts:["الفاتيكان","موناكو","سان مارينو","ليختنشتاين"],c:0},
+  {cat:"عامة",q:"ما هو الحيوان الأسرع في العالم؟",opts:["الفهد","الأسد","الحصان","النسر"],c:0},
+  {cat:"عامة",q:"كم عدد أيام السنة الكبيسة؟",opts:["366","365","364","367"],c:0},
 ];
 
-/* ═══════════════════ STATE ═══════════════════ */
+/* ═══════ STATE ═══════ */
 let RC=null, PID=null, PN=null, isH=false, myT=null, RD=null;
 let tmrHost=null, tmrDisp=null, tmrAns=null, rl=null;
 
-/* ═══════════════════ UTILS ═══════════════════ */
-function showScr(id){ document.querySelectorAll('.scr').forEach(s=>s.classList.remove('on')); document.getElementById(id).classList.add('on'); }
-function clearT(){ clearInterval(tmrHost); clearInterval(tmrDisp); clearInterval(tmrAns); tmrHost=tmrDisp=tmrAns=null; }
-
-function saveS(){ if(RC&&PID) sessionStorage.setItem('gs',JSON.stringify({rc:RC,pid:PID,pn:PN,h:isH,t:myT})); }
-function clearS(){ sessionStorage.removeItem('gs'); }
+/* ═══════ UTILS ═══════ */
+function showScr(id){document.querySelectorAll('.scr').forEach(s=>s.classList.remove('on'));document.getElementById(id).classList.add('on')}
+function clearT(){clearInterval(tmrHost);clearInterval(tmrDisp);clearInterval(tmrAns);tmrHost=tmrDisp=tmrAns=null}
+function saveS(){if(RC&&PID)sessionStorage.setItem('gs',JSON.stringify({rc:RC,pid:PID,pn:PN,h:isH,t:myT}))}
+function clearS(){sessionStorage.removeItem('gs')}
 function restoreS(){
-  const s=sessionStorage.getItem('gs'); if(!s)return false;
-  try{
-    const d=JSON.parse(s);
+  const s=sessionStorage.getItem('gs');if(!s)return false;
+  try{const d=JSON.parse(s);
     db.ref('rooms/'+d.rc).once('value',snap=>{
-      if(!snap.exists()||!snap.val().players||!snap.val().players[d.pid]){clearS();showScr('scrWelcome');return;}
-      RC=d.rc; PID=d.pid; PN=d.pn; isH=d.h; myT=d.t;
-      saveS(); listen();
-    });
-    return true;
-  }catch(e){clearS();return false;}
+      if(!snap.exists()||!snap.val().players||!snap.val().players[d.pid]){clearS();showScr('scrWelcome');return}
+      RC=d.rc;PID=d.pid;PN=d.pn;isH=d.h;myT=d.t;saveS();listen()});return true}
+  catch(e){clearS();return false}
 }
 
-function goHome(){
-  clearT();
-  if(RC&&PID) db.ref('rooms/'+RC+'/players/'+PID).remove();
-  if(RC&&rl){ db.ref('rooms/'+RC).off('value',rl); rl=null; }
-  clearS(); RC=PID=PN=RD=myT=null; isH=false;
-  showScr('scrWelcome');
-}
-
-/* ═══════════════════ CREATE ROOM ═══════════════════ */
+/* ═══════ CREATE / JOIN ═══════ */
 function createRoom(){
-  const n=document.getElementById('hostName').value.trim(); if(!n){alert('أدخل اسمك');return;}
+  const n=document.getElementById('hostName').value.trim();if(!n){alert('أدخل اسمك');return}
   const t1=document.getElementById('t1n').value.trim()||'الفريق الأحمر';
   const t2=document.getElementById('t2n').value.trim()||'الفريق الأزرق';
   const sz=parseInt(document.getElementById('tsz').value);
-  RC=Math.floor(1000+Math.random()*9000).toString(); PID='h-'+Date.now(); PN=n; isH=true;
-  db.ref('rooms/'+RC).set({
-    code:RC, host:PID, t1Name:t1, t2Name:t2, tSize:sz,
-    players:{[PID]:{name:n,isHost:true,team:''}},
-    state:'lobby', curQ:'', usedQ:[], couch:[],
-    buzzP:'', showOpts:false, banTeam:'',
-    corAns:'', selAns:'', waitChoice:false, choiceP:'',
-    waitText:false, qStart:'', buzzTime:''
-  });
-  saveS(); listen(); showLobby();
-}
+  RC=Math.floor(1000+Math.random()*9000).toString();PID='h-'+Date.now();PN=n;isH=true;
+  db.ref('rooms/'+RC).set({code:RC,host:PID,t1Name:t1,t2Name:t2,tSize:sz,
+    players:{[PID]:{name:n,isHost:true,team:''}},state:'lobby',
+    curQ:'',usedQ:[],couch:[],buzzP:'',showOpts:false,banTeam:'',
+    corAns:'',selAns:'',waitChoice:false,choiceP:'',waitText:false,qStart:'',buzzTime:''});
+  saveS();listen();showLobby()}
 
-/* ═══════════════════ JOIN ROOM ═══════════════════ */
 function joinRoom(){
-  const n=document.getElementById('pName').value.trim();
-  const c=document.getElementById('pCode').value.trim();
-  if(!n){alert('أدخل اسمك');return;} if(!c||c.length!==4){alert('أدخل كود الغرفة (4 أرقام)');return;}
+  const n=document.getElementById('pName').value.trim();const c=document.getElementById('pCode').value.trim();
+  if(!n){alert('أدخل اسمك');return}if(!c||c.length!==4){alert('أدخل كود الغرفة (4 أرقام)');return}
   db.ref('rooms/'+c).once('value',snap=>{
-    if(!snap.exists()){alert('الغرفة غير موجودة');return;}
-    RC=c; PID='p-'+Date.now(); PN=n; isH=false;
+    if(!snap.exists()){alert('الغرفة غير موجودة');return}
+    RC=c;PID='p-'+Date.now();PN=n;isH=false;
     db.ref('rooms/'+RC+'/players/'+PID).set({name:n,isHost:false,team:''});
-    saveS(); listen();
-    showScr('scrTeam'); document.getElementById('wpn').textContent=n;
-  });
-}
+    saveS();listen();showScr('scrTeam');document.getElementById('wpn').textContent=n})}
 
-/* ═══════════════════ LISTEN ═══════════════════ */
+/* ═══════ LISTEN ═══════ */
 function listen(){
-  if(rl) db.ref('rooms/'+RC).off('value',rl);
-  rl = db.ref('rooms/'+RC).on('value',snap=>{
-    if(!snap.exists()){clearS();showScr('scrWelcome');return;}
-    RD=snap.val();
-    if(!RD.players||!RD.players[PID])return;
-    const me=RD.players[PID]; if(me.team && !myT){myT=me.team;}
-    updateUI();
-  });
-}
+  if(rl)db.ref('rooms/'+RC).off('value',rl);
+  rl=db.ref('rooms/'+RC).on('value',snap=>{
+    if(!snap.exists()){clearS();showScr('scrWelcome');return}
+    RD=snap.val();if(!RD.players||!RD.players[PID])return;
+    const me=RD.players[PID];if(me.team&&me.team!=='')myT=me.team;
+    updateUI()})}
 
-/* ═══════════════════ LOBBY ═══════════════════ */
-function showLobby(){ showScr('scrLobby'); document.getElementById('drc').textContent=RC; }
+/* ═══════ LOBBY ═══════ */
+function showLobby(){showScr('scrLobby');document.getElementById('drc').textContent=RC}
+function pickTeam(t){myT=t;db.ref('rooms/'+RC+'/players/'+PID).update({team:t});saveS()}
+function pickTeamJoin(t){myT=t;db.ref('rooms/'+RC+'/players/'+PID).update({team:t});saveS();
+  RD&&RD.state==='playing'?showScr('scrGame'):showScr('scrWait')}
 
-function renderHTBtns(){
+function renderPlayers(cid){
+  const c=document.getElementById(cid);c.innerHTML='';
+  Object.entries(RD.players||{}).forEach(([id,p])=>{
+    const d=document.createElement('div');d.className='chip';
+    let dc='dg';if(p.team==='team1')dc='dr';if(p.team==='team2')dc='db';
+    d.innerHTML=`<span class="dot ${dc}"></span>${p.name}${p.isHost?' 👑':''}`;c.appendChild(d)})}
+
+function updateLobby(){
+  const cnt=Object.keys(RD.players||{}).length;
+  document.getElementById('pc').textContent=cnt;renderPlayers('lpl');
   if(!RD)return;
   document.getElementById('htBtns').innerHTML=
     `<button class="tsb rt ${myT==='team1'?'sel':''}" onclick="pickTeam('team1')">🔴 ${RD.t1Name}</button>`+
     `<button class="tsb bt ${myT==='team2'?'sel':''}" onclick="pickTeam('team2')">🔵 ${RD.t2Name}</button>`;
-}
-
-function pickTeam(t){ myT=t; db.ref('rooms/'+RC+'/players/'+PID).update({team:t}); saveS(); }
-
-function renderTSBtns(){
-  if(!RD)return;
-  document.getElementById('tsBtns').innerHTML=
-    `<button class="tsb rt" onclick="pickTeamJoin('team1')">🔴 ${RD.t1Name}</button>`+
-    `<button class="tsb bt" onclick="pickTeamJoin('team2')">🔵 ${RD.t2Name}</button>`;
-}
-function pickTeamJoin(t){ myT=t; db.ref('rooms/'+RC+'/players/'+PID).update({team:t}); saveS();
-  RD.state==='playing'?showScr('scrGame'):showScr('scrWait'); }
-
-function renderPlayers(containerId){
-  const c=document.getElementById(containerId); c.innerHTML='';
-  Object.entries(RD.players||{}).forEach(([id,p])=>{
-    const d=document.createElement('div'); d.className='chip';
-    let dc='dg'; if(p.team==='team1')dc='dr'; if(p.team==='team2')dc='db';
-    d.innerHTML=`<span class="dot ${dc}"></span>${p.name}${p.isHost?' 👑':''}`;
-    c.appendChild(d);
-  });
-}
-
-function updateLobby(){
-  const ps=RD.players||{}; const cnt=Object.keys(ps).length;
-  document.getElementById('pc').textContent=cnt;
-  renderPlayers('lpl'); renderHTBtns();
   const b=document.getElementById('sgBtn');
-  if(!myT){b.disabled=true;b.textContent='اختر فريقك أولاً';}
-  else{b.disabled=false;b.textContent='ابدأ اللعبة ▶️';}
-}
+  if(!myT||myT===''){b.disabled=true;b.textContent='اختر فريقك أولاً'}
+  else{b.disabled=false;b.textContent='ابدأ اللعبة ▶️'}}
 
 function updateWait(){
-  document.getElementById('wtn').textContent=myT==='team1'?RD.t1Name:RD.t2Name;
-  renderPlayers('wpl');
-}
+  document.getElementById('wtn').textContent=myT==='team1'?RD.t1Name:RD.t2Name;renderPlayers('wpl')}
 
-function startGame(){ if(!myT){alert('اختر فريقك أولاً');return;} db.ref('rooms/'+RC).update({state:'playing'}); }
+function startGame(){if(!myT){alert('اختر فريقك');return}db.ref('rooms/'+RC).update({state:'playing'})}
 
-/* ═══════════════════ UPDATE UI ═══════════════════ */
+/* ═══════ UPDATE UI ═══════ */
 function updateUI(){
   if(!RD)return;
+  // Check for replay team-select state
+  if(RD.state==='teamSelect'){document.getElementById('replayOv').classList.add('on');renderReplayTeams();return}
+  else{document.getElementById('replayOv').classList.remove('on')}
+
   if(RD.state==='lobby'){
-    if(isH){ if(!document.getElementById('scrLobby').classList.contains('on'))showLobby(); updateLobby(); }
-    else if(!myT){ if(!document.getElementById('scrTeam').classList.contains('on')){showScr('scrTeam');document.getElementById('wpn').textContent=PN;} renderTSBtns(); }
-    else{ if(!document.getElementById('scrWait').classList.contains('on'))showScr('scrWait'); updateWait(); }
+    if(isH){if(!document.getElementById('scrLobby').classList.contains('on'))showLobby();updateLobby()}
+    else if(!myT||myT===''){if(!document.getElementById('scrTeam').classList.contains('on')){showScr('scrTeam');document.getElementById('wpn').textContent=PN}
+      if(RD){document.getElementById('tsBtns').innerHTML=
+        `<button class="tsb rt" onclick="pickTeamJoin('team1')">🔴 ${RD.t1Name}</button>`+
+        `<button class="tsb bt" onclick="pickTeamJoin('team2')">🔵 ${RD.t2Name}</button>`}}
+    else{if(!document.getElementById('scrWait').classList.contains('on'))showScr('scrWait');updateWait()}
   } else if(RD.state==='playing'){
-    if(!myT){showScr('scrTeam');document.getElementById('wpn').textContent=PN;renderTSBtns();}
-    else{ if(!document.getElementById('scrGame').classList.contains('on'))showScr('scrGame'); updateGame(); }
+    if(!myT||myT===''){showScr('scrTeam');document.getElementById('wpn').textContent=PN;
+      if(RD){document.getElementById('tsBtns').innerHTML=
+        `<button class="tsb rt" onclick="pickTeamJoin('team1')">🔴 ${RD.t1Name}</button>`+
+        `<button class="tsb bt" onclick="pickTeamJoin('team2')">🔵 ${RD.t2Name}</button>`}}
+    else{if(!document.getElementById('scrGame').classList.contains('on'))showScr('scrGame');updateGame()}
   }
 }
 
-/* ═══════════════════ GAME ═══════════════════ */
+/* ═══════ GAME ═══════ */
 function updateGame(){
-  if(!RD)return;
-  const sz=RD.tSize||2;
-  const couch=RD.couch||[];
+  if(!RD)return;const sz=RD.tSize||2;const couch=RD.couch||[];
 
-  // Check victory: couch full AND one team has majority
-  if(couch.length >= sz){
-    let c1=0,c2=0;
-    couch.forEach(pid=>{ const p=RD.players[pid]; if(p){if(p.team==='team1')c1++;else c2++;} });
-    if(c1>c2||c2>c1){ showVic(); return; }
-  }
+  // Victory: couch full AND all same team
+  let t1c=0,t2c=0;
+  couch.forEach(pid=>{const p=RD.players[pid];if(p){if(p.team==='team1')t1c++;else t2c++}});
+  if(couch.length>=sz && (t1c===sz||t2c===sz)){showVic();return}
   document.getElementById('vicOv').classList.remove('on');
 
-  // Top bar scores
-  document.getElementById('gt1n').textContent=RD.t1Name;
-  document.getElementById('gt2n').textContent=RD.t2Name;
-  let s1=0,s2=0;
-  couch.forEach(pid=>{ const p=RD.players[pid]; if(p){if(p.team==='team1')s1++;else s2++;} });
-  document.getElementById('gt1s').textContent=s1;
-  document.getElementById('gt2s').textContent=s2;
-  renderTP('gt1p','team1'); renderTP('gt2p','team2');
+  // Top bar
+  document.getElementById('gt1n').textContent=RD.t1Name;document.getElementById('gt2n').textContent=RD.t2Name;
+  document.getElementById('gt1s').textContent=t1c;document.getElementById('gt2s').textContent=t2c;
+  renderTP('gt1p','team1');renderTP('gt2p','team2');
 
-  // Couch display (shared)
-  document.getElementById('couchCnt').textContent=couch.length;
-  document.getElementById('couchMax').textContent=sz;
-  const cs=document.getElementById('couchSeats'); cs.innerHTML='';
+  // Couch
+  document.getElementById('couchCnt').textContent=couch.length;document.getElementById('couchMax').textContent=sz;
+  const cs=document.getElementById('couchSeats');cs.innerHTML='';
   for(let i=0;i<sz;i++){
     const d=document.createElement('div');
-    if(couch[i]){
-      const p=RD.players[couch[i]];
-      if(p){ d.className='cseat '+(p.team==='team1'?'fr':'fb'); d.textContent='🏆 '+p.name; }
-      else{ d.className='cseat empty'; d.textContent='—'; }
-    } else { d.className='cseat empty'; d.textContent='—'; }
-    cs.appendChild(d);
-  }
+    if(couch[i]){const p=RD.players[couch[i]];
+      if(p){d.className='cseat '+(p.team==='team1'?'fr':'fb')+(couch[i]===PID?' me':'');d.textContent='🏆 '+p.name}
+      else{d.className='cseat empty';d.textContent='—'}}
+    else{d.className='cseat empty';d.textContent='—'}
+    cs.appendChild(d)}
 
-  // Am I on couch?
-  const onC = couch.includes(PID);
-  const ocb=document.getElementById('ocBanner'); const gc=document.getElementById('gContent');
-  if(onC){ ocb.classList.remove('hid'); gc.style.display='none'; }
-  else{ ocb.classList.add('hid'); gc.style.display='block'; renderGC(); }
-
+  // ALL players see questions - even on couch
+  document.getElementById('gContent').style.display='block';
+  renderGC();
   document.getElementById('hNext').classList.toggle('hid',!isH);
-  document.getElementById('gTop').style.display='';
-  document.getElementById('couchSec').style.display='';
-}
+  document.getElementById('gTop').style.display='';document.getElementById('couchSec').style.display=''}
 
 function renderTP(cid,team){
-  const c=document.getElementById(cid); c.innerHTML='';
-  const couch=RD.couch||[];
-  Object.entries(RD.players||{}).forEach(([id,p])=>{
-    if(p.team===team){
-      const s=document.createElement('span');
-      s.className='mp'+(couch.includes(id)?' oc':'');
-      s.textContent=p.name; c.appendChild(s);
-    }
-  });
-}
+  const c=document.getElementById(cid);c.innerHTML='';const couch=RD.couch||[];
+  Object.entries(RD.players||{}).forEach(([id,p])=>{if(p.team===team){
+    const s=document.createElement('span');s.className='mp'+(couch.includes(id)?' oc':'');
+    s.textContent=p.name;c.appendChild(s)}})}
 
-/* ═══════════════════ ANSWER MATCHING ═══════════════════ */
-function hasAns(){ return RD.corAns===true || RD.corAns===false; }
+/* ═══════ ANSWER MATCHING ═══════ */
+function hasAns(){return RD.corAns===true||RD.corAns===false}
+function norm(s){return s.toLowerCase().replace(/[\u064B-\u065F\u0670]/g,'').replace(/ة/g,'ه').replace(/ى/g,'ي').replace(/[أإآٱ]/g,'ا').replace(/ؤ/g,'و').replace(/ئ/g,'ي').replace(/\s+/g,' ').trim()}
 
-function norm(s){
-  return s.toLowerCase()
-    .replace(/[\u064B-\u065F\u0670]/g,'') // tashkeel
-    .replace(/ة/g,'ه').replace(/ى/g,'ي')
-    .replace(/[أإآٱ]/g,'ا').replace(/ؤ/g,'و').replace(/ئ/g,'ي')
-    .replace(/\s+/g,' ').trim();
-}
+const AR_N={'واحد':1,'اثنين':2,'اثنان':2,'ثلاثة':3,'ثلاث':3,'اربعة':4,'اربع':4,'خمسة':5,'خمس':5,
+'ستة':6,'ست':6,'سبعة':7,'سبع':7,'ثمانية':8,'ثماني':8,'ثمان':8,'تسعة':9,'تسع':9,
+'عشرة':10,'عشر':10,'احد عشر':11,'اثنا عشر':12,'مئة':100,'مائة':100,'مئتين':200,
+'ثلاثمئة':300,'اربعمئة':400,'خمسمئة':500,'الف':1000};
 
-// Arabic word → number mapping
-const AR_NUMS = {
-  'واحد':1,'اثنين':2,'اثنان':2,'ثلاثة':3,'ثلاث':3,'اربعة':4,'اربع':4,'خمسة':5,'خمس':5,
-  'ستة':6,'ست':6,'سبعة':7,'سبع':7,'ثمانية':8,'ثماني':8,'ثمان':8,'تسعة':9,'تسع':9,
-  'عشرة':10,'عشر':10,'احد عشر':11,'اثنا عشر':12,'ثلاثة عشر':13,'اربعة عشر':14,
-  'خمسة عشر':15,'ستة عشر':16,'سبعة عشر':17,'ثمانية عشر':18,'تسعة عشر':19,
-  'عشرين':20,'خمسة وعشرين':25,'ثلاثين':30,'اربعين':40,'خمسين':50,
-  'مئة':100,'مائة':100,'مئتين':200,'مائتين':200,
-  'ثلاثمائة':300,'ثلاثمئة':300,'اربعمئة':400,'خمسمئة':500,
-  'الف':1000,'ألف':1000
-};
+function getNums(s){const m=s.match(/\d+/g);const r=m?m.map(Number):[];
+const n=norm(s);for(const[w,v]of Object.entries(AR_N))if(n.includes(norm(w)))r.push(v);return[...new Set(r)]}
 
-function extractNum(s){
-  // Try digits first
-  const m = s.match(/\d+/g);
-  if(m) return m.map(Number);
-  // Try Arabic words
-  const n = norm(s);
-  const nums = [];
-  for(const[w,v] of Object.entries(AR_NUMS)){
-    if(n.includes(norm(w))) nums.push(v);
-  }
-  return nums;
-}
+function checkAns(u,c){
+  const un=norm(u),cn=norm(c);if(un===cn)return true;
+  const uN=getNums(u),cN=getNums(c);
+  if(uN.length&&cN.length){for(const a of uN)for(const b of cN)if(a===b)return true}
+  if(un.length>=3&&cn.includes(un))return true;if(cn.length>=3&&un.includes(cn))return true;
+  const uw=un.split(' ').filter(w=>w.length>2),cw=cn.split(' ').filter(w=>w.length>2);
+  for(const a of uw)for(const b of cw){if(a===b)return true;if(a.length>=3&&b.includes(a))return true;if(b.length>=3&&a.includes(b))return true}
+  return false}
 
-function checkAns(userStr, correctStr){
-  const u = norm(userStr);
-  const c = norm(correctStr);
-
-  // 1. Exact match
-  if(u === c) return true;
-
-  // 2. Number matching - extract numbers from both
-  const uNums = extractNum(userStr);
-  const cNums = extractNum(correctStr);
-  if(uNums.length > 0 && cNums.length > 0){
-    for(const un of uNums){
-      for(const cn of cNums){
-        if(un === cn) return true;
-      }
-    }
-  }
-
-  // 3. Contains (min 3 chars)
-  if(u.length >= 3 && c.includes(u)) return true;
-  if(c.length >= 3 && u.includes(c)) return true;
-
-  // 4. Key word matching
-  const uw = u.split(' ').filter(w=>w.length>2);
-  const cw = c.split(' ').filter(w=>w.length>2);
-  for(const a of uw){
-    for(const b of cw){
-      if(a===b) return true;
-      if(a.length>=3 && b.includes(a)) return true;
-      if(b.length>=3 && a.includes(b)) return true;
-    }
-  }
-  return false;
-}
-
-/* ═══════════════════ RENDER GAME CONTENT ═══════════════════ */
+/* ═══════ RENDER GAME ═══════ */
 function renderGC(){
-  // Hide all
   ['qCard','tBar','bzInd','bzBtn','aiArea','optsG','chG'].forEach(id=>document.getElementById(id).classList.add('hid'));
-  const bb=document.getElementById('bzBtn'); bb.disabled=true;
-  const st=document.getElementById('gSts'); st.classList.remove('hid');
+  document.getElementById('bzBtn').disabled=true;
+  const st=document.getElementById('gSts');st.classList.remove('hid');
 
-  // CHOICE STATE
-  if(RD.waitChoice && RD.choiceP===PID){
-    showQ(); st.textContent='✅ إجابة صحيحة! اختر:'; st.className='sts s'; renderChoice(); return;
-  }
-  if(RD.waitChoice){
-    const p=RD.players[RD.choiceP];
-    showQ(); st.textContent=(p?.name||'')+' يختار الآن...'; st.className='sts i'; return;
-  }
+  // Choice
+  if(RD.waitChoice&&RD.choiceP===PID){showQ();st.textContent='✅ إجابة صحيحة! اختر:';st.className='sts s';renderChoice();return}
+  if(RD.waitChoice){const p=RD.players[RD.choiceP];showQ();st.textContent=(p?.name||'')+' يختار...';st.className='sts i';return}
 
-  // NO QUESTION
-  if(!RD.curQ || RD.curQ===''){
-    st.textContent='⏳ انتظر السؤال...'; st.className='sts i'; return;
-  }
-
+  // No Q
+  if(!RD.curQ||RD.curQ===''){st.textContent='⏳ انتظر السؤال...';st.className='sts i';return}
   showQ();
 
-  // TEXT ANSWER (I'm typing)
-  if(RD.waitText && RD.buzzP===PID && !hasAns()){
-    st.textContent='⌨️ اكتب إجابتك بسرعة!'; st.className='sts w';
-    document.getElementById('aiArea').classList.remove('hid');
-    showMainTimer(); startAnsTimer(); return;
-  }
+  // I'm typing
+  if(RD.waitText&&RD.buzzP===PID&&!hasAns()){
+    st.textContent='⌨️ اكتب إجابتك!';st.className='sts w';
+    document.getElementById('aiArea').classList.remove('hid');showMainTimer();startAnsTimer();return}
 
-  // SOMEONE ELSE TYPING
-  if(RD.waitText && RD.buzzP && RD.buzzP!==PID && !hasAns()){
-    const p=RD.players[RD.buzzP]; const tn=p?.team==='team1'?RD.t1Name:RD.t2Name;
-    const bi=document.getElementById('bzInd'); bi.classList.remove('hid');
-    bi.textContent=`🔔 ${p?.name} من ${tn} يكتب الإجابة...`;
-    st.textContent='انتظر...'; st.className='sts i'; showMainTimer(); return;
-  }
+  // Someone typing
+  if(RD.waitText&&RD.buzzP&&RD.buzzP!==PID&&!hasAns()){
+    const p=RD.players[RD.buzzP];const bi=document.getElementById('bzInd');bi.classList.remove('hid');
+    bi.textContent=`🔔 ${p?.name||''} يكتب الإجابة...`;st.textContent='انتظر...';st.className='sts i';showMainTimer();return}
 
-  // OPTIONS SHOWN
-  if(RD.showOpts && !hasAns()){
-    const og=document.getElementById('optsG'); og.classList.remove('hid'); og.innerHTML='';
-    const banned = RD.banTeam && RD.banTeam===myT;
-    RD.curQ.opts.forEach((o,i)=>{
-      const b=document.createElement('button'); b.className='ob'; b.textContent=o;
-      if(banned) b.disabled=true; else b.onclick=()=>selAns(i);
-      og.appendChild(b);
-    });
-    if(banned){ st.textContent='⛔ فريقك ممنوع - الفرصة للخصم'; st.className='sts e'; }
-    else if(RD.banTeam){ st.textContent='🎯 فرصة فريقك! اختر الإجابة'; st.className='sts s'; }
-    else{ st.textContent='اختر الإجابة الصحيحة'; st.className='sts i'; }
-    return;
-  }
+  // Options
+  if(RD.showOpts&&!hasAns()){
+    const og=document.getElementById('optsG');og.classList.remove('hid');og.innerHTML='';
+    const banned=RD.banTeam&&RD.banTeam===myT;
+    RD.curQ.opts.forEach((o,i)=>{const b=document.createElement('button');b.className='ob';b.textContent=o;
+      if(banned)b.disabled=true;else b.onclick=()=>selAns(i);og.appendChild(b)});
+    if(banned){st.textContent='⛔ فريقك ممنوع - فرصة الخصم';st.className='sts e'}
+    else if(RD.banTeam){st.textContent='🎯 فرصتك! اختر الإجابة';st.className='sts s'}
+    else{st.textContent='اختر الإجابة الصحيحة';st.className='sts i'}
+    return}
 
-  // ANSWER RESULT
-  if(hasAns()){
-    st.textContent = RD.corAns ? '✅ إجابة صحيحة!' : '❌ إجابة خاطئة!';
-    st.className = RD.corAns ? 'sts s' : 'sts e'; return;
-  }
+  // Result
+  if(hasAns()){st.textContent=RD.corAns?'✅ إجابة صحيحة!':'❌ إجابة خاطئة!';st.className=RD.corAns?'sts s':'sts e';return}
 
-  // ACTIVE QUESTION - NO BUZZ
-  if(!RD.buzzP && !RD.showOpts){
-    showMainTimer();
-    bb.classList.remove('hid'); bb.disabled=false;
-    st.textContent='📖 اقرأ السؤال واضغط الجرس!'; st.className='sts i'; return;
-  }
+  // Active Q
+  if(!RD.buzzP&&!RD.showOpts){showMainTimer();const bb=document.getElementById('bzBtn');bb.classList.remove('hid');bb.disabled=false;
+    st.textContent='📖 اقرأ واضغط الجرس!';st.className='sts i';return}
 
-  // SOMEONE ELSE BUZZED
-  if(RD.buzzP && RD.buzzP!==PID){
-    const p=RD.players[RD.buzzP];
-    st.textContent=(p?.name||'')+' يجيب الآن...'; st.className='sts w';
-    showMainTimer();
-  }
-}
+  // Someone buzzed
+  if(RD.buzzP&&RD.buzzP!==PID){const p=RD.players[RD.buzzP];
+    st.textContent=(p?.name||'')+' يجيب...';st.className='sts w';showMainTimer()}}
 
-function showQ(){
-  if(!RD.curQ||RD.curQ==='')return;
-  document.getElementById('qCard').classList.remove('hid');
-  document.getElementById('qCat').textContent=RD.curQ.cat||'';
-  document.getElementById('qTxt').textContent=RD.curQ.q;
-}
+function showQ(){if(!RD.curQ||RD.curQ==='')return;document.getElementById('qCard').classList.remove('hid');
+  document.getElementById('qCat').textContent=RD.curQ.cat||'';document.getElementById('qTxt').textContent=RD.curQ.q}
 
-/* ═══════════════════ TIMERS ═══════════════════ */
+/* ═══════ TIMERS ═══════ */
 function showMainTimer(){
-  if(!RD.qStart)return;
-  document.getElementById('tBar').classList.remove('hid');
-  updateTimerDisplay();
+  if(!RD.qStart)return;document.getElementById('tBar').classList.remove('hid');updTimerDisp();
+  if(!tmrDisp)tmrDisp=setInterval(()=>{if(!RD||!RD.qStart){clearInterval(tmrDisp);tmrDisp=null;return}updTimerDisp()},500);
+  if(isH&&!tmrHost)tmrHost=setInterval(()=>{if(!RD||!RD.qStart){clearInterval(tmrHost);tmrHost=null;return}
+    const tl=Math.max(0,30-Math.floor((Date.now()-RD.qStart)/1000));
+    if(tl<=0){clearInterval(tmrHost);tmrHost=null;
+      if(!hasAns()&&!RD.showOpts){const u={showOpts:true,waitText:false};
+        if(RD.buzzP)u.banTeam=RD.players[RD.buzzP]?.team||'';db.ref('rooms/'+RC).update(u)}}},500)}
 
-  // Display timer for everyone
-  if(!tmrDisp){
-    tmrDisp=setInterval(()=>{
-      if(!RD||!RD.qStart){clearInterval(tmrDisp);tmrDisp=null;return;}
-      updateTimerDisplay();
-    },500);
-  }
+function updTimerDisp(){const tl=Math.max(0,30-Math.floor((Date.now()-RD.qStart)/1000));
+  const c=document.getElementById('tCirc');if(c){c.textContent=tl;c.classList.toggle('dng',tl<=5)}}
 
-  // Host authority timer
-  if(isH && !tmrHost){
-    tmrHost=setInterval(()=>{
-      if(!RD||!RD.qStart){clearInterval(tmrHost);tmrHost=null;return;}
-      const tl=Math.max(0, 30-Math.floor((Date.now()-RD.qStart)/1000));
-      if(tl<=0){
-        clearInterval(tmrHost);tmrHost=null;
-        if(!hasAns()&&!RD.showOpts){
-          const u={showOpts:true,waitText:false};
-          if(RD.buzzP){u.banTeam=RD.players[RD.buzzP]?.team||'';}
-          db.ref('rooms/'+RC).update(u);
-        }
-      }
-    },500);
-  }
-}
+function startAnsTimer(){if(!RD.buzzTime)return;clearInterval(tmrAns);const ci=document.getElementById('atCirc');
+  tmrAns=setInterval(()=>{if(!RD||!RD.buzzTime){clearInterval(tmrAns);tmrAns=null;return}
+    const tl=Math.max(0,5-Math.floor((Date.now()-RD.buzzTime)/1000));
+    ci.textContent=tl;ci.classList.toggle('dng',tl<=2);
+    if(tl<=0){clearInterval(tmrAns);tmrAns=null;
+      if(RD.buzzP===PID&&!hasAns())db.ref('rooms/'+RC).update({corAns:false,waitText:false,showOpts:true,banTeam:RD.players[PID]?.team||''})}},300)}
 
-function updateTimerDisplay(){
-  const tl=Math.max(0, 30-Math.floor((Date.now()-RD.qStart)/1000));
-  const c=document.getElementById('tCirc');
-  if(c){c.textContent=tl;c.classList.toggle('dng',tl<=5);}
-}
+/* ═══════ BUZZER ═══════ */
+function buzzIn(){if(!RD.curQ||RD.curQ===''||RD.buzzP||RD.showOpts)return;
+  db.ref('rooms/'+RC).update({buzzP:PID,waitText:true,buzzTime:Date.now()})}
 
-function startAnsTimer(){
-  if(!RD.buzzTime)return; clearInterval(tmrAns);
-  const ci=document.getElementById('atCirc');
-  tmrAns=setInterval(()=>{
-    if(!RD||!RD.buzzTime){clearInterval(tmrAns);tmrAns=null;return;}
-    const tl=Math.max(0, 5-Math.floor((Date.now()-RD.buzzTime)/1000));
-    ci.textContent=tl; ci.classList.toggle('dng',tl<=2);
-    if(tl<=0){
-      clearInterval(tmrAns);tmrAns=null;
-      if(RD.buzzP===PID && !hasAns()){
-        db.ref('rooms/'+RC).update({corAns:false,waitText:false,showOpts:true,banTeam:RD.players[PID]?.team||''});
-      }
-    }
-  },300);
-}
+/* ═══════ SUBMIT TEXT ═══════ */
+function submitAns(){const inp=document.getElementById('tAns');const v=inp.value.trim();
+  if(!v){alert('اكتب إجابة!');return}clearInterval(tmrAns);tmrAns=null;
+  const ok=checkAns(v,RD.curQ.opts[RD.curQ.c]);const ref=db.ref('rooms/'+RC);
+  if(ok){ref.update({corAns:true,waitText:false});handleCorrect()}
+  else{ref.update({corAns:false,waitText:false,showOpts:true,banTeam:RD.players[PID]?.team||''})}
+  inp.value=''}
 
-/* ═══════════════════ BUZZER ═══════════════════ */
-function buzzIn(){
-  if(!RD.curQ||RD.curQ===''||RD.buzzP||RD.showOpts)return;
-  db.ref('rooms/'+RC).update({buzzP:PID,waitText:true,buzzTime:Date.now()});
-}
+/* ═══════ SELECT OPTION ═══════ */
+function selAns(i){const ok=i===RD.curQ.c;clearT();
+  db.ref('rooms/'+RC).update({selAns:i,corAns:ok,showOpts:false,buzzP:RD.buzzP||PID});
+  if(ok)handleCorrect()}
 
-/* ═══════════════════ SUBMIT TEXT ═══════════════════ */
-function submitAns(){
-  const inp=document.getElementById('tAns'); const v=inp.value.trim();
-  if(!v){alert('اكتب إجابة!');return;} clearInterval(tmrAns);tmrAns=null;
-  const correct=RD.curQ.opts[RD.curQ.c];
-  const ok=checkAns(v,correct);
-  const ref=db.ref('rooms/'+RC);
-  if(ok){ ref.update({corAns:true,waitText:false}); handleCorrect(); }
-  else{ ref.update({corAns:false,waitText:false,showOpts:true,banTeam:RD.players[PID]?.team||''}); }
-  inp.value='';
-}
-
-/* ═══════════════════ SELECT OPTION ═══════════════════ */
-function selAns(i){
-  const ok = i===RD.curQ.c;
-  clearT();
-  const ref=db.ref('rooms/'+RC);
-  ref.update({selAns:i,corAns:ok,showOpts:false,buzzP:RD.buzzP||PID});
-  if(ok) handleCorrect();
-}
-
-/* ═══════════════════ CORRECT ANSWER LOGIC ═══════════════════ */
+/* ═══════ CORRECT ANSWER ═══════ */
 function handleCorrect(){
-  const sz=RD.tSize||2;
-  const couch=RD.couch||[];
-  const ref=db.ref('rooms/'+RC);
+  const sz=RD.tSize||2;const couch=RD.couch||[];const ref=db.ref('rooms/'+RC);
+  const opps=couch.filter(pid=>{const p=RD.players[pid];return p&&p.team!==myT});
 
-  if(couch.length >= sz){
-    // Couch FULL - can only pull opponent
-    const opps = couch.filter(pid=>{ const p=RD.players[pid]; return p&&p.team!==myT; });
-    if(opps.length > 0){
-      ref.update({waitChoice:true,choiceP:PID});
-    }
-    // If no opponents to pull, do nothing (shouldn't happen normally)
+  if(couch.length>=sz){
+    // Couch FULL → can only pull (NO auto-sit)
+    if(opps.length>0)ref.update({waitChoice:true,choiceP:PID});
   } else {
-    // Couch has space
-    const opps = couch.filter(pid=>{ const p=RD.players[pid]; return p&&p.team!==myT; });
-    if(opps.length > 0){
-      // Can sit OR pull
-      ref.update({waitChoice:true,choiceP:PID});
-    } else {
-      // Just sit
-      addToCouch();
-    }
-  }
-}
+    // Space available
+    if(opps.length>0)ref.update({waitChoice:true,choiceP:PID}); // sit or pull
+    else addToCouch(); // just sit
+  }}
 
-/* ═══════════════════ CHOICE ═══════════════════ */
+/* ═══════ CHOICE ═══════ */
 function renderChoice(){
-  const cg=document.getElementById('chG'); cg.classList.remove('hid'); cg.innerHTML='';
-  const sz=RD.tSize||2;
-  const couch=RD.couch||[];
-  const opps = couch.filter(pid=>{ const p=RD.players[pid]; return p&&p.team!==myT; });
-  const full = couch.length >= sz;
+  const cg=document.getElementById('chG');cg.classList.remove('hid');cg.innerHTML='';
+  const sz=RD.tSize||2;const couch=RD.couch||[];
+  const opps=couch.filter(pid=>{const p=RD.players[pid];return p&&p.team!==myT});
+  const full=couch.length>=sz;
 
   if(full){
-    // Can only pull
-    if(opps.length>0){
-      const b=document.createElement('button'); b.className='chb pull';
-      b.textContent='🎯 اسحب لاعب خصم من الكنبة';
-      b.onclick=()=>doSteal(); cg.appendChild(b);
-    }
+    // ONLY pull - no auto sit
+    if(opps.length>0){const b=document.createElement('button');b.className='chb pull';
+      b.textContent='🎯 اسحب لاعب خصم من الكنبة';b.onclick=()=>doSteal();cg.appendChild(b)}
   } else {
-    // Can sit
-    const sb=document.createElement('button'); sb.className='chb sit';
-    sb.textContent='🛋️ اجلس على الكنبة';
-    sb.onclick=()=>doSit(); cg.appendChild(sb);
-    // Can also pull
-    if(opps.length>0){
-      const pb=document.createElement('button'); pb.className='chb pull';
-      pb.textContent='🎯 اسحب لاعب خصم من الكنبة';
-      pb.onclick=()=>doSteal(); cg.appendChild(pb);
-    }
-  }
-}
+    const sb=document.createElement('button');sb.className='chb sit';
+    sb.textContent='🛋️ اجلس على الكنبة';sb.onclick=()=>doSit();cg.appendChild(sb);
+    if(opps.length>0){const pb=document.createElement('button');pb.className='chb pull';
+      pb.textContent='🎯 اسحب لاعب خصم من الكنبة';pb.onclick=()=>doSteal();cg.appendChild(pb)}}}
 
-function doSit(){ addToCouch(); }
+function doSit(){addToCouch()}
 
 function doSteal(){
   const couch=[...(RD.couch||[])];
-  // Find last opponent on couch
-  let idx=-1;
-  for(let i=couch.length-1;i>=0;i--){
-    const p=RD.players[couch[i]];
-    if(p && p.team!==myT){idx=i;break;}
-  }
-  if(idx===-1){ db.ref('rooms/'+RC).update({waitChoice:false,choiceP:''}); return; }
+  let idx=-1;for(let i=couch.length-1;i>=0;i--){const p=RD.players[couch[i]];if(p&&p.team!==myT){idx=i;break}}
+  if(idx===-1){db.ref('rooms/'+RC).update({waitChoice:false,choiceP:''});return}
   couch.splice(idx,1);
-
-  const sz=RD.tSize||2;
-  // After pulling, if there's space, also sit
-  if(couch.length < sz){ couch.push(PID); }
-  db.ref('rooms/'+RC).update({couch:couch,waitChoice:false,choiceP:''});
-}
+  // Pull ONLY - do NOT auto-sit. Player needs another correct answer to sit.
+  db.ref('rooms/'+RC).update({couch:couch,waitChoice:false,choiceP:''})}
 
 function addToCouch(){
-  const couch=[...(RD.couch||[])]; const sz=RD.tSize||2;
-  if(couch.length>=sz){db.ref('rooms/'+RC).update({waitChoice:false,choiceP:''});return;}
-  if(!couch.includes(PID)) couch.push(PID);
-  db.ref('rooms/'+RC).update({couch:couch,waitChoice:false,choiceP:''});
-}
+  const couch=[...(RD.couch||[])];const sz=RD.tSize||2;
+  if(couch.length>=sz){db.ref('rooms/'+RC).update({waitChoice:false,choiceP:''});return}
+  if(!couch.includes(PID))couch.push(PID);
+  db.ref('rooms/'+RC).update({couch:couch,waitChoice:false,choiceP:''})}
 
-/* ═══════════════════ NEXT QUESTION ═══════════════════ */
-function nextQ(){
-  clearT();
-  const used = RD.usedQ || [];
-  let avail = ALL_Q.filter(q => !used.includes(q.q));
-  if(avail.length===0){ avail=[...ALL_Q]; used.length=0; }
+/* ═══════ NEXT QUESTION ═══════ */
+function nextQ(){clearT();
+  const used=RD.usedQ||[];let avail=ALL_Q.filter(q=>!used.includes(q.q));
+  if(avail.length===0){avail=[...ALL_Q];used.length=0}
+  for(let i=avail.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[avail[i],avail[j]]=[avail[j],avail[i]]}
+  const q=avail[0];used.push(q.q);
+  db.ref('rooms/'+RC).update({curQ:{cat:q.cat,q:q.q,opts:q.opts,c:q.c},usedQ:used,
+    buzzP:'',showOpts:false,banTeam:'',corAns:'',selAns:'',
+    waitChoice:false,choiceP:'',qStart:Date.now(),waitText:false,buzzTime:''})}
 
-  // Shuffle
-  for(let i=avail.length-1;i>0;i--){
-    const j=Math.floor(Math.random()*(i+1));
-    [avail[i],avail[j]]=[avail[j],avail[i]];
-  }
-  const q=avail[0]; used.push(q.q);
-
-  db.ref('rooms/'+RC).update({
-    curQ:{cat:q.cat,q:q.q,opts:q.opts,c:q.c},
-    usedQ:used, buzzP:'', showOpts:false, banTeam:'',
-    corAns:'', selAns:'', waitChoice:false, choiceP:'',
-    qStart:Date.now(), waitText:false, buzzTime:''
-  });
-}
-
-/* ═══════════════════ VICTORY ═══════════════════ */
-function showVic(){
-  clearT();
-  const couch=RD.couch||[];
-  let c1=0,c2=0;
-  couch.forEach(pid=>{ const p=RD.players[pid]; if(p){if(p.team==='team1')c1++;else c2++;} });
-  const winner = c1>c2 ? RD.t1Name : RD.t2Name;
-
-  document.getElementById('vicOv').classList.add('on');
-  document.getElementById('vicMsg').textContent='🎉 '+winner+' فاز! 🎉';
+/* ═══════ VICTORY ═══════ */
+function showVic(){clearT();const couch=RD.couch||[];
+  let t1c=0,t2c=0;couch.forEach(pid=>{const p=RD.players[pid];if(p){if(p.team==='team1')t1c++;else t2c++}});
+  const w=t1c>t2c?RD.t1Name:RD.t2Name;
+  document.getElementById('vicOv').classList.add('on');document.getElementById('vicMsg').textContent='🎉 '+w+' فاز! 🎉';
   document.getElementById('gContent').style.display='none';
-  document.getElementById('ocBanner').classList.add('hid');
   document.getElementById('hNext').classList.add('hid');
-  document.getElementById('gTop').style.display='none';
-  document.getElementById('couchSec').style.display='none';
-}
+  document.getElementById('gTop').style.display='none';document.getElementById('couchSec').style.display='none'}
 
-function replay(){
-  db.ref('rooms/'+RC).update({
-    state:'playing', curQ:'', usedQ:[], couch:[],
-    buzzP:'', showOpts:false, banTeam:'',
-    corAns:'', selAns:'', waitChoice:false, choiceP:'',
-    waitText:false, qStart:'', buzzTime:''
-  });
-  document.getElementById('gTop').style.display='';
-  document.getElementById('couchSec').style.display='';
-  document.getElementById('gContent').style.display='';
-  document.getElementById('vicOv').classList.remove('on');
-}
+/* ═══════ REPLAY WITH TEAM CHANGE ═══════ */
+function askReplay(){
+  // Go to team selection state so all players can change
+  db.ref('rooms/'+RC).update({state:'teamSelect'})}
 
-/* ═══════════════════ INPUT LISTENERS ═══════════════════ */
-document.getElementById('pCode')?.addEventListener('input',function(){this.value=this.value.replace(/[^0-9]/g,'');});
-document.getElementById('tAns')?.addEventListener('keypress',function(e){if(e.key==='Enter')submitAns();});
+function renderReplayTeams(){
+  if(!RD)return;
+  document.getElementById('rpBtns').innerHTML=
+    `<button class="tsb rt ${myT==='team1'?'sel':''}" onclick="rpPick('team1')">🔴 ${RD.t1Name}</button>`+
+    `<button class="tsb bt ${myT==='team2'?'sel':''}" onclick="rpPick('team2')">🔵 ${RD.t2Name}</button>`;
+  // Only host sees start button
+  if(isH){document.getElementById('rpStart').classList.remove('hid');document.getElementById('rpWait').classList.add('hid')}
+  else{document.getElementById('rpStart').classList.add('hid');document.getElementById('rpWait').classList.remove('hid')}}
 
-/* ═══════════════════ INIT ═══════════════════ */
-if(!restoreS()) showScr('scrWelcome');
+function rpPick(t){myT=t;db.ref('rooms/'+RC+'/players/'+PID).update({team:t});saveS();renderReplayTeams()}
+
+function confirmReplay(){
+  db.ref('rooms/'+RC).update({state:'playing',curQ:'',usedQ:[],couch:[],
+    buzzP:'',showOpts:false,banTeam:'',corAns:'',selAns:'',
+    waitChoice:false,choiceP:'',waitText:false,qStart:'',buzzTime:''});
+  document.getElementById('replayOv').classList.remove('on');
+  document.getElementById('gTop').style.display='';document.getElementById('couchSec').style.display='';
+  document.getElementById('gContent').style.display='';document.getElementById('vicOv').classList.remove('on')}
+
+/* ═══════ INPUT ═══════ */
+document.getElementById('pCode')?.addEventListener('input',function(){this.value=this.value.replace(/[^0-9]/g,'')});
+document.getElementById('tAns')?.addEventListener('keypress',function(e){if(e.key==='Enter')submitAns()});
+
+/* ═══════ INIT ═══════ */
+if(!restoreS())showScr('scrWelcome');
 </script>
 </body>
 </html>
