@@ -16,7 +16,7 @@
 
         body {
             font-family: 'Cairo', sans-serif;
-            background: linear-gradient(135deg, #1a1f3a 0%, #2d1f4a 50%, #3d2456 100%);
+            background: #0a1a3a;
             min-height: 100vh;
             padding: 20px;
             position: relative;
@@ -54,13 +54,13 @@
         }
 
         .card {
-            background: linear-gradient(135deg, rgba(255, 255, 255, 0.15), rgba(212, 175, 55, 0.1));
+            background: rgba(12, 28, 60, 0.85);
             backdrop-filter: blur(20px);
             border-radius: 30px;
             padding: 40px;
             box-shadow: 0 25px 50px rgba(0, 0, 0, 0.3),
-                        inset 0 0 100px rgba(255, 215, 0, 0.05);
-            border: 2px solid rgba(255, 215, 0, 0.5);
+                        inset 0 0 100px rgba(212, 175, 55, 0.03);
+            border: 2px solid rgba(212, 175, 55, 0.35);
             animation: fadeIn 0.5s;
         }
 
@@ -86,20 +86,25 @@
         h1 {
             font-size: 42px;
             font-weight: 900;
-            background: linear-gradient(135deg, #d4af37, #f4e4b0);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
+            color: #0a1a3a;
+            background: linear-gradient(135deg, #d4af37, #f5e6a3, #d4af37);
+            padding: 8px 24px;
+            border-radius: 12px;
+            display: inline-block;
             text-align: center;
             margin-bottom: 10px;
         }
 
         h2 {
-            font-size: 32px;
+            font-size: 28px;
             font-weight: 900;
-            color: #ffffff;
+            color: #0a1a3a;
             text-align: center;
             margin-bottom: 20px;
-            text-shadow: 0 2px 10px rgba(0, 0, 0, 0.5);
+            background: linear-gradient(135deg, #d4af37, #f5e6a3);
+            padding: 6px 18px;
+            border-radius: 10px;
+            display: inline-block;
         }
 
         p {
@@ -111,8 +116,8 @@
         }
 
         .status {
-            background: linear-gradient(135deg, rgba(254, 243, 199, 0.3), rgba(254, 249, 231, 0.3));
-            border: 3px solid rgba(212, 175, 55, 0.6);
+            background: rgba(212, 175, 55, 0.1);
+            border: 2px solid rgba(212, 175, 55, 0.3);
             border-radius: 16px;
             padding: 20px;
             margin: 20px 0;
@@ -143,8 +148,8 @@
             font-size: 24px;
             font-weight: 700;
             text-align: center;
-            background: linear-gradient(to bottom, rgba(254, 252, 232, 0.3), rgba(254, 243, 199, 0.3));
-            border: 3px solid rgba(212, 175, 55, 0.6);
+            background: rgba(10, 26, 58, 0.6);
+            border: 2px solid rgba(212, 175, 55, 0.4);
             border-radius: 16px;
             color: #ffffff;
             font-family: 'Cairo', sans-serif;
@@ -158,8 +163,8 @@
 
         input:focus {
             outline: none;
-            box-shadow: 0 0 0 4px rgba(212, 175, 55, 0.4);
-            border-color: rgba(212, 175, 55, 0.9);
+            box-shadow: 0 0 0 4px rgba(212, 175, 55, 0.3);
+            border-color: #d4af37;
         }
 
         input::placeholder {
@@ -173,8 +178,9 @@
             font-size: 14px;
             cursor: pointer;
             font-family: 'Cairo', sans-serif;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white;
+            background: linear-gradient(135deg, #d4af37, #b8941e);
+            color: #0a1a3a;
+            font-weight: 700;
             margin: 3px;
             transition: all 0.2s;
         }
@@ -186,13 +192,15 @@
         .btn-full { width: 100%; margin: 5px 0; }
 
         .btn-gold {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white;
+            background: linear-gradient(135deg, #d4af37, #b8941e);
+            color: #0a1a3a;
+            font-weight: 700;
         }
         
         .btn-purple {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white;
+            background: rgba(212, 175, 55, 0.2);
+            color: #d4af37;
+            border: 2px solid rgba(212, 175, 55, 0.5);
         }
 
         .btn-green {
@@ -237,11 +245,11 @@
             padding: 18px;
             font-size: 18px;
             font-weight: 700;
-            border: 3px solid rgba(229, 231, 235, 0.4);
+            border: 2px solid rgba(212, 175, 55, 0.2);
             border-radius: 14px;
             cursor: pointer;
             font-family: 'Cairo', sans-serif;
-            background: rgba(255, 255, 255, 0.1);
+            background: rgba(10, 26, 58, 0.6);
             color: #ffffff;
             backdrop-filter: blur(10px);
             transition: all 0.3s;
@@ -252,7 +260,7 @@
 
         .category-btn:hover {
             transform: scale(1.05);
-            border-color: rgba(212, 175, 55, 0.6);
+            border-color: #d4af37;
         }
         
         .category-btn:active {
@@ -260,21 +268,21 @@
         }
 
         .category-btn.active {
-            background: linear-gradient(135deg, rgba(212, 175, 55, 0.5), rgba(244, 228, 176, 0.5));
-            color: #ffffff;
-            border-color: rgba(212, 175, 55, 0.8);
-            box-shadow: 0 0 20px rgba(212, 175, 55, 0.4);
+            background: linear-gradient(135deg, #d4af37, #b8941e);
+            color: #0a1a3a;
+            border-color: #d4af37;
+            box-shadow: 0 0 20px rgba(212, 175, 55, 0.3);
         }
         
         .category-btn-result {
             padding: 18px;
             font-size: 18px;
             font-weight: 700;
-            border: 3px solid rgba(229, 231, 235, 0.4);
+            border: 2px solid rgba(212, 175, 55, 0.2);
             border-radius: 14px;
             cursor: pointer;
             font-family: 'Cairo', sans-serif;
-            background: rgba(255, 255, 255, 0.1);
+            background: rgba(10, 26, 58, 0.6);
             color: #ffffff;
             backdrop-filter: blur(10px);
             transition: all 0.3s;
@@ -285,7 +293,7 @@
 
         .category-btn-result:hover {
             transform: scale(1.05);
-            border-color: rgba(212, 175, 55, 0.6);
+            border-color: #d4af37;
         }
         
         .category-btn-result:active {
@@ -293,14 +301,14 @@
         }
 
         .category-btn-result.active {
-            background: linear-gradient(135deg, rgba(212, 175, 55, 0.5), rgba(244, 228, 176, 0.5));
-            color: #ffffff;
-            border-color: rgba(212, 175, 55, 0.8);
-            box-shadow: 0 0 20px rgba(212, 175, 55, 0.4);
+            background: linear-gradient(135deg, #d4af37, #b8941e);
+            color: #0a1a3a;
+            border-color: #d4af37;
+            box-shadow: 0 0 20px rgba(212, 175, 55, 0.3);
         }
 
         .room-code {
-            background: linear-gradient(135deg, #d4af37, #f4e4b0);
+            background: linear-gradient(135deg, #d4af37, #f5e6a3);
             padding: 30px;
             border-radius: 20px;
             text-align: center;
@@ -311,7 +319,7 @@
             font-size: 60px;
             font-weight: 900;
             letter-spacing: 10px;
-            color: #1f2937;
+            color: #0a1a3a;
         }
 
         .player-list {
@@ -319,8 +327,8 @@
         }
 
         .player-item {
-            background: linear-gradient(to right, rgba(254, 243, 199, 0.3), rgba(254, 249, 231, 0.3));
-            border: 2px solid rgba(212, 175, 55, 0.6);
+            background: rgba(10, 26, 58, 0.6);
+            border: 2px solid rgba(212, 175, 55, 0.3);
             border-radius: 14px;
             padding: 18px;
             margin: 12px 0;
@@ -345,7 +353,7 @@
 
         .host-badge {
             background: #d4af37;
-            color: #1f2937;
+            color: #0a1a3a;
             padding: 6px 14px;
             border-radius: 10px;
             font-size: 14px;
@@ -353,7 +361,7 @@
         }
 
         .word-box {
-            background: linear-gradient(135deg, #667eea, #764ba2);
+            background: linear-gradient(135deg, #d4af37, #b8941e);
             border-radius: 26px;
             padding: 50px;
             margin: 30px 0;
@@ -363,8 +371,8 @@
         .word-text {
             font-size: 64px;
             font-weight: 900;
-            color: #ffffff;
-            text-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
+            color: #0a1a3a;
+            text-shadow: none;
         }
 
         .impostor-badge {
@@ -389,8 +397,8 @@
         }
 
         .vote-card {
-            background: linear-gradient(to bottom right, rgba(254, 243, 199, 0.3), rgba(254, 249, 231, 0.3));
-            border: 3px solid rgba(212, 175, 55, 0.6);
+            background: rgba(10, 26, 58, 0.6);
+            border: 2px solid rgba(212, 175, 55, 0.3);
             border-radius: 18px;
             padding: 26px;
             text-align: center;
@@ -406,15 +414,16 @@
 
         .vote-card:hover {
             transform: translateY(-5px);
-            box-shadow: 0 15px 40px rgba(212, 175, 55, 0.5);
-            border-color: rgba(212, 175, 55, 0.9);
-            background: linear-gradient(to bottom right, rgba(254, 243, 199, 0.5), rgba(254, 249, 231, 0.5));
+            box-shadow: 0 15px 40px rgba(212, 175, 55, 0.3);
+            border-color: #d4af37;
+            background: rgba(212, 175, 55, 0.15);
         }
 
         .vote-card.selected {
-            background: linear-gradient(135deg, rgba(212, 175, 55, 0.5), rgba(244, 228, 176, 0.5));
-            border-width: 5px;
-            box-shadow: 0 0 30px rgba(212, 175, 55, 0.6);
+            background: rgba(212, 175, 55, 0.25);
+            border-width: 3px;
+            border-color: #d4af37;
+            box-shadow: 0 0 30px rgba(212, 175, 55, 0.4);
         }
 
         .hidden {
@@ -439,10 +448,10 @@
 
         .divider span {
             position: relative;
-            background: linear-gradient(135deg, rgba(255, 255, 255, 0.1), rgba(212, 175, 55, 0.1));
+            background: rgba(10, 26, 58, 0.8);
             backdrop-filter: blur(10px);
             padding: 0 20px;
-            color: #fbbf24;
+            color: #d4af37;
             font-weight: 700;
             text-shadow: 0 2px 4px rgba(0, 0, 0, 0.5);
         }
@@ -526,7 +535,7 @@
     <div class="container">
         <!-- الشاشة الرئيسية -->
         <div id="homeScreen" class="card">
-            <div class="ramadan">رمضان كريم 🌙</div>
+            <div class="ramadan">☪ رمضان كريم ☪</div>
             <div class="emoji">🎭</div>
             <h1>مين برا السالفة؟</h1>
             
@@ -546,7 +555,7 @@
 
         <!-- شاشة إنشاء غرفة -->
         <div id="createRoomScreen" class="card hidden">
-            <div class="ramadan">بارك الله فيك 🌙</div>
+            <div class="ramadan">☪ بارك الله فيك ☪</div>
             <h2>إنشاء غرفة جديدة</h2>
             
             <input type="text" id="hostName" placeholder="اسمك" maxlength="15">
@@ -573,7 +582,7 @@
 
         <!-- شاشة الانضمام -->
         <div id="joinRoomScreen" class="card hidden">
-            <div class="ramadan">أهلاً وسهلاً 🌙</div>
+            <div class="ramadan">☪ أهلاً وسهلاً ☪</div>
             <h2>انضمام لغرفة</h2>
             
             <input type="text" id="joinPlayerName" placeholder="اسمك" maxlength="15">
@@ -585,7 +594,7 @@
 
         <!-- غرفة الانتظار -->
         <div id="lobbyScreen" class="card hidden">
-            <div class="ramadan">بارك الله فيكم 🌙</div>
+            <div class="ramadan">☪ بارك الله فيكم ☪</div>
             <h2>غرفة الانتظار</h2>
 
             <div class="room-code">
@@ -625,7 +634,7 @@
 
         <!-- شاشة الكلمة -->
         <div id="wordScreen" class="card hidden">
-            <div class="ramadan">تبارك الرحمن 🌙</div>
+            <div class="ramadan">☪ تبارك الرحمن ☪</div>
             <h2 id="wordTitle">كلمتك</h2>
 
             <div id="beforeReveal">
@@ -660,7 +669,7 @@
 
         <!-- شاشة الأسئلة المنظمة -->
         <div id="questionsScreen" class="card hidden">
-            <div class="ramadan">بسم الله 🌙</div>
+            <div class="ramadan">☪ بسم الله ☪</div>
             <h2>جولة الأسئلة 🗣️</h2>
 
             <div id="currentQuestion" class="word-box" style="margin: 30px 0;">
@@ -688,7 +697,7 @@
 
         <!-- شاشة الأسئلة الحرة -->
         <div id="freeQuestionsScreen" class="card hidden">
-            <div class="ramadan">الله يوفقكم 🌙</div>
+            <div class="ramadan">☪ الله يوفقكم ☪</div>
             <h2>أسئلة حرة 💬</h2>
 
             <div class="word-box" style="margin: 30px 0;">
@@ -708,7 +717,7 @@
 
         <!-- شاشة النقاش -->
         <div id="discussScreen" class="card hidden">
-            <div class="ramadan">الله يوفقكم 🌙</div>
+            <div class="ramadan">☪ الله يوفقكم ☪</div>
             <h2>وقت النقاش! 🗣️</h2>
 
             <div class="status">
@@ -729,7 +738,7 @@
 
         <!-- شاشة التصويت -->
         <div id="voteScreen" class="card hidden">
-            <div class="ramadan">بسم الله 🌙</div>
+            <div class="ramadan">☪ بسم الله ☪</div>
             <h2>صوّت: مين برا السالفة؟</h2>
 
             <div class="vote-grid" id="voteGrid"></div>
