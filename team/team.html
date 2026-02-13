@@ -427,6 +427,113 @@ const AR_N={'واحد':1,'اثنين':2,'اثنان':2,'ثلاثة':3,'ثلاث'
 function getNums(s){const m=s.match(/\d+/g);const r=m?m.map(Number):[];
 const n=norm(s);for(const[w,v]of Object.entries(AR_N))if(n.includes(norm(w)))r.push(v);return[...new Set(r)]}
 
+/* ═══════ PHONETIC TRANSLITERATION SYSTEM ═══════ */
+// تحويل النص العربي إلى أحرف لاتينية صوتية
+function arToLatin(s){
+  s=s.replace(/[\u064B-\u065F\u0670]/g,'');
+  const m={'ا':'a','أ':'a','إ':'a','آ':'aa','ب':'b','پ':'p','ت':'t','ث':'th','ج':'j','ح':'h','خ':'kh',
+    'د':'d','ذ':'dh','ر':'r','ز':'z','س':'s','ش':'sh','ص':'s','ض':'d','ط':'t','ظ':'z',
+    'ع':'a','غ':'g','ف':'f','ق':'q','ك':'k','ل':'l','م':'m','ن':'n','ه':'h','و':'w',
+    'ي':'y','ة':'a','ى':'a','ئ':'y','ؤ':'w'};
+  let r='';
+  for(let c of s) r+=(m[c]!==undefined)?m[c]:c;
+  return r;
+}
+
+// توليد مفتاح صوتي موحد للمقارنة (يعمل مع عربي ولاتيني)
+function phoneticKey(s){
+  s=s.toLowerCase().trim();
+  // لو عربي حوّله للاتيني أول
+  if(/[\u0600-\u06FF]/.test(s)){
+    // شيل "ال" التعريف
+    s=s.replace(/(^|\s)ال/g,'$1');
+    s=arToLatin(s);
+  }
+  // نظّف الانجليزي
+  s=s.replace(/ph/g,'f').replace(/ck/g,'k').replace(/x/g,'ks');
+  // تبسيط الحروف الصامتة في الانجليزي
+  s=s.replace(/ght/g,'t');     // knight→knit, night→nit, fight→fit
+  s=s.replace(/\bkn/g,'n');    // knight→nit, know→now, knee→nee
+  s=s.replace(/\bwr/g,'r');    // write→rite, wrong→rong
+  s=s.replace(/mb\b/g,'m');    // climb→clim, bomb→bom
+  // شيل أدوات التعريف والربط
+  s=s.replace(/\b(the|of|a|an|de|la|el|le|los|las)\b/g,'');
+  // وحّد الأصوات المتشابهة
+  s=s.replace(/[gqj]/g,'k');   // ق غ ج ك → k (في العربي ج تمثل g و j)
+  s=s.replace(/c(?=[eiy])/g,'s'); // ce ci cy → s
+  s=s.replace(/c/g,'k');       // c → k
+  s=s.replace(/[sz]/g,'s');    // س ز ص → s
+  s=s.replace(/[dt]/g,'t');    // د ت ط ض → t
+  s=s.replace(/[pb]/g,'b');    // ب پ → b
+  s=s.replace(/v/g,'f');       // ف ڤ → f
+  // شيل كل شي غير حروف
+  s=s.replace(/[^a-z]/g,'');
+  // شيل التكرار
+  s=s.replace(/(.)\1+/g,'$1');
+  return s;
+}
+
+// توليد مفتاح الحروف الساكنة فقط (بدون حركات)
+function consonantKey(s){
+  s=phoneticKey(s);
+  // شيل كل الحركات + الأحرف اللي تمثل حركات في التعريب (و=o/u, ي=i/e, ه=غالباً صامتة)
+  s=s.replace(/[aeiouhyw]/g,'');
+  // شيل التكرار الجديد اللي صار بعد حذف الحركات
+  s=s.replace(/(.)\1+/g,'$1');
+  return s;
+}
+
+// مقارنة صوتية ذكية
+function phoneticMatch(userInput,correctAns){
+  // لو ما فيه خلط عربي/انجليزي لا تسوي شي
+  const hasAr=/[\u0600-\u06FF]/.test(userInput);
+  const hasEn=/[a-zA-Z]/.test(correctAns);
+  if(!hasAr && !hasEn) return false;
+
+  const uKey=phoneticKey(userInput);
+  const cKey=phoneticKey(correctAns);
+
+  // مطابقة كاملة
+  if(uKey===cKey) return true;
+  if(uKey.length>=3 && cKey.length>=3){
+    // مطابقة جزئية (لو كتب جزء كبير من الاسم)
+    if(cKey.includes(uKey) && uKey.length>=cKey.length*0.5) return true;
+    if(uKey.includes(cKey) && cKey.length>=uKey.length*0.5) return true;
+  }
+
+  // مقارنة الحروف الساكنة
+  const uCon=consonantKey(userInput);
+  const cCon=consonantKey(correctAns);
+  if(uCon.length>=3 && cCon.length>=3){
+    if(uCon===cCon) return true;
+    if(cCon.includes(uCon) && uCon.length>=cCon.length*0.5) return true;
+    if(uCon.includes(cCon) && cCon.length>=uCon.length*0.5) return true;
+  }
+
+  // مقارنة كلمة بكلمة
+  const uWords=userInput.replace(/(^|\s)ال/g,'$1').split(/\s+/).filter(w=>w.length>1);
+  const cWords=correctAns.toLowerCase().replace(/\b(the|of|a|an|de|la)\b/g,'').split(/\s+/).filter(w=>w.length>1);
+  if(cWords.length>0){
+    let matched=0;
+    for(const cw of cWords){
+      const ck=phoneticKey(cw);
+      if(ck.length<2) continue;
+      for(const uw of uWords){
+        const uk=phoneticKey(uw);
+        if(uk.length<2) continue;
+        if(uk===ck || (ck.length>=3 && uk.length>=3 && (ck.includes(uk)||uk.includes(ck)))) {matched++;break}
+        // مقارنة ساكنة
+        const ukc=consonantKey(uw), ckc=consonantKey(cw);
+        if(ukc.length>=2 && ckc.length>=2 && (ukc===ckc||(ckc.includes(ukc)&&ukc.length>=ckc.length*0.6)||(ukc.includes(ckc)&&ckc.length>=ukc.length*0.6))){matched++;break}
+      }
+    }
+    // لو طابق أغلب الكلمات المهمة
+    if(matched>=Math.ceil(cWords.length*0.6) && matched>=1) return true;
+  }
+
+  return false;
+}
+
 function checkAns(u,c){
   const un=norm(u),cn=norm(c);if(un===cn)return true;
   const uN=getNums(u),cN=getNums(c);
@@ -434,6 +541,8 @@ function checkAns(u,c){
   if(un.length>=3&&cn.includes(un))return true;if(cn.length>=3&&un.includes(cn))return true;
   const uw=un.split(' ').filter(w=>w.length>2),cw=cn.split(' ').filter(w=>w.length>2);
   for(const a of uw)for(const b of cw){if(a===b)return true;if(a.length>=3&&b.includes(a))return true;if(b.length>=3&&a.includes(b))return true}
+  // ✅ مطابقة صوتية للتعريب (مثلاً: والكينق ديد = Walking Dead)
+  if(phoneticMatch(u,c)) return true;
   return false}
 
 /* ═══════ RENDER GAME ═══════ */
