@@ -462,10 +462,12 @@ function renderGC(){
   // Options
   if(RD.showOpts&&!hasAns()){
     const og=document.getElementById('optsG');og.classList.remove('hid');og.innerHTML='';
+    const onCouch=(RD.couch||[]).includes(PID);
     const banned=RD.banTeam&&RD.banTeam===myT;
     RD.curQ.opts.forEach((o,i)=>{const b=document.createElement('button');b.className='ob';b.textContent=o;
-      if(banned)b.disabled=true;else b.onclick=()=>selAns(i);og.appendChild(b)});
-    if(banned){st.textContent='⛔ فريقك ممنوع - فرصة الخصم';st.className='sts e'}
+      if(onCouch||banned)b.disabled=true;else b.onclick=()=>selAns(i);og.appendChild(b)});
+    if(onCouch){st.textContent='🛋️ أنت على الكنبة - شاهد فقط';st.className='sts w'}
+    else if(banned){st.textContent='⛔ فريقك ممنوع - فرصة الخصم';st.className='sts e'}
     else if(RD.banTeam){st.textContent='🎯 فرصتك! اختر الإجابة';st.className='sts s'}
     else{st.textContent='اختر الإجابة الصحيحة';st.className='sts i'}
     return}
@@ -474,8 +476,11 @@ function renderGC(){
   if(hasAns()){st.textContent=RD.corAns?'✅ إجابة صحيحة!':'❌ إجابة خاطئة!';st.className=RD.corAns?'sts s':'sts e';return}
 
   // Active Q
-  if(!RD.buzzP&&!RD.showOpts){showMainTimer();const bb=document.getElementById('bzBtn');bb.classList.remove('hid');bb.disabled=false;
-    st.textContent='📖 اقرأ واضغط الجرس!';st.className='sts i';return}
+  if(!RD.buzzP&&!RD.showOpts){showMainTimer();const bb=document.getElementById('bzBtn');bb.classList.remove('hid');
+    const onCouch=(RD.couch||[]).includes(PID);
+    if(onCouch){bb.disabled=true;st.textContent='🛋️ أنت على الكنبة - شاهد فقط';st.className='sts w'}
+    else{bb.disabled=false;st.textContent='📖 اقرأ واضغط الجرس!';st.className='sts i'}
+    return}
 
   // Someone buzzed
   if(RD.buzzP&&RD.buzzP!==PID){const p=RD.players[RD.buzzP];
@@ -516,6 +521,7 @@ function startAnsTimer(){if(!RD.buzzTime)return;clearInterval(tmrAns);const ci=d
 
 /* ═══════ BUZZER ═══════ */
 function buzzIn(){if(!RD.curQ||RD.curQ===''||RD.buzzP||RD.showOpts)return;
+  if((RD.couch||[]).includes(PID))return;
   db.ref('rooms/'+RC).update({buzzP:PID,waitText:true,buzzTime:Date.now()})}
 
 /* ═══════ SUBMIT TEXT ═══════ */
