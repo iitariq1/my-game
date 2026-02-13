@@ -1,7 +1,35 @@
+
+<!-- 
+  ╔════════════════════════════════════════════════════════╗
+  ║  ⚠️  WARNING: This code is protected by copyright    ║
+  ║  Unauthorized copying, modification, or distribution  ║
+  ║  of this code is strictly prohibited.                 ║
+  ║  جميع الحقوق محفوظة           ║
+  ╚════════════════════════════════════════════════════════╝
+-->
 <!DOCTYPE html>
 <html lang="ar" dir="rtl">
 <head>
+
+<style id="_px">
+/* ═══ حماية النصوص ═══ */
+body,html{-webkit-user-select:none!important;-moz-user-select:none!important;-ms-user-select:none!important;user-select:none!important;-webkit-touch-callout:none!important}
+input,textarea,select{-webkit-user-select:text!important;-moz-user-select:text!important;user-select:text!important}
+/* ═══ إخفاء عند فتح DevTools ═══ */
+._dt_open body{display:none!important}
+._dt_open::after{content:"⛔ الوصول غير مصرح به";display:flex;justify-content:center;align-items:center;height:100vh;font-size:2em;color:#d4af37;background:#0a1a3a;font-family:sans-serif;direction:rtl}
+</style>
+
+<noscript><div style="position:fixed;top:0;left:0;width:100%;height:100%;background:#0a1a3a;color:#d4af37;display:flex;justify-content:center;align-items:center;font-size:1.5em;z-index:99999;direction:rtl;font-family:sans-serif">⚠️ يجب تفعيل JavaScript لاستخدام هذا الموقع</div></noscript>
+
+
     <meta charset="UTF-8">
+
+<meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+<meta http-equiv="Pragma" content="no-cache">
+<meta http-equiv="Expires" content="0">
+<meta name="robots" content="noindex, nofollow, noarchive, nosnippet">
+
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>مركز الألعاب - المحقق المخادع و مين برا السالفة</title>
     <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700;800&family=Amiri:wght@700&display=swap" rel="stylesheet">
@@ -222,6 +250,127 @@
     </style>
 </head>
 <body>
+
+<script>
+// ╔══════════════════════════════════════════╗
+// ║  🔒 PROTECTION SYSTEM - DO NOT MODIFY  ║
+// ║  جميع الحقوق محفوظة                      ║
+// ╚══════════════════════════════════════════╝
+(function(){
+'use strict';
+
+// ═══ [1] حظر أزرار لوحة المفاتيح ═══
+var _bk=[
+  {k:123,c:false,s:false,a:false},           // F12
+  {k:73,c:true,s:true,a:false},              // Ctrl+Shift+I
+  {k:74,c:true,s:true,a:false},              // Ctrl+Shift+J
+  {k:67,c:true,s:true,a:false},              // Ctrl+Shift+C
+  {k:85,c:true,s:false,a:false},             // Ctrl+U
+  {k:83,c:true,s:false,a:false},             // Ctrl+S
+  {k:72,c:true,s:false,a:false},             // Ctrl+H (for some browsers)
+];
+document.addEventListener('keydown',function(e){
+  for(var i=0;i<_bk.length;i++){
+    var r=_bk[i];
+    if(e.keyCode===r.k && e.ctrlKey===r.c && e.shiftKey===r.s){
+      e.preventDefault();e.stopPropagation();e.stopImmediatePropagation();return false;
+    }
+  }
+  // حظر F5+Shift (hard refresh to view source)
+  if(e.keyCode===116&&e.shiftKey){e.preventDefault();return false}
+},true);
+
+// ═══ [2] حظر كلك يمين ═══
+document.addEventListener('contextmenu',function(e){
+  e.preventDefault();e.stopPropagation();return false;
+},true);
+
+// ═══ [3] حظر السحب (Drag) ═══
+document.addEventListener('dragstart',function(e){e.preventDefault();return false},true);
+document.addEventListener('drop',function(e){e.preventDefault();return false},true);
+
+// ═══ [4] كشف DevTools ═══
+var _dtO=false;
+var _dtE=document.documentElement;
+function _chkDT(){
+  var w=window.outerWidth-window.innerWidth>160;
+  var h=window.outerHeight-window.innerHeight>160;
+  var d=w||h;
+  if(d&&!_dtO){_dtO=true;_dtE.classList.add('_dt_open');
+    console.clear();console.log('%c⛔ الوصول غير مصرح به','font-size:40px;color:red;font-weight:bold');
+    console.log('%cجميع الحقوق محفوظة - يمنع نسخ أو تعديل الكود','font-size:16px;color:#d4af37');
+  }
+  if(!d&&_dtO){_dtO=false;_dtE.classList.remove('_dt_open')}
+}
+setInterval(_chkDT,1000);
+_chkDT();
+
+// ═══ [5] فخ Debugger ═══
+(function _dT(){
+  try{(function(){return false})
+  ['constructor']('debugger')();
+  }catch(e){}
+  setTimeout(_dT,3000);
+})();
+
+// ═══ [6] حماية Console ═══
+var _oc=console.log;
+var _wm=false;
+try{
+  Object.defineProperty(console,'_cs',{get:function(){_wm=true}});
+  console.log('%c','font-size:0',console._cs);
+  if(_wm){_dtE.classList.add('_dt_open')}
+}catch(e){}
+
+// تنظيف Console
+setInterval(function(){
+  console.clear();
+  console.log('%c⛔ Protected Content','font-size:20px;color:red;font-weight:bold');
+  console.log('%cجميع الحقوق محفوظة','font-size:14px;color:#d4af37');
+},2000);
+
+// ═══ [7] حماية من النسخ ═══
+document.addEventListener('copy',function(e){e.preventDefault();return false},true);
+document.addEventListener('cut',function(e){e.preventDefault();return false},true);
+
+// ═══ [8] حماية من Print ═══
+window.addEventListener('beforeprint',function(){document.body.style.display='none'});
+window.addEventListener('afterprint',function(){document.body.style.display=''});
+
+// ═══ [9] كشف عبر Performance (طريقة ثانية لكشف DevTools) ═══
+var _pC=0;
+setInterval(function(){
+  var s=performance.now();
+  for(var i=0;i<100;i++){void 0}
+  var e=performance.now();
+  if(e-s>50){_pC++;if(_pC>3){_dtE.classList.add('_dt_open')}}
+  else{_pC=Math.max(0,_pC-1)}
+},1500);
+
+// ═══ [10] حماية الكود المصدري ═══
+// إزالة جميع التعليقات المرئية من DOM
+setTimeout(function(){
+  var iter=document.createNodeIterator(document,NodeFilter.SHOW_COMMENT);
+  var n;while(n=iter.nextNode())n.parentNode.removeChild(n);
+},100);
+
+// ═══ [11] حماية من iframe embedding ═══
+if(window.top!==window.self){
+  try{window.top.location=window.self.location}catch(e){
+    document.body.innerHTML='<h1 style="color:red;text-align:center;margin-top:40vh">⛔ غير مسموح بالتضمين</h1>'
+  }
+}
+
+// ═══ [12] حماية الدوال الأصلية ═══
+try{
+  Object.freeze(console);
+  Object.defineProperty(window,'console',{get:function(){return console},set:function(){}});
+}catch(e){}
+
+})();
+</script>
+
+
     <div class="stars-container" id="starsContainer"></div>
     <div class="ramadan-deco">☪ ✦ 🏮 ✦ ☪ ✦ 🏮 ✦ ☪</div>
 
@@ -296,5 +445,22 @@
             card.addEventListener('mouseleave', function() { this.style.zIndex = '1'; });
         });
     </script>
+
+<script>
+// Source integrity check
+(function(){
+  var _h=document.documentElement.outerHTML.length;
+  var _t=setInterval(function(){
+    if(document.documentElement.outerHTML.length<_h*0.5){
+      document.body.innerHTML='';clearInterval(_t);
+    }
+  },5000);
+  // Prevent view-source by detecting navigation
+  window.addEventListener('beforeunload',function(){
+    // cleanup
+  });
+})();
+</script>
+
 </body>
 </html>
