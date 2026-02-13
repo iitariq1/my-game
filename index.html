@@ -1,706 +1,300 @@
 <!DOCTYPE html>
 <html lang="ar" dir="rtl">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
-<title>لعبة الكنبة</title>
-<link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700;800;900&display=swap" rel="stylesheet">
-<style>
-:root{--bg:#0a1a3a;--card:rgba(12,28,60,0.85);--card2:rgba(15,35,70,0.8);--bdr:rgba(212,175,55,0.25);--gold:#d4af37;--goldL:rgba(212,175,55,0.15);--red:#C0392B;--redL:rgba(192,57,43,0.15);--blue:#4a9fd4;--blueL:rgba(74,159,212,0.15);--grn:#2ecc71;--grnL:rgba(46,204,113,0.15);--txt:#e8e0d4;--txtM:#b8c5d6;--txtD:#8fa3c0;--org:#d4af37;--orgL:rgba(212,175,55,0.15);--sh:0 2px 10px rgba(0,0,0,.2);--R:14px;--r:10px}
-*{margin:0;padding:0;box-sizing:border-box}
-body{font-family:'Tajawal',sans-serif;background:var(--bg);color:var(--txt);min-height:100dvh;display:flex;justify-content:center;padding:10px;position:relative}
-.app{width:100%;max-width:460px;display:flex;flex-direction:column;min-height:calc(100dvh - 20px)}
-.scr{display:none;flex-direction:column;flex:1}.scr.on{display:flex}
-.hdr{text-align:center;padding:14px 0 10px}.hdr h1{font-size:1.5em;font-weight:900}.hdr .sub{font-size:.8em;color:var(--txtD);margin-top:2px}
-.card{background:var(--card);border:1px solid var(--bdr);border-radius:var(--R);padding:16px;margin-bottom:10px;box-shadow:var(--sh)}
-.fld{margin-bottom:12px}.fld label{display:block;font-size:.85em;font-weight:700;margin-bottom:5px;color:#d4af37}
-.fld input,.fld select{width:100%;padding:11px 14px;background:rgba(10,26,58,0.5);border:1.5px solid var(--bdr);border-radius:var(--r);color:var(--txt);font-family:inherit;font-size:.95em;font-weight:500;outline:none}
-.fld input:focus,.fld select:focus{border-color:var(--gold);box-shadow:0 0 0 3px rgba(212,175,55,.2)}
-.fld input::placeholder{color:var(--txtD)}.fld select option{background:#0a1a3a;color:#fff}
-.btn{width:100%;padding:13px;border:none;border-radius:var(--r);font-family:inherit;font-size:1em;font-weight:700;cursor:pointer;transition:all .15s;margin-top:6px}
-.btn:active:not(:disabled){transform:scale(.97)}.btn:disabled{opacity:.4;cursor:not-allowed}
-.bp{background:linear-gradient(135deg,#d4af37,#b8941e);color:#0a1a3a;font-weight:800;box-shadow:0 3px 12px rgba(212,175,55,.25)}
-.bo{background:rgba(10,26,58,0.5);border:1.5px solid var(--bdr);color:var(--txtM)}
-.bg{background:var(--grn);color:#fff}.br{background:var(--red);color:#fff}
-.rcb{text-align:center;padding:14px;background:linear-gradient(135deg,#d4af37,#f5e6a3);border:1.5px solid #d4af37;border-radius:var(--R);margin-bottom:12px;box-shadow:var(--sh)}
-.rcb .lb{font-size:.78em;color:#0a1a3a;font-weight:700}.rcb .code{font-size:2.4em;font-weight:900;color:#0a1a3a;letter-spacing:10px}
-.chip{display:inline-flex;align-items:center;gap:5px;padding:5px 10px;background:rgba(10,26,58,0.5);border:1px solid var(--bdr);border-radius:20px;font-size:.82em;font-weight:600;margin:3px}
-.dot{width:8px;height:8px;border-radius:50%}.dr{background:var(--red)}.db{background:var(--blue)}.dg{background:var(--gold)}
-.tsg{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin:8px 0}
-.tsb{padding:14px 8px;border-radius:var(--R);font-family:inherit;font-size:.95em;font-weight:700;cursor:pointer;border:2px solid transparent;transition:all .2s;text-align:center}
-.tsb.rt{background:rgba(192,57,43,0.2);color:#e74c3c;border-color:rgba(192,57,43,.3)}
-.tsb.bt{background:rgba(74,159,212,0.2);color:#4a9fd4;border-color:rgba(74,159,212,.3)}
-.tsb.sel{border-color:var(--gold)!important;box-shadow:0 0 0 3px rgba(196,127,23,.15)}
-.tsb:active{transform:scale(.96)}
-.gtb{display:grid;grid-template-columns:1fr auto 1fr;align-items:center;gap:6px;margin-bottom:8px}
-.tsc{padding:8px;border-radius:var(--r);text-align:center;box-shadow:var(--sh)}
-.tsc.r{background:rgba(192,57,43,0.15);border:1.5px solid rgba(192,57,43,.3)}
-.tsc.b{background:rgba(74,159,212,0.15);border:1.5px solid rgba(74,159,212,.3)}
-.tsc .tn{font-size:.7em;font-weight:700;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
-.tsc.r .tn{color:#e74c3c}.tsc.b .tn{color:#4a9fd4}
-.tsc .tv{font-size:1.4em;font-weight:900;line-height:1}.tsc.r .tv{color:#e74c3c}.tsc.b .tv{color:#4a9fd4}
-.vb{font-size:.75em;font-weight:900;color:var(--txtD);padding:4px 8px;border-radius:20px;border:1px solid var(--bdr);background:var(--card)}
-.mpl{display:flex;flex-wrap:wrap;gap:3px;justify-content:center;margin-top:3px}
-.mp{font-size:.63em;padding:2px 5px;border-radius:8px;font-weight:600;background:rgba(255,255,255,.05);color:var(--txtD)}.mp.oc{opacity:.5;background:rgba(212,175,55,0.15);color:var(--gold)}
-.couch{background:rgba(212,175,55,0.1);border:1.5px solid rgba(212,175,55,0.3);border-radius:var(--R);padding:12px;margin-bottom:8px;box-shadow:var(--sh)}
-.couch .clb{text-align:center;font-size:.78em;font-weight:800;color:var(--gold);letter-spacing:2px;margin-bottom:8px}
-.cseats{display:flex;justify-content:center;gap:8px;flex-wrap:wrap}
-.cseat{display:inline-flex;align-items:center;justify-content:center;gap:4px;padding:5px 12px;border-radius:20px;font-size:.78em;font-weight:700}
-.cseat.fr{background:var(--red);color:#fff}.cseat.fb{background:var(--blue);color:#fff}
-.cseat.empty{width:36px;height:36px;border-radius:50%;border:2px dashed rgba(212,175,55,0.3);color:rgba(212,175,55,0.4);font-size:.7em;padding:0}
-.cseat.me{box-shadow:0 0 0 3px rgba(196,127,23,.4)}
-.qcard{background:var(--card);border:1.5px solid var(--bdr);border-radius:var(--R);padding:16px;margin-bottom:8px;text-align:center;box-shadow:var(--sh)}
-.qcat{font-size:.72em;font-weight:700;color:var(--gold);letter-spacing:1px;margin-bottom:6px}
-.qtxt{font-size:1.08em;font-weight:700;line-height:1.5}
-.tbar{text-align:center;margin-bottom:8px}
-.tc{display:inline-flex;align-items:center;justify-content:center;width:56px;height:56px;border-radius:50%;border:3px solid var(--gold);font-size:1.5em;font-weight:900;color:var(--gold);background:var(--card);box-shadow:var(--sh);transition:all .3s}
-.tc.dng{border-color:var(--red);color:var(--red);animation:tp .5s infinite}
-.tc.sm{width:44px;height:44px;font-size:1.2em;border-color:var(--org);color:var(--org)}
-.tc.sm.dng{border-color:var(--red);color:var(--red)}
-@keyframes tp{0%,100%{transform:scale(1)}50%{transform:scale(1.08)}}
-.buzzb{width:100%;padding:20px;border:none;border-radius:var(--R);font-family:inherit;font-size:1.25em;font-weight:800;cursor:pointer;background:linear-gradient(135deg,#d4af37,#b8941e);color:#0a1a3a;box-shadow:0 4px 18px rgba(212,175,55,.3);transition:all .15s;margin-bottom:8px}
-.buzzb:active:not(:disabled){transform:scale(.96)}
-.buzzb:disabled{background:rgba(15,30,65,0.5);color:var(--txtD);box-shadow:none;cursor:not-allowed}
-.sts{padding:8px 12px;border-radius:var(--r);font-size:.85em;font-weight:700;text-align:center;margin-bottom:8px}
-.sts.i{background:rgba(74,159,212,0.15);color:#4a9fd4}.sts.s{background:rgba(46,204,113,0.15);color:#2ecc71}
-.sts.e{background:rgba(192,57,43,0.15);color:#e74c3c}.sts.w{background:rgba(212,175,55,0.15);color:#d4af37}
-.opts{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:8px}
-.ob{padding:12px 8px;background:var(--card);border:1.5px solid var(--bdr);border-radius:var(--r);font-family:inherit;font-size:.9em;font-weight:700;color:var(--txt);cursor:pointer;transition:all .2s;text-align:center;min-height:50px;display:flex;align-items:center;justify-content:center;box-shadow:var(--sh)}
-.ob:hover:not(:disabled){border-color:var(--gold);background:rgba(212,175,55,0.15)}
-.ob:active:not(:disabled){transform:scale(.96)}.ob:disabled{opacity:.35;cursor:not-allowed}
-.aia{margin-bottom:8px}
-.aia input{width:100%;padding:12px;background:rgba(10,26,58,0.5);border:2px solid var(--gold);border-radius:var(--r);color:var(--txt);font-family:inherit;font-size:1em;font-weight:700;text-align:center;outline:none;margin-bottom:6px}
-.aia input::placeholder{color:var(--txtD)}
-.chg{display:grid;gap:8px;margin-bottom:8px}
-.chb{padding:14px;border:none;border-radius:var(--r);font-family:inherit;font-size:.95em;font-weight:700;cursor:pointer;transition:all .2s}
-.chb:active{transform:scale(.97)}.chb.sit{background:var(--grn);color:#fff}.chb.pull{background:var(--red);color:#fff}
-.bzi{padding:6px 12px;border-radius:var(--r);background:rgba(212,175,55,0.1);text-align:center;font-size:.82em;font-weight:700;color:#d4af37;margin-bottom:8px}
-.vic{display:none;text-align:center;padding:40px 16px;flex:1;justify-content:center;align-items:center;flex-direction:column}
-.vic.on{display:flex}
-.vic .tr{font-size:4em;margin-bottom:12px;animation:bnc 1.5s infinite}
-@keyframes bnc{0%,100%{transform:translateY(0)}50%{transform:translateY(-12px)}}
-.vic h2{font-size:1.6em;font-weight:900;color:var(--gold);margin-bottom:20px}
-.spc{flex:1}.hid{display:none!important}
-/* Replay team select overlay */
-.rto{display:none;position:fixed;inset:0;background:rgba(0,0,0,.4);z-index:100;justify-content:center;align-items:center}
-.rto.on{display:flex}
-.rto .inner{background:rgba(12,28,60,0.95);border:1.5px solid rgba(212,175,55,0.3);border-radius:var(--R);padding:24px;width:90%;max-width:380px;box-shadow:0 8px 30px rgba(0,0,0,.3)}
-</style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>مركز الألعاب - المحقق المخادع و مين برا السالفة</title>
+    <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700;800&family=Amiri:wght@700&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Tajawal', sans-serif;
+            background: #0a1a3a;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            overflow-x: hidden;
+            position: relative;
+        }
+
+        /* النجوم البيضاء */
+        .stars-container {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        .star-dot {
+            position: absolute;
+            background: white;
+            border-radius: 50%;
+            animation: twinkle var(--dur) ease-in-out infinite;
+            animation-delay: var(--delay);
+        }
+
+        @keyframes twinkle {
+            0%, 100% { opacity: 0.2; }
+            50% { opacity: 0.9; }
+        }
+
+        /* زخرفة رمضانية علوية */
+        .ramadan-deco {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            text-align: center;
+            font-size: 1.8em;
+            padding: 10px 0;
+            pointer-events: none;
+            z-index: 0;
+            opacity: 0.2;
+            letter-spacing: 30px;
+        }
+
+        .container {
+            max-width: 700px;
+            margin: 0 auto;
+            padding: 40px 20px;
+            position: relative;
+            z-index: 1;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 40px;
+            animation: fadeInDown 1s ease-out;
+        }
+
+        @keyframes fadeInDown {
+            from { opacity: 0; transform: translateY(-50px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .ramadan-greeting {
+            font-family: 'Amiri', serif;
+            font-size: 1.2em;
+            color: #d4af37;
+            margin-bottom: 12px;
+            opacity: 0.9;
+        }
+
+        .main-title {
+            font-family: 'Amiri', serif;
+            font-size: 3.5em;
+            font-weight: 700;
+            color: #0a1a3a;
+            background: linear-gradient(135deg, #d4af37, #f5e6a3, #d4af37);
+            padding: 10px 30px;
+            border-radius: 15px;
+            display: inline-block;
+            margin-bottom: 15px;
+        }
+
+        .subtitle {
+            font-size: 1.4em;
+            color: #c5d4e8;
+            opacity: 0.9;
+        }
+
+        .games-grid {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+            margin-top: 30px;
+        }
+
+        .game-card {
+            background: rgba(15, 30, 65, 0.85);
+            border-radius: 20px;
+            padding: 25px 35px;
+            border: 2px solid rgba(212, 175, 55, 0.25);
+            position: relative;
+            overflow: hidden;
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            cursor: pointer;
+            animation: fadeInUp 1s ease-out;
+            display: flex;
+            align-items: center;
+            gap: 25px;
+        }
+
+        @keyframes fadeInUp {
+            from { opacity: 0; transform: translateY(50px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .game-card:nth-child(2) { animation-delay: 0.2s; }
+        .game-card:nth-child(3) { animation-delay: 0.4s; }
+
+        .game-card::before {
+            content: '';
+            position: absolute;
+            top: -2px; left: -2px; right: -2px; bottom: -2px;
+            background: linear-gradient(135deg, #d4af37, #f5e6a3, #d4af37);
+            background-size: 400% 400%;
+            border-radius: 20px;
+            z-index: -1;
+            opacity: 0;
+            transition: opacity 0.4s;
+            animation: gradientShift 3s ease infinite;
+        }
+
+        @keyframes gradientShift {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+
+        .game-card:hover::before { opacity: 1; }
+        .game-card:hover {
+            transform: translateY(-10px) scale(1.02);
+            box-shadow: 0 20px 60px rgba(212, 175, 55, 0.2);
+        }
+        .game-card:active { transform: translateY(-5px) scale(0.99); }
+
+        .game-icon {
+            font-size: 3em;
+            filter: drop-shadow(0 5px 15px rgba(0, 0, 0, 0.5));
+            flex-shrink: 0;
+            transition: transform 0.3s ease;
+        }
+        .game-card:hover .game-icon { transform: scale(1.1) rotate(5deg); }
+
+        .game-content { flex: 1; }
+
+        .game-title {
+            font-family: 'Amiri', serif;
+            font-size: 1.6em;
+            font-weight: 700;
+            margin-bottom: 8px;
+            color: #0a1a3a;
+            background: linear-gradient(135deg, #d4af37, #f5e6a3);
+            padding: 4px 16px;
+            border-radius: 8px;
+            display: inline-block;
+            transition: all 0.3s ease;
+        }
+        .game-card:hover .game-title { box-shadow: 0 0 20px rgba(212, 175, 55, 0.5); }
+
+        .game-description {
+            font-size: 0.95em;
+            line-height: 1.5;
+            color: #b8c5d6;
+            margin-bottom: 0;
+            margin-top: 8px;
+            transition: color 0.3s ease;
+        }
+        .game-card:hover .game-description { color: #e0e7f0; }
+
+        .footer {
+            text-align: center;
+            margin-top: 60px;
+            padding-top: 30px;
+            border-top: 1px solid rgba(212, 175, 55, 0.2);
+            color: #8fa3c0;
+            animation: fadeIn 2s ease-out;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        @media (max-width: 768px) {
+            .main-title { font-size: 2.2em; }
+            .game-card { padding: 20px 25px; flex-direction: column; text-align: center; }
+            .game-icon { font-size: 2.5em; }
+            .game-title { font-size: 1.3em; }
+            .game-description { font-size: 0.9em; }
+        }
+    </style>
 </head>
 <body>
-<div id="teamStars" style="position:fixed;top:0;left:0;width:100%;height:100%;pointer-events:none;z-index:0;"></div>
-<div class="app" style="position:relative;z-index:1;">
-
-<!-- WELCOME -->
-<div class="scr on" id="scrWelcome">
-<div style="flex:1;display:flex;flex-direction:column;justify-content:center">
-<div class="hdr"><p style="color:#d4af37;font-size:0.85em;margin-bottom:5px;">☪ رمضان كريم ☪</p><h1>🛋️ لعبة الكنبة</h1><div class="sub">من يملأ الكنبة أولاً يفوز!</div></div>
-<div style="padding:0 10px">
-<button class="btn bp" onclick="showScr('scrCreate')">إنشاء غرفة جديدة</button>
-<button class="btn bo" onclick="showScr('scrJoin')">الانضمام لغرفة</button>
-<button class="btn bo" onclick="goBack()">رجوع</button>
-</div></div></div>
-
-<!-- CREATE -->
-<div class="scr" id="scrCreate">
-<div class="hdr"><h1>إنشاء غرفة</h1></div>
-<div class="card">
-<div class="fld"><label>اسمك</label><input id="hostName" placeholder="أدخل اسمك"></div>
-<div class="fld"><label>اسم الفريق الأول</label><input id="t1n" value="الفريق الأحمر"></div>
-<div class="fld"><label>اسم الفريق الثاني</label><input id="t2n" value="الفريق الأزرق"></div>
-<div class="fld"><label>عدد لاعبي كل فريق (= حجم الكنبة)</label><select id="tsz"><option value="2">2</option><option value="3">3</option><option value="4">4</option><option value="5">5</option></select></div>
-<button class="btn bp" onclick="createRoom()">إنشاء الغرفة</button>
-<button class="btn bo" onclick="showScr('scrWelcome')">رجوع</button>
-</div></div>
-
-<!-- JOIN -->
-<div class="scr" id="scrJoin">
-<div class="hdr"><h1>الانضمام لغرفة</h1></div>
-<div class="card">
-<div class="fld"><label>اسمك</label><input id="pName" placeholder="أدخل اسمك"></div>
-<div class="fld"><label>كود الغرفة</label><input id="pCode" placeholder="0000" maxlength="4" inputmode="numeric"></div>
-<button class="btn bp" onclick="joinRoom()">انضم</button>
-<button class="btn bo" onclick="showScr('scrWelcome')">رجوع</button>
-</div></div>
-
-<!-- TEAM SELECT -->
-<div class="scr" id="scrTeam">
-<div class="hdr"><h1>اختر فريقك</h1><div class="sub">مرحباً <span id="wpn"></span></div></div>
-<div class="card"><div class="tsg" id="tsBtns"></div></div></div>
-
-<!-- LOBBY -->
-<div class="scr" id="scrLobby">
-<div class="hdr"><h1>غرفة الانتظار</h1></div>
-<div class="rcb"><div class="lb">كود الغرفة</div><div class="code" id="drc"></div></div>
-<div class="card"><div style="font-size:.8em;font-weight:700;color:var(--txtD);margin-bottom:8px">اختر فريقك</div><div class="tsg" id="htBtns"></div></div>
-<div class="card"><div style="font-size:.8em;font-weight:700;color:var(--txtD);margin-bottom:8px">اللاعبون (<span id="pc">0</span>)</div><div id="lpl" style="display:flex;flex-wrap:wrap;gap:4px"></div></div>
-<div class="spc"></div>
-<button class="btn bp" onclick="startGame()" id="sgBtn" disabled>ابدأ اللعبة</button>
-</div>
-
-<!-- WAITING -->
-<div class="scr" id="scrWait">
-<div class="hdr"><h1>في انتظار البدء</h1><div class="sub">أنت في <span id="wtn" style="color:var(--gold);font-weight:700"></span></div></div>
-<div class="card"><div style="font-size:.8em;font-weight:700;color:var(--txtD);margin-bottom:8px">اللاعبون</div><div id="wpl" style="display:flex;flex-wrap:wrap;gap:4px"></div></div></div>
-
-<!-- GAME -->
-<div class="scr" id="scrGame">
-<div id="gTop" class="gtb">
-<div class="tsc r"><div class="tn" id="gt1n"></div><div class="tv" id="gt1s">0</div><div class="mpl" id="gt1p"></div></div>
-<div class="vb">VS</div>
-<div class="tsc b"><div class="tn" id="gt2n"></div><div class="tv" id="gt2s">0</div><div class="mpl" id="gt2p"></div></div>
-</div>
-<div class="couch" id="couchSec"><div class="clb">🛋️ كنبة الفوز (<span id="couchCnt">0</span>/<span id="couchMax">2</span>)</div><div class="cseats" id="couchSeats"></div></div>
-<div id="gContent">
-<div class="qcard hid" id="qCard"><div class="qcat" id="qCat"></div><div class="qtxt" id="qTxt"></div></div>
-<div class="tbar hid" id="tBar"><div class="tc" id="tCirc">30</div></div>
-<div class="bzi hid" id="bzInd"></div>
-<div class="sts i" id="gSts">انتظر السؤال...</div>
-<button class="buzzb hid" id="bzBtn" onclick="buzzIn()" disabled>🔔 اضغط الجرس!</button>
-<div class="aia hid" id="aiArea"><div class="tbar"><div class="tc sm" id="atCirc">6</div></div><input id="tAns" placeholder="اكتب إجابتك..." autocomplete="off"><button class="btn bg" onclick="submitAns()">إرسال</button></div>
-<div class="opts hid" id="optsG"></div>
-<div class="chg hid" id="chG"></div>
-</div>
-<div class="vic" id="vicOv"><div class="tr">🏆</div><h2 id="vicMsg"></h2>
-<button class="btn bp" onclick="askReplay()">إعادة اللعب 🔄</button>
-<button class="btn bo" onclick="window.location.href='index.html'">الخروج ↩️</button>
-</div>
-<div class="spc"></div>
-<div class="hid" id="hNext"><button class="btn bp" onclick="nextQ()">السؤال التالي ▶️</button></div>
-</div>
-
-<!-- REPLAY TEAM SELECT OVERLAY -->
-<div class="rto" id="replayOv">
-<div class="inner">
-<div class="hdr"><h1>اختر فريقك</h1><div class="sub">يمكنك تغيير فريقك قبل بداية الجولة الجديدة</div></div>
-<div class="tsg" id="rpBtns"></div>
-<button class="btn bp" id="rpStart" onclick="confirmReplay()" style="margin-top:10px">تأكيد وبدء اللعبة ▶️</button>
-<div style="text-align:center;margin-top:8px;font-size:.75em;color:var(--txtD)" id="rpWait" class="hid">في انتظار المضيف...</div>
-</div></div>
-
-</div>
-
-<script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-database-compat.js"></script>
-<script>
-firebase.initializeApp({
-  apiKey:"AIzaSyBUXlgxP463b18dg9_Og_8EcMDLfLIr76o",
-  authDomain:"team-cc63c.firebaseapp.com",
-  databaseURL:"https://team-cc63c-default-rtdb.europe-west1.firebasedatabase.app/",
-  projectId:"team-cc63c",
-  storageBucket:"team-cc63c.firebasestorage.app",
-  messagingSenderId:"511582595742",
-  appId:"1:511582595742:web:3e21273dcf49bf26d7298f"
-});
-const db = firebase.database();
-
-/* ═══════ QUESTIONS ═══════ */
-const ALL_Q = [
-  {cat:"دينية",q:"كم عدد سور القرآن الكريم؟",opts:["114 سورة","110 سورة","120 سورة","100 سورة"],c:0},
-  {cat:"دينية",q:"ما هي أطول سورة في القرآن الكريم؟",opts:["سورة البقرة","سورة آل عمران","سورة النساء","سورة الأعراف"],c:0},
-  {cat:"دينية",q:"كم عدد أركان الإسلام؟",opts:["5","4","6","7"],c:0},
-  {cat:"دينية",q:"من هو خاتم الأنبياء؟",opts:["محمد ﷺ","عيسى عليه السلام","موسى عليه السلام","إبراهيم عليه السلام"],c:0},
-  {cat:"دينية",q:"في أي شهر فُرض الصيام؟",opts:["رمضان","شعبان","رجب","ذو القعدة"],c:0},
-  {cat:"دينية",q:"كم عدد أركان الإيمان؟",opts:["6","5","7","4"],c:0},
-  {cat:"دينية",q:"ما أول ما نزل من القرآن الكريم؟",opts:["اقرأ","الفاتحة","المدثر","البسملة"],c:0},
-  {cat:"دينية",q:"كم عدد الأنبياء المذكورين في القرآن؟",opts:["25","24","26","30"],c:0},
-  {cat:"دينية",q:"ما هي السورة التي تعدل ثلث القرآن؟",opts:["الإخلاص","الفاتحة","البقرة","يس"],c:0},
-  {cat:"ثقافية",q:"من هو مخترع المصباح الكهربائي؟",opts:["توماس إديسون","نيكولا تسلا","بنجامين فرانكلين","ألكسندر بيل"],c:0},
-  {cat:"ثقافية",q:"ما هي أكبر دولة عربية مساحة؟",opts:["الجزائر","السعودية","السودان","ليبيا"],c:0},
-  {cat:"ثقافية",q:"كم عدد قارات العالم؟",opts:["7","6","5","8"],c:0},
-  {cat:"ثقافية",q:"ما هي اللغة الأكثر تحدثاً في العالم؟",opts:["الصينية","الإنجليزية","الإسبانية","العربية"],c:0},
-  {cat:"جغرافية",q:"ما هي عاصمة اليابان؟",opts:["طوكيو","كيوتو","أوساكا","يوكوهاما"],c:0},
-  {cat:"جغرافية",q:"ما هو أطول نهر في العالم؟",opts:["نهر النيل","نهر الأمازون","نهر المسيسيبي","نهر اليانغتسي"],c:0},
-  {cat:"جغرافية",q:"كم عدد دول مجلس التعاون الخليجي؟",opts:["6","5","7","8"],c:0},
-  {cat:"جغرافية",q:"ما هي أكبر صحراء في العالم؟",opts:["الصحراء الكبرى","الربع الخالي","غوبي","كالاهاري"],c:0},
-  {cat:"جغرافية",q:"ما هي أصغر دولة في العالم؟",opts:["الفاتيكان","موناكو","سان مارينو","ليختنشتاين"],c:0},
-  {cat:"رياضية",q:"كم عدد لاعبي كرة القدم في الفريق؟",opts:["11","10","12","9"],c:0},
-  {cat:"رياضية",q:"في أي عام أقيمت أول بطولة كأس عالم؟",opts:["1930","1928","1934","1926"],c:0},
-  {cat:"رياضية",q:"كم مدة الشوط الواحد في كرة القدم؟",opts:["45 دقيقة","40 دقيقة","50 دقيقة","30 دقيقة"],c:0},
-  {cat:"علمية",q:"كم عدد كواكب المجموعة الشمسية؟",opts:["8","9","7","10"],c:0},
-  {cat:"علمية",q:"ما هو العنصر الأكثر وفرة في الكون؟",opts:["الهيدروجين","الأكسجين","الكربون","الهيليوم"],c:0},
-  {cat:"علمية",q:"كم عدد عظام جسم الإنسان البالغ؟",opts:["206","205","208","200"],c:0},
-  {cat:"علمية",q:"ما هو أصلب معدن على وجه الأرض؟",opts:["الألماس","الحديد","التيتانيوم","الذهب"],c:0},
-  {cat:"عامة",q:"كم عدد ألوان قوس قزح؟",opts:["7","6","8","5"],c:0},
-  {cat:"عامة",q:"ما هي العملة الرسمية لليابان؟",opts:["الين","الوون","اليوان","الدولار"],c:0},
-  {cat:"عامة",q:"كم عدد حروف اللغة العربية؟",opts:["28","26","30","27"],c:0},
-  {cat:"عامة",q:"ما هو الحيوان الأسرع في العالم؟",opts:["الفهد","الأسد","الحصان","النسر"],c:0},
-  {cat:"عامة",q:"كم عدد أيام السنة الكبيسة؟",opts:["366","365","364","367"],c:0},
-  // ===== رياضية =====
-{cat:"رياضية",q:"كم عدد تبديلات الفريق المسموحة عادةً في مباريات كرة القدم (بعد تحديثات الفيفا)؟",opts:["5","3","6","4"],c:0},
-{cat:"رياضية",q:"كم عدد أشواط مباراة كرة السلة الرسمية؟",opts:["4","2","3","5"],c:0},
-{cat:"رياضية",q:"كم طول سباق الماراثون الرسمي؟",opts:["42.195 كم","40 كم","21.097 كم","50 كم"],c:0},
-{cat:"رياضية",q:"في أي دولة أُقيمت أولمبياد 2016؟",opts:["البرازيل","الصين","اليونان","بريطانيا"],c:0},
-{cat:"رياضية",q:"كم نقطة تُحتسب الرمية الثلاثية في كرة السلة؟",opts:["3","2","1","4"],c:0},
-{cat:"رياضية",q:"كم عدد اللاعبين داخل الملعب لكل فريق في كرة الطائرة؟",opts:["6","5","7","8"],c:0},
-{cat:"رياضية",q:"كم عدد الجولات في النزال الاحترافي للملاكمة عادةً؟",opts:["12","10","8","15"],c:0},
-{cat:"رياضية",q:"ما اسم البطولة الأقوى للأندية في أوروبا؟",opts:["دوري أبطال أوروبا","الدوري الأوروبي","كأس العالم للأندية","كأس السوبر الأوروبي"],c:0},
-{cat:"رياضية",q:"كم عدد أشواط مباراة التنس للرجال في البطولات الأربع الكبرى؟",opts:["5","3","4","2"],c:0},
-{cat:"رياضية",q:"أي رياضة تُعرف بـ(الرياضة البيضاء)؟",opts:["التنس","السباحة","الجودو","الكرة الطائرة"],c:0},
-
-// ===== تاريخية =====
-{cat:"تاريخية",q:"في أي عام انتهت الحرب العالمية الثانية؟",opts:["1945","1944","1946","1939"],c:0},
-{cat:"تاريخية",q:"ما اسم الحضارة التي بُنيت حول نهر النيل قديماً؟",opts:["المصرية القديمة","الرومانية","الإغريقية","الفينيقية"],c:0},
-{cat:"تاريخية",q:"من هو القائد المقدوني الذي فتح بلاداً واسعة حتى الهند؟",opts:["الإسكندر الأكبر","يوليوس قيصر","حنبعل","نيرون"],c:0},
-{cat:"تاريخية",q:"ما اسم السفينة الشهيرة التي غرقت عام 1912؟",opts:["تايتانيك","بريتانك","كوين ماري","سانتا ماريا"],c:0},
-{cat:"تاريخية",q:"ما اسم الجدار الدفاعي الشهير في الصين؟",opts:["سور الصين العظيم","جدار برلين","السور الهادرياني","سور القدس"],c:0},
-{cat:"تاريخية",q:"أي إمبراطورية كانت عاصمتها روما؟",opts:["الإمبراطورية الرومانية","البيزنطية","الفرعونية","العباسية"],c:0},
-{cat:"تاريخية",q:"في أي قارة قامت حضارة الإنكا؟",opts:["أمريكا الجنوبية","أمريكا الشمالية","أوروبا","آسيا"],c:0},
-{cat:"تاريخية",q:"ما اسم الحدث الذي أدى لانقسام ألمانيا إلى شرقية وغربية بعد الحرب العالمية الثانية؟",opts:["الحرب الباردة","حرب القرم","حرب فيتنام","حرب الخليج"],c:0},
-{cat:"تاريخية",q:"من هو المستكشف الذي ارتبط اسمه باكتشاف الأمريكتين عام 1492؟",opts:["كريستوفر كولومبوس","فاسكو دا غاما","ماجلان","جيمس كوك"],c:0},
-{cat:"تاريخية",q:"ما اسم العصر الذي تميز بالاعتماد على الحجر لصناعة الأدوات؟",opts:["العصر الحجري","العصر البرونزي","العصر الحديدي","العصر الصناعي"],c:0},
-
-// ===== مسلسلات =====
-{cat:"مسلسلات",q:"ما اسم المسلسل الذي تدور أحداثه حول صناعة المخدرات وشخصية والتر وايت؟",opts:["Breaking Bad","The Office","Friends","Sherlock"],c:0},
-{cat:"مسلسلات",q:"ما اسم المسلسل الكوري الذي يعتمد على ألعاب قاتلة للفوز بجائزة؟",opts:["لعبة الحبار","دارك","ناركوس","بيكي بلايندرز"],c:0},
-{cat:"مسلسلات",q:"ما اسم المسلسل الإسباني عن سرقة مطبعة النقود بقيادة (البروفيسور)؟",opts:["La Casa de Papel","Vikings","Stranger Things","Narcos"],c:0},
-{cat:"مسلسلات",q:"ما اسم المسلسل الكوميدي الشهير الذي تدور أحداثه حول 6 أصدقاء في نيويورك؟",opts:["Friends","How I Met Your Mother","The Big Bang Theory","Modern Family"],c:0},
-{cat:"مسلسلات",q:"أي مسلسل تدور أحداثه حول محقق عبقري اسمه شيرلوك هولمز؟",opts:["Sherlock","House","Dark","Suits"],c:0},
-{cat:"مسلسلات",q:"ما اسم مسلسل الفانتازيا الذي اشتهر بصراع العروش؟",opts:["Game of Thrones","The Witcher","The Crown","Lost"],c:0},
-{cat:"مسلسلات",q:"ما اسم المسلسل الذي يتناول عصابة في برمنغهام وزعيمها توماس شيلبي؟",opts:["Peaky Blinders","Narcos","Vikings","Suits"],c:0},
-{cat:"مسلسلات",q:"ما اسم المسلسل الذي تدور أحداثه حول وباء الزومبي وبقاء الناجين؟",opts:["The Walking Dead","Dark","Prison Break","Lost"],c:0},
-{cat:"مسلسلات",q:"ما اسم المسلسل القانوني الذي بطلُه محامٍ اسمه هارفي سبيكتر؟",opts:["Suits","House","The Office","Dexter"],c:0},
-{cat:"مسلسلات",q:"ما اسم المسلسل الذي بطلُه مايكل سكوفيلد ويهرب من السجن؟",opts:["Prison Break","Lost","Dexter","Narcos"],c:0},
-
-// ===== أفلام =====
-{cat:"أفلام",q:"ما اسم فيلم الرسوم المتحركة الذي تدور قصته حول ألعاب تتحرك عندما لا يراها البشر؟",opts:["Toy Story","Shrek","Frozen","Cars"],c:0},
-{cat:"أفلام",q:"ما اسم الفيلم الذي تدور قصته حول سفينة غرقت في المحيط وقصة حب؟",opts:["Titanic","Inception","Gladiator","Avatar"],c:0},
-{cat:"أفلام",q:"ما اسم الفيلم الذي يدور حول دخول الأحلام وزراعة الأفكار؟",opts:["Inception","Interstellar","The Matrix","Memento"],c:0},
-{cat:"أفلام",q:"ما اسم الفيلم الذي يتحدث عن كوكب باندورا وكائنات زرقاء؟",opts:["Avatar","Dune","Star Wars","Joker"],c:0},
-{cat:"أفلام",q:"ما اسم فيلم الأبطال الخارقين الذي يجمع شخصيات مارفل ضد تهديد كبير؟",opts:["Avengers","Batman","Superman","X-Men"],c:0},
-{cat:"أفلام",q:"ما اسم الفيلم الذي تدور أحداثه في مدرسة سحرية وبطله هاري؟",opts:["Harry Potter","The Hobbit","Narnia","Fantastic Beasts"],c:0},
-{cat:"أفلام",q:"ما اسم الفيلم الذي بطلُه محارب روماني يعود للانتقام في الساحة؟",opts:["Gladiator","Braveheart","Troy","300"],c:0},
-{cat:"أفلام",q:"ما اسم الفيلم الذي بطلُه مهرج ويستعرض تحوله النفسي في جوثام؟",opts:["Joker","The Dark Knight","Venom","Logan"],c:0},
-{cat:"أفلام",q:"ما اسم الفيلم الذي يدور حول رحلة فضائية لإنقاذ البشرية عبر ثقب دودي؟",opts:["Interstellar","Gravity","The Martian","Arrival"],c:0},
-{cat:"أفلام",q:"ما اسم الفيلم الشهير عن ديناصورات تعود للحياة داخل حديقة؟",opts:["Jurassic Park","King Kong","Godzilla","Jumanji"],c:0},
-];
-
-/* ═══════ STATE ═══════ */
-let RC=null, PID=null, PN=null, isH=false, myT=null, RD=null;
-let tmrHost=null, tmrDisp=null, tmrAns=null, rl=null;
-
-/* ═══════ UTILS ═══════ */
-function showScr(id){document.querySelectorAll('.scr').forEach(s=>s.classList.remove('on'));document.getElementById(id).classList.add('on')}
-function goBack(){if(document.referrer&&document.referrer.indexOf(window.location.host)!==-1)window.history.back();else showScr('scrWelcome')}
-function clearT(){clearInterval(tmrHost);clearInterval(tmrDisp);clearInterval(tmrAns);tmrHost=tmrDisp=tmrAns=null}
-function saveS(){if(RC&&PID)sessionStorage.setItem('gs',JSON.stringify({rc:RC,pid:PID,pn:PN,h:isH,t:myT}))}
-function clearS(){sessionStorage.removeItem('gs')}
-function restoreS(){
-  const s=sessionStorage.getItem('gs');if(!s)return false;
-  try{const d=JSON.parse(s);
-    db.ref('rooms/'+d.rc).once('value',snap=>{
-      if(!snap.exists()||!snap.val().players||!snap.val().players[d.pid]){clearS();showScr('scrWelcome');return}
-      RC=d.rc;PID=d.pid;PN=d.pn;isH=d.h;myT=d.t;saveS();listen()});return true}
-  catch(e){clearS();return false}
-}
-
-/* ═══════ CREATE / JOIN ═══════ */
-function createRoom(){
-  const n=document.getElementById('hostName').value.trim();if(!n){alert('أدخل اسمك');return}
-  const t1=document.getElementById('t1n').value.trim()||'الفريق الأحمر';
-  const t2=document.getElementById('t2n').value.trim()||'الفريق الأزرق';
-  const sz=parseInt(document.getElementById('tsz').value);
-  RC=Math.floor(1000+Math.random()*9000).toString();PID='h-'+Date.now();PN=n;isH=true;
-  db.ref('rooms/'+RC).set({oneShotOpts:false,code:RC,host:PID,t1Name:t1,t2Name:t2,tSize:sz,
-    players:{[PID]:{name:n,isHost:true,team:''}},state:'lobby',
-    curQ:'',usedQ:[],couch:[],buzzP:'',showOpts:false,banTeam:'',
-    corAns:'',selAns:'',waitChoice:false,choiceP:'',waitText:false,qStart:'',buzzTime:''});
-  saveS();listen();showLobby()}
-
-function joinRoom(){
-  const n=document.getElementById('pName').value.trim();const c=document.getElementById('pCode').value.trim();
-  if(!n){alert('أدخل اسمك');return}if(!c||c.length!==4){alert('أدخل كود الغرفة (4 أرقام)');return}
-  db.ref('rooms/'+c).once('value',snap=>{
-    if(!snap.exists()){alert('الغرفة غير موجودة');return}
-    RC=c;PID='p-'+Date.now();PN=n;isH=false;
-    db.ref('rooms/'+RC+'/players/'+PID).set({name:n,isHost:false,team:''});
-    saveS();listen();showScr('scrTeam');document.getElementById('wpn').textContent=n})}
-
-/* ═══════ LISTEN ═══════ */
-function listen(){
-  if(rl)db.ref('rooms/'+RC).off('value',rl);
-  rl=db.ref('rooms/'+RC).on('value',snap=>{
-    if(!snap.exists()){clearS();showScr('scrWelcome');return}
-    RD=snap.val();if(!RD.players||!RD.players[PID])return;
-    const me=RD.players[PID];if(me.team&&me.team!=='')myT=me.team;
-    updateUI()})}
-
-/* ═══════ LOBBY ═══════ */
-function showLobby(){showScr('scrLobby');document.getElementById('drc').textContent=RC}
-function pickTeam(t){myT=t;db.ref('rooms/'+RC+'/players/'+PID).update({team:t});saveS()}
-function pickTeamJoin(t){myT=t;db.ref('rooms/'+RC+'/players/'+PID).update({team:t});saveS();
-  RD&&RD.state==='playing'?showScr('scrGame'):showScr('scrWait')}
-
-function renderPlayers(cid){
-  const c=document.getElementById(cid);c.innerHTML='';
-  Object.entries(RD.players||{}).forEach(([id,p])=>{
-    const d=document.createElement('div');d.className='chip';
-    let dc='dg';if(p.team==='team1')dc='dr';if(p.team==='team2')dc='db';
-    d.innerHTML=`<span class="dot ${dc}"></span>${p.name}${p.isHost?' 👑':''}`;c.appendChild(d)})}
-
-function updateLobby(){
-  const cnt=Object.keys(RD.players||{}).length;
-  document.getElementById('pc').textContent=cnt;renderPlayers('lpl');
-  if(!RD)return;
-  document.getElementById('htBtns').innerHTML=
-    `<button class="tsb rt ${myT==='team1'?'sel':''}" onclick="pickTeam('team1')">🔴 ${RD.t1Name}</button>`+
-    `<button class="tsb bt ${myT==='team2'?'sel':''}" onclick="pickTeam('team2')">🔵 ${RD.t2Name}</button>`;
-  const b=document.getElementById('sgBtn');
-  if(!myT||myT===''){b.disabled=true;b.textContent='اختر فريقك أولاً'}
-  else{b.disabled=false;b.textContent='ابدأ اللعبة ▶️'}}
-
-function updateWait(){
-  document.getElementById('wtn').textContent=myT==='team1'?RD.t1Name:RD.t2Name;renderPlayers('wpl')}
-
-function startGame(){if(!myT){alert('اختر فريقك');return}db.ref('rooms/'+RC).update({state:'playing'})}
-
-/* ═══════ UPDATE UI ═══════ */
-function updateUI(){
-  if(!RD)return;
-  // Check for replay team-select state
-  if(RD.state==='teamSelect'){document.getElementById('replayOv').classList.add('on');renderReplayTeams();return}
-  else{document.getElementById('replayOv').classList.remove('on')}
-
-  if(RD.state==='lobby'){
-    if(isH){if(!document.getElementById('scrLobby').classList.contains('on'))showLobby();updateLobby()}
-    else if(!myT||myT===''){if(!document.getElementById('scrTeam').classList.contains('on')){showScr('scrTeam');document.getElementById('wpn').textContent=PN}
-      if(RD){document.getElementById('tsBtns').innerHTML=
-        `<button class="tsb rt" onclick="pickTeamJoin('team1')">🔴 ${RD.t1Name}</button>`+
-        `<button class="tsb bt" onclick="pickTeamJoin('team2')">🔵 ${RD.t2Name}</button>`}}
-    else{if(!document.getElementById('scrWait').classList.contains('on'))showScr('scrWait');updateWait()}
-  } else if(RD.state==='playing'){
-    if(!myT||myT===''){showScr('scrTeam');document.getElementById('wpn').textContent=PN;
-      if(RD){document.getElementById('tsBtns').innerHTML=
-        `<button class="tsb rt" onclick="pickTeamJoin('team1')">🔴 ${RD.t1Name}</button>`+
-        `<button class="tsb bt" onclick="pickTeamJoin('team2')">🔵 ${RD.t2Name}</button>`}}
-    else{if(!document.getElementById('scrGame').classList.contains('on'))showScr('scrGame');updateGame()}
-  }
-}
-
-/* ═══════ GAME ═══════ */
-function updateGame(){
-  if(!RD)return;const sz=RD.tSize||2;const couch=RD.couch||[];
-
-  // Victory: couch full AND all same team
-  let t1c=0,t2c=0;
-  couch.forEach(pid=>{const p=RD.players[pid];if(p){if(p.team==='team1')t1c++;else t2c++}});
-  if(couch.length>=sz && (t1c===sz||t2c===sz)){showVic();return}
-  document.getElementById('vicOv').classList.remove('on');
-
-  // Top bar
-  document.getElementById('gt1n').textContent=RD.t1Name;document.getElementById('gt2n').textContent=RD.t2Name;
-  document.getElementById('gt1s').textContent=t1c;document.getElementById('gt2s').textContent=t2c;
-  renderTP('gt1p','team1');renderTP('gt2p','team2');
-
-  // Couch
-  document.getElementById('couchCnt').textContent=couch.length;document.getElementById('couchMax').textContent=sz;
-  const cs=document.getElementById('couchSeats');cs.innerHTML='';
-  for(let i=0;i<sz;i++){
-    const d=document.createElement('div');
-    if(couch[i]){const p=RD.players[couch[i]];
-      if(p){d.className='cseat '+(p.team==='team1'?'fr':'fb')+(couch[i]===PID?' me':'');d.textContent='🏆 '+p.name}
-      else{d.className='cseat empty';d.textContent='—'}}
-    else{d.className='cseat empty';d.textContent='—'}
-    cs.appendChild(d)}
-
-  // ALL players see questions - even on couch
-  document.getElementById('gContent').style.display='block';
-  renderGC();
-  document.getElementById('hNext').classList.toggle('hid',!isH);
-  document.getElementById('gTop').style.display='';document.getElementById('couchSec').style.display=''}
-
-function renderTP(cid,team){
-  const c=document.getElementById(cid);c.innerHTML='';const couch=RD.couch||[];
-  Object.entries(RD.players||{}).forEach(([id,p])=>{if(p.team===team){
-    const s=document.createElement('span');s.className='mp'+(couch.includes(id)?' oc':'');
-    s.textContent=p.name;c.appendChild(s)}})}
-
-/* ═══════ ANSWER MATCHING ═══════ */
-function hasAns(){return RD.corAns===true||RD.corAns===false}
-function norm(s){return s.toLowerCase().replace(/[\u064B-\u065F\u0670]/g,'').replace(/ة/g,'ه').replace(/ى/g,'ي').replace(/[أإآٱ]/g,'ا').replace(/ؤ/g,'و').replace(/ئ/g,'ي').replace(/\s+/g,' ').trim()}
-
-const AR_N={'واحد':1,'اثنين':2,'اثنان':2,'ثلاثة':3,'ثلاث':3,'اربعة':4,'اربع':4,'خمسة':5,'خمس':5,
-'ستة':6,'ست':6,'سبعة':7,'سبع':7,'ثمانية':8,'ثماني':8,'ثمان':8,'تسعة':9,'تسع':9,
-'عشرة':10,'عشر':10,'احد عشر':11,'اثنا عشر':12,'مئة':100,'مائة':100,'مئتين':200,
-'ثلاثمئة':300,'اربعمئة':400,'خمسمئة':500,'الف':1000};
-
-function getNums(s){const m=s.match(/\d+/g);const r=m?m.map(Number):[];
-const n=norm(s);for(const[w,v]of Object.entries(AR_N))if(n.includes(norm(w)))r.push(v);return[...new Set(r)]}
-
-function checkAns(u,c){
-  const un=norm(u),cn=norm(c);if(un===cn)return true;
-  const uN=getNums(u),cN=getNums(c);
-  if(uN.length&&cN.length){for(const a of uN)for(const b of cN)if(a===b)return true}
-  if(un.length>=3&&cn.includes(un))return true;if(cn.length>=3&&un.includes(cn))return true;
-  const uw=un.split(' ').filter(w=>w.length>2),cw=cn.split(' ').filter(w=>w.length>2);
-  for(const a of uw)for(const b of cw){if(a===b)return true;if(a.length>=3&&b.includes(a))return true;if(b.length>=3&&a.includes(b))return true}
-  return false}
-
-/* ═══════ RENDER GAME ═══════ */
-function renderGC(){
-  ['qCard','tBar','bzInd','bzBtn','aiArea','optsG','chG'].forEach(id=>document.getElementById(id).classList.add('hid'));
-  document.getElementById('bzBtn').disabled=true;
-  const st=document.getElementById('gSts');st.classList.remove('hid');
-
-  // Choice
-  if(RD.waitChoice&&RD.choiceP===PID){showQ();st.textContent='✅ إجابة صحيحة! اختر:';st.className='sts s';renderChoice();return}
-  if(RD.waitChoice){const p=RD.players[RD.choiceP];showQ();st.textContent=(p?.name||'')+' يختار...';st.className='sts i';return}
-
-  // No Q
-  if(!RD.curQ||RD.curQ===''){st.textContent='⏳ انتظر السؤال...';st.className='sts i';return}
-  showQ();
-
-  // I'm typing
-  if(RD.waitText&&RD.buzzP===PID&&!hasAns()){
-    st.textContent='⌨️ اكتب إجابتك!';st.className='sts w';
-    document.getElementById('aiArea').classList.remove('hid');showMainTimer();startAnsTimer();return}
-
-  // Someone typing
-  if(RD.waitText&&RD.buzzP&&RD.buzzP!==PID&&!hasAns()){
-    const p=RD.players[RD.buzzP];const bi=document.getElementById('bzInd');bi.classList.remove('hid');
-    bi.textContent=`🔔 ${p?.name||''} يكتب الإجابة...`;st.textContent='انتظر...';st.className='sts i';showMainTimer();return}
-
-  // Options
-  if(RD.showOpts&&!hasAns()){
-    const og=document.getElementById('optsG');og.classList.remove('hid');og.innerHTML='';
-    const onCouch=(RD.couch||[]).includes(PID);
-    const banned=RD.banTeam&&RD.banTeam===myT;
-    RD.curQ.opts.forEach((o,i)=>{const b=document.createElement('button');b.className='ob';b.textContent=o;
-      if(onCouch||banned)b.disabled=true;else b.onclick=()=>selAns(i);og.appendChild(b)});
-    if(onCouch){st.textContent='🛋️ أنت على الكنبة - شاهد فقط';st.className='sts w'}
-    else if(banned){st.textContent='⛔ فريقك ممنوع - فرصة الخصم';st.className='sts e'}
-    else if(RD.banTeam){st.textContent='🎯 فرصتك! اختر الإجابة';st.className='sts s'}
-    else{st.textContent='اختر الإجابة الصحيحة';st.className='sts i'}
-    return}
-
-  // Result
-  if(hasAns()){st.textContent=RD.corAns?'✅ إجابة صحيحة!':'❌ إجابة خاطئة!';st.className=RD.corAns?'sts s':'sts e';return}
-
-  // Active Q
-  if(!RD.buzzP&&!RD.showOpts){showMainTimer();const bb=document.getElementById('bzBtn');bb.classList.remove('hid');
-    const onCouch=(RD.couch||[]).includes(PID);
-    if(onCouch){bb.disabled=true;st.textContent='🛋️ أنت على الكنبة - شاهد فقط';st.className='sts w'}
-    else{bb.disabled=false;st.textContent='📖 اقرأ واضغط الجرس!';st.className='sts i'}
-    return}
-
-  // Someone buzzed
-  if(RD.buzzP&&RD.buzzP!==PID){const p=RD.players[RD.buzzP];
-    st.textContent=(p?.name||'')+' يجيب...';st.className='sts w';showMainTimer()}}
-
-function showQ(){if(!RD.curQ||RD.curQ==='')return;document.getElementById('qCard').classList.remove('hid');
-  document.getElementById('qCat').textContent=RD.curQ.cat||'';document.getElementById('qTxt').textContent=RD.curQ.q}
-
-/* ═══════ TIMERS ═══════ */
-function showMainTimer(){
-  if(!RD.qStart)return;document.getElementById('tBar').classList.remove('hid');updTimerDisp();
-  if(!tmrDisp)tmrDisp=setInterval(()=>{if(!RD||!RD.qStart){clearInterval(tmrDisp);tmrDisp=null;return}updTimerDisp()},500);
-  if(isH&&!tmrHost)tmrHost=setInterval(()=>{if(!RD||!RD.qStart){clearInterval(tmrHost);tmrHost=null;return}
-    const tl=Math.max(0,30-Math.floor((Date.now()-RD.qStart)/1000));
-    if(tl<=0){clearInterval(tmrHost);tmrHost=null;
-      if(!hasAns()&&!RD.showOpts){const u={showOpts:true,waitText:false};
-        if(RD.buzzP)u.banTeam=RD.players[RD.buzzP]?.team||'';db.ref('rooms/'+RC).update(u)}}},500)}
-
-function updTimerDisp(){const tl=Math.max(0,30-Math.floor((Date.now()-RD.qStart)/1000));
-  const c=document.getElementById('tCirc');if(c){c.textContent=tl;c.classList.toggle('dng',tl<=5)}}
-
-function startAnsTimer(){if(!RD.buzzTime)return;clearInterval(tmrAns);const ci=document.getElementById('atCirc');
-  tmrAns=setInterval(()=>{if(!RD||!RD.buzzTime){clearInterval(tmrAns);tmrAns=null;return}
-    const tl=Math.max(0,6-Math.floor((Date.now()-RD.buzzTime)/1000));
-    ci.textContent=tl;ci.classList.toggle('dng',tl<=2);
-    if(tl<=0 && RD.buzzP===PID && !hasAns()){
-      clearInterval(tmrAns);tmrAns=null;
-      db.ref('rooms/'+RC).update({
-        corAns:'',
-        waitText:false,
-        showOpts:true,
-        banTeam:(RD.players?.[PID]?.team) || "",
-        oneShotOpts:true,
-        buzzTime:""
-      });
-    }},1000)}
-
-
-/* ═══════ BUZZER ═══════ */
-function buzzIn(){if(!RD.curQ||RD.curQ===''||RD.buzzP||RD.showOpts)return;
-  if((RD.couch||[]).includes(PID))return;
-  db.ref('rooms/'+RC).update({buzzP:PID,waitText:true,buzzTime:Date.now()})}
-
-/* ═══════ SUBMIT TEXT ═══════ */
-function submitAns(){const inp=document.getElementById('tAns');const v=inp.value.trim();
-  if(!v){alert('اكتب إجابة!');return}clearInterval(tmrAns);tmrAns=null;
-  const ok=checkAns(v,RD.curQ.opts[RD.curQ.c]);const ref=db.ref('rooms/'+RC);
-  if(ok){ref.update({corAns:true,waitText:false});handleCorrect()}
-  else{
-  ref.update({
-    corAns:'',                 // لا ننهي السؤال هنا
-    waitText:false,
-    showOpts:true,             // افتح الخيارات
-    banTeam: RD.players[PID]?.team || '', // امنع فريق اللي ضغط الجرس
-    oneShotOpts:true,          // ✅ محاولة واحدة للخصم
-    buzzTime:''
-  });
-}
-                    }
-
-/* ═══════ SELECT OPTION ═══════ */
-function selAns(i){
-  // ✅ ممنوع اللي على كنبة الفوز يجاوب
-  if((RD.couch || []).includes(PID)) return;
-
-  const ok = i === RD.curQ.c;
-  clearT();
-
-  const ref = db.ref('rooms/'+RC);
-  const myTeam = RD.players[PID]?.team || '';
-  const disabled = RD.disabledOpts || [];
-
-  // ✅ لا تسمح بالضغط على خيار مقفّل
-  if(disabled.includes(i)) return;
-
-  if(ok){
-    // ✅ صحيح: انهِ الخيارات وكمّل منطق الكنبة
-    ref.update({
-      selAns: i,
-      corAns: true,
-      showOpts: false,
-      buzzP: RD.buzzP || PID,
-      oneShotOpts: false,
-      banTeam: '',
-      disabledOpts: []
-    });
-    handleCorrect();
-    return;
-  }
-
-  // ❌ خطأ
-  if(RD.oneShotOpts){
-    // ✅ هذا سيناريو "بعد فشل الجرس": الخصم له محاولة واحدة فقط
-    // لو غلط => تنتهي فرصة الفريقين فوراً بدون كشف الجواب
-    ref.update({
-      selAns: i,
-      corAns: false,      // ينهي السؤال للطرفين
-      showOpts: false,    // يقفل الخيارات
-      oneShotOpts: false,
-      banTeam: '',
-      waitText: false,
-      buzzTime: ''
-    });
-    return;
-  }
-
-  // ✅ وضع الخيارات الطبيعي (بعد 30 ثانية):
-  // اقفل الخيار اللي اختاره + امنع فريقه وخلي الفرصة للخصم
-  ref.update({
-    selAns: i,
-    corAns: '', // لا ننهي السؤال
-    showOpts: true,
-    banTeam: myTeam, // فريقه ممنوع
-    disabledOpts: [...new Set([...disabled, i])],
-    waitText: false,
-    buzzTime: ''
-  });
-}
-
-
-/* ═══════ CORRECT ANSWER ═══════ */
-function handleCorrect(){
-  const sz=RD.tSize||2;const couch=RD.couch||[];const ref=db.ref('rooms/'+RC);
-  const opps=couch.filter(pid=>{const p=RD.players[pid];return p&&p.team!==myT});
-
-  if(couch.length>=sz){
-    // Couch FULL → can only pull (NO auto-sit)
-    if(opps.length>0)ref.update({waitChoice:true,choiceP:PID});
-  } else {
-    // Space available
-    if(opps.length>0)ref.update({waitChoice:true,choiceP:PID}); // sit or pull
-    else addToCouch(); // just sit
-  }}
-
-/* ═══════ CHOICE ═══════ */
-function renderChoice(){
-  const cg=document.getElementById('chG');cg.classList.remove('hid');cg.innerHTML='';
-  const sz=RD.tSize||2;const couch=RD.couch||[];
-  const opps=couch.filter(pid=>{const p=RD.players[pid];return p&&p.team!==myT});
-  const full=couch.length>=sz;
-
-  if(full){
-    // ONLY pull - no auto sit
-    if(opps.length>0){const b=document.createElement('button');b.className='chb pull';
-      b.textContent='🎯 اسحب لاعب خصم من الكنبة';b.onclick=()=>doSteal();cg.appendChild(b)}
-  } else {
-    const sb=document.createElement('button');sb.className='chb sit';
-    sb.textContent='🛋️ اجلس على الكنبة';sb.onclick=()=>doSit();cg.appendChild(sb);
-    if(opps.length>0){const pb=document.createElement('button');pb.className='chb pull';
-      pb.textContent='🎯 اسحب لاعب خصم من الكنبة';pb.onclick=()=>doSteal();cg.appendChild(pb)}}}
-
-function doSit(){addToCouch()}
-
-function doSteal(){
-  const couch=[...(RD.couch||[])];
-  let idx=-1;for(let i=couch.length-1;i>=0;i--){const p=RD.players[couch[i]];if(p&&p.team!==myT){idx=i;break}}
-  if(idx===-1){db.ref('rooms/'+RC).update({waitChoice:false,choiceP:''});return}
-  couch.splice(idx,1);
-  // Pull ONLY - do NOT auto-sit. Player needs another correct answer to sit.
-  db.ref('rooms/'+RC).update({couch:couch,waitChoice:false,choiceP:''})}
-
-function addToCouch(){
-  const couch=[...(RD.couch||[])];const sz=RD.tSize||2;
-  if(couch.length>=sz){db.ref('rooms/'+RC).update({waitChoice:false,choiceP:''});return}
-  if(!couch.includes(PID))couch.push(PID);
-  db.ref('rooms/'+RC).update({couch:couch,waitChoice:false,choiceP:''})}
-
-/* ═══════ NEXT QUESTION ═══════ */
-function nextQ(){clearT();
-  const used=RD.usedQ||[];let avail=ALL_Q.filter(q=>!used.includes(q.q));
-  if(avail.length===0){avail=[...ALL_Q];used.length=0}
-  for(let i=avail.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[avail[i],avail[j]]=[avail[j],avail[i]]}
-  const q=avail[0];used.push(q.q);
-  db.ref('rooms/'+RC).update({oneShotOpts:false,curQ:{cat:q.cat,q:q.q,opts:q.opts,c:q.c},usedQ:used,
-    buzzP:'',showOpts:false,banTeam:'',corAns:'',selAns:'',
-    waitChoice:false,choiceP:'',qStart:Date.now(),waitText:false,buzzTime:''})}
-
-/* ═══════ VICTORY ═══════ */
-function showVic(){clearT();const couch=RD.couch||[];
-  let t1c=0,t2c=0;couch.forEach(pid=>{const p=RD.players[pid];if(p){if(p.team==='team1')t1c++;else t2c++}});
-  const w=t1c>t2c?RD.t1Name:RD.t2Name;
-  document.getElementById('vicOv').classList.add('on');document.getElementById('vicMsg').textContent='🎉 '+w+' فاز! 🎉';
-  document.getElementById('gContent').style.display='none';
-  document.getElementById('hNext').classList.add('hid');
-  document.getElementById('gTop').style.display='none';document.getElementById('couchSec').style.display='none'}
-
-/* ═══════ REPLAY WITH TEAM CHANGE ═══════ */
-function askReplay(){
-  // Go to team selection state so all players can change
-  db.ref('rooms/'+RC).update({state:'teamSelect'})}
-
-function renderReplayTeams(){
-  if(!RD)return;
-  document.getElementById('rpBtns').innerHTML=
-    `<button class="tsb rt ${myT==='team1'?'sel':''}" onclick="rpPick('team1')">🔴 ${RD.t1Name}</button>`+
-    `<button class="tsb bt ${myT==='team2'?'sel':''}" onclick="rpPick('team2')">🔵 ${RD.t2Name}</button>`;
-  // Only host sees start button
-  if(isH){document.getElementById('rpStart').classList.remove('hid');document.getElementById('rpWait').classList.add('hid')}
-  else{document.getElementById('rpStart').classList.add('hid');document.getElementById('rpWait').classList.remove('hid')}}
-
-function rpPick(t){myT=t;db.ref('rooms/'+RC+'/players/'+PID).update({team:t});saveS();renderReplayTeams()}
-
-function confirmReplay(){
-  db.ref('rooms/'+RC).update({state:'playing',curQ:'',usedQ:[],couch:[],
-    buzzP:'',showOpts:false,banTeam:'',corAns:'',selAns:'',
-    waitChoice:false,choiceP:'',waitText:false,qStart:'',buzzTime:''});
-  document.getElementById('replayOv').classList.remove('on');
-  document.getElementById('gTop').style.display='';document.getElementById('couchSec').style.display='';
-  document.getElementById('gContent').style.display='';document.getElementById('vicOv').classList.remove('on')}
-
-/* ═══════ INPUT ═══════ */
-document.getElementById('pCode')?.addEventListener('input',function(){this.value=this.value.replace(/[^0-9]/g,'')});
-document.getElementById('tAns')?.addEventListener('keypress',function(e){if(e.key==='Enter')submitAns()});
-
-/* ═══════ STARS ═══════ */
-(function(){var c=document.getElementById('teamStars');for(var i=0;i<60;i++){var s=document.createElement('div');var sz=Math.random()*2.5+1;s.style.cssText='position:absolute;background:white;border-radius:50%;width:'+sz+'px;height:'+sz+'px;left:'+Math.random()*100+'%;top:'+Math.random()*100+'%;animation:starTw '+(Math.random()*3+2)+'s ease-in-out infinite '+(Math.random()*3)+'s';c.appendChild(s)}var st=document.createElement('style');st.textContent='@keyframes starTw{0%,100%{opacity:0.15}50%{opacity:0.8}}';document.head.appendChild(st)})();
-
-/* ═══════ INIT ═══════ */
-if(!restoreS())showScr('scrWelcome');
-</script>
+    <div class="stars-container" id="starsContainer"></div>
+    <div class="ramadan-deco">☪ ✦ 🏮 ✦ ☪ ✦ 🏮 ✦ ☪</div>
+
+    <div class="container">
+        <div class="header">
+            <div class="ramadan-greeting">☪ رمضان كريم ☪</div>
+            <h1 class="main-title">مركز الألعاب</h1>
+            <p class="subtitle">اختر لعبتك المفضلة واستمتع بوقتك</p>
+        </div>
+
+        <div class="games-grid">
+            <div class="game-card detective" onclick="playGame('detective')">
+                <div class="game-icon">🕵️</div>
+                <div class="game-content">
+                    <h2 class="game-title">المحقق المخادع</h2>
+                    <p class="game-description">لعبة ذكاء وخداع جماعية! كن المحقق الذكي أو المجرم الماكر واستخدم مهاراتك في الخداع والاستنتاج</p>
+                </div>
+            </div>
+
+            <div class="game-card menBra" onclick="playGame('menBra')">
+                <div class="game-icon">💬</div>
+                <div class="game-content">
+                    <h2 class="game-title">مين برا السالفة</h2>
+                    <p class="game-description">العب مع اصحابك بدون الحاجه الى جهاز واحد واستمتعوا</p>
+                </div>
+            </div>
+
+            <div class="game-card couch" onclick="playGame('couch')">
+                <div class="game-icon">🛋️</div>
+                <div class="game-content">
+                    <h2 class="game-title">لعبة الكنبة</h2>
+                    <p class="game-description">لعبة تنافسية مثيرة بين فريقين! أجب على الأسئلة بسرعة واحصل على مقعد في الفوز</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="footer">
+            <p>☪ رمضان مبارك ☪</p>
+            <p style="margin-top: 10px; font-size: 0.9em;">© 2026 مركز الألعاب</p>
+        </div>
+    </div>
+
+    <script>
+        (function() {
+            var c = document.getElementById('starsContainer');
+            for (var i = 0; i < 80; i++) {
+                var s = document.createElement('div');
+                s.className = 'star-dot';
+                var sz = Math.random() * 2.5 + 1;
+                s.style.width = sz + 'px';
+                s.style.height = sz + 'px';
+                s.style.left = Math.random() * 100 + '%';
+                s.style.top = Math.random() * 100 + '%';
+                s.style.setProperty('--dur', (Math.random() * 3 + 2) + 's');
+                s.style.setProperty('--delay', (Math.random() * 3) + 's');
+                c.appendChild(s);
+            }
+        })();
+
+        function playGame(game) {
+            if (game === 'detective') {
+                window.location.href = 'detective/detective.html';
+            } else if (game === 'menBra') {
+                window.location.href = 'menBra/menBra.html';
+            } else if (game === 'couch') {
+                window.location.href = 'https://m7qqmkadee.com/team/team.html';
+            }
+        }
+
+        document.querySelectorAll('.game-card').forEach(card => {
+            card.addEventListener('mouseenter', function() { this.style.zIndex = '10'; });
+            card.addEventListener('mouseleave', function() { this.style.zIndex = '1'; });
+        });
+    </script>
 </body>
 </html>
