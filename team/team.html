@@ -280,6 +280,7 @@ let tmrHost=null, tmrDisp=null, tmrAns=null, rl=null;
 
 /* ═══════ UTILS ═══════ */
 function showScr(id){document.querySelectorAll('.scr').forEach(s=>s.classList.remove('on'));document.getElementById(id).classList.add('on')}
+function goBack(){if(document.referrer&&document.referrer.indexOf(window.location.host)!==-1)window.history.back();else showScr('scrWelcome')}
 function clearT(){clearInterval(tmrHost);clearInterval(tmrDisp);clearInterval(tmrAns);tmrHost=tmrDisp=tmrAns=null}
 function saveS(){if(RC&&PID)sessionStorage.setItem('gs',JSON.stringify({rc:RC,pid:PID,pn:PN,h:isH,t:myT}))}
 function clearS(){sessionStorage.removeItem('gs')}
@@ -509,7 +510,7 @@ function startAnsTimer(){if(!RD.buzzTime)return;clearInterval(tmrAns);const ci=d
   oneShotOpts:true,
   buzzTime:""
 });
-    }}}
+    }},1000)}
 
 
 /* ═══════ BUZZER ═══════ */
@@ -682,22 +683,6 @@ function confirmReplay(){
   document.getElementById('replayOv').classList.remove('on');
   document.getElementById('gTop').style.display='';document.getElementById('couchSec').style.display='';
   document.getElementById('gContent').style.display='';document.getElementById('vicOv').classList.remove('on')}
-
-/* ═══════ SCREEN NAVIGATION ═══════ */
-function showScr(id){
-  document.querySelectorAll('.scr').forEach(s=>s.classList.remove('on'));
-  document.getElementById(id).classList.add('on');
-}
-
-function goBack(){
-  // محاولة الرجوع للصفحة السابقة
-  if(document.referrer && document.referrer.indexOf(window.location.host) !== -1){
-    window.history.back();
-  } else {
-    // إذا لم يكن هناك صفحة سابقة، ارجع لشاشة الترحيب
-    showScr('scrWelcome');
-  }
-}
 
 /* ═══════ INPUT ═══════ */
 document.getElementById('pCode')?.addEventListener('input',function(){this.value=this.value.replace(/[^0-9]/g,'')});
