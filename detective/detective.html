@@ -12,15 +12,36 @@
         
         body {
             font-family: 'Cairo', sans-serif;
-            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+            background: #0a1a3a;
             min-height: 100vh;
             padding: 10px;
             padding-bottom: 80px;
             direction: rtl;
             color: #fff;
+            position: relative;
         }
 
-        .container { max-width: 900px; margin: 0 auto; }
+        /* النجوم البيضاء */
+        .stars-bg {
+            position: fixed;
+            top: 0; left: 0;
+            width: 100%; height: 100%;
+            pointer-events: none;
+            z-index: 0;
+        }
+        .stars-bg .sd {
+            position: absolute;
+            background: white;
+            border-radius: 50%;
+            animation: twk var(--d) ease-in-out infinite;
+            animation-delay: var(--dl);
+        }
+        @keyframes twk {
+            0%, 100% { opacity: 0.15; }
+            50% { opacity: 0.8; }
+        }
+
+        .container { max-width: 900px; margin: 0 auto; position: relative; z-index: 1; }
 
         .screen { display: none; }
         .screen.active { display: block; }
@@ -28,19 +49,21 @@
         .header {
             text-align: center;
             padding: 15px;
-            background: rgba(0,0,0,0.3);
+            background: rgba(10, 26, 58, 0.7);
             border-radius: 15px;
             margin-bottom: 15px;
+            border: 1px solid rgba(212, 175, 55, 0.2);
         }
 
-        .header h1 { font-size: 1.4em; color: #ffd700; }
+        .header h1 { font-size: 1.4em; color: #0a1a3a; background: linear-gradient(135deg, #d4af37, #f5e6a3); padding: 6px 20px; border-radius: 10px; display: inline-block; }
 
         .card {
-            background: linear-gradient(135deg, #1a237e 0%, #880e4f 100%);
+            background: rgba(12, 28, 60, 0.85);
             border-radius: 15px;
             padding: 15px;
             margin-bottom: 15px;
             box-shadow: 0 4px 15px rgba(0,0,0,0.3);
+            border: 1px solid rgba(212, 175, 55, 0.15);
         }
 
         input, select {
@@ -60,8 +83,9 @@
             font-size: 14px;
             cursor: pointer;
             font-family: 'Cairo', sans-serif;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white;
+            background: linear-gradient(135deg, #d4af37 0%, #b8941e 100%);
+            color: #0a1a3a;
+            font-weight: 700;
             margin: 3px;
             transition: all 0.2s;
         }
@@ -88,7 +112,7 @@
 
         .player-card.forensic-card {
             background: linear-gradient(135deg, #2980b9, #3498db);
-            border: 2px solid #ffd700;
+            border: 2px solid #d4af37;
         }
 
         .player-card.selected-suspect {
@@ -157,7 +181,7 @@
             border-radius: 6px;
             margin-top: 8px;
             font-size: 0.85em;
-            border-right: 3px solid #ffd700;
+            border-right: 3px solid #d4af37;
         }
 
         /* بطاقة الدور */
@@ -184,12 +208,12 @@
             bottom: 0;
             left: 0;
             right: 0;
-            background: linear-gradient(135deg, #27ae60ee, #2ecc71ee);
+            background: rgba(12, 28, 60, 0.95);
             padding: 8px 15px;
             z-index: 1000;
             transition: all 0.3s;
             backdrop-filter: blur(10px);
-            border-top: 2px solid #ffd700;
+            border-top: 2px solid #d4af37;
         }
 
         .clues-bar.expanded {
@@ -263,7 +287,7 @@
             border-radius: 4px;
         }
 
-        .clue-opt.selected { background: #ffd700; color: #000; }
+        .clue-opt.selected { background: #d4af37; color: #000; }
 
         .round-info {
             text-align: center;
@@ -295,7 +319,7 @@
             background: rgba(255,255,255,0.1);
         }
 
-        .sel-btn.selected { background: #c0392b; border: 2px solid #ffd700; }
+        .sel-btn.selected { background: #c0392b; border: 2px solid #d4af37; }
 
         /* النتائج */
         .results-box {
@@ -322,8 +346,12 @@
         .room-code {
             font-size: 2.2em;
             font-weight: bold;
-            color: #ffd700;
+            color: #0a1a3a;
             letter-spacing: 6px;
+            background: linear-gradient(135deg, #d4af37, #f5e6a3);
+            padding: 5px 20px;
+            border-radius: 10px;
+            display: inline-block;
         }
 
         .lobby-player {
@@ -335,7 +363,7 @@
             justify-content: space-between;
         }
 
-        .lobby-player.host { border-right: 3px solid #ffd700; }
+        .lobby-player.host { border-right: 3px solid #d4af37; }
 
         .alert {
             padding: 12px;
@@ -363,7 +391,7 @@
             margin: 10px 0;
         }
 
-        .my-items h4 { font-size: 0.9em; color: #ffd700; margin-bottom: 6px; }
+        .my-items h4 { font-size: 0.9em; color: #d4af37; margin-bottom: 6px; }
         
         .item-tag {
             display: inline-block;
@@ -392,17 +420,21 @@
 </head>
 <body>
 
+    <!-- النجوم البيضاء -->
+    <div class="stars-bg" id="starsBg"></div>
+
     
     <div class="container">
         <!-- الشاشة الرئيسية -->
         <div id="homeScreen" class="screen active">
             <div class="header">
+                <p style="color:#d4af37;font-size:0.9em;margin-bottom:8px;">☪ رمضان كريم ☪</p>
                 <h1>🔍 المحقق المخادع 🔪</h1>
             </div>
             <div class="card">
-                <div style="background:rgba(0,0,0,0.3);padding:15px;border-radius:10px;margin-bottom:20px;border-right:4px solid #ffd700;">
+                <div style="background:rgba(0,0,0,0.3);padding:15px;border-radius:10px;margin-bottom:20px;border-right:4px solid #d4af37;">
                     <p style="text-align:right;font-size:0.85em;line-height:1.8;color:#fff;">
-                        <strong style="color:#ffd700;">📖 كيف تلعب:</strong><br><br>
+                        <strong style="color:#d4af37;">📖 كيف تلعب:</strong><br><br>
                         حدثت جريمة قتل، وهناك قاتل بين المحققين. يحتاج المحققون الحقيقيون إلى اكتشاف القاتل وأداة الجريمة والدليل. 
                         يمكن التقدم في التحقيق عن طريق الطبيب الشرعي للمساعدة في كشف القاتل.<br><br>
                         يوجد شاهد يعرف القاتل، ومهمته مساعدة المحققين في لفت الانتباه للقاتل من خلال تحرياته حول أداة الجريمة والدليل.<br><br>
@@ -535,6 +567,25 @@
             <div id="cluesListFull"></div>
         </div>
     </div>
+
+    <script>
+        // توليد النجوم البيضاء
+        (function() {
+            var c = document.getElementById('starsBg');
+            for (var i = 0; i < 70; i++) {
+                var s = document.createElement('div');
+                s.className = 'sd';
+                var sz = Math.random() * 2.5 + 1;
+                s.style.width = sz + 'px';
+                s.style.height = sz + 'px';
+                s.style.left = Math.random() * 100 + '%';
+                s.style.top = Math.random() * 100 + '%';
+                s.style.setProperty('--d', (Math.random() * 3 + 2) + 's');
+                s.style.setProperty('--dl', (Math.random() * 3) + 's');
+                c.appendChild(s);
+            }
+        })();
+    </script>
 
     <script>
         // ========== Firebase ==========
@@ -921,7 +972,7 @@
                 
                 var isMe = player.id === game.oderId;
                 html += '<div style="margin-bottom:10px;padding:10px;background:' + (isMe ? 'rgba(231,76,60,0.2)' : 'rgba(255,255,255,0.08)') + ';border-radius:8px;' + (isMe ? 'border:2px solid #e74c3c;' : 'border:1px solid rgba(255,255,255,0.1);') + '">';
-                html += '<strong style="color:' + (isMe ? '#e74c3c' : '#ffd700') + ';font-size:0.95em;display:block;margin-bottom:6px;">' + player.name + (isMe ? ' (أنت)' : '') + '</strong>';
+                html += '<strong style="color:' + (isMe ? '#e74c3c' : '#d4af37') + ';font-size:0.95em;display:block;margin-bottom:6px;">' + player.name + (isMe ? ' (أنت)' : '') + '</strong>';
                 
                 html += '<div style="margin-bottom:6px;">';
                 html += '<span style="color:#e74c3c;font-size:0.8em;">⚔️ الأسلحة: </span>';
@@ -1138,13 +1189,13 @@
                     var selectedClue = game.clues.find(function(c) { return c.cardIndex === idx; });
                     
                     full.innerHTML += '<div class="clue-card" style="background:rgba(255,255,255,0.15);border-radius:10px;padding:12px;margin-bottom:12px;">';
-                    full.innerHTML += '<strong style="color:#ffd700;display:block;margin-bottom:8px;">' + card.title + '</strong>';
+                    full.innerHTML += '<strong style="color:#d4af37;display:block;margin-bottom:8px;">' + card.title + '</strong>';
                     full.innerHTML += '<div style="display:flex;flex-wrap:wrap;gap:6px;">';
                     
                     card.options.forEach(function(opt) {
                         var isSelected = selectedClue && selectedClue.option === opt;
                         full.innerHTML += '<span class="clue-tag" style="' + 
-                            (isSelected ? 'background:#ffd700;color:#000;font-weight:bold;font-size:0.9em;padding:6px 12px;border:2px solid #fff;box-shadow:0 0 10px rgba(255,215,0,0.5);' : 'background:rgba(255,255,255,0.2);opacity:0.7;') + 
+                            (isSelected ? 'background:#d4af37;color:#000;font-weight:bold;font-size:0.9em;padding:6px 12px;border:2px solid #fff;box-shadow:0 0 10px rgba(255,215,0,0.5);' : 'background:rgba(255,255,255,0.2);opacity:0.7;') + 
                             '">' + opt + (isSelected ? ' ✓' : '') + '</span>';
                     });
                     
