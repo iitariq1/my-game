@@ -156,7 +156,7 @@ body{font-family:'Tajawal',sans-serif;background:var(--bg);color:var(--txt);min-
 <div class="bzi hid" id="bzInd"></div>
 <div class="sts i" id="gSts">انتظر السؤال...</div>
 <button class="buzzb hid" id="bzBtn" onclick="buzzIn()" disabled>🔔 اضغط الجرس!</button>
-<div class="aia hid" id="aiArea"><div class="tbar"><div class="tc sm" id="atCirc">5</div></div><input id="tAns" placeholder="اكتب إجابتك..." autocomplete="off"><button class="btn bg" onclick="submitAns()">إرسال</button></div>
+<div class="aia hid" id="aiArea"><div class="tbar"><div class="tc sm" id="atCirc">6</div></div><input id="tAns" placeholder="اكتب إجابتك..." autocomplete="off"><button class="btn bg" onclick="submitAns()">إرسال</button></div>
 <div class="opts hid" id="optsG"></div>
 <div class="chg hid" id="chG"></div>
 </div>
@@ -499,17 +499,18 @@ function updTimerDisp(){const tl=Math.max(0,30-Math.floor((Date.now()-RD.qStart)
 
 function startAnsTimer(){if(!RD.buzzTime)return;clearInterval(tmrAns);const ci=document.getElementById('atCirc');
   tmrAns=setInterval(()=>{if(!RD||!RD.buzzTime){clearInterval(tmrAns);tmrAns=null;return}
-    const tl=Math.max(0,5-Math.floor((Date.now()-RD.buzzTime)/1000));
+    const tl=Math.max(0,6-Math.floor((Date.now()-RD.buzzTime)/1000));
     ci.textContent=tl;ci.classList.toggle('dng',tl<=2);
-    if(RD.buzzP===PID && !hasAns()){
-  db.ref('rooms/'+RC).update({
-  corAns:'',
-  waitText:false,
-  showOpts:true,
-  banTeam:(RD.players?.[PID]?.team) || "",
-  oneShotOpts:true,
-  buzzTime:""
-});
+    if(tl<=0 && RD.buzzP===PID && !hasAns()){
+      clearInterval(tmrAns);tmrAns=null;
+      db.ref('rooms/'+RC).update({
+        corAns:'',
+        waitText:false,
+        showOpts:true,
+        banTeam:(RD.players?.[PID]?.team) || "",
+        oneShotOpts:true,
+        buzzTime:""
+      });
     }},1000)}
 
 
