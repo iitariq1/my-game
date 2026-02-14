@@ -92,10 +92,20 @@ body{font-family:'Tajawal',sans-serif;background:var(--bg);color:var(--txt);min-
 <div class="app" style="position:relative;z-index:1;">
 
 <!-- WELCOME -->
-<div class="scr on" id="scrWelcome">
-<div style="flex:1;display:flex;flex-direction:column;justify-content:center">
-<div class="hdr"><p style="color:#d4af37;font-size:0.85em;margin-bottom:5px;">☪ رمضان كريم ☪</p><h1>🛋️ لعبة الكنبة</h1><div class="sub">من يملأ الكنبة أولاً يفوز!</div></div>
-<div style="padding:0 10px">
+<div id="homeScreen" class="screen active">
+            <div class="header">
+                <p style="color:#d4af37;font-size:0.9em;margin-bottom:8px;">☪ رمضان كريم ☪</p>
+                <h1>لعبة الكنبة🛋️</h1>
+            </div>
+            <div class="card">
+                <div style="background:rgba(0,0,0,0.3);padding:15px;border-radius:10px;margin-bottom:20px;border-right:4px solid #d4af37;">
+                    <p style="text-align:right;font-size:0.85em;line-height:1.8;color:#fff;">
+                        <strong style="color:#d4af37;">📖 كيف تلعب:</strong><br><br>
+                        فريقين يتسابقون بالاجابة على الأسئلة واللاعب اللي يجاوب اول يجلس على الكنبة ولايمكنه المشاركة الا اذا قرر الخصم بعد الإجابة الصحيحة انهم يسحبونه من الكنبة.<br><br>
+                        الفريق اللي يجلس كامل على الكنبة يفوز.<br><br>
+                        <strong style="color:#e74c3c;">⚠️ تنبيه:</strong> من يضغط الجرس أولا لديه 10 ثواني لكتابة الإجابة اذا اخطأ تفتح الخيارات للفريق الاخر
+                    </p>
+                </div>
 <button class="btn bp" onclick="showScr('scrCreate')">إنشاء غرفة جديدة</button>
 <button class="btn bo" onclick="showScr('scrJoin')">الانضمام لغرفة</button>
 <button class="btn bo" onclick="goBack()">رجوع</button>
