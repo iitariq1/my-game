@@ -208,13 +208,77 @@
             bottom: 0;
             left: 0;
             right: 0;
-            background: rgba(12, 28, 60, 0.95);
+            background: rgba(30, 80, 50, 0.95);
             padding: 8px 15px;
             z-index: 1000;
             transition: all 0.3s;
             backdrop-filter: blur(10px);
-            border-top: 2px solid #d4af37;
+            border-top: 3px solid #2ecc71;
         }
+
+        /* مودال الاستبدال */
+        .replace-modal-overlay {
+            display: none;
+            position: fixed;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background: rgba(0,0,0,0.7);
+            z-index: 2000;
+            justify-content: center;
+            align-items: center;
+        }
+        .replace-modal-overlay.active { display: flex; }
+        .replace-modal {
+            background: linear-gradient(135deg, #1a3a2a, #0d2818);
+            border: 2px solid #2ecc71;
+            border-radius: 18px;
+            padding: 25px;
+            width: 90%;
+            max-width: 400px;
+            text-align: center;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.6);
+            animation: modalIn 0.25s ease-out;
+        }
+        @keyframes modalIn {
+            from { transform: scale(0.85); opacity: 0; }
+            to { transform: scale(1); opacity: 1; }
+        }
+        .replace-modal h3 { color: #2ecc71; margin-bottom: 15px; font-size: 1.1em; }
+        .replace-modal .modal-btns { display: flex; flex-direction: column; gap: 10px; margin: 15px 0; }
+        .replace-modal .modal-opt {
+            padding: 14px;
+            border-radius: 10px;
+            border: 2px solid transparent;
+            font-size: 14px;
+            cursor: pointer;
+            font-family: 'Cairo', sans-serif;
+            font-weight: 700;
+            transition: all 0.2s;
+        }
+        .replace-modal .modal-opt.opt-card {
+            background: rgba(231, 76, 60, 0.2);
+            color: #e74c3c;
+            border-color: rgba(231, 76, 60, 0.4);
+        }
+        .replace-modal .modal-opt.opt-option {
+            background: rgba(52, 152, 219, 0.2);
+            color: #3498db;
+            border-color: rgba(52, 152, 219, 0.4);
+        }
+        .replace-modal .modal-opt.selected-mode {
+            border-color: #2ecc71 !important;
+            box-shadow: 0 0 12px rgba(46, 204, 113, 0.4);
+        }
+        .replace-modal .modal-desc {
+            font-size: 0.85em;
+            color: #aaa;
+            margin-bottom: 15px;
+            min-height: 2em;
+        }
+        .replace-modal .modal-actions { display: flex; gap: 10px; }
+        .replace-modal .modal-actions button { flex: 1; padding: 12px; font-size: 14px; border-radius: 10px; border: none; cursor: pointer; font-family: 'Cairo', sans-serif; font-weight: 700; }
+        .replace-modal .btn-confirm { background: #27ae60; color: #fff; }
+        .replace-modal .btn-confirm:disabled { opacity: 0.4; cursor: not-allowed; }
+        .replace-modal .btn-cancel { background: rgba(255,255,255,0.15); color: #fff; }
 
         .clues-bar.expanded {
             max-height: 70vh;
@@ -287,12 +351,12 @@
             border-radius: 4px;
         }
 
-        .clue-opt.selected { background: #d4af37; color: #000; }
+        .clue-opt.selected { background: #2ecc71; color: #000; }
 
         .round-info {
             text-align: center;
             padding: 10px;
-            background: rgba(255,215,0,0.2);
+            background: rgba(46, 204, 113, 0.2);
             border-radius: 8px;
             margin: 10px 0;
         }
@@ -540,8 +604,11 @@
     <!-- شريط الأدلة السفلي (للجميع) -->
     <div id="cluesBar" class="clues-bar hidden">
         <div class="clues-bar-header" onclick="toggleCluesBar()">
-            <h4>📋 أدلة الطبيب الشرعي (<span id="cluesCount">0</span>/6)</h4>
-            <span class="toggle-icon">▲</span>
+            <h4 style="color:#2ecc71;">📋 أدلة الطبيب الشرعي (<span id="cluesCount">0</span>/6)</h4>
+            <div style="display:flex;align-items:center;gap:8px;">
+                <span style="font-size:0.75em;color:#aaa;">اضغط السهم لإظهار تفاصيل الأدلة</span>
+                <span class="toggle-icon">▲</span>
+            </div>
         </div>
         <div class="clues-summary" id="cluesSummary"></div>
         <div class="clues-full" id="cluesFull">
@@ -565,6 +632,26 @@
             </div>
             <!-- قائمة الأدلة للاعبين الآخرين -->
             <div id="cluesListFull"></div>
+        </div>
+    </div>
+
+    <!-- مودال استبدال البطاقة -->
+    <div class="replace-modal-overlay" id="replaceModal">
+        <div class="replace-modal">
+            <h3>🔄 استبدال: <span id="replaceCardTitle">-</span></h3>
+            <div class="modal-btns">
+                <button class="modal-opt opt-card" id="modeCardBtn" onclick="setReplaceMode('card')">
+                    🔄 تبديل البطاقة كاملة
+                </button>
+                <button class="modal-opt opt-option" id="modeOptionBtn" onclick="setReplaceMode('option')">
+                    ✏️ تبديل خيار واحد فقط
+                </button>
+            </div>
+            <div class="modal-desc" id="replaceDesc">اختر طريقة الاستبدال</div>
+            <div class="modal-actions">
+                <button class="btn-confirm" id="replaceConfirmBtn" onclick="confirmReplace()" disabled>✓ تأكيد</button>
+                <button class="btn-cancel" onclick="cancelReplace()">✖ إلغاء</button>
+            </div>
         </div>
     </div>
 
@@ -710,6 +797,11 @@
                 var t = arr[i]; arr[i] = arr[j]; arr[j] = t;
             }
             return arr;
+        }
+        function sortByName(players) {
+            return players.slice().sort(function(a, b) {
+                return a.name.localeCompare(b.name, 'ar');
+            });
         }
         function showScreen(id) {
             document.querySelectorAll('.screen').forEach(function(s) { s.classList.remove('active'); });
@@ -967,7 +1059,7 @@
             
             var html = '<h4 style="color:#f39c12;margin-bottom:12px;">👁️ أسلحة وأدلة جميع اللاعبين:</h4>';
             
-            game.players.forEach(function(player) {
+            sortByName(game.players).forEach(function(player) {
                 if (player.role === 'forensic') return;
                 
                 var isMe = player.id === game.oderId;
@@ -1054,7 +1146,7 @@
             var allDiv = document.getElementById('allPlayersItems');
             allDiv.innerHTML = '<h4 style="margin-bottom:10px;color:#f39c12;">👁️ أسلحة وأدلة جميع اللاعبين:</h4>';
             
-            game.players.forEach(function(player) {
+            sortByName(game.players).forEach(function(player) {
                 if (player.role === 'forensic') return;
                 
                 var isMe = player.id === game.oderId;
@@ -1189,13 +1281,13 @@
                     var selectedClue = game.clues.find(function(c) { return c.cardIndex === idx; });
                     
                     full.innerHTML += '<div class="clue-card" style="background:rgba(255,255,255,0.15);border-radius:10px;padding:12px;margin-bottom:12px;">';
-                    full.innerHTML += '<strong style="color:#d4af37;display:block;margin-bottom:8px;">' + card.title + '</strong>';
+                    full.innerHTML += '<strong style="color:#2ecc71;display:block;margin-bottom:8px;">' + card.title + '</strong>';
                     full.innerHTML += '<div style="display:flex;flex-wrap:wrap;gap:6px;">';
                     
                     card.options.forEach(function(opt) {
                         var isSelected = selectedClue && selectedClue.option === opt;
                         full.innerHTML += '<span class="clue-tag" style="' + 
-                            (isSelected ? 'background:#d4af37;color:#000;font-weight:bold;font-size:0.9em;padding:6px 12px;border:2px solid #fff;box-shadow:0 0 10px rgba(255,215,0,0.5);' : 'background:rgba(255,255,255,0.2);opacity:0.7;') + 
+                            (isSelected ? 'background:#2ecc71;color:#000;font-weight:bold;font-size:0.9em;padding:6px 12px;border:2px solid #fff;box-shadow:0 0 10px rgba(46,204,113,0.5);' : 'background:rgba(255,255,255,0.2);opacity:0.7;') + 
                             '">' + opt + (isSelected ? ' ✓' : '') + '</span>';
                     });
                     
@@ -1261,45 +1353,50 @@
                 div.innerHTML = html;
                 container.appendChild(div);
             });
-
-            if (selectedCardToReplace !== null) {
-                var replaceCard = game.cards[selectedCardToReplace];
-                
-                container.innerHTML += '<div class="alert alert-warning" style="margin-top:10px;">' +
-                    '<p style="margin-bottom:10px;"><strong>استبدال: ' + replaceCard.title + '</strong></p>' +
-                    '<div style="display:flex;gap:8px;margin-bottom:12px;">' +
-                    '<button onclick="setReplaceMode(\'card\')" class="btn-small ' + (replaceMode === 'card' ? 'btn-danger' : 'btn-secondary') + '" style="flex:1;">🔄 تبديل البطاقة كاملة</button>' +
-                    '<button onclick="setReplaceMode(\'option\')" class="btn-small ' + (replaceMode === 'option' ? 'btn-danger' : 'btn-secondary') + '" style="flex:1;">✏️ تبديل خيار واحد</button>' +
-                    '</div>' +
-                    '<p style="font-size:0.85em;opacity:0.8;margin-bottom:10px;">' + 
-                    (replaceMode === 'card' ? '🔄 سيتم استبدال البطاقة كاملة ببطاقة أخرى' : '✏️ سيتم إلغاء الخيار الحالي لتتمكن من اختيار خيار آخر من نفس البطاقة') + 
-                    '</p>' +
-                    '<button onclick="confirmReplace()" class="btn-small btn-danger">✓ تأكيد</button> ' +
-                    '<button onclick="cancelReplace()" class="btn-small btn-secondary">✖ إلغاء</button>' +
-                    '</div>';
-            }
         }
 
         function selectForReplace(idx) {
             selectedCardToReplace = idx;
-            renderForensicCards();
+            replaceMode = null;
+            var modal = document.getElementById('replaceModal');
+            document.getElementById('replaceCardTitle').textContent = game.cards[idx].title;
+            document.getElementById('replaceDesc').textContent = 'اختر طريقة الاستبدال';
+            document.getElementById('replaceConfirmBtn').disabled = true;
+            document.getElementById('modeCardBtn').classList.remove('selected-mode');
+            document.getElementById('modeOptionBtn').classList.remove('selected-mode');
+            modal.classList.add('active');
         }
 
-        var replaceMode = 'card'; // 'card' أو 'option'
+        var replaceMode = null;
 
         function setReplaceMode(mode) {
             replaceMode = mode;
-            renderForensicCards();
+            var cardBtn = document.getElementById('modeCardBtn');
+            var optBtn = document.getElementById('modeOptionBtn');
+            var desc = document.getElementById('replaceDesc');
+            var confirmBtn = document.getElementById('replaceConfirmBtn');
+            
+            cardBtn.classList.remove('selected-mode');
+            optBtn.classList.remove('selected-mode');
+            
+            if (mode === 'card') {
+                cardBtn.classList.add('selected-mode');
+                desc.textContent = '🔄 سيتم استبدال البطاقة كاملة ببطاقة عشوائية أخرى';
+            } else {
+                optBtn.classList.add('selected-mode');
+                desc.textContent = '✏️ سيتم إلغاء الخيار الحالي لتتمكن من اختيار خيار آخر من نفس البطاقة';
+            }
+            confirmBtn.disabled = false;
         }
 
         function cancelReplace() {
             selectedCardToReplace = null;
-            replaceMode = 'card';
-            renderForensicCards();
+            replaceMode = null;
+            document.getElementById('replaceModal').classList.remove('active');
         }
 
         function confirmReplace() {
-            if (selectedCardToReplace === null) return;
+            if (selectedCardToReplace === null || !replaceMode) return;
 
             var idx = selectedCardToReplace;
             var currentCard = game.cards[idx];
@@ -1346,7 +1443,8 @@
             });
 
             selectedCardToReplace = null;
-            replaceMode = 'card';
+            replaceMode = null;
+            document.getElementById('replaceModal').classList.remove('active');
             renderForensicCards();
             updateCluesBar();
         }
@@ -1403,7 +1501,7 @@
                 container.appendChild(alertDiv);
             }
 
-            game.players.forEach(function(p) {
+            sortByName(game.players).forEach(function(p) {
                 if (p.id === game.oderId) return;
 
                 var card = document.createElement('div');
