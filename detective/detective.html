@@ -192,14 +192,31 @@
             margin-bottom: 15px;
         }
 
-        .role-card.murderer { background: linear-gradient(135deg, #c0392b, #e74c3c); }
-        .role-card.accomplice { background: linear-gradient(135deg, #8e44ad, #9b59b6); }
-        .role-card.witness { background: linear-gradient(135deg, #f39c12, #e67e22); }
-        .role-card.forensic { background: linear-gradient(135deg, #2980b9, #3498db); }
-        .role-card.investigator { background: linear-gradient(135deg, #27ae60, #2ecc71); }
+        .role-card.murderer { background: rgba(12, 28, 60, 0.85); border: 2px solid #e74c3c; }
+        .role-card.accomplice { background: rgba(12, 28, 60, 0.85); border: 2px solid #9b59b6; }
+        .role-card.witness { background: rgba(12, 28, 60, 0.85); border: 2px solid #e67e22; }
+        .role-card.forensic { background: rgba(12, 28, 60, 0.85); border: 2px solid #3498db; }
+        .role-card.investigator { background: rgba(12, 28, 60, 0.85); border: 2px solid #2ecc71; }
 
         .role-icon { font-size: 2.5em; }
-        .role-title { font-size: 1.3em; margin: 8px 0; }
+        .role-title {
+            font-size: 1.3em;
+            margin: 8px auto;
+            display: inline-block;
+            padding: 6px 25px;
+            border-radius: 10px;
+            font-weight: 700;
+        }
+        .role-card.murderer .role-title { background: linear-gradient(135deg, #c0392b, #e74c3c); color: #fff; }
+        .role-card.accomplice .role-title { background: linear-gradient(135deg, #8e44ad, #9b59b6); color: #fff; }
+        .role-card.witness .role-title { background: linear-gradient(135deg, #f39c12, #e67e22); color: #fff; }
+        .role-card.forensic .role-title { background: linear-gradient(135deg, #2980b9, #3498db); color: #fff; }
+        .role-card.investigator .role-title { background: linear-gradient(135deg, #27ae60, #2ecc71); color: #fff; }
+        .role-card.murderer .role-desc { color: #e74c3c; }
+        .role-card.accomplice .role-desc { color: #9b59b6; }
+        .role-card.witness .role-desc { color: #e67e22; }
+        .role-card.forensic .role-desc { color: #3498db; }
+        .role-card.investigator .role-desc { color: #2ecc71; }
         .role-desc { font-size: 0.9em; opacity: 0.9; }
 
         /* شريط الأدلة السفلي */
