@@ -576,6 +576,16 @@
                 </div>
             </div>
             
+            <div style="margin: 20px 0;">
+                <label style="display: block; text-align: center; font-weight: 700; color: #ffffff; margin-bottom: 12px; text-shadow: 0 2px 4px rgba(0, 0, 0, 0.5);">🏆 نقاط الفوز:</label>
+                <div style="display: flex; gap: 10px; justify-content: center;">
+                    <button class="category-btn win-points-btn" data-points="2" style="padding:14px 24px;">2</button>
+                    <button class="category-btn win-points-btn active" data-points="3" style="padding:14px 24px;">3</button>
+                    <button class="category-btn win-points-btn" data-points="4" style="padding:14px 24px;">4</button>
+                    <button class="category-btn win-points-btn" data-points="5" style="padding:14px 24px;">5</button>
+                </div>
+            </div>
+            
             <button class="btn btn-full btn-success" id="confirmCreateBtn">✅ إنشاء الغرفة</button>
             <button class="btn btn-full btn-secondary" id="backFromCreate">🔙 رجوع</button>
         </div>
@@ -621,6 +631,7 @@
 
             <div class="status">
                 <p>الفئة المختارة: <span id="displayCategory" style="color: #fbbf24;">حيوانات</span></p>
+                <p>🏆 نقاط الفوز: <span id="displayWinPoints" style="color: #fbbf24;">3</span></p>
             </div>
 
             <h2>اللاعبين (<span id="playerCount">0</span>)</h2>
@@ -832,6 +843,14 @@
                 <button class="btn btn-full btn-success" id="nextRoundBtn">🎮 جولة جديدة</button>
                 <button class="btn btn-full btn-gold" id="newGameBtn">🔄 لعبة جديدة (صفر النقاط)</button>
                 <button class="btn btn-full btn-secondary" id="backToMenuBtn">🏠 العودة للقائمة الرئيسية</button>
+            </div>
+            
+            <!-- ✨ زر الخروج لجميع اللاعبين -->
+            <div id="playerLeaveResult" class="hidden" style="margin-top: 15px;">
+                <div class="status">
+                    <p>⏳ انتظر المضيف يبدأ الجولة الجديدة...</p>
+                </div>
+                <button class="btn btn-full btn-danger" id="leaveFromResultBtn">🚪 مغادرة الغرفة</button>
             </div>
         </div>
     </div>
@@ -1065,6 +1084,65 @@
         // متغير لتخزين الفئة المختارة مؤقتاً
         let selectedCategory = 'حيوانات';
         let selectedCategoryForNextRound = 'حيوانات';
+        let selectedWinPoints = 3;
+        
+        // ✨ منع تكرار حساب النقاط
+        let lastScoredRoundId = null;
+        
+        // ✨ حفظ الجلسة لمنع الطرد عند التحديث
+        function saveSession() {
+            try {
+                sessionStorage.setItem('menBra_session', JSON.stringify({
+                    roomCode: state.roomCode,
+                    playerId: state.playerId,
+                    playerName: state.playerName,
+                    isHost: state.isHost
+                }));
+            } catch(e) {}
+        }
+        
+        function loadSession() {
+            try {
+                const saved = sessionStorage.getItem('menBra_session');
+                if (saved) return JSON.parse(saved);
+            } catch(e) {}
+            return null;
+        }
+        
+        function clearSession() {
+            try { sessionStorage.removeItem('menBra_session'); } catch(e) {}
+        }
+        
+        // ✨ محاولة إعادة الاتصال عند تحميل الصفحة
+        setTimeout(() => {
+            if (!db) return;
+            const session = loadSession();
+            if (session && session.roomCode && session.playerId) {
+                console.log('🔄 محاولة إعادة الاتصال بالغرفة:', session.roomCode);
+                db.ref(`rooms/${session.roomCode}`).once('value').then(snapshot => {
+                    if (snapshot.exists()) {
+                        const roomData = snapshot.val();
+                        if (roomData.players && roomData.players[session.playerId]) {
+                            console.log('✅ تم إعادة الاتصال بنجاح!');
+                            state.roomCode = session.roomCode;
+                            state.playerId = session.playerId;
+                            state.playerName = session.playerName;
+                            state.isHost = session.isHost || (roomData.host === session.playerId);
+                            listenToRoom();
+                        } else {
+                            console.log('⚠️ اللاعب غير موجود في الغرفة');
+                            clearSession();
+                        }
+                    } else {
+                        console.log('⚠️ الغرفة غير موجودة');
+                        clearSession();
+                    }
+                }).catch(e => {
+                    console.log('⚠️ خطأ في إعادة الاتصال:', e);
+                    clearSession();
+                });
+            }
+        }, 1500);
 
         // أزرار التنقل للشاشات
         document.getElementById('goToCreateBtn').addEventListener('click', () => {
@@ -1084,11 +1162,21 @@
         });
 
         // أزرار الفئات في شاشة الإنشاء
-        document.querySelectorAll('#createRoomScreen .category-btn').forEach(btn => {
+        document.querySelectorAll('#createRoomScreen .category-btn:not(.win-points-btn)').forEach(btn => {
             btn.addEventListener('click', function() {
-                document.querySelectorAll('#createRoomScreen .category-btn').forEach(b => b.classList.remove('active'));
+                document.querySelectorAll('#createRoomScreen .category-btn:not(.win-points-btn)').forEach(b => b.classList.remove('active'));
                 this.classList.add('active');
                 selectedCategory = this.dataset.category;
+            });
+        });
+        
+        // أزرار نقاط الفوز
+        document.querySelectorAll('.win-points-btn').forEach(btn => {
+            btn.addEventListener('click', function() {
+                document.querySelectorAll('.win-points-btn').forEach(b => b.classList.remove('active'));
+                this.classList.add('active');
+                selectedWinPoints = parseInt(this.dataset.points);
+                console.log('🏆 نقاط الفوز:', selectedWinPoints);
             });
         });
 
@@ -1121,6 +1209,7 @@
                 code,
                 host: playerId,
                 category: selectedCategory,
+                winPoints: selectedWinPoints,
                 state: 'lobby',
                 players: {},
                 scores: {},
@@ -1140,6 +1229,7 @@
                 state.isHost = true;
                 state.category = selectedCategory;
 
+                saveSession();
                 listenToRoom();
                 showScreen('lobbyScreen');
             } catch (e) {
@@ -1179,6 +1269,7 @@
                 state.playerName = name;
                 state.isHost = false;
 
+                saveSession();
                 listenToRoom();
                 showScreen('lobbyScreen');
             } catch (e) {
@@ -1188,18 +1279,63 @@
 
         function listenToRoom() {
             roomRef = db.ref(`rooms/${state.roomCode}`);
+            
+            // ✨ عند فقدان الاتصال مؤقتاً، لا نحذف اللاعب
+            // فقط نحدّث حالة الاتصال
+            const connectedRef = db.ref('.info/connected');
+            connectedRef.on('value', (snap) => {
+                if (snap.val() === true && roomRef) {
+                    // عند إعادة الاتصال، تأكد من وجود اللاعب
+                    roomRef.child(`players/${state.playerId}`).once('value').then(playerSnap => {
+                        if (!playerSnap.exists() && state.playerName) {
+                            // أعد إضافة اللاعب إذا تمت إزالته
+                            roomRef.child(`players/${state.playerId}`).set({ 
+                                name: state.playerName, 
+                                ready: false 
+                            });
+                        }
+                    });
+                }
+            });
+            
             roomRef.on('value', (snapshot) => {
-                state.roomData = snapshot.val();
+                const data = snapshot.val();
+                if (!data) {
+                    // الغرفة حُذفت
+                    clearSession();
+                    roomRef.off();
+                    roomRef = null;
+                    state = {
+                        roomCode: '',
+                        playerId: '',
+                        playerName: '',
+                        isHost: false,
+                        category: 'حيوانات',
+                        roomData: null
+                    };
+                    showScreen('homeScreen');
+                    alert('تم إغلاق الغرفة من قبل المضيف');
+                    return;
+                }
+                state.roomData = data;
                 updateUI();
             });
         }
 
         function updateUI() {
             if (!state.roomData) return;
+            
+            // ✨ تحقق من وجود اللاعب في الغرفة
+            if (state.roomData.players && !state.roomData.players[state.playerId]) {
+                // اللاعب غير موجود - قد يكون تم حذفه
+                console.log('⚠️ اللاعب غير موجود في الغرفة');
+                return;
+            }
 
             const currentState = state.roomData.state;
 
             if (currentState === 'lobby') {
+                showScreen('lobbyScreen');
                 updateLobby();
             } else if (currentState === 'revealing') {
                 showWordScreen();
@@ -1263,6 +1399,7 @@
         function updateLobby() {
             document.getElementById('displayCode').textContent = state.roomCode;
             document.getElementById('displayCategory').textContent = state.roomData.category;
+            document.getElementById('displayWinPoints').textContent = state.roomData.winPoints || 3;
 
             const players = Object.values(state.roomData.players || {});
             document.getElementById('playerCount').textContent = players.length;
@@ -1704,7 +1841,7 @@
             document.getElementById('hostFreeControls').classList.toggle('hidden', !state.isHost);
         }
 
-        function showResults() {
+        async function showResults() {
             showScreen('resultScreen');
 
             const round = state.roomData.currentRound;
@@ -1715,13 +1852,15 @@
 
             // حساب الأصوات
             const voteCount = {};
-            Object.values(round.votes).forEach(v => {
+            const votes = round.votes || {};
+            Object.values(votes).forEach(v => {
                 voteCount[v] = (voteCount[v] || 0) + 1;
             });
 
-            const mostVoted = Object.keys(voteCount).reduce((a, b) => 
+            const voteKeys = Object.keys(voteCount);
+            const mostVoted = voteKeys.length > 0 ? voteKeys.reduce((a, b) => 
                 voteCount[a] > voteCount[b] ? a : b
-            );
+            ) : null;
 
             const impostorCaught = mostVoted === round.impostorId;
             const impostorGuessCorrect = round.impostorGuess === round.mainWord;
@@ -1754,12 +1893,15 @@
             resultsDiv.innerHTML += '</div>';
 
             // ✨ نظام النقاط المحدّث - نقطة واحدة فقط لمن خمّن صح
-            if (state.isHost) {
+            // ✨ إصلاح: منع تكرار حساب النقاط باستخدام roundId
+            const roundId = round.impostorId + '_' + round.mainWord;
+            if (state.isHost && lastScoredRoundId !== roundId && !round.scoresCalculated) {
+                lastScoredRoundId = roundId;
                 const newScores = { ...state.roomData.scores };
 
                 // نقطة واحدة فقط للاعبين اللي صوتوا على المتطفل بشكل صحيح
                 if (impostorCaught) {
-                    Object.entries(round.votes).forEach(([voterId, votedId]) => {
+                    Object.entries(votes).forEach(([voterId, votedId]) => {
                         if (votedId === round.impostorId) {
                             newScores[voterId] = (newScores[voterId] || 0) + 1;
                             console.log(`✅ ${players[voterId].name} حصل على نقطة (صوّت صح)`);
@@ -1773,7 +1915,12 @@
                     console.log(`✅ ${players[round.impostorId].name} (المتطفل) حصل على نقطة (خمّن صح)`);
                 }
 
-                roomRef.child('scores').set(newScores);
+                // ✨ وضع علامة أن النقاط تم حسابها + تحديث النقاط
+                await roomRef.update({
+                    scores: newScores,
+                    'currentRound/scoresCalculated': true
+                });
+                return; // سيتم إعادة استدعاء showResults بعد التحديث
             }
 
             // عرض النقاط
@@ -1793,7 +1940,8 @@
             });
 
             // فحص الفائز
-            const winner = sortedScores.find(([id, score]) => score >= 5);
+            const requiredPoints = state.roomData.winPoints || 3;
+            const winner = sortedScores.find(([id, score]) => score >= requiredPoints);
             if (winner) {
                 const winnerBox = document.getElementById('winnerAnnounce');
                 winnerBox.classList.remove('hidden');
@@ -1817,6 +1965,7 @@
             }
 
             document.getElementById('hostResult').classList.toggle('hidden', !state.isHost);
+            document.getElementById('playerLeaveResult').classList.toggle('hidden', state.isHost);
         }
 
         // أزرار الفئات في شاشة النتائج
@@ -1842,6 +1991,8 @@
                 selectedCategoryForNextRound = state.roomData.category || 'حيوانات';
             }
             
+            lastScoredRoundId = null;
+            
             try {
                 await roomRef.update({
                     category: selectedCategoryForNextRound,
@@ -1858,6 +2009,8 @@
         // ✨ إصلاح: زر اللعبة الجديدة
         document.getElementById('newGameBtn').addEventListener('click', async () => {
             console.log('🔄 بدء لعبة جديدة (صفر النقاط)');
+            
+            lastScoredRoundId = null;
             
             try {
                 const scores = {};
@@ -1895,6 +2048,7 @@
                         roomRef = null;
                     }
                     
+                    clearSession();
                     state = {
                         roomCode: '',
                         playerId: '',
@@ -1922,6 +2076,7 @@
                 }
                 roomRef.off();
             }
+            clearSession();
             state = {
                 roomCode: '',
                 playerId: '',
@@ -1931,6 +2086,28 @@
                 roomData: null
             };
             showScreen('homeScreen');
+        });
+
+        // ✨ زر مغادرة من شاشة النتائج (للاعبين غير المضيف)
+        document.getElementById('leaveFromResultBtn').addEventListener('click', async () => {
+            if (confirm('هل أنت متأكد من المغادرة؟')) {
+                if (roomRef) {
+                    await roomRef.child(`players/${state.playerId}`).remove();
+                    await roomRef.child(`scores/${state.playerId}`).remove();
+                    roomRef.off();
+                    roomRef = null;
+                }
+                clearSession();
+                state = {
+                    roomCode: '',
+                    playerId: '',
+                    playerName: '',
+                    isHost: false,
+                    category: 'حيوانات',
+                    roomData: null
+                };
+                showScreen('homeScreen');
+            }
         });
 
         document.getElementById('backToHomeBtn').addEventListener('click', async () => {
@@ -1944,6 +2121,7 @@
                 roomRef.off();
                 roomRef = null;
             }
+            clearSession();
             state = {
                 roomCode: '',
                 playerId: '',
