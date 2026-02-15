@@ -576,23 +576,13 @@
                 </div>
             </div>
             
-            <div style="margin: 20px 0;">
-                <label style="display: block; text-align: center; font-weight: 700; color: #ffffff; margin-bottom: 12px; text-shadow: 0 2px 4px rgba(0, 0, 0, 0.5);">🏆 نقاط الفوز:</label>
-                <div style="display: flex; gap: 10px; justify-content: center;">
-                    <button class="category-btn win-points-btn" data-points="2" style="padding:14px 24px;">2</button>
-                    <button class="category-btn win-points-btn active" data-points="3" style="padding:14px 24px;">3</button>
-                    <button class="category-btn win-points-btn" data-points="4" style="padding:14px 24px;">4</button>
-                    <button class="category-btn win-points-btn" data-points="5" style="padding:14px 24px;">5</button>
-                </div>
-            </div>
-            
             <button class="btn btn-full btn-success" id="confirmCreateBtn">✅ إنشاء الغرفة</button>
             <button class="btn btn-full btn-secondary" id="backFromCreate">🔙 رجوع</button>
         </div>
 
         <!-- شاشة الانضمام -->
         <div id="joinRoomScreen" class="card hidden">
-            <div class="ramadan">☪ أهلاً وسهلاً ☪</div>
+            <div class="ramadan">☪ رمضان كريم ☪</div>
             <h2>انضمام لغرفة</h2>
             
             <input type="text" id="joinPlayerName" placeholder="اسمك" maxlength="15">
@@ -631,7 +621,6 @@
 
             <div class="status">
                 <p>الفئة المختارة: <span id="displayCategory" style="color: #fbbf24;">حيوانات</span></p>
-                <p>🏆 نقاط الفوز: <span id="displayWinPoints" style="color: #fbbf24;">3</span></p>
             </div>
 
             <h2>اللاعبين (<span id="playerCount">0</span>)</h2>
@@ -642,7 +631,7 @@
             </div>
 
             <div id="hostControls" class="hidden">
-                <button class="btn btn-full btn-success" id="startBtn">▶️ ابدأ الجيم</button>
+                <button class="btn btn-full btn-success" id="startBtn">▶️ ابدأ اللعبة</button>
             </div>
 
             <button class="btn btn-full btn-danger" id="leaveBtn">🚪 مغادرة</button>
@@ -651,7 +640,7 @@
 
         <!-- شاشة الكلمة -->
         <div id="wordScreen" class="card hidden">
-            <div class="ramadan">☪ تبارك الرحمن ☪</div>
+            <div class="ramadan">☪ رمضان كريم ☪</div>
             <h2 id="wordTitle">كلمتك</h2>
 
             <div id="beforeReveal">
@@ -831,26 +820,30 @@
             </div>
 
             <div id="hostResult" class="hidden">
-                <div id="categorySelectionForNextRound" class="hidden" style="margin: 20px 0;">
-                    <label style="display: block; text-align: center; font-weight: 700; color: #ffffff; margin-bottom: 12px; text-shadow: 0 2px 4px rgba(0, 0, 0, 0.5);">اختر الفئة للجولة الجديدة:</label>
-                    <div class="category-grid">
-                        <button class="category-btn-result active" data-category="حيوانات">🦁 حيوانات</button>
-                        <button class="category-btn-result" data-category="أكل">🍕 أكل</button>
-                        <button class="category-btn-result" data-category="أماكن">🏖️ أماكن</button>
-                        <button class="category-btn-result" data-category="وظائف">👨‍⚕️ وظائف</button>
-                    </div>
-                </div>
                 <button class="btn btn-full btn-success" id="nextRoundBtn">🎮 جولة جديدة</button>
                 <button class="btn btn-full btn-gold" id="newGameBtn">🔄 لعبة جديدة (صفر النقاط)</button>
                 <button class="btn btn-full btn-secondary" id="backToMenuBtn">🏠 العودة للقائمة الرئيسية</button>
             </div>
             
-            <!-- ✨ زر الخروج لجميع اللاعبين -->
-            <div id="playerLeaveResult" class="hidden" style="margin-top: 15px;">
-                <div class="status">
-                    <p>⏳ انتظر المضيف يبدأ الجولة الجديدة...</p>
+            <!-- نافذة اختيار الفئة للجولة الجديدة -->
+            <div id="categoryModal" class="hidden" style="position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.8); z-index: 1000; display: flex; align-items: center; justify-content: center;">
+                <div style="background: rgba(12, 28, 60, 0.95); border-radius: 20px; padding: 30px; max-width: 400px; width: 90%; border: 2px solid rgba(212, 175, 55, 0.5);">
+                    <h3 style="color: #d4af37; text-align: center; margin-bottom: 20px; font-size: 22px;">اختر الفئة للجولة الجديدة 🎯</h3>
+                    <div class="category-grid" id="categoryModalGrid">
+                        <button class="category-btn-result active" data-category="حيوانات">🦁 حيوانات</button>
+                        <button class="category-btn-result" data-category="أكل">🍕 أكل</button>
+                        <button class="category-btn-result" data-category="أماكن">🏖️ أماكن</button>
+                        <button class="category-btn-result" data-category="وظائف">👨‍⚕️ وظائف</button>
+                        <button class="category-btn-result" data-category="مدن سعودية:"> مدن سعودية</button>
+                        <button class="category-btn-result" data-category="دول"> دول</button>
+                        <button class="category-btn-result" data-category="مسلسلات"> مسلسلات</button>
+                        <button class="category-btn-result" data-category="أثاث"> أثاث</button>
+                        <button class="category-btn-result" data-category="لاعبين"> لاعبين</button>
+                        <button class="category-btn-result" data-category="أندية"> أندية</button>
+                    </div>
+                    <button class="btn btn-full btn-success" id="confirmCategoryBtn" style="margin-top: 15px;">✅ تأكيد وبدء الجولة</button>
+                    <button class="btn btn-full btn-secondary" id="cancelCategoryBtn" style="margin-top: 10px;">❌ إلغاء</button>
                 </div>
-                <button class="btn btn-full btn-danger" id="leaveFromResultBtn">🚪 مغادرة الغرفة</button>
             </div>
         </div>
     </div>
@@ -1084,65 +1077,6 @@
         // متغير لتخزين الفئة المختارة مؤقتاً
         let selectedCategory = 'حيوانات';
         let selectedCategoryForNextRound = 'حيوانات';
-        let selectedWinPoints = 3;
-        
-        // ✨ منع تكرار حساب النقاط
-        let lastScoredRoundId = null;
-        
-        // ✨ حفظ الجلسة لمنع الطرد عند التحديث
-        function saveSession() {
-            try {
-                sessionStorage.setItem('menBra_session', JSON.stringify({
-                    roomCode: state.roomCode,
-                    playerId: state.playerId,
-                    playerName: state.playerName,
-                    isHost: state.isHost
-                }));
-            } catch(e) {}
-        }
-        
-        function loadSession() {
-            try {
-                const saved = sessionStorage.getItem('menBra_session');
-                if (saved) return JSON.parse(saved);
-            } catch(e) {}
-            return null;
-        }
-        
-        function clearSession() {
-            try { sessionStorage.removeItem('menBra_session'); } catch(e) {}
-        }
-        
-        // ✨ محاولة إعادة الاتصال عند تحميل الصفحة
-        setTimeout(() => {
-            if (!db) return;
-            const session = loadSession();
-            if (session && session.roomCode && session.playerId) {
-                console.log('🔄 محاولة إعادة الاتصال بالغرفة:', session.roomCode);
-                db.ref(`rooms/${session.roomCode}`).once('value').then(snapshot => {
-                    if (snapshot.exists()) {
-                        const roomData = snapshot.val();
-                        if (roomData.players && roomData.players[session.playerId]) {
-                            console.log('✅ تم إعادة الاتصال بنجاح!');
-                            state.roomCode = session.roomCode;
-                            state.playerId = session.playerId;
-                            state.playerName = session.playerName;
-                            state.isHost = session.isHost || (roomData.host === session.playerId);
-                            listenToRoom();
-                        } else {
-                            console.log('⚠️ اللاعب غير موجود في الغرفة');
-                            clearSession();
-                        }
-                    } else {
-                        console.log('⚠️ الغرفة غير موجودة');
-                        clearSession();
-                    }
-                }).catch(e => {
-                    console.log('⚠️ خطأ في إعادة الاتصال:', e);
-                    clearSession();
-                });
-            }
-        }, 1500);
 
         // أزرار التنقل للشاشات
         document.getElementById('goToCreateBtn').addEventListener('click', () => {
@@ -1162,21 +1096,11 @@
         });
 
         // أزرار الفئات في شاشة الإنشاء
-        document.querySelectorAll('#createRoomScreen .category-btn:not(.win-points-btn)').forEach(btn => {
+        document.querySelectorAll('#createRoomScreen .category-btn').forEach(btn => {
             btn.addEventListener('click', function() {
-                document.querySelectorAll('#createRoomScreen .category-btn:not(.win-points-btn)').forEach(b => b.classList.remove('active'));
+                document.querySelectorAll('#createRoomScreen .category-btn').forEach(b => b.classList.remove('active'));
                 this.classList.add('active');
                 selectedCategory = this.dataset.category;
-            });
-        });
-        
-        // أزرار نقاط الفوز
-        document.querySelectorAll('.win-points-btn').forEach(btn => {
-            btn.addEventListener('click', function() {
-                document.querySelectorAll('.win-points-btn').forEach(b => b.classList.remove('active'));
-                this.classList.add('active');
-                selectedWinPoints = parseInt(this.dataset.points);
-                console.log('🏆 نقاط الفوز:', selectedWinPoints);
             });
         });
 
@@ -1209,7 +1133,6 @@
                 code,
                 host: playerId,
                 category: selectedCategory,
-                winPoints: selectedWinPoints,
                 state: 'lobby',
                 players: {},
                 scores: {},
@@ -1229,7 +1152,6 @@
                 state.isHost = true;
                 state.category = selectedCategory;
 
-                saveSession();
                 listenToRoom();
                 showScreen('lobbyScreen');
             } catch (e) {
@@ -1269,7 +1191,6 @@
                 state.playerName = name;
                 state.isHost = false;
 
-                saveSession();
                 listenToRoom();
                 showScreen('lobbyScreen');
             } catch (e) {
@@ -1279,63 +1200,18 @@
 
         function listenToRoom() {
             roomRef = db.ref(`rooms/${state.roomCode}`);
-            
-            // ✨ عند فقدان الاتصال مؤقتاً، لا نحذف اللاعب
-            // فقط نحدّث حالة الاتصال
-            const connectedRef = db.ref('.info/connected');
-            connectedRef.on('value', (snap) => {
-                if (snap.val() === true && roomRef) {
-                    // عند إعادة الاتصال، تأكد من وجود اللاعب
-                    roomRef.child(`players/${state.playerId}`).once('value').then(playerSnap => {
-                        if (!playerSnap.exists() && state.playerName) {
-                            // أعد إضافة اللاعب إذا تمت إزالته
-                            roomRef.child(`players/${state.playerId}`).set({ 
-                                name: state.playerName, 
-                                ready: false 
-                            });
-                        }
-                    });
-                }
-            });
-            
             roomRef.on('value', (snapshot) => {
-                const data = snapshot.val();
-                if (!data) {
-                    // الغرفة حُذفت
-                    clearSession();
-                    roomRef.off();
-                    roomRef = null;
-                    state = {
-                        roomCode: '',
-                        playerId: '',
-                        playerName: '',
-                        isHost: false,
-                        category: 'حيوانات',
-                        roomData: null
-                    };
-                    showScreen('homeScreen');
-                    alert('تم إغلاق الغرفة من قبل المضيف');
-                    return;
-                }
-                state.roomData = data;
+                state.roomData = snapshot.val();
                 updateUI();
             });
         }
 
         function updateUI() {
             if (!state.roomData) return;
-            
-            // ✨ تحقق من وجود اللاعب في الغرفة
-            if (state.roomData.players && !state.roomData.players[state.playerId]) {
-                // اللاعب غير موجود - قد يكون تم حذفه
-                console.log('⚠️ اللاعب غير موجود في الغرفة');
-                return;
-            }
 
             const currentState = state.roomData.state;
 
             if (currentState === 'lobby') {
-                showScreen('lobbyScreen');
                 updateLobby();
             } else if (currentState === 'revealing') {
                 showWordScreen();
@@ -1399,7 +1275,6 @@
         function updateLobby() {
             document.getElementById('displayCode').textContent = state.roomCode;
             document.getElementById('displayCategory').textContent = state.roomData.category;
-            document.getElementById('displayWinPoints').textContent = state.roomData.winPoints || 3;
 
             const players = Object.values(state.roomData.players || {});
             document.getElementById('playerCount').textContent = players.length;
@@ -1841,7 +1716,7 @@
             document.getElementById('hostFreeControls').classList.toggle('hidden', !state.isHost);
         }
 
-        async function showResults() {
+        function showResults() {
             showScreen('resultScreen');
 
             const round = state.roomData.currentRound;
@@ -1852,15 +1727,13 @@
 
             // حساب الأصوات
             const voteCount = {};
-            const votes = round.votes || {};
-            Object.values(votes).forEach(v => {
+            Object.values(round.votes).forEach(v => {
                 voteCount[v] = (voteCount[v] || 0) + 1;
             });
 
-            const voteKeys = Object.keys(voteCount);
-            const mostVoted = voteKeys.length > 0 ? voteKeys.reduce((a, b) => 
+            const mostVoted = Object.keys(voteCount).reduce((a, b) => 
                 voteCount[a] > voteCount[b] ? a : b
-            ) : null;
+            );
 
             const impostorCaught = mostVoted === round.impostorId;
             const impostorGuessCorrect = round.impostorGuess === round.mainWord;
@@ -1893,15 +1766,12 @@
             resultsDiv.innerHTML += '</div>';
 
             // ✨ نظام النقاط المحدّث - نقطة واحدة فقط لمن خمّن صح
-            // ✨ إصلاح: منع تكرار حساب النقاط باستخدام roundId
-            const roundId = round.impostorId + '_' + round.mainWord;
-            if (state.isHost && lastScoredRoundId !== roundId && !round.scoresCalculated) {
-                lastScoredRoundId = roundId;
+            if (state.isHost) {
                 const newScores = { ...state.roomData.scores };
 
                 // نقطة واحدة فقط للاعبين اللي صوتوا على المتطفل بشكل صحيح
                 if (impostorCaught) {
-                    Object.entries(votes).forEach(([voterId, votedId]) => {
+                    Object.entries(round.votes).forEach(([voterId, votedId]) => {
                         if (votedId === round.impostorId) {
                             newScores[voterId] = (newScores[voterId] || 0) + 1;
                             console.log(`✅ ${players[voterId].name} حصل على نقطة (صوّت صح)`);
@@ -1915,12 +1785,7 @@
                     console.log(`✅ ${players[round.impostorId].name} (المتطفل) حصل على نقطة (خمّن صح)`);
                 }
 
-                // ✨ وضع علامة أن النقاط تم حسابها + تحديث النقاط
-                await roomRef.update({
-                    scores: newScores,
-                    'currentRound/scoresCalculated': true
-                });
-                return; // سيتم إعادة استدعاء showResults بعد التحديث
+                roomRef.child('scores').set(newScores);
             }
 
             // عرض النقاط
@@ -1940,41 +1805,24 @@
             });
 
             // فحص الفائز
-            const requiredPoints = state.roomData.winPoints || 3;
-            const winner = sortedScores.find(([id, score]) => score >= requiredPoints);
+            const winner = sortedScores.find(([id, score]) => score >= 5);
             if (winner) {
                 const winnerBox = document.getElementById('winnerAnnounce');
                 winnerBox.classList.remove('hidden');
                 document.getElementById('winnerName').textContent = players[winner[0]].name;
                 document.getElementById('winnerPoints').textContent = winner[1];
-                
-                document.getElementById('categorySelectionForNextRound').classList.add('hidden');
-            } else {
-                if (state.isHost) {
-                    document.getElementById('categorySelectionForNextRound').classList.remove('hidden');
-                }
-            }
-
-            // ✨ إصلاح: تحديث أزرار الفئات
-            if (state.isHost) {
-                setTimeout(() => {
-                    document.querySelectorAll('.category-btn-result').forEach(btn => {
-                        btn.classList.toggle('active', btn.dataset.category === selectedCategoryForNextRound);
-                    });
-                }, 100);
             }
 
             document.getElementById('hostResult').classList.toggle('hidden', !state.isHost);
-            document.getElementById('playerLeaveResult').classList.toggle('hidden', state.isHost);
         }
 
-        // أزرار الفئات في شاشة النتائج
+        // أزرار الفئات في النافذة المنبثقة
         document.addEventListener('click', (e) => {
-            if (e.target.closest('.category-btn-result') && state.isHost) {
+            if (e.target.closest('.category-btn-result')) {
                 const btn = e.target.closest('.category-btn-result');
                 selectedCategoryForNextRound = btn.dataset.category;
                 
-                document.querySelectorAll('.category-btn-result').forEach(b => 
+                document.querySelectorAll('#categoryModalGrid .category-btn-result').forEach(b => 
                     b.classList.remove('active')
                 );
                 btn.classList.add('active');
@@ -1983,52 +1831,78 @@
             }
         });
 
-        // ✨ إصلاح: زر الجولة الجديدة
-        document.getElementById('nextRoundBtn').addEventListener('click', async () => {
+        // متغير لتحديد نوع العملية (جولة جديدة أو لعبة جديدة)
+        let isNewGameReset = false;
+
+        // ✨ إصلاح: زر الجولة الجديدة - يفتح نافذة اختيار الفئة
+        document.getElementById('nextRoundBtn').addEventListener('click', () => {
+            isNewGameReset = false;
+            document.getElementById('categoryModal').classList.remove('hidden');
+            document.getElementById('categoryModal').style.display = 'flex';
+            
+            // تحديث الفئة المختارة في النافذة
+            document.querySelectorAll('#categoryModalGrid .category-btn-result').forEach(btn => {
+                btn.classList.toggle('active', btn.dataset.category === (selectedCategoryForNextRound || state.roomData.category || 'حيوانات'));
+            });
+        });
+
+        // زر تأكيد الفئة وبدء الجولة
+        document.getElementById('confirmCategoryBtn').addEventListener('click', async () => {
             console.log('🎮 بدء جولة جديدة مع الفئة:', selectedCategoryForNextRound);
             
             if (!selectedCategoryForNextRound) {
                 selectedCategoryForNextRound = state.roomData.category || 'حيوانات';
             }
             
-            lastScoredRoundId = null;
-            
             try {
-                await roomRef.update({
-                    category: selectedCategoryForNextRound,
-                    state: 'lobby',
-                    currentRound: null
-                });
-                console.log('✅ تم تحديث الغرفة بنجاح');
+                if (isNewGameReset) {
+                    // لعبة جديدة مع صفر النقاط
+                    const scores = {};
+                    Object.keys(state.roomData.players).forEach(id => {
+                        scores[id] = 0;
+                    });
+                    
+                    await roomRef.update({
+                        category: selectedCategoryForNextRound,
+                        state: 'lobby',
+                        currentRound: null,
+                        scores
+                    });
+                    console.log('✅ تم إعادة تعيين اللعبة بنجاح');
+                } else {
+                    // جولة جديدة فقط
+                    await roomRef.update({
+                        category: selectedCategoryForNextRound,
+                        state: 'lobby',
+                        currentRound: null
+                    });
+                    console.log('✅ تم تحديث الغرفة بنجاح');
+                }
+                
+                document.getElementById('categoryModal').classList.add('hidden');
+                document.getElementById('categoryModal').style.display = 'none';
             } catch (e) {
                 console.error('❌ خطأ:', e);
                 alert('حدث خطأ! حاول مرة أخرى.');
             }
         });
 
-        // ✨ إصلاح: زر اللعبة الجديدة
-        document.getElementById('newGameBtn').addEventListener('click', async () => {
-            console.log('🔄 بدء لعبة جديدة (صفر النقاط)');
-            
-            lastScoredRoundId = null;
-            
-            try {
-                const scores = {};
-                Object.keys(state.roomData.players).forEach(id => {
-                    scores[id] = 0;
-                });
+        // زر إلغاء النافذة
+        document.getElementById('cancelCategoryBtn').addEventListener('click', () => {
+            document.getElementById('categoryModal').classList.add('hidden');
+            document.getElementById('categoryModal').style.display = 'none';
+        });
 
-                await roomRef.update({
-                    state: 'lobby',
-                    currentRound: null,
-                    category: state.roomData.category || 'حيوانات',
-                    scores
-                });
-                console.log('✅ تم إعادة تعيين اللعبة بنجاح');
-            } catch (e) {
-                console.error('❌ خطأ:', e);
-                alert('حدث خطأ! حاول مرة أخرى.');
-            }
+        // ✨ إصلاح: زر اللعبة الجديدة - يفتح نافذة اختيار الفئة أيضاً
+        document.getElementById('newGameBtn').addEventListener('click', () => {
+            isNewGameReset = true;
+            document.getElementById('categoryModal').classList.remove('hidden');
+            document.getElementById('categoryModal').style.display = 'flex';
+            
+            // تحديث الفئة المختارة في النافذة
+            document.querySelectorAll('#categoryModalGrid .category-btn-result').forEach(btn => {
+                btn.classList.toggle('active', btn.dataset.category === (selectedCategoryForNextRound || state.roomData.category || 'حيوانات'));
+            });
         });
 
         // ✨ زر جديد: العودة للقائمة الرئيسية
@@ -2048,7 +1922,6 @@
                         roomRef = null;
                     }
                     
-                    clearSession();
                     state = {
                         roomCode: '',
                         playerId: '',
@@ -2076,7 +1949,6 @@
                 }
                 roomRef.off();
             }
-            clearSession();
             state = {
                 roomCode: '',
                 playerId: '',
@@ -2086,28 +1958,6 @@
                 roomData: null
             };
             showScreen('homeScreen');
-        });
-
-        // ✨ زر مغادرة من شاشة النتائج (للاعبين غير المضيف)
-        document.getElementById('leaveFromResultBtn').addEventListener('click', async () => {
-            if (confirm('هل أنت متأكد من المغادرة؟')) {
-                if (roomRef) {
-                    await roomRef.child(`players/${state.playerId}`).remove();
-                    await roomRef.child(`scores/${state.playerId}`).remove();
-                    roomRef.off();
-                    roomRef = null;
-                }
-                clearSession();
-                state = {
-                    roomCode: '',
-                    playerId: '',
-                    playerName: '',
-                    isHost: false,
-                    category: 'حيوانات',
-                    roomData: null
-                };
-                showScreen('homeScreen');
-            }
         });
 
         document.getElementById('backToHomeBtn').addEventListener('click', async () => {
@@ -2121,7 +1971,6 @@
                 roomRef.off();
                 roomRef = null;
             }
-            clearSession();
             state = {
                 roomCode: '',
                 playerId: '',
