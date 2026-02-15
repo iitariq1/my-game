@@ -582,7 +582,7 @@
 
         <!-- شاشة الانضمام -->
         <div id="joinRoomScreen" class="card hidden">
-            <div class="ramadan">☪ رمضان كريم ☪</div>
+            <div class="ramadan">☪ أهلاً وسهلاً ☪</div>
             <h2>انضمام لغرفة</h2>
             
             <input type="text" id="joinPlayerName" placeholder="اسمك" maxlength="15">
@@ -631,7 +631,7 @@
             </div>
 
             <div id="hostControls" class="hidden">
-                <button class="btn btn-full btn-success" id="startBtn">▶️ ابدأ اللعبة</button>
+                <button class="btn btn-full btn-success" id="startBtn">▶️ ابدأ الجيم</button>
             </div>
 
             <button class="btn btn-full btn-danger" id="leaveBtn">🚪 مغادرة</button>
@@ -640,7 +640,7 @@
 
         <!-- شاشة الكلمة -->
         <div id="wordScreen" class="card hidden">
-            <div class="ramadan">☪ رمضان كريم ☪</div>
+            <div class="ramadan">☪ تبارك الرحمن ☪</div>
             <h2 id="wordTitle">كلمتك</h2>
 
             <div id="beforeReveal">
@@ -1746,15 +1746,30 @@
             document.getElementById('mainWord').textContent = round.mainWord;
             document.getElementById('impostorWord').textContent = round.impostorWord;
 
+            // حساب اللاعبين اللي صوتوا صح
+            const correctVoters = [];
+            Object.entries(round.votes).forEach(([voterId, votedId]) => {
+                if (votedId === round.impostorId) {
+                    correctVoters.push(players[voterId].name);
+                }
+            });
+
             // عرض نتائج الجولة
             const resultsDiv = document.getElementById('roundResults');
             resultsDiv.innerHTML = '<div class="status" style="background: rgba(255,255,255,0.1); padding: 20px; border-radius: 15px; margin: 20px 0;">';
             resultsDiv.innerHTML += '<h3 style="color: #ffffff; margin-bottom: 15px; font-size: 20px;">📊 نتائج هذه الجولة:</h3>';
 
             if (impostorCaught) {
-                resultsDiv.innerHTML += '<p style="color: #2ecc71; font-weight: 700; font-size: 18px; margin: 10px 0;">✅ اللاعبون اكتشفوا اللي برا السالفة - نقطة لكل من صوّت صح!</p>';
+                resultsDiv.innerHTML += '<p style="color: #2ecc71; font-weight: 700; font-size: 18px; margin: 10px 0;">✅ الأغلبية اكتشفوا اللي برا السالفة!</p>';
             } else {
-                resultsDiv.innerHTML += '<p style="color: #e74c3c; font-weight: 700; font-size: 18px; margin: 10px 0;">❌ اللي برا السالفة نجا من التصويت!</p>';
+                resultsDiv.innerHTML += '<p style="color: #e74c3c; font-weight: 700; font-size: 18px; margin: 10px 0;">❌ اللي برا السالفة نجا من الأغلبية!</p>';
+            }
+
+            // عرض اللاعبين اللي صوتوا صح وحصلوا نقاط
+            if (correctVoters.length > 0) {
+                resultsDiv.innerHTML += '<p style="color: #2ecc71; font-weight: 700; font-size: 16px; margin: 10px 0;">🎯 صوّتوا صح وحصلوا نقطة: <strong>' + correctVoters.join('، ') + '</strong></p>';
+            } else {
+                resultsDiv.innerHTML += '<p style="color: #ffa500; font-weight: 700; font-size: 16px; margin: 10px 0;">😅 ما أحد صوّت صح!</p>';
             }
 
             if (impostorGuessCorrect) {
@@ -1765,21 +1780,19 @@
             
             resultsDiv.innerHTML += '</div>';
 
-            // ✨ نظام النقاط المحدّث - نقطة واحدة فقط لمن خمّن صح
+            // ✨ نظام النقاط المحدّث - نقطة لكل من صوّت صح (مستقل عن النتيجة)
             if (state.isHost) {
                 const newScores = { ...state.roomData.scores };
 
-                // نقطة واحدة فقط للاعبين اللي صوتوا على المتطفل بشكل صحيح
-                if (impostorCaught) {
-                    Object.entries(round.votes).forEach(([voterId, votedId]) => {
-                        if (votedId === round.impostorId) {
-                            newScores[voterId] = (newScores[voterId] || 0) + 1;
-                            console.log(`✅ ${players[voterId].name} حصل على نقطة (صوّت صح)`);
-                        }
-                    });
-                }
+                // نقطة لكل لاعب صوّت على اللي برا السالفة (بغض النظر عن الأغلبية)
+                Object.entries(round.votes).forEach(([voterId, votedId]) => {
+                    if (votedId === round.impostorId) {
+                        newScores[voterId] = (newScores[voterId] || 0) + 1;
+                        console.log(`✅ ${players[voterId].name} حصل على نقطة (صوّت صح)`);
+                    }
+                });
 
-                // نقطة واحدة فقط للمتطفل إذا خمّن الكلمة الصحيحة
+                // نقطة للي برا السالفة إذا خمّن الكلمة صح (مستقل عن تصويت اللاعبين)
                 if (impostorGuessCorrect) {
                     newScores[round.impostorId] = (newScores[round.impostorId] || 0) + 1;
                     console.log(`✅ ${players[round.impostorId].name} (المتطفل) حصل على نقطة (خمّن صح)`);
