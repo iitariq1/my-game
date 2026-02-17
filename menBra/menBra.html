@@ -530,7 +530,7 @@
     </style>
 <!-- Code Protection -->
 <script>
-(function(){document.addEventListener('contextmenu',function(e){e.preventDefault();return false;});document.addEventListener('keydown',function(e){if(e.key==='F12')return e.preventDefault(),false;if(e.ctrlKey&&e.shiftKey&&['I','i','J','j','C','c'].includes(e.key))return e.preventDefault(),false;if(e.ctrlKey&&['u','U','s','S'].includes(e.key))return e.preventDefault(),false;});(function(){setInterval(function(){(function(){return false;})['constructor']('debugger')();},50);})();Object.defineProperty(window,'console',{get:function(){return{log:function(){},warn:function(){},error:function(){},info:function(){},debug:function(){},clear:function(){},dir:function(){},table:function(){},trace:function(){},assert:function(){},count:function(){},group:function(){},groupEnd:function(){},time:function(){},timeEnd:function(){}}}});document.addEventListener('dragstart',function(e){e.preventDefault();});document.addEventListener('copy',function(e){e.preventDefault();});document.addEventListener('cut',function(e){e.preventDefault();});})();
+(function(){document.addEventListener('contextmenu',function(e){e.preventDefault();return false;});document.addEventListener('keydown',function(e){if(e.key==='F12')return e.preventDefault(),false;if(e.ctrlKey&&e.shiftKey&&['I','i','J','j','C','c'].includes(e.key))return e.preventDefault(),false;if(e.ctrlKey&&['u','U','s','S'].includes(e.key))return e.preventDefault(),false;});document.addEventListener('dragstart',function(e){e.preventDefault();});document.addEventListener('copy',function(e){e.preventDefault();});document.addEventListener('cut',function(e){e.preventDefault();});})();
 </script>
 <style>*:not(input):not(textarea):not(button){-webkit-user-select:none!important;-moz-user-select:none!important;user-select:none!important;}</style>
 </head>
@@ -841,7 +841,7 @@
             </div>
             
             <!-- نافذة اختيار الفئة للجولة الجديدة -->
-            <div id="categoryModal" class="hidden" style="position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.8); z-index: 1000; display: flex; align-items: center; justify-content: center;">
+            <div id="categoryModal" class="hidden" style="position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.8); z-index: 1000; display: none; align-items: center; justify-content: center;">
                 <div style="background: rgba(12, 28, 60, 0.95); border-radius: 20px; padding: 30px; max-width: 400px; width: 90%; border: 2px solid rgba(212, 175, 55, 0.5);">
                     <h3 style="color: #d4af37; text-align: center; margin-bottom: 20px; font-size: 22px;">اختر الفئة للجولة الجديدة 🎯</h3>
                     <div class="category-grid" id="categoryModalGrid">
@@ -1885,22 +1885,28 @@
         // ✨ زر الجولة التالية - يرجع للوبي مباشرة بنفس الفئة
         document.getElementById('nextRoundBtn').addEventListener('click', async () => {
             lastScoredRound = null;
+            if (!roomRef) {
+                alert('خطأ: لا يوجد اتصال بالغرفة!');
+                return;
+            }
             try {
                 await roomRef.update({
                     state: 'lobby',
                     currentRound: null
                 });
-                console.log('✅ تم الانتقال للجولة التالية');
             } catch (e) {
-                console.error('❌ خطأ:', e);
-                alert('حدث خطأ! حاول مرة أخرى.');
+                alert('حدث خطأ: ' + e.message);
             }
         });
 
         // زر تأكيد الفئة وبدء الجولة
         document.getElementById('confirmCategoryBtn').addEventListener('click', async () => {
-            console.log('🎮 بدء جولة جديدة مع الفئة:', selectedCategoryForNextRound);
-            lastScoredRound = null; // ✨ إعادة تعيين flag النقاط
+            lastScoredRound = null;
+            
+            if (!roomRef) {
+                alert('خطأ: لا يوجد اتصال بالغرفة!');
+                return;
+            }
             
             if (!selectedCategoryForNextRound) {
                 selectedCategoryForNextRound = state.roomData.category || 'حيوانات';
@@ -1908,7 +1914,6 @@
             
             try {
                 if (isNewGameReset) {
-                    // لعبة جديدة مع صفر النقاط
                     const scores = {};
                     Object.keys(state.roomData.players).forEach(id => {
                         scores[id] = 0;
@@ -1920,22 +1925,18 @@
                         currentRound: null,
                         scores
                     });
-                    console.log('✅ تم إعادة تعيين اللعبة بنجاح');
                 } else {
-                    // جولة جديدة فقط
                     await roomRef.update({
                         category: selectedCategoryForNextRound,
                         state: 'lobby',
                         currentRound: null
                     });
-                    console.log('✅ تم تحديث الغرفة بنجاح');
                 }
                 
                 document.getElementById('categoryModal').classList.add('hidden');
                 document.getElementById('categoryModal').style.display = 'none';
             } catch (e) {
-                console.error('❌ خطأ:', e);
-                alert('حدث خطأ! حاول مرة أخرى.');
+                alert('حدث خطأ: ' + e.message);
             }
         });
 
