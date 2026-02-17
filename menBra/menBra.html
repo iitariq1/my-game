@@ -581,6 +581,15 @@
                 </div>
             </div>
             
+            <div style="margin: 20px 0; text-align: center;">
+                <label style="display: block; font-weight: 700; color: #ffffff; margin-bottom: 12px; text-shadow: 0 2px 4px rgba(0, 0, 0, 0.5);">عدد نقاط الفوز: <span id="winScoreDisplay" style="color: #fbbf24; font-size: 24px;">5</span></label>
+                <div style="display: flex; align-items: center; justify-content: center; gap: 15px;">
+                    <span style="color: #aaa; font-size: 14px;">2</span>
+                    <input type="range" id="winScoreSlider" min="2" max="7" value="5" style="width: 200px; accent-color: #d4af37; cursor: pointer;">
+                    <span style="color: #aaa; font-size: 14px;">7</span>
+                </div>
+            </div>
+            
             <button class="btn btn-full btn-success" id="confirmCreateBtn">✅ إنشاء الغرفة</button>
             <button class="btn btn-full btn-secondary" id="backFromCreate">🔙 رجوع</button>
         </div>
@@ -626,6 +635,7 @@
 
             <div class="status">
                 <p>الفئة المختارة: <span id="displayCategory" style="color: #fbbf24;">حيوانات</span></p>
+                <p>نقاط الفوز: <span id="displayWinScore" style="color: #fbbf24;">5</span> نقاط 🏆</p>
             </div>
 
             <h2>اللاعبين (<span id="playerCount">0</span>)</h2>
@@ -820,14 +830,14 @@
                 <div class="crown">👑</div>
                 <div class="winner-title">الفائز</div>
                 <div class="winner-name-text" id="winnerName">---</div>
-                <div class="winner-score">وصل لـ <span id="winnerPoints">5</span> نقاط!</div>
+                <div class="winner-score">وصل لـ <span id="winnerPoints">5</span> نقاط! 🎊</div>
                 <div class="congrats">مبروك! 🎊</div>
             </div>
 
             <div id="hostResult" class="hidden">
-                <button class="btn btn-full btn-success" id="nextRoundBtn">🎮 جولة جديدة</button>
-                <button class="btn btn-full btn-gold" id="newGameBtn">🔄 لعبة جديدة (صفر النقاط)</button>
-                <button class="btn btn-full btn-secondary" id="backToMenuBtn">🏠 العودة للقائمة الرئيسية</button>
+                <button class="btn btn-full btn-success" id="nextRoundBtn">▶️ الجولة التالية</button>
+                <button class="btn btn-full btn-gold" id="newGameBtn">🔄 إعادة اللعب (تصفير النقاط)</button>
+                <button class="btn btn-full btn-secondary" id="backToMenuBtn">🚪 الخروج</button>
             </div>
             
             <!-- نافذة اختيار الفئة للجولة الجديدة -->
@@ -1082,6 +1092,8 @@
         // متغير لتخزين الفئة المختارة مؤقتاً
         let selectedCategory = 'حيوانات';
         let selectedCategoryForNextRound = 'حيوانات';
+        // ✨ flag لمنع تكرار احتساب النقاط
+        let lastScoredRound = null;
 
         // أزرار التنقل للشاشات
         document.getElementById('goToCreateBtn').addEventListener('click', () => {
@@ -1109,6 +1121,11 @@
             });
         });
 
+        // تحديث عرض عدد نقاط الفوز
+        document.getElementById('winScoreSlider').addEventListener('input', (e) => {
+            document.getElementById('winScoreDisplay').textContent = e.target.value;
+        });
+
         // زر تأكيد إنشاء الغرفة
         document.getElementById('confirmCreateBtn').addEventListener('click', async (e) => {
             e.preventDefault();
@@ -1134,10 +1151,13 @@
             const code = Math.floor(1000 + Math.random() * 9000).toString();
             const playerId = Date.now().toString();
 
+            const winScore = parseInt(document.getElementById('winScoreSlider').value) || 5;
+
             const room = {
                 code,
                 host: playerId,
                 category: selectedCategory,
+                winScore: winScore,
                 state: 'lobby',
                 players: {},
                 scores: {},
@@ -1280,6 +1300,7 @@
         function updateLobby() {
             document.getElementById('displayCode').textContent = state.roomCode;
             document.getElementById('displayCategory').textContent = state.roomData.category;
+            document.getElementById('displayWinScore').textContent = state.roomData.winScore || 5;
 
             const players = Object.values(state.roomData.players || {});
             document.getElementById('playerCount').textContent = players.length;
@@ -1786,7 +1807,10 @@
             resultsDiv.innerHTML += '</div>';
 
             // ✨ نظام النقاط المحدّث - نقطة لكل من صوّت صح (مستقل عن النتيجة)
-            if (state.isHost) {
+            // ✅ يتم احتساب النقاط مرة واحدة فقط لكل جولة
+            const roundId = round.impostorId + '_' + round.mainWord;
+            if (state.isHost && lastScoredRound !== roundId) {
+                lastScoredRound = roundId;
                 const newScores = { ...state.roomData.scores };
 
                 // نقطة لكل لاعب صوّت على اللي برا السالفة (بغض النظر عن الأغلبية)
@@ -1823,12 +1847,19 @@
             });
 
             // فحص الفائز
-            const winner = sortedScores.find(([id, score]) => score >= 5);
+            const winScore = state.roomData.winScore || 5;
+            const winner = sortedScores.find(([id, score]) => score >= winScore);
             if (winner) {
                 const winnerBox = document.getElementById('winnerAnnounce');
                 winnerBox.classList.remove('hidden');
                 document.getElementById('winnerName').textContent = players[winner[0]].name;
                 document.getElementById('winnerPoints').textContent = winner[1];
+                // إخفاء زر الجولة التالية عند وجود فائز
+                document.getElementById('nextRoundBtn').classList.add('hidden');
+            } else {
+                document.getElementById('winnerAnnounce').classList.add('hidden');
+                document.getElementById('nextRoundBtn').classList.remove('hidden');
+            }
             }
 
             document.getElementById('hostResult').classList.toggle('hidden', !state.isHost);
@@ -1852,21 +1883,25 @@
         // متغير لتحديد نوع العملية (جولة جديدة أو لعبة جديدة)
         let isNewGameReset = false;
 
-        // ✨ إصلاح: زر الجولة الجديدة - يفتح نافذة اختيار الفئة
-        document.getElementById('nextRoundBtn').addEventListener('click', () => {
-            isNewGameReset = false;
-            document.getElementById('categoryModal').classList.remove('hidden');
-            document.getElementById('categoryModal').style.display = 'flex';
-            
-            // تحديث الفئة المختارة في النافذة
-            document.querySelectorAll('#categoryModalGrid .category-btn-result').forEach(btn => {
-                btn.classList.toggle('active', btn.dataset.category === (selectedCategoryForNextRound || state.roomData.category || 'حيوانات'));
-            });
+        // ✨ زر الجولة التالية - يرجع للوبي مباشرة بنفس الفئة
+        document.getElementById('nextRoundBtn').addEventListener('click', async () => {
+            lastScoredRound = null;
+            try {
+                await roomRef.update({
+                    state: 'lobby',
+                    currentRound: null
+                });
+                console.log('✅ تم الانتقال للجولة التالية');
+            } catch (e) {
+                console.error('❌ خطأ:', e);
+                alert('حدث خطأ! حاول مرة أخرى.');
+            }
         });
 
         // زر تأكيد الفئة وبدء الجولة
         document.getElementById('confirmCategoryBtn').addEventListener('click', async () => {
             console.log('🎮 بدء جولة جديدة مع الفئة:', selectedCategoryForNextRound);
+            lastScoredRound = null; // ✨ إعادة تعيين flag النقاط
             
             if (!selectedCategoryForNextRound) {
                 selectedCategoryForNextRound = state.roomData.category || 'حيوانات';
@@ -1911,7 +1946,7 @@
             document.getElementById('categoryModal').style.display = 'none';
         });
 
-        // ✨ إصلاح: زر اللعبة الجديدة - يفتح نافذة اختيار الفئة أيضاً
+        // ✨ زر إعادة اللعب (تصفير النقاط) - يفتح نافذة اختيار الفئة
         document.getElementById('newGameBtn').addEventListener('click', () => {
             isNewGameReset = true;
             document.getElementById('categoryModal').classList.remove('hidden');
