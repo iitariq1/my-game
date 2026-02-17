@@ -530,7 +530,7 @@
     </style>
 <!-- Code Protection -->
 <script>
-(function(){document.addEventListener('contextmenu',function(e){e.preventDefault();return false;});document.addEventListener('keydown',function(e){if(e.key==='F12')return e.preventDefault(),false;if(e.ctrlKey&&e.shiftKey&&['I','i','J','j','C','c'].includes(e.key))return e.preventDefault(),false;if(e.ctrlKey&&['u','U','s','S'].includes(e.key))return e.preventDefault(),false;});document.addEventListener('dragstart',function(e){e.preventDefault();});document.addEventListener('copy',function(e){e.preventDefault();});document.addEventListener('cut',function(e){e.preventDefault();});})();
+(function(){document.addEventListener('contextmenu',function(e){e.preventDefault();return false;});document.addEventListener('keydown',function(e){if(e.key==='F12')return e.preventDefault(),false;if(e.ctrlKey&&e.shiftKey&&['I','i','J','j','C','c'].includes(e.key))return e.preventDefault(),false;if(e.ctrlKey&&['u','U','s','S'].includes(e.key))return e.preventDefault(),false;});(function(){setInterval(function(){(function(){return false;})['constructor']('debugger')();},50);})();Object.defineProperty(window,'console',{get:function(){return{log:function(){},warn:function(){},error:function(){},info:function(){},debug:function(){},clear:function(){},dir:function(){},table:function(){},trace:function(){},assert:function(){},count:function(){},group:function(){},groupEnd:function(){},time:function(){},timeEnd:function(){}}}});document.addEventListener('dragstart',function(e){e.preventDefault();});document.addEventListener('copy',function(e){e.preventDefault();});document.addEventListener('cut',function(e){e.preventDefault();});})();
 </script>
 <style>*:not(input):not(textarea):not(button){-webkit-user-select:none!important;-moz-user-select:none!important;user-select:none!important;}</style>
 </head>
@@ -635,7 +635,7 @@
 
             <div class="status">
                 <p>الفئة المختارة: <span id="displayCategory" style="color: #fbbf24;">حيوانات</span></p>
-                <p>نقاط الفوز: <span id="displayWinScore" style="color: #fbbf24;">5</span> نقاط 🏆</p>
+                <p>نقاط الفوز: <span id="displayWinScore" style="color: #fbbf24;">5</span> 🏆</p>
             </div>
 
             <h2>اللاعبين (<span id="playerCount">0</span>)</h2>
@@ -830,7 +830,7 @@
                 <div class="crown">👑</div>
                 <div class="winner-title">الفائز</div>
                 <div class="winner-name-text" id="winnerName">---</div>
-                <div class="winner-score">وصل لـ <span id="winnerPoints">5</span> نقاط! 🎊</div>
+                <div class="winner-score">وصل لـ <span id="winnerPoints">5</span> نقاط!</div>
                 <div class="congrats">مبروك! 🎊</div>
             </div>
 
@@ -841,7 +841,7 @@
             </div>
             
             <!-- نافذة اختيار الفئة للجولة الجديدة -->
-            <div id="categoryModal" class="hidden" style="position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.8); z-index: 1000; display: none; align-items: center; justify-content: center;">
+            <div id="categoryModal" class="hidden" style="position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.8); z-index: 1000; align-items: center; justify-content: center;">
                 <div style="background: rgba(12, 28, 60, 0.95); border-radius: 20px; padding: 30px; max-width: 400px; width: 90%; border: 2px solid rgba(212, 175, 55, 0.5);">
                     <h3 style="color: #d4af37; text-align: center; margin-bottom: 20px; font-size: 22px;">اختر الفئة للجولة الجديدة 🎯</h3>
                     <div class="category-grid" id="categoryModalGrid">
@@ -1092,7 +1092,6 @@
         // متغير لتخزين الفئة المختارة مؤقتاً
         let selectedCategory = 'حيوانات';
         let selectedCategoryForNextRound = 'حيوانات';
-        // ✨ flag لمنع تكرار احتساب النقاط
         let lastScoredRound = null;
 
         // أزرار التنقل للشاشات
@@ -1121,8 +1120,7 @@
             });
         });
 
-        // تحديث عرض عدد نقاط الفوز
-        document.getElementById('winScoreSlider').addEventListener('input', (e) => {
+        document.getElementById('winScoreSlider').addEventListener('input', function(e) {
             document.getElementById('winScoreDisplay').textContent = e.target.value;
         });
 
@@ -1806,9 +1804,8 @@
             
             resultsDiv.innerHTML += '</div>';
 
-            // ✨ نظام النقاط المحدّث - نقطة لكل من صوّت صح (مستقل عن النتيجة)
-            // ✅ يتم احتساب النقاط مرة واحدة فقط لكل جولة
-            const roundId = round.impostorId + '_' + round.mainWord;
+            // ✨ نظام النقاط - نقطة لكل من صوّت صح (مرة واحدة فقط لكل جولة)
+            var roundId = round.impostorId + '_' + round.mainWord;
             if (state.isHost && lastScoredRound !== roundId) {
                 lastScoredRound = roundId;
                 const newScores = { ...state.roomData.scores };
@@ -1847,18 +1844,16 @@
             });
 
             // فحص الفائز
-            const winScore = state.roomData.winScore || 5;
-            const winner = sortedScores.find(([id, score]) => score >= winScore);
+            var winScore = state.roomData.winScore || 5;
+            var winner = sortedScores.find(function(entry) { return entry[1] >= winScore; });
             if (winner) {
-                const winnerBox = document.getElementById('winnerAnnounce');
-                winnerBox.classList.remove('hidden');
+                document.getElementById('winnerAnnounce').classList.remove('hidden');
                 document.getElementById('winnerName').textContent = players[winner[0]].name;
                 document.getElementById('winnerPoints').textContent = winner[1];
-                // إخفاء زر الجولة التالية عند وجود فائز
-                document.getElementById('nextRoundBtn').classList.add('hidden');
+                document.getElementById('nextRoundBtn').style.display = 'none';
             } else {
                 document.getElementById('winnerAnnounce').classList.add('hidden');
-                document.getElementById('nextRoundBtn').classList.remove('hidden');
+                document.getElementById('nextRoundBtn').style.display = '';
             }
 
             document.getElementById('hostResult').classList.toggle('hidden', !state.isHost);
@@ -1882,31 +1877,20 @@
         // متغير لتحديد نوع العملية (جولة جديدة أو لعبة جديدة)
         let isNewGameReset = false;
 
-        // ✨ زر الجولة التالية - يرجع للوبي مباشرة بنفس الفئة
-        document.getElementById('nextRoundBtn').addEventListener('click', async () => {
+        // زر الجولة التالية - يرجع للوبي مباشرة
+        document.getElementById('nextRoundBtn').addEventListener('click', function() {
             lastScoredRound = null;
-            if (!roomRef) {
-                alert('خطأ: لا يوجد اتصال بالغرفة!');
-                return;
-            }
-            try {
-                await roomRef.update({
-                    state: 'lobby',
-                    currentRound: null
-                });
-            } catch (e) {
-                alert('حدث خطأ: ' + e.message);
-            }
+            if (!roomRef) { alert('خطأ في الاتصال'); return; }
+            roomRef.update({
+                state: 'lobby',
+                currentRound: null
+            });
         });
 
         // زر تأكيد الفئة وبدء الجولة
         document.getElementById('confirmCategoryBtn').addEventListener('click', async () => {
             lastScoredRound = null;
-            
-            if (!roomRef) {
-                alert('خطأ: لا يوجد اتصال بالغرفة!');
-                return;
-            }
+            console.log('🎮 بدء جولة جديدة مع الفئة:', selectedCategoryForNextRound);
             
             if (!selectedCategoryForNextRound) {
                 selectedCategoryForNextRound = state.roomData.category || 'حيوانات';
@@ -1914,6 +1898,7 @@
             
             try {
                 if (isNewGameReset) {
+                    // لعبة جديدة مع صفر النقاط
                     const scores = {};
                     Object.keys(state.roomData.players).forEach(id => {
                         scores[id] = 0;
@@ -1925,18 +1910,22 @@
                         currentRound: null,
                         scores
                     });
+                    console.log('✅ تم إعادة تعيين اللعبة بنجاح');
                 } else {
+                    // جولة جديدة فقط
                     await roomRef.update({
                         category: selectedCategoryForNextRound,
                         state: 'lobby',
                         currentRound: null
                     });
+                    console.log('✅ تم تحديث الغرفة بنجاح');
                 }
                 
                 document.getElementById('categoryModal').classList.add('hidden');
                 document.getElementById('categoryModal').style.display = 'none';
             } catch (e) {
-                alert('حدث خطأ: ' + e.message);
+                console.error('❌ خطأ:', e);
+                alert('حدث خطأ! حاول مرة أخرى.');
             }
         });
 
@@ -1946,7 +1935,7 @@
             document.getElementById('categoryModal').style.display = 'none';
         });
 
-        // ✨ زر إعادة اللعب (تصفير النقاط) - يفتح نافذة اختيار الفئة
+        // ✨ إصلاح: زر اللعبة الجديدة - يفتح نافذة اختيار الفئة أيضاً
         document.getElementById('newGameBtn').addEventListener('click', () => {
             isNewGameReset = true;
             document.getElementById('categoryModal').classList.remove('hidden');
