@@ -1235,6 +1235,7 @@
             const currentState = state.roomData.state;
 
             if (currentState === 'lobby') {
+                showScreen('lobbyScreen');
                 updateLobby();
             } else if (currentState === 'revealing') {
                 showWordScreen();
