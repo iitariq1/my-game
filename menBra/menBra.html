@@ -572,7 +572,7 @@
                     <button class="category-btn" data-category="أكل">🍕 أكل</button>
                     <button class="category-btn" data-category="أماكن">🏖️ أماكن</button>
                     <button class="category-btn" data-category="وظائف">👨‍⚕️ وظائف</button>
-                    <button class="category-btn" data-category="مدن سعودية:"> مدن سعودية</button>
+                    <button class="category-btn" data-category="مدن سعودية"> مدن سعودية</button>
                     <button class="category-btn" data-category="دول"> دول</button>
                     <button class="category-btn" data-category="مسلسلات"> مسلسلات </button>
                     <button class="category-btn" data-category="أثاث"> أثاث </button>
@@ -624,7 +624,7 @@
                     <button class="category-btn" data-category="أكل">🍕 أكل</button>
                     <button class="category-btn" data-category="أماكن">🏖️ أماكن</button>
                     <button class="category-btn" data-category="وظائف">👨‍⚕️ وظائف</button>
-                    <button class="category-btn" data-category="مدن سعودية:"> مدن سعودية</button>
+                    <button class="category-btn" data-category="مدن سعودية"> مدن سعودية</button>
                     <button class="category-btn" data-category="دول"> دول</button>
                     <button class="category-btn" data-category="مسلسلات"> مسلسلات </button>
                     <button class="category-btn" data-category="أثاث"> أثاث </button>
@@ -849,7 +849,7 @@
                         <button class="category-btn-result" data-category="أكل">🍕 أكل</button>
                         <button class="category-btn-result" data-category="أماكن">🏖️ أماكن</button>
                         <button class="category-btn-result" data-category="وظائف">👨‍⚕️ وظائف</button>
-                        <button class="category-btn-result" data-category="مدن سعودية:"> مدن سعودية</button>
+                        <button class="category-btn-result" data-category="مدن سعودية"> مدن سعودية</button>
                         <button class="category-btn-result" data-category="دول"> دول</button>
                         <button class="category-btn-result" data-category="مسلسلات"> مسلسلات</button>
                         <button class="category-btn-result" data-category="أثاث"> أثاث</button>
@@ -1236,6 +1236,11 @@
 
             if (currentState === 'lobby') {
                 showScreen('lobbyScreen');
+                // تنظيف اسم الفئة إذا فيه نقطتين زيادة
+                if (state.isHost && state.roomData.category && state.roomData.category.endsWith(':')) {
+                    var cleanCat = state.roomData.category.replace(/:$/, '');
+                    roomRef.update({ category: cleanCat });
+                }
                 updateLobby();
             } else if (currentState === 'revealing') {
                 showWordScreen();
@@ -1357,7 +1362,12 @@
                 return;
             }
 
-            const words = wordSets[state.roomData.category];
+            const category = state.roomData.category;
+            const words = wordSets[category];
+            if (!words || words.length === 0) {
+                alert('خطأ: لا توجد كلمات لهذه الفئة! اختر فئة ثانية.');
+                return;
+            }
             const selected = words[Math.floor(Math.random() * words.length)];
             const impostorIdx = Math.floor(Math.random() * players.length);
             const impostorId = players[impostorIdx];
