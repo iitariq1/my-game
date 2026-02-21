@@ -984,15 +984,17 @@
                 }
 
                 let found = 0;
+                const now = Date.now();
                 for (const [code, info] of Object.entries(rooms)) {
-                    // Verify room still exists and is in lobby
+                    // حذف رومات أقدم من ساعة
+                    if (info.created && (now - info.created) > 3600000) { db.ref('publicRooms/menBra/' + code).remove(); continue; }
                     const roomSnap = await db.ref('rooms/' + code).once('value');
                     if (!roomSnap.exists()) {
                         db.ref('publicRooms/menBra/' + code).remove();
                         continue;
                     }
                     const roomData = roomSnap.val();
-                    if (roomData.state !== 'lobby') continue;
+                    if (roomData.state !== 'lobby') { db.ref('publicRooms/menBra/' + code).remove(); continue; }
 
                     const playerCount = roomData.players ? Object.keys(roomData.players).length : 0;
                     const hostName = info.hostName || 'مضيف';
@@ -2018,7 +2020,7 @@
                 try {
                     if (roomRef) {
                         if (state.isHost) {
-                            await roomRef.remove();
+                            await roomRef.remove(); removePublicRoom();
                         } else {
                             await roomRef.child(`players/${state.playerId}`).remove();
                             await roomRef.child(`scores/${state.playerId}`).remove();
@@ -2049,7 +2051,7 @@
                 try {
                     if (roomRef) {
                         if (state.isHost) {
-                            await roomRef.remove();
+                            await roomRef.remove(); removePublicRoom();
                         } else {
                             await roomRef.child(`players/${state.playerId}`).remove();
                             await roomRef.child(`scores/${state.playerId}`).remove();
@@ -2070,7 +2072,7 @@
         document.getElementById('leaveBtn').addEventListener('click', async () => {
             if (roomRef) {
                 if (state.isHost) {
-                    await roomRef.remove();
+                    await roomRef.remove(); removePublicRoom();
                 } else {
                     await roomRef.child(`players/${state.playerId}`).remove();
                     await roomRef.child(`scores/${state.playerId}`).remove();
@@ -2093,7 +2095,7 @@
         document.getElementById('backToHomeBtn').addEventListener('click', async () => {
             if (roomRef) {
                 if (state.isHost) {
-                    await roomRef.remove();
+                    await roomRef.remove(); removePublicRoom();
                 } else {
                     await roomRef.child(`players/${state.playerId}`).remove();
                     await roomRef.child(`scores/${state.playerId}`).remove();
@@ -2149,6 +2151,12 @@
 
         function clearSession() {
             sessionStorage.removeItem('menBra');
+        }
+
+        function removePublicRoom() {
+            if (state.roomCode) {
+                try { db.ref('publicRooms/menBra/' + state.roomCode).remove(); } catch(e) {}
+            }
         }
 
         // ========== Kick Player ==========
