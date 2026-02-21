@@ -650,6 +650,8 @@
             </div>
 
             <div id="waitResult" class="status hidden"><p>⏳ انتظر المضيف...</p></div>
+
+            <button class="btn btn-full btn-danger" id="exitFromResult" style="margin-top:8px;">🚪 خروج من الغرفة</button>
         </div>
     </div>
 
@@ -917,7 +919,8 @@
         // زر تأكيد إنشاء الغرفة
         document.getElementById('confirmCreateBtn').addEventListener('click', async (e) => {
             e.preventDefault();
-            console.log('🔘 تم الضغط على زر إنشاء الغرفة');
+            const createBtn = document.getElementById('confirmCreateBtn');
+            if (createBtn.disabled) return;
             
             const name = document.getElementById('hostName').value.trim();
             if (!name) {
@@ -925,16 +928,13 @@
                 return;
             }
 
-            console.log('👤 الاسم:', name);
-
             if (!db) {
-                console.log('❌ Firebase غير جاهز');
                 alert('⚠️ للعب أونلاين:\n\n1. ارفع الملف على موقع (Netlify)\n2. افتح الرابط من المتصفح\n\nالآن الملف مفتوح محلياً ❌');
-                console.log('💡 ارفع الملف على: https://app.netlify.com/drop');
                 return;
             }
 
-            console.log('✅ Firebase جاهز - جاري إنشاء الغرفة...');
+            createBtn.disabled = true;
+            createBtn.textContent = '⏳ جاري الإنشاء...';
 
             const code = Math.floor(1000 + Math.random() * 9000).toString();
             const playerId = Date.now().toString();
@@ -972,11 +972,16 @@
             } catch (e) {
                 console.error('❌ خطأ:', e);
                 alert('خطأ في إنشاء الغرفة!\n\n' + e.message);
+                createBtn.disabled = false;
+                createBtn.textContent = '✅ إنشاء الغرفة';
             }
         });
 
         // زر تأكيد الانضمام
         document.getElementById('confirmJoinBtn').addEventListener('click', async () => {
+            const joinBtn = document.getElementById('confirmJoinBtn');
+            if (joinBtn.disabled) return;
+            
             const name = document.getElementById('joinPlayerName').value.trim();
             const code = document.getElementById('joinRoomCode').value.trim();
 
@@ -990,10 +995,15 @@
                 return;
             }
 
+            joinBtn.disabled = true;
+            joinBtn.textContent = '⏳ جاري الانضمام...';
+
             try {
                 const snapshot = await db.ref(`rooms/${code}`).once('value');
                 if (!snapshot.exists()) {
                     alert('الغرفة غير موجودة!');
+                    joinBtn.disabled = false;
+                    joinBtn.textContent = '✅ انضمام';
                     return;
                 }
 
@@ -1012,6 +1022,8 @@
                 initChat();
             } catch (e) {
                 alert('خطأ في الانضمام: ' + e.message);
+                joinBtn.disabled = false;
+                joinBtn.textContent = '✅ انضمام';
             }
         });
 
@@ -1804,6 +1816,29 @@
                     showScreen('homeScreen');
                 } catch (e) {
                     console.error('❌ خطأ:', e);
+                    alert('حدث خطأ! حاول مرة أخرى.');
+                }
+            }
+        });
+
+        document.getElementById('exitFromResult').addEventListener('click', async () => {
+            if (confirm('هل أنت متأكد من الخروج؟')) {
+                try {
+                    if (roomRef) {
+                        if (state.isHost) {
+                            await roomRef.remove();
+                        } else {
+                            await roomRef.child(`players/${state.playerId}`).remove();
+                            await roomRef.child(`scores/${state.playerId}`).remove();
+                        }
+                        roomRef.off();
+                        roomRef = null;
+                    }
+                    clearSession();
+                    destroyChat();
+                    state = { roomCode: '', playerId: '', playerName: '', isHost: false, category: 'حيوانات', roomData: null };
+                    showScreen('homeScreen');
+                } catch (e) {
                     alert('حدث خطأ! حاول مرة أخرى.');
                 }
             }
