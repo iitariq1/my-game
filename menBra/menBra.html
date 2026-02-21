@@ -8,649 +8,335 @@
     <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-database-compat.js"></script>
     <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
 
         body {
             font-family: 'Cairo', sans-serif;
             background: #0a1a3a;
             min-height: 100vh;
-            padding: 20px;
+            padding: 10px;
+            padding-bottom: 20px;
+            direction: rtl;
+            color: #fff;
             position: relative;
         }
 
-        .stars {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            pointer-events: none;
-            z-index: 0;
-        }
-
+        /* Stars Background */
+        .stars { position: fixed; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; z-index: 0; }
         .star {
-            position: absolute;
-            background: white;
-            width: 10px;
-            height: 10px;
-            clip-path: polygon(50% 0%, 61% 35%, 98% 35%, 68% 57%, 79% 91%, 50% 70%, 21% 91%, 32% 57%, 2% 35%, 39% 35%);
-            animation: twinkle 3s infinite;
+            position: absolute; background: white; width: 3px; height: 3px;
+            border-radius: 50%; animation: twk 3s ease-in-out infinite;
         }
+        @keyframes twk { 0%,100%{opacity:0.15} 50%{opacity:0.8} }
 
-        @keyframes twinkle {
-            0%, 100% { opacity: 0.3; }
-            50% { opacity: 1; }
-        }
+        .container { max-width: 500px; margin: 0 auto; position: relative; z-index: 1; }
 
-        .container {
-            max-width: 600px;
-            margin: 0 auto;
-            position: relative;
-            z-index: 1;
-        }
-
+        /* Cards - Compact like detective */
         .card {
             background: rgba(12, 28, 60, 0.85);
-            backdrop-filter: blur(20px);
-            border-radius: 30px;
-            padding: 40px;
-            box-shadow: 0 25px 50px rgba(0, 0, 0, 0.3),
-                        inset 0 0 100px rgba(212, 175, 55, 0.03);
-            border: 2px solid rgba(212, 175, 55, 0.35);
-            animation: fadeIn 0.5s;
+            border-radius: 15px;
+            padding: 18px;
+            margin-bottom: 12px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.3);
+            border: 1px solid rgba(212, 175, 55, 0.15);
+            animation: fadeIn 0.35s ease-out;
         }
+        @keyframes fadeIn { from{opacity:0;transform:translateY(12px)} to{opacity:1;transform:translateY(0)} }
 
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(20px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-
-        .ramadan {
-            font-size: 24px;
-            color: #d4af37;
-            font-weight: 700;
+        /* Headers */
+        .header-bar {
             text-align: center;
-            margin-bottom: 15px;
-        }
-
-        .emoji {
-            font-size: 80px;
-            text-align: center;
-            margin: 20px 0;
+            padding: 10px 15px;
+            background: rgba(10, 26, 58, 0.7);
+            border-radius: 12px;
+            margin-bottom: 12px;
+            border: 1px solid rgba(212, 175, 55, 0.2);
         }
 
         h1 {
-            font-size: 42px;
-            font-weight: 900;
-            color: #0a1a3a;
-            background: linear-gradient(135deg, #d4af37, #f5e6a3, #d4af37);
-            padding: 8px 24px;
-            border-radius: 12px;
-            display: inline-block;
-            text-align: center;
-            margin-bottom: 10px;
+            font-size: 1.3em; font-weight: 800; color: #0a1a3a;
+            background: linear-gradient(135deg, #d4af37, #f5e6a3);
+            padding: 5px 18px; border-radius: 8px; display: inline-block;
+            text-align: center; margin-bottom: 8px;
         }
 
         h2 {
-            font-size: 28px;
-            font-weight: 900;
-            color: #0a1a3a;
-            text-align: center;
-            margin-bottom: 20px;
+            font-size: 1em; font-weight: 800; color: #0a1a3a; text-align: center;
             background: linear-gradient(135deg, #d4af37, #f5e6a3);
-            padding: 6px 18px;
-            border-radius: 10px;
-            display: inline-block;
+            padding: 4px 14px; border-radius: 8px; display: inline-block;
+            margin-bottom: 10px;
         }
 
-        p {
-            text-align: center;
-            color: #f3f4f6;
-            font-size: 18px;
-            margin-bottom: 20px;
-            text-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
-        }
+        p { color: #e0e0e0; font-size: 0.85em; margin-bottom: 6px; text-align: center; }
 
+        .emoji { font-size: 2.2em; text-align: center; margin: 8px 0; }
+
+        /* Status boxes */
         .status {
-            background: rgba(212, 175, 55, 0.1);
-            border: 2px solid rgba(212, 175, 55, 0.3);
-            border-radius: 16px;
-            padding: 20px;
-            margin: 20px 0;
+            background: rgba(212, 175, 55, 0.08);
+            border: 1px solid rgba(212, 175, 55, 0.2);
+            border-radius: 10px;
+            padding: 10px 12px;
+            margin: 8px 0;
             text-align: center;
-            backdrop-filter: blur(10px);
         }
+        .status.success { background: rgba(46,204,113,0.15); border-color: rgba(46,204,113,0.3); }
+        .status.error { background: rgba(231,76,60,0.15); border-color: rgba(231,76,60,0.3); }
+        .status p { color: #fff; font-weight: 600; margin: 3px 0; font-size: 0.82em; }
 
-        .status.success {
-            background: linear-gradient(135deg, rgba(209, 250, 229, 0.3), rgba(167, 243, 208, 0.3));
-            border-color: rgba(16, 185, 129, 0.6);
-        }
-
-        .status.error {
-            background: linear-gradient(135deg, rgba(254, 226, 226, 0.3), rgba(254, 202, 202, 0.3));
-            border-color: rgba(239, 68, 68, 0.6);
-        }
-
-        .status p {
-            color: #ffffff;
-            font-weight: 700;
-            margin: 5px 0;
-            text-shadow: 0 2px 4px rgba(0, 0, 0, 0.5);
-        }
-
+        /* Inputs */
         input[type="text"] {
-            width: 100%;
-            padding: 18px 24px;
-            font-size: 24px;
-            font-weight: 700;
-            text-align: center;
-            background: rgba(10, 26, 58, 0.6);
-            border: 2px solid rgba(212, 175, 55, 0.4);
-            border-radius: 16px;
-            color: #ffffff;
-            font-family: 'Cairo', sans-serif;
-            margin-bottom: 15px;
-            backdrop-filter: blur(10px);
-            text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
-            position: relative;
-            z-index: 10;
-            cursor: text;
+            width: 100%; padding: 10px 14px; font-size: 15px; font-weight: 700;
+            text-align: center; background: rgba(255,255,255,0.06);
+            border: 1.5px solid rgba(212, 175, 55, 0.25); border-radius: 10px;
+            color: #fff; font-family: 'Cairo', sans-serif; margin-bottom: 8px;
+            transition: border-color 0.2s;
         }
+        input:focus { outline: none; border-color: #d4af37; box-shadow: 0 0 0 3px rgba(212,175,55,0.15); }
+        input::placeholder { color: rgba(255,255,255,0.4); }
 
-        input:focus {
-            outline: none;
-            box-shadow: 0 0 0 4px rgba(212, 175, 55, 0.3);
-            border-color: #d4af37;
-        }
-
-        input::placeholder {
-            color: rgba(255, 255, 255, 0.6);
-        }
-
+        /* Buttons */
         .btn {
-            padding: 10px 15px;
-            border: none;
-            border-radius: 8px;
-            font-size: 14px;
-            cursor: pointer;
-            font-family: 'Cairo', sans-serif;
+            padding: 9px 14px; border: none; border-radius: 8px; font-size: 13px;
+            cursor: pointer; font-family: 'Cairo', sans-serif;
             background: linear-gradient(135deg, #d4af37, #b8941e);
-            color: #0a1a3a;
-            font-weight: 700;
-            margin: 3px;
-            transition: all 0.2s;
+            color: #0a1a3a; font-weight: 700; margin: 3px; transition: all 0.15s;
         }
-
         .btn:hover { opacity: 0.9; }
         .btn:disabled { opacity: 0.4; cursor: not-allowed; }
-        .btn:active { transform: scale(0.98); }
-        
-        .btn-full { width: 100%; margin: 5px 0; }
+        .btn:active { transform: scale(0.97); }
+        .btn-full { width: 100%; margin: 4px 0; padding: 10px; }
+        .btn-gold { background: linear-gradient(135deg, #d4af37, #b8941e); color: #0a1a3a; }
+        .btn-purple { background: rgba(212,175,55,0.12); color: #d4af37; border: 1.5px solid rgba(212,175,55,0.35); }
+        .btn-success { background: linear-gradient(135deg, #27ae60, #2ecc71); color: #fff; }
+        .btn-danger { background: linear-gradient(135deg, #e74c3c, #c0392b); color: #fff; }
+        .btn-secondary { background: #4a5568; color: #fff; }
+        .btn-small { padding: 5px 8px; font-size: 11px; }
+        .btn-green { background: linear-gradient(135deg, #27ae60, #2ecc71); color: white; }
 
-        .btn-gold {
-            background: linear-gradient(135deg, #d4af37, #b8941e);
-            color: #0a1a3a;
-            font-weight: 700;
-        }
-        
-        .btn-purple {
-            background: rgba(212, 175, 55, 0.2);
-            color: #d4af37;
-            border: 2px solid rgba(212, 175, 55, 0.5);
-        }
-
-        .btn-green {
-            background: linear-gradient(135deg, #27ae60 0%, #2ecc71 100%);
-            color: white;
-            box-shadow: 0 4px 15px rgba(39, 174, 96, 0.4);
-        }
-
-        .btn-green:hover:not(:disabled) {
-            box-shadow: 0 6px 20px rgba(39, 174, 96, 0.6);
-        }
-        
-        .btn-green:active:not(:disabled) {
-            transform: translateY(0px) scale(0.98);
-        }
-        
-        .btn-success {
-            background: linear-gradient(135deg, #27ae60 0%, #2ecc71 100%);
-            color: white;
-        }
-        
-        .btn-danger {
-            background: linear-gradient(135deg, #e74c3c 0%, #c0392b 100%);
-            color: white;
-        }
-        
-        .btn-secondary {
-            background: #6c757d;
-            color: white;
-        }
-        
-        .btn-small { padding: 6px 10px; font-size: 12px; }
-
-        .category-grid {
-            display: grid;
-            grid-template-columns: repeat(2, 1fr);
-            gap: 12px;
-            margin: 20px 0;
-        }
-
+        /* Category Grid - Compact */
+        .category-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 6px; margin: 8px 0; }
         .category-btn {
-            padding: 18px;
-            font-size: 18px;
-            font-weight: 700;
-            border: 2px solid rgba(212, 175, 55, 0.2);
-            border-radius: 14px;
-            cursor: pointer;
-            font-family: 'Cairo', sans-serif;
-            background: rgba(10, 26, 58, 0.6);
-            color: #ffffff;
-            backdrop-filter: blur(10px);
-            transition: all 0.3s;
-            text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
-            position: relative;
-            z-index: 10;
+            padding: 9px 6px; font-size: 13px; font-weight: 700;
+            border: 1.5px solid rgba(212,175,55,0.15); border-radius: 8px;
+            cursor: pointer; font-family: 'Cairo', sans-serif;
+            background: rgba(255,255,255,0.04); color: #ccc;
+            transition: all 0.2s; text-align: center;
         }
-
-        .category-btn:hover {
-            transform: scale(1.05);
-            border-color: #d4af37;
-        }
-        
-        .category-btn:active {
-            transform: scale(0.98);
-        }
-
+        .category-btn:hover { border-color: rgba(212,175,55,0.5); color: #fff; }
+        .category-btn:active { transform: scale(0.97); }
         .category-btn.active {
             background: linear-gradient(135deg, #d4af37, #b8941e);
-            color: #0a1a3a;
-            border-color: #d4af37;
-            box-shadow: 0 0 20px rgba(212, 175, 55, 0.3);
+            color: #0a1a3a; border-color: #d4af37;
+            box-shadow: 0 2px 10px rgba(212,175,55,0.3);
         }
-        
         .category-btn-result {
-            padding: 18px;
-            font-size: 18px;
-            font-weight: 700;
-            border: 2px solid rgba(212, 175, 55, 0.2);
-            border-radius: 14px;
-            cursor: pointer;
-            font-family: 'Cairo', sans-serif;
-            background: rgba(10, 26, 58, 0.6);
-            color: #ffffff;
-            backdrop-filter: blur(10px);
-            transition: all 0.3s;
-            text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
-            position: relative;
-            z-index: 10;
+            padding: 9px 6px; font-size: 13px; font-weight: 700;
+            border: 1.5px solid rgba(212,175,55,0.15); border-radius: 8px;
+            cursor: pointer; font-family: 'Cairo', sans-serif;
+            background: rgba(255,255,255,0.04); color: #ccc;
+            transition: all 0.2s; text-align: center;
         }
-
-        .category-btn-result:hover {
-            transform: scale(1.05);
-            border-color: #d4af37;
-        }
-        
-        .category-btn-result:active {
-            transform: scale(0.98);
-        }
-
+        .category-btn-result:hover { border-color: rgba(212,175,55,0.5); color: #fff; }
+        .category-btn-result:active { transform: scale(0.97); }
         .category-btn-result.active {
             background: linear-gradient(135deg, #d4af37, #b8941e);
-            color: #0a1a3a;
-            border-color: #d4af37;
-            box-shadow: 0 0 20px rgba(212, 175, 55, 0.3);
+            color: #0a1a3a; border-color: #d4af37;
         }
 
+        /* Room Code - Compact */
         .room-code {
-            background: linear-gradient(135deg, #d4af37, #f5e6a3);
-            padding: 30px;
-            border-radius: 20px;
-            text-align: center;
-            margin: 20px 0;
+            background: rgba(212,175,55,0.1); border: 1.5px solid rgba(212,175,55,0.3);
+            padding: 12px; border-radius: 12px; text-align: center; margin: 10px 0;
         }
-
         .room-code-number {
-            font-size: 60px;
-            font-weight: 900;
-            letter-spacing: 10px;
-            color: #0a1a3a;
+            font-size: 2.2em; font-weight: 900; letter-spacing: 8px;
+            color: #0a1a3a; background: linear-gradient(135deg, #d4af37, #f5e6a3);
+            padding: 4px 16px; border-radius: 8px; display: inline-block;
         }
 
-        .player-list {
-            margin: 20px 0;
-        }
-
+        /* Player List */
+        .player-list { margin: 8px 0; }
         .player-item {
-            background: rgba(10, 26, 58, 0.6);
-            border: 2px solid rgba(212, 175, 55, 0.3);
-            border-radius: 14px;
-            padding: 18px;
-            margin: 12px 0;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            backdrop-filter: blur(10px);
+            background: rgba(255,255,255,0.06); border: 1px solid rgba(212,175,55,0.12);
+            border-radius: 8px; padding: 10px 12px; margin: 5px 0;
+            display: flex; justify-content: space-between; align-items: center;
         }
-
-        .player-name {
-            font-size: 22px;
-            font-weight: 700;
-            color: #ffffff;
-            text-shadow: 0 2px 4px rgba(0, 0, 0, 0.5);
-        }
-
-        .points {
-            font-size: 28px;
-            font-weight: 900;
-            color: #d4af37;
-        }
-
+        .player-name { font-size: 0.9em; font-weight: 700; color: #fff; }
+        .points { font-size: 1em; font-weight: 800; color: #d4af37; }
         .host-badge {
-            background: #d4af37;
-            color: #0a1a3a;
-            padding: 6px 14px;
-            border-radius: 10px;
-            font-size: 14px;
-            font-weight: 800;
+            background: #d4af37; color: #0a1a3a; padding: 2px 8px;
+            border-radius: 6px; font-size: 11px; font-weight: 800;
         }
 
+        /* Word Box - Compact */
         .word-box {
-            background: linear-gradient(135deg, #d4af37, #b8941e);
-            border-radius: 26px;
-            padding: 50px;
-            margin: 30px 0;
-            text-align: center;
+            background: linear-gradient(135deg, rgba(212,175,55,0.15), rgba(212,175,55,0.08));
+            border: 2px solid rgba(212,175,55,0.4); border-radius: 14px;
+            padding: 20px 15px; margin: 12px 0; text-align: center;
         }
+        .word-text { font-size: 2em; font-weight: 900; color: #d4af37; }
 
-        .word-text {
-            font-size: 64px;
-            font-weight: 900;
-            color: #0a1a3a;
-            text-shadow: none;
-        }
-
+        /* Impostor Badge */
         .impostor-badge {
-            background: #dc2626;
-            border-radius: 16px;
-            padding: 20px;
-            margin-top: 20px;
+            background: rgba(220,38,38,0.2); border: 1.5px solid rgba(220,38,38,0.5);
+            border-radius: 10px; padding: 12px; margin-top: 10px;
         }
+        .impostor-badge p { color: #fff; font-weight: 700; margin: 4px 0; font-size: 0.85em; }
 
-        .impostor-badge p {
-            color: white;
-            font-size: 26px;
-            font-weight: 700;
-            margin: 0;
-        }
-
-        .vote-grid {
-            display: grid;
-            grid-template-columns: repeat(2, 1fr);
-            gap: 16px;
-            margin: 20px 0;
-        }
-
+        /* Vote Grid */
+        .vote-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 8px; margin: 10px 0; }
         .vote-card {
-            background: rgba(10, 26, 58, 0.6);
-            border: 2px solid rgba(212, 175, 55, 0.3);
-            border-radius: 18px;
-            padding: 26px;
-            text-align: center;
-            cursor: pointer;
-            transition: all 0.3s;
-            backdrop-filter: blur(10px);
-            min-height: 150px;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
+            background: rgba(255,255,255,0.05); border: 1.5px solid rgba(212,175,55,0.2);
+            border-radius: 12px; padding: 14px 10px; text-align: center;
+            cursor: pointer; transition: all 0.2s; min-height: 70px;
+            display: flex; flex-direction: column; align-items: center; justify-content: center;
         }
-
         .vote-card:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 15px 40px rgba(212, 175, 55, 0.3);
-            border-color: #d4af37;
-            background: rgba(212, 175, 55, 0.15);
+            border-color: #d4af37; background: rgba(212,175,55,0.1);
+            transform: translateY(-2px); box-shadow: 0 4px 15px rgba(212,175,55,0.2);
         }
-
         .vote-card.selected {
-            background: rgba(212, 175, 55, 0.25);
-            border-width: 3px;
-            border-color: #d4af37;
-            box-shadow: 0 0 30px rgba(212, 175, 55, 0.4);
+            background: rgba(212,175,55,0.2); border-color: #d4af37;
+            border-width: 2px; box-shadow: 0 0 20px rgba(212,175,55,0.3);
         }
 
-        .hidden {
-            display: none !important;
-        }
-
-        .divider {
-            position: relative;
-            margin: 24px 0;
-            text-align: center;
-        }
-
+        /* Divider */
+        .divider { position: relative; margin: 14px 0; text-align: center; }
         .divider::before {
-            content: '';
-            position: absolute;
-            top: 50%;
-            left: 0;
-            right: 0;
-            height: 2px;
-            background: linear-gradient(to right, transparent, #d4af37, transparent);
+            content: ''; position: absolute; top: 50%; left: 0; right: 0;
+            height: 1px; background: linear-gradient(to right, transparent, rgba(212,175,55,0.4), transparent);
         }
-
         .divider span {
-            position: relative;
-            background: rgba(10, 26, 58, 0.8);
-            backdrop-filter: blur(10px);
-            padding: 0 20px;
-            color: #d4af37;
-            font-weight: 700;
-            text-shadow: 0 2px 4px rgba(0, 0, 0, 0.5);
+            position: relative; background: rgba(12, 28, 60, 0.95);
+            padding: 0 12px; color: #d4af37; font-weight: 700; font-size: 0.85em;
         }
 
-        .guess-input {
-            margin: 20px 0;
-        }
-
-        /* تصميم احترافي للفائز */
+        /* Winner Announcement */
         .winner-announcement {
-            background: linear-gradient(135deg, rgba(255, 215, 0, 0.2), rgba(255, 193, 7, 0.2));
-            border: 3px solid rgba(255, 215, 0, 0.6);
-            border-radius: 20px;
-            padding: 30px 25px;
-            margin: 25px 0;
-            text-align: center;
-            backdrop-filter: blur(15px);
-            box-shadow: 0 10px 40px rgba(255, 215, 0, 0.3);
+            background: linear-gradient(135deg, rgba(255,215,0,0.12), rgba(255,193,7,0.08));
+            border: 2px solid rgba(255,215,0,0.4); border-radius: 14px;
+            padding: 18px 15px; margin: 12px 0; text-align: center;
             animation: winnerGlow 2s ease-in-out infinite;
         }
-
         @keyframes winnerGlow {
-            0%, 100% { 
-                box-shadow: 0 10px 40px rgba(255, 215, 0, 0.3);
-                transform: scale(1);
-            }
-            50% { 
-                box-shadow: 0 15px 50px rgba(255, 215, 0, 0.5);
-                transform: scale(1.02);
-            }
+            0%,100% { box-shadow: 0 4px 20px rgba(255,215,0,0.2); }
+            50% { box-shadow: 0 6px 30px rgba(255,215,0,0.4); }
         }
+        .winner-announcement .crown { font-size: 2.5em; margin-bottom: 8px; animation: crownFloat 2s ease-in-out infinite; }
+        @keyframes crownFloat { 0%,100%{transform:translateY(0)} 50%{transform:translateY(-6px)} }
+        .winner-announcement .winner-title { font-size: 1.1em; color: #fbbf24; font-weight: 800; margin-bottom: 4px; }
+        .winner-announcement .winner-name-text { font-size: 1.6em; color: #fff; font-weight: 900; margin: 6px 0; }
+        .winner-announcement .winner-score { font-size: 0.9em; color: #fef3c7; font-weight: 700; }
+        .winner-announcement .congrats { font-size: 0.85em; color: #d4af37; font-weight: 600; margin-top: 6px; }
 
-        .winner-announcement .crown {
-            font-size: 70px;
-            margin-bottom: 15px;
-            animation: crownFloat 2s ease-in-out infinite;
-        }
+        .guess-input { margin: 10px 0; }
 
-        @keyframes crownFloat {
-            0%, 100% { transform: translateY(0); }
-            50% { transform: translateY(-10px); }
-        }
+        /* Hidden */
+        .hidden { display: none !important; }
 
-        .winner-announcement .winner-title {
-            font-size: 26px;
-            color: #fbbf24;
-            font-weight: 800;
-            margin-bottom: 12px;
-            text-shadow: 0 3px 8px rgba(0, 0, 0, 0.4);
-        }
+        /* Ramadan badge - smaller */
+        .ramadan { font-size: 0.8em; color: #d4af37; font-weight: 600; text-align: center; margin-bottom: 8px; opacity: 0.7; }
 
-        .winner-announcement .winner-name-text {
-            font-size: 38px;
-            color: #ffffff;
-            font-weight: 900;
-            margin: 15px 0;
-            text-shadow: 0 4px 12px rgba(0, 0, 0, 0.5);
-            letter-spacing: 1px;
-        }
-
-        .winner-announcement .winner-score {
-            font-size: 20px;
-            color: #fef3c7;
-            font-weight: 700;
-            margin-top: 10px;
-            text-shadow: 0 2px 6px rgba(0, 0, 0, 0.4);
-        }
-
-        .winner-announcement .congrats {
-            font-size: 18px;
-            color: #d4af37;
-            font-weight: 600;
-            margin-top: 15px;
-            text-shadow: 0 2px 5px rgba(0, 0, 0, 0.3);
-        }
         /* ========== Chat System ========== */
         .chat-fab {
-            position: fixed; bottom: 90px; left: 15px; width: 54px; height: 54px;
+            position: fixed; bottom: 20px; left: 15px; width: 48px; height: 48px;
             border-radius: 50%; background: linear-gradient(135deg, #d4af37, #f5e6a3);
-            border: none; color: #0a1a3a; font-size: 24px; cursor: pointer; z-index: 1500;
-            box-shadow: 0 4px 20px rgba(212,175,55,0.5); display: flex; align-items: center;
-            justify-content: center; -webkit-tap-highlight-color: transparent; touch-action: manipulation;
-            will-change: transform; transition: transform 0.2s cubic-bezier(0.4,0,0.2,1), box-shadow 0.2s ease;
+            border: none; color: #0a1a3a; font-size: 20px; cursor: pointer; z-index: 1500;
+            box-shadow: 0 4px 16px rgba(212,175,55,0.4); display: flex; align-items: center;
+            justify-content: center; touch-action: manipulation; will-change: transform;
+            transition: transform 0.2s, box-shadow 0.2s;
         }
-        .chat-fab:hover { transform: scale(1.08); box-shadow: 0 6px 28px rgba(212,175,55,0.65); }
+        .chat-fab:hover { transform: scale(1.08); box-shadow: 0 6px 24px rgba(212,175,55,0.6); }
         .chat-fab:active { transform: scale(0.92); }
-        .chat-fab.has-unread { animation: chatFabBounce 0.5s cubic-bezier(0.36,0.07,0.19,0.97); }
-        @keyframes chatFabBounce { 0%{transform:scale(1)} 20%{transform:scale(1.22)} 50%{transform:scale(0.92)} 75%{transform:scale(1.06)} 100%{transform:scale(1)} }
+        .chat-fab.has-unread { animation: chatFabBounce 0.5s; }
+        @keyframes chatFabBounce { 0%{transform:scale(1)} 20%{transform:scale(1.2)} 50%{transform:scale(0.92)} 100%{transform:scale(1)} }
         .chat-badge {
-            position: absolute; top: -5px; right: -5px; background: #e74c3c; color: #fff;
-            font-size: 11px; font-weight: 700; min-width: 21px; height: 21px; border-radius: 11px;
-            display: none; align-items: center; justify-content: center; padding: 0 5px;
-            font-family: 'Cairo',sans-serif; box-shadow: 0 2px 8px rgba(231,76,60,0.6);
-            border: 2px solid #0a1a3a;
+            position: absolute; top: -4px; right: -4px; background: #e74c3c; color: #fff;
+            font-size: 10px; font-weight: 700; min-width: 18px; height: 18px; border-radius: 9px;
+            display: none; align-items: center; justify-content: center; padding: 0 4px;
+            font-family: 'Cairo',sans-serif; border: 2px solid #0a1a3a;
         }
         .chat-badge.visible { display: flex; }
-        .chat-overlay {
-            position: fixed; inset: 0; background: rgba(0,0,0,0); z-index: 2400;
-            pointer-events: none; transition: background 0.35s ease;
-        }
-        .chat-overlay.active { background: rgba(0,0,0,0.45); pointer-events: auto; }
+        .chat-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0); z-index: 2400; pointer-events: none; transition: background 0.3s; }
+        .chat-overlay.active { background: rgba(0,0,0,0.4); pointer-events: auto; }
         .chat-panel {
             position: fixed; bottom: 0; left: 0; right: 0; background: #0c1530; z-index: 2500;
-            display: flex; flex-direction: column; overflow: hidden; border-radius: 22px 22px 0 0;
-            box-shadow: 0 -8px 40px rgba(0,0,0,0.5); will-change: transform; transform: translateY(100%);
-            transition: transform 0.38s cubic-bezier(0.32,0.72,0,1); max-height: 80vh; height: 70vh;
-            border-top: 2px solid rgba(212,175,55,0.35);
+            display: flex; flex-direction: column; overflow: hidden; border-radius: 18px 18px 0 0;
+            box-shadow: 0 -6px 30px rgba(0,0,0,0.5); will-change: transform; transform: translateY(100%);
+            transition: transform 0.35s cubic-bezier(0.32,0.72,0,1); max-height: 75vh; height: 65vh;
+            border-top: 2px solid rgba(212,175,55,0.3);
         }
         .chat-panel.open { transform: translateY(0); }
-        .chat-drag-handle {
-            width: 100%; display: flex; justify-content: center; padding: 10px 0 4px;
-            cursor: grab; flex-shrink: 0; touch-action: none;
-        }
-        .chat-drag-handle::after { content:''; width:40px; height:4px; background:rgba(255,255,255,0.2); border-radius:3px; }
-        .chat-drag-handle:active::after { background: rgba(255,255,255,0.4); }
-        .chat-header { display:flex; justify-content:space-between; align-items:center; padding:4px 18px 12px; flex-shrink:0; }
-        .chat-header h4 { color:#d4af37; font-size:0.95em; display:flex; align-items:center; gap:8px; margin:0; }
-        .chat-header h4 span { font-size: 1.15em; }
-        .chat-online-dot { width:8px; height:8px; background:#2ecc71; border-radius:50%; display:inline-block; margin-right:4px; animation:onlinePulse 2s ease-in-out infinite; }
+        .chat-drag-handle { width:100%; display:flex; justify-content:center; padding:8px 0 3px; cursor:grab; flex-shrink:0; touch-action:none; }
+        .chat-drag-handle::after { content:''; width:36px; height:3px; background:rgba(255,255,255,0.2); border-radius:2px; }
+        .chat-header { display:flex; justify-content:space-between; align-items:center; padding:3px 14px 8px; flex-shrink:0; }
+        .chat-header h4 { color:#d4af37; font-size:0.85em; display:flex; align-items:center; gap:6px; margin:0; }
+        .chat-header h4 span { font-size:1.1em; }
+        .chat-online-dot { width:6px; height:6px; background:#2ecc71; border-radius:50%; display:inline-block; animation:onlinePulse 2s ease-in-out infinite; }
         @keyframes onlinePulse { 0%,100%{opacity:1} 50%{opacity:0.4} }
-        .chat-close-btn {
-            background:rgba(255,255,255,0.08); border:none; color:#aaa; width:34px; height:34px;
-            border-radius:50%; font-size:16px; cursor:pointer; display:flex; align-items:center;
-            justify-content:center; transition:all 0.15s; padding:0;
-        }
+        .chat-close-btn { background:rgba(255,255,255,0.08); border:none; color:#aaa; width:30px; height:30px; border-radius:50%; font-size:14px; cursor:pointer; display:flex; align-items:center; justify-content:center; }
         .chat-close-btn:hover { background:rgba(255,255,255,0.15); color:#fff; }
-        .chat-close-btn:active { transform: scale(0.9); }
-        .chat-messages {
-            flex:1; overflow-y:auto; overflow-x:hidden; padding:8px 14px; display:flex;
-            flex-direction:column; gap:4px; -webkit-overflow-scrolling:touch; overscroll-behavior:contain;
-        }
-        .chat-messages::-webkit-scrollbar { width:3px; }
-        .chat-messages::-webkit-scrollbar-track { background:transparent; }
-        .chat-messages::-webkit-scrollbar-thumb { background:rgba(212,175,55,0.25); border-radius:2px; }
-        .chat-msg {
-            max-width:80%; padding:8px 13px; border-radius:16px; font-size:0.88em; line-height:1.55;
-            word-wrap:break-word; word-break:break-word; opacity:0; transform:translateY(12px) scale(0.97);
-            animation:chatMsgIn 0.3s cubic-bezier(0.32,0.72,0,1) forwards; position:relative;
-        }
-        @keyframes chatMsgIn { to{opacity:1;transform:translateY(0) scale(1)} }
-        .chat-msg.me { align-self:flex-start; background:linear-gradient(135deg,#d4af37,#c9a230); color:#0a1a3a; border-bottom-right-radius:5px; }
-        .chat-msg.other { align-self:flex-end; background:rgba(255,255,255,0.08); color:#e8e8e8; border-bottom-left-radius:5px; border:1px solid rgba(255,255,255,0.06); }
-        .chat-msg .msg-sender { font-size:0.72em; font-weight:700; margin-bottom:2px; }
-        .chat-msg.me .msg-sender { color:rgba(10,26,58,0.7); }
+        .chat-messages { flex:1; overflow-y:auto; padding:6px 12px; display:flex; flex-direction:column; gap:3px; -webkit-overflow-scrolling:touch; overscroll-behavior:contain; }
+        .chat-messages::-webkit-scrollbar { width:2px; }
+        .chat-messages::-webkit-scrollbar-thumb { background:rgba(212,175,55,0.2); border-radius:2px; }
+        .chat-msg { max-width:80%; padding:7px 11px; border-radius:14px; font-size:0.82em; line-height:1.5; word-wrap:break-word; word-break:break-word; opacity:0; transform:translateY(10px); animation:chatMsgIn 0.25s ease forwards; }
+        @keyframes chatMsgIn { to{opacity:1;transform:translateY(0)} }
+        .chat-msg.me { align-self:flex-start; background:linear-gradient(135deg,#d4af37,#c9a230); color:#0a1a3a; border-bottom-right-radius:4px; }
+        .chat-msg.other { align-self:flex-end; background:rgba(255,255,255,0.07); color:#e0e0e0; border-bottom-left-radius:4px; border:1px solid rgba(255,255,255,0.05); }
+        .chat-msg .msg-sender { font-size:0.68em; font-weight:700; margin-bottom:1px; }
+        .chat-msg.me .msg-sender { color:rgba(10,26,58,0.6); }
         .chat-msg.other .msg-sender { color:#d4af37; }
-        .chat-msg .msg-text { direction:rtl; line-height:1.6; }
-        .chat-msg .msg-time { font-size:0.62em; opacity:0.4; margin-top:3px; text-align:left; }
-        .chat-msg.system-msg { align-self:center; max-width:90%; background:rgba(212,175,55,0.12); color:#d4af37; text-align:center; font-size:0.78em; padding:5px 16px; border-radius:20px; border:1px solid rgba(212,175,55,0.15); }
-        .chat-msg.grouped { margin-top:-2px; }
-        .chat-msg.grouped.me { border-top-right-radius:5px; }
-        .chat-msg.grouped.other { border-top-left-radius:5px; }
+        .chat-msg .msg-text { direction:rtl; line-height:1.5; }
+        .chat-msg .msg-time { font-size:0.58em; opacity:0.4; margin-top:2px; text-align:left; }
+        .chat-msg.system-msg { align-self:center; max-width:90%; background:rgba(212,175,55,0.1); color:#d4af37; text-align:center; font-size:0.75em; padding:4px 12px; border-radius:16px; }
+        .chat-msg.grouped { margin-top:-1px; }
         .chat-msg.grouped .msg-sender { display:none; }
-        .chat-input-area {
-            display:flex; gap:8px; padding:10px 14px; padding-bottom:max(10px,env(safe-area-inset-bottom,10px));
-            background:rgba(0,0,0,0.25); border-top:1px solid rgba(212,175,55,0.1); flex-shrink:0; align-items:center;
-        }
-        .chat-input-area input {
-            flex:1; padding:11px 16px; border:1.5px solid rgba(212,175,55,0.2); border-radius:24px;
-            background:rgba(255,255,255,0.06); color:#fff; font-size:15px; font-family:'Cairo',sans-serif;
-            outline:none; transition:border-color 0.2s,background 0.2s; -webkit-appearance:none;
-        }
-        .chat-input-area input:focus { border-color:rgba(212,175,55,0.6); background:rgba(255,255,255,0.1); }
+        .chat-input-area { display:flex; gap:6px; padding:8px 12px; padding-bottom:max(8px,env(safe-area-inset-bottom,8px)); background:rgba(0,0,0,0.2); border-top:1px solid rgba(212,175,55,0.08); flex-shrink:0; align-items:center; }
+        .chat-input-area input { flex:1; padding:9px 13px; border:1.5px solid rgba(212,175,55,0.15); border-radius:20px; background:rgba(255,255,255,0.05); color:#fff; font-size:14px; font-family:'Cairo',sans-serif; outline:none; }
+        .chat-input-area input:focus { border-color:rgba(212,175,55,0.5); background:rgba(255,255,255,0.08); }
         .chat-input-area input::placeholder { color:rgba(255,255,255,0.3); }
-        .chat-send-btn {
-            width:42px; height:42px; border-radius:50%; background:linear-gradient(135deg,#d4af37,#f5e6a3);
-            border:none; color:#0a1a3a; font-size:18px; cursor:pointer; display:flex; align-items:center;
-            justify-content:center; transition:transform 0.15s,opacity 0.15s; flex-shrink:0; padding:0;
-            touch-action:manipulation;
-        }
-        .chat-send-btn:hover { transform:scale(1.08); }
+        .chat-send-btn { width:38px; height:38px; border-radius:50%; background:linear-gradient(135deg,#d4af37,#f5e6a3); border:none; color:#0a1a3a; font-size:16px; cursor:pointer; display:flex; align-items:center; justify-content:center; flex-shrink:0; touch-action:manipulation; transition:transform 0.15s; }
         .chat-send-btn:active { transform:scale(0.88); }
         .chat-send-btn.disabled { opacity:0.35; pointer-events:none; }
-        .chat-empty { flex:1; display:flex; align-items:center; justify-content:center; color:rgba(255,255,255,0.2); font-size:0.9em; text-align:center; padding:20px; }
+        .chat-empty { flex:1; display:flex; align-items:center; justify-content:center; color:rgba(255,255,255,0.15); font-size:0.85em; text-align:center; padding:15px; }
         .chat-empty div { line-height:2; }
+
         @media (min-width:768px) {
-            .chat-fab { bottom:90px; left:20px; width:56px; height:56px; }
-            .chat-panel { width:380px; max-width:380px; height:520px; max-height:70vh; left:20px; right:auto; bottom:20px; border-radius:18px; transform:translateY(20px) scale(0.95); opacity:0; pointer-events:none; transition:transform 0.3s cubic-bezier(0.32,0.72,0,1),opacity 0.25s ease; box-shadow:0 12px 50px rgba(0,0,0,0.45); }
+            .chat-fab { bottom:20px; left:20px; width:50px; height:50px; }
+            .chat-panel { width:360px; max-width:360px; height:480px; max-height:65vh; left:20px; right:auto; bottom:20px; border-radius:16px; transform:translateY(20px) scale(0.95); opacity:0; pointer-events:none; transition:transform 0.3s cubic-bezier(0.32,0.72,0,1),opacity 0.25s; }
             .chat-panel.open { transform:translateY(0) scale(1); opacity:1; pointer-events:auto; }
             .chat-drag-handle { display:none; }
-            .chat-header { padding:14px 18px; border-bottom:1px solid rgba(212,175,55,0.12); }
             .chat-overlay.active { background:rgba(0,0,0,0.15); }
         }
         @media (max-width:380px) {
-            .chat-fab { width:48px; height:48px; font-size:20px; bottom:85px; left:10px; }
-            .chat-panel { max-height:75vh; height:68vh; }
-            .chat-msg { font-size:0.84em; padding:7px 10px; max-width:85%; }
-            .chat-input-area input { font-size:14px; padding:9px 12px; }
-            .chat-send-btn { width:38px; height:38px; font-size:16px; }
+            .chat-fab { width:42px; height:42px; font-size:18px; }
+            .chat-panel { max-height:70vh; height:60vh; }
         }
-        @media (max-height:500px) and (max-width:900px) {
-            .chat-panel { max-height:95vh; height:90vh; }
-            .chat-fab { bottom:10px; }
-        }
+
+        /* Kick Button */
         .kick-btn {
-            background:rgba(231,76,60,0.15); border:1px solid rgba(231,76,60,0.3); color:#e74c3c;
-            font-size:12px; padding:4px 10px; border-radius:8px; cursor:pointer;
-            font-family:'Cairo',sans-serif; font-weight:700; transition:all 0.2s; margin-right:8px;
+            background:rgba(231,76,60,0.12); border:1px solid rgba(231,76,60,0.25); color:#e74c3c;
+            font-size:11px; padding:3px 8px; border-radius:6px; cursor:pointer;
+            font-family:'Cairo',sans-serif; font-weight:700; transition:all 0.2s; margin-right:6px;
         }
-        .kick-btn:hover { background:rgba(231,76,60,0.3); }
+        .kick-btn:hover { background:rgba(231,76,60,0.25); }
+
+        /* Info box */
+        .info-box {
+            background: rgba(0,0,0,0.2); border-right: 3px solid #d4af37;
+            padding: 10px 12px; border-radius: 8px; margin: 8px 0;
+        }
+        .info-box p { text-align: right; font-size: 0.8em; line-height: 1.7; color: #ccc; margin: 0; }
+        .info-box strong { color: #d4af37; }
+
+        /* Responsive text */
+        @media (max-width: 400px) {
+            .card { padding: 14px; }
+            h1 { font-size: 1.1em; }
+            .word-text { font-size: 1.6em; }
+            .room-code-number { font-size: 1.8em; }
+        }
     </style>
 <!-- Code Protection -->
 <script>
@@ -665,55 +351,56 @@
         <!-- الشاشة الرئيسية -->
         <div id="homeScreen" class="card">
             <div class="ramadan">☪ رمضان كريم ☪</div>
-            <div class="emoji">🎭</div>
-            <h1>مين برا السالفة؟</h1>
-            
-            <div style="background:rgba(0,0,0,0.3);padding:15px;border-radius:10px;margin:20px 0;border-right:4px solid #d4af37;">
-                <p style="text-align:right;font-size:0.9em;line-height:1.8;color:#fff;">
-                    <strong style="color:#d4af37;">📖 كيف تلعب:</strong><br><br>
-                    لعبة جماعية ممتعة! كل لاعب يحصل على كلمة من نفس الموضوع، إلا واحد... هو "برا السالفة"!<br><br>
-                    عبر جولات الأسئلة والأجوبة، حاول تكتشف مين الشخص اللي ما عنده نفس الموضوع. وهو يحاول يخمن السالفة الأساسية!<br><br>
-                    <strong style="color:#d4af37;">🎯 الهدف:</strong> اكتشف اللي برا السالفة قبل ما يكتشف موضوعكم!
+            <div style="text-align:center;">
+                <div class="emoji">🎭</div>
+                <h1>مين برا السالفة؟</h1>
+            </div>
+
+            <div class="info-box">
+                <p>
+                    <strong>📖 كيف تلعب:</strong><br>
+                    لعبة جماعية! كل لاعب يحصل على كلمة من نفس الموضوع، إلا واحد... هو "برا السالفة"!<br>
+                    عبر جولات الأسئلة، حاول تكتشف مين اللي ما عنده نفس الموضوع.<br>
+                    <strong>🎯 الهدف:</strong> اكتشف اللي برا السالفة قبل ما يكتشف موضوعكم!
                 </p>
             </div>
-            
+
             <button class="btn btn-full btn-gold" id="goToCreateBtn">🏠 إنشاء غرفة جديدة</button>
             <button class="btn btn-full btn-purple" id="goToJoinBtn">🚪 انضمام لغرفة</button>
-            <button class="btn btn-full btn-secondary" onclick="window.location.href='../index.html'" style="margin-top: 10px;">← العودة للقائمة</button>
+            <button class="btn btn-full btn-secondary" onclick="window.location.href='../index.html'">← العودة للقائمة</button>
         </div>
 
         <!-- شاشة إنشاء غرفة -->
         <div id="createRoomScreen" class="card hidden">
             <div class="ramadan">☪ رمضان كريم ☪</div>
             <h2>إنشاء غرفة جديدة</h2>
-            
             <input type="text" id="hostName" placeholder="اسمك" maxlength="15">
-            
-            <div id="categorySection" style="margin: 20px 0;">
-                <label style="display: block; text-align: center; font-weight: 700; color: #ffffff; margin-bottom: 12px; text-shadow: 0 2px 4px rgba(0, 0, 0, 0.5);">اختر الفئة:</label>
+
+            <div id="categorySection" style="margin:8px 0;">
+                <label style="display:block;text-align:center;font-weight:700;color:#d4af37;margin-bottom:6px;font-size:0.85em;">اختر الفئة:</label>
                 <div class="category-grid">
                     <button class="category-btn active" data-category="حيوانات">🦁 حيوانات</button>
                     <button class="category-btn" data-category="أكل">🍕 أكل</button>
                     <button class="category-btn" data-category="أماكن">🏖️ أماكن</button>
                     <button class="category-btn" data-category="وظائف">👨‍⚕️ وظائف</button>
-                    <button class="category-btn" data-category="مدن سعودية"> مدن سعودية</button>
-                    <button class="category-btn" data-category="دول"> دول</button>
-                    <button class="category-btn" data-category="مسلسلات"> مسلسلات </button>
-                    <button class="category-btn" data-category="أثاث"> أثاث </button>
-                    <button class="category-btn" data-category="لاعبين"> لاعبين </button>
-                    <button class="category-btn" data-category="أندية"> أندية </button>
+                    <button class="category-btn" data-category="مدن سعودية">🏙️ مدن سعودية</button>
+                    <button class="category-btn" data-category="دول">🌍 دول</button>
+                    <button class="category-btn" data-category="مسلسلات">📺 مسلسلات</button>
+                    <button class="category-btn" data-category="أثاث">🛋️ أثاث</button>
+                    <button class="category-btn" data-category="لاعبين">⚽ لاعبين</button>
+                    <button class="category-btn" data-category="أندية">🏟️ أندية</button>
                 </div>
             </div>
-            
-            <div style="margin: 20px 0; text-align: center;">
-                <label style="display: block; font-weight: 700; color: #ffffff; margin-bottom: 12px; text-shadow: 0 2px 4px rgba(0, 0, 0, 0.5);">عدد نقاط الفوز: <span id="winScoreDisplay" style="color: #fbbf24; font-size: 24px;">5</span></label>
-                <div style="display: flex; align-items: center; justify-content: center; gap: 15px;">
-                    <span style="color: #aaa; font-size: 14px;">2</span>
-                    <input type="range" id="winScoreSlider" min="2" max="7" value="5" style="width: 200px; accent-color: #d4af37; cursor: pointer;">
-                    <span style="color: #aaa; font-size: 14px;">7</span>
+
+            <div style="margin:8px 0;text-align:center;">
+                <label style="display:block;font-weight:700;color:#d4af37;margin-bottom:4px;font-size:0.85em;">نقاط الفوز: <span id="winScoreDisplay" style="color:#fbbf24;font-size:1.2em;">5</span></label>
+                <div style="display:flex;align-items:center;justify-content:center;gap:10px;">
+                    <span style="color:#666;font-size:12px;">2</span>
+                    <input type="range" id="winScoreSlider" min="2" max="7" value="5" style="width:160px;accent-color:#d4af37;cursor:pointer;">
+                    <span style="color:#666;font-size:12px;">7</span>
                 </div>
             </div>
-            
+
             <button class="btn btn-full btn-success" id="confirmCreateBtn">✅ إنشاء الغرفة</button>
             <button class="btn btn-full btn-secondary" id="backFromCreate">🔙 رجوع</button>
         </div>
@@ -722,10 +409,8 @@
         <div id="joinRoomScreen" class="card hidden">
             <div class="ramadan">☪ أهلاً وسهلاً ☪</div>
             <h2>انضمام لغرفة</h2>
-            
             <input type="text" id="joinPlayerName" placeholder="اسمك" maxlength="15">
-            <input type="text" id="joinRoomCode" placeholder="كود الغرفة (4 أرقام)" maxlength="4" style="text-transform:uppercase;text-align:center;font-size:1.5em;letter-spacing:5px;">
-            
+            <input type="text" id="joinRoomCode" placeholder="كود الغرفة (4 أرقام)" maxlength="4" style="letter-spacing:5px;font-size:1.2em;">
             <button class="btn btn-full btn-success" id="confirmJoinBtn">✅ انضمام</button>
             <button class="btn btn-full btn-secondary" id="backFromJoin">🔙 رجوع</button>
         </div>
@@ -736,33 +421,33 @@
             <h2>غرفة الانتظار</h2>
 
             <div class="room-code">
-                <p style="font-size: 18px; margin-bottom: 10px; color: #1f2937;">كود الغرفة:</p>
+                <p style="font-size:0.8em;margin-bottom:4px;color:#d4af37;">كود الغرفة:</p>
                 <div class="room-code-number" id="displayCode">0000</div>
-                <button class="btn btn-purple" id="copyBtn" style="width: auto; padding: 12px 24px; font-size: 18px; margin-top: 15px;">📋 نسخ</button>
+                <br>
+                <button class="btn btn-small btn-purple" id="copyBtn" style="margin-top:6px;">📋 نسخ الكود</button>
             </div>
 
             <div id="categorySection">
-                <label style="display: block; text-align: center; font-weight: 700; color: #ffffff; margin-bottom: 12px; text-shadow: 0 2px 4px rgba(0, 0, 0, 0.5);">اختر الفئة:</label>
+                <label style="display:block;text-align:center;font-weight:700;color:#d4af37;margin-bottom:6px;font-size:0.85em;">اختر الفئة:</label>
                 <div class="category-grid">
                     <button class="category-btn active" data-category="حيوانات">🦁 حيوانات</button>
                     <button class="category-btn" data-category="أكل">🍕 أكل</button>
                     <button class="category-btn" data-category="أماكن">🏖️ أماكن</button>
                     <button class="category-btn" data-category="وظائف">👨‍⚕️ وظائف</button>
-                    <button class="category-btn" data-category="مدن سعودية"> مدن سعودية</button>
-                    <button class="category-btn" data-category="دول"> دول</button>
-                    <button class="category-btn" data-category="مسلسلات"> مسلسلات </button>
-                    <button class="category-btn" data-category="أثاث"> أثاث </button>
-                    <button class="category-btn" data-category="لاعبين"> لاعبين </button>
-                    <button class="category-btn" data-category="أندية"> أندية </button>
+                    <button class="category-btn" data-category="مدن سعودية">🏙️ مدن سعودية</button>
+                    <button class="category-btn" data-category="دول">🌍 دول</button>
+                    <button class="category-btn" data-category="مسلسلات">📺 مسلسلات</button>
+                    <button class="category-btn" data-category="أثاث">🛋️ أثاث</button>
+                    <button class="category-btn" data-category="لاعبين">⚽ لاعبين</button>
+                    <button class="category-btn" data-category="أندية">🏟️ أندية</button>
                 </div>
             </div>
 
             <div class="status">
-                <p>الفئة المختارة: <span id="displayCategory" style="color: #fbbf24;">حيوانات</span></p>
-                <p>نقاط الفوز: <span id="displayWinScore" style="color: #fbbf24;">5</span> 🏆</p>
+                <p>الفئة: <span id="displayCategory" style="color:#fbbf24;">حيوانات</span> · نقاط الفوز: <span id="displayWinScore" style="color:#fbbf24;">5</span> 🏆</p>
             </div>
 
-            <h2>اللاعبين (<span id="playerCount">0</span>)</h2>
+            <div style="text-align:center;"><h2>اللاعبين (<span id="playerCount">0</span>)</h2></div>
             <div class="player-list" id="playerList"></div>
 
             <div id="minWarning" class="status error hidden">
@@ -780,7 +465,7 @@
         <!-- شاشة الكلمة -->
         <div id="wordScreen" class="card hidden">
             <div class="ramadan">☪ تبارك الرحمن ☪</div>
-            <h2 id="wordTitle">كلمتك</h2>
+            <div style="text-align:center;"><h2 id="wordTitle">كلمتك</h2></div>
 
             <div id="beforeReveal">
                 <div class="emoji">🎴</div>
@@ -790,11 +475,11 @@
 
             <div id="afterReveal" class="hidden">
                 <div class="word-box">
-                    <p style="font-size: 26px; margin-bottom: 18px; color: #ffffff;">كلمتك:</p>
+                    <p style="font-size:0.9em;margin-bottom:8px;color:#ccc;">كلمتك:</p>
                     <div class="word-text" id="myWord">---</div>
                     <div id="impostorBadge" class="impostor-badge hidden">
-                        <p style="color: white; font-size: 28px; font-weight: 700; margin: 0; margin-bottom: 12px;">🎭 أنت برا السالفة!</p>
-                        <p style="color: rgba(255,255,255,0.95); font-size: 18px; font-weight: 600; margin: 0; line-height: 1.5;">💡 حاول تكتشف السالفة الأساسية من كلام اللاعبين واستمع جيداً!</p>
+                        <p style="font-size:1em;margin-bottom:4px;">🎭 أنت برا السالفة!</p>
+                        <p style="font-size:0.8em;opacity:0.9;">💡 حاول تكتشف السالفة من كلام اللاعبين!</p>
                     </div>
                 </div>
 
@@ -805,7 +490,6 @@
                 <div id="hostNext" class="hidden">
                     <button class="btn btn-full btn-success" id="nextPhaseBtn">➡️ التالي</button>
                 </div>
-
                 <div id="waitingHost" class="status hidden">
                     <p>⏳ انتظر المضيف...</p>
                 </div>
@@ -815,44 +499,38 @@
         <!-- شاشة الأسئلة المنظمة -->
         <div id="questionsScreen" class="card hidden">
             <div class="ramadan">☪ بسم الله ☪</div>
-            <h2>جولة الأسئلة 🗣️</h2>
+            <div style="text-align:center;"><h2>جولة الأسئلة 🗣️</h2></div>
 
-            <div id="currentQuestion" class="word-box" style="margin: 30px 0;">
-                <p style="font-size: 22px; color: #ffffff; margin-bottom: 15px; font-weight: 700;">السؤال <span id="questionNum">1</span>:</p>
-                <p style="font-size: 32px; color: #ffffff; font-weight: 900; margin: 10px 0;">
-                    <span id="askerName" style="color: #ffd700;">أحمد</span> → <span id="answererName" style="color: #ffd700;">سارة</span>
+            <div id="currentQuestion" class="word-box" style="margin:10px 0;">
+                <p style="font-size:0.85em;color:#ccc;margin-bottom:6px;">السؤال <span id="questionNum">1</span>:</p>
+                <p style="font-size:1.2em;color:#fff;font-weight:800;margin:6px 0;">
+                    <span id="askerName" style="color:#ffd700;">أحمد</span> → <span id="answererName" style="color:#ffd700;">سارة</span>
                 </p>
-                <p style="font-size: 18px; color: #ffffff; margin-top: 15px; opacity: 0.9;">
+                <p style="font-size:0.8em;color:#ccc;margin-top:6px;">
                     <span id="askerName2">أحمد</span> يسأل <span id="answererName2">سارة</span> سؤال عن كلمتها
                 </p>
             </div>
 
-            <div class="status">
-                <p>💡 اسأل أسئلة ذكية لتكتشف مين برا السالفة!</p>
-            </div>
+            <div class="status"><p>💡 اسأل أسئلة ذكية لتكتشف مين برا السالفة!</p></div>
 
             <div id="hostQuestionControls" class="hidden">
                 <button class="btn btn-full btn-success" id="nextQuestionBtn">➡️ السؤال التالي</button>
             </div>
-
-            <div id="waitQuestionHost" class="status hidden">
-                <p>⏳ انتظر المضيف...</p>
-            </div>
+            <div id="waitQuestionHost" class="status hidden"><p>⏳ انتظر المضيف...</p></div>
         </div>
 
         <!-- شاشة الأسئلة الحرة -->
         <div id="freeQuestionsScreen" class="card hidden">
             <div class="ramadan">☪ الله يوفقكم ☪</div>
-            <h2>أسئلة حرة 💬</h2>
+            <div style="text-align:center;"><h2>أسئلة حرة 💬</h2></div>
 
-            <div class="word-box" style="margin: 30px 0;">
-                <p style="font-size: 48px; color: #ffffff; font-weight: 900; margin: 0;">⏰ <span id="freeTimer">60</span></p>
-                <p style="font-size: 20px; color: #ffffff; margin-top: 10px;">ثانية متبقية</p>
+            <div class="word-box" style="margin:10px 0;">
+                <p style="font-size:2em;color:#d4af37;font-weight:900;margin:0;">⏰ <span id="freeTimer">60</span></p>
+                <p style="font-size:0.85em;color:#ccc;margin-top:4px;">ثانية متبقية</p>
             </div>
 
             <div class="status">
                 <p>💬 أي واحد يقدر يسأل أي واحد!</p>
-                <p style="font-size: 16px; margin-top: 8px;">استغل الوقت لاكتشاف اللي برا السالفة</p>
             </div>
 
             <div id="hostFreeControls" class="hidden">
@@ -863,7 +541,7 @@
         <!-- شاشة النقاش -->
         <div id="discussScreen" class="card hidden">
             <div class="ramadan">☪ الله يوفقكم ☪</div>
-            <h2>وقت النقاش! 🗣️</h2>
+            <div style="text-align:center;"><h2>وقت النقاش! 🗣️</h2></div>
 
             <div class="status">
                 <p>💬 كل واحد يتكلم عن كلمته</p>
@@ -875,19 +553,14 @@
             <div id="hostDiscuss" class="hidden">
                 <button class="btn btn-full btn-success" id="startVoteBtn">🗳️ ابدأ التصويت</button>
             </div>
-
-            <div id="waitDiscuss" class="status hidden">
-                <p>⏳ انتظر المضيف يبدأ التصويت...</p>
-            </div>
+            <div id="waitDiscuss" class="status hidden"><p>⏳ انتظر المضيف يبدأ التصويت...</p></div>
         </div>
 
         <!-- شاشة التصويت -->
         <div id="voteScreen" class="card hidden">
             <div class="ramadan">☪ بسم الله ☪</div>
-            <h2>صوّت: مين برا السالفة؟</h2>
-
+            <div style="text-align:center;"><h2>صوّت: مين برا السالفة؟</h2></div>
             <div class="vote-grid" id="voteGrid"></div>
-
             <div id="voteWaiting" class="status hidden">
                 <p>✅ تم تسجيل صوتك!</p>
                 <p>⏳ في انتظار الباقين...</p>
@@ -897,36 +570,28 @@
         <!-- شاشة تخمين اللي برا السالفة -->
         <div id="guessScreen" class="card hidden">
             <div class="ramadan">الله يوفقك 🌙</div>
-            <h2>أنت برا السالفة! 🎭</h2>
-
+            <div style="text-align:center;"><h2>أنت برا السالفة! 🎭</h2></div>
             <div class="status">
-                <p style="font-size: 20px; margin-bottom: 10px;">💡 اختر الكلمة الصحيحة من الخيارات:</p>
-                <p style="font-size: 16px; opacity: 0.9;">إذا خمّنت صح، تكسب نقطة! 🎯</p>
+                <p>💡 اختر الكلمة الصحيحة من الخيارات:</p>
+                <p style="font-size:0.78em;opacity:0.8;">إذا خمّنت صح، تكسب نقطة! 🎯</p>
             </div>
-
-            <div id="guessOptions" class="vote-grid" style="margin: 20px 0;">
-                <!-- سيتم ملؤها بالخيارات -->
-            </div>
-
+            <div id="guessOptions" class="vote-grid" style="margin:10px 0;"></div>
             <div id="guessWait" class="status hidden">
                 <p>✅ تم إرسال تخمينك!</p>
                 <p>⏳ انتظر النتائج...</p>
             </div>
         </div>
-        
+
         <!-- شاشة انتظار تخمين اللي برا السالفة -->
         <div id="waitingGuessScreen" class="card hidden">
             <div class="ramadan">انتظروا 🌙</div>
             <div class="emoji">⏳</div>
-            <h2>اللي برا السالفة يخمّن الكلمة الصحيحة...</h2>
-            
+            <div style="text-align:center;"><h2>اللي برا السالفة يخمّن...</h2></div>
             <div class="word-box">
-                <p style="font-size: 22px; margin-bottom: 15px; color: #ffffff;">اللي برا السالفة: <span id="impostorNameWait">---</span> 🎭</p>
+                <p style="font-size:0.9em;color:#ccc;">اللي برا السالفة: <span id="impostorNameWait" style="color:#d4af37;">---</span> 🎭</p>
             </div>
-            
             <div class="status">
-                <p style="font-size: 18px;">💭 اللي برا السالفة الحين يختار من 6 خيارات...</p>
-                <p style="font-size: 16px; margin-top: 10px;">إذا خمّن صح، يكسب نقطة! 🎯</p>
+                <p>💭 يختار من 6 خيارات... إذا خمّن صح يكسب نقطة! 🎯</p>
             </div>
         </div>
 
@@ -934,22 +599,21 @@
         <div id="resultScreen" class="card hidden">
             <div class="ramadan">ما شاء الله 🌙</div>
             <div class="emoji" id="resultEmoji">🎉</div>
-            <h2 id="resultTitle">النتيجة</h2>
+            <div style="text-align:center;"><h2 id="resultTitle">النتيجة</h2></div>
 
             <div class="word-box">
-                <p style="font-size: 22px; margin-bottom: 15px; color: #ffffff;">اللي برا السالفة: <span id="impostorName">---</span> 🎭</p>
-                <div style="background: rgba(255,255,255,0.2); border-radius: 16px; padding: 20px;">
-                    <p style="margin: 8px 0; color: #ffffff; font-weight: 700;">الكلمة الصحيحة: <strong id="mainWord">---</strong></p>
-                    <p style="margin: 8px 0; color: #ffffff; font-weight: 700;">كلمة اللي برا السالفة: <strong id="impostorWord">---</strong></p>
+                <p style="font-size:0.9em;color:#ccc;margin-bottom:8px;">اللي برا السالفة: <span id="impostorName" style="color:#e74c3c;">---</span> 🎭</p>
+                <div style="background:rgba(255,255,255,0.08);border-radius:10px;padding:10px;margin-top:8px;">
+                    <p style="margin:4px 0;color:#fff;font-size:0.85em;">الكلمة الصحيحة: <strong id="mainWord" style="color:#2ecc71;">---</strong></p>
+                    <p style="margin:4px 0;color:#fff;font-size:0.85em;">كلمة اللي برا السالفة: <strong id="impostorWord" style="color:#e74c3c;">---</strong></p>
                 </div>
             </div>
 
             <div id="roundResults"></div>
 
-            <h2>النقاط الإجمالية 🏆</h2>
+            <div style="text-align:center;"><h2>النقاط 🏆</h2></div>
             <div class="player-list" id="scoreList"></div>
 
-            <!-- إعلان الفائز الاحترافي -->
             <div id="winnerAnnounce" class="winner-announcement hidden">
                 <div class="crown">👑</div>
                 <div class="winner-title">الفائز</div>
@@ -963,27 +627,29 @@
                 <button class="btn btn-full btn-gold" id="newGameBtn">🔄 إعادة اللعب (تصفير النقاط)</button>
                 <button class="btn btn-full btn-secondary" id="backToMenuBtn">🚪 الخروج</button>
             </div>
-            
+
             <!-- نافذة اختيار الفئة للجولة الجديدة -->
-            <div id="categoryModal" class="hidden" style="position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.8); z-index: 1000; align-items: center; justify-content: center;">
-                <div style="background: rgba(12, 28, 60, 0.95); border-radius: 20px; padding: 30px; max-width: 400px; width: 90%; border: 2px solid rgba(212, 175, 55, 0.5);">
-                    <h3 style="color: #d4af37; text-align: center; margin-bottom: 20px; font-size: 22px;">اختر الفئة للجولة الجديدة 🎯</h3>
+            <div id="categoryModal" class="hidden" style="position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,0.8);z-index:1000;align-items:center;justify-content:center;">
+                <div style="background:rgba(12,28,60,0.95);border-radius:14px;padding:20px;max-width:380px;width:90%;border:1.5px solid rgba(212,175,55,0.4);">
+                    <h3 style="color:#d4af37;text-align:center;margin-bottom:12px;font-size:1em;">اختر الفئة للجولة الجديدة 🎯</h3>
                     <div class="category-grid" id="categoryModalGrid">
-                        <button class="category-btn-result active" data-category="حيوانات">🦁 حيوانات</button>
+                        <button class="category-btn-result" data-category="حيوانات">🦁 حيوانات</button>
                         <button class="category-btn-result" data-category="أكل">🍕 أكل</button>
                         <button class="category-btn-result" data-category="أماكن">🏖️ أماكن</button>
                         <button class="category-btn-result" data-category="وظائف">👨‍⚕️ وظائف</button>
-                        <button class="category-btn-result" data-category="مدن سعودية"> مدن سعودية</button>
-                        <button class="category-btn-result" data-category="دول"> دول</button>
-                        <button class="category-btn-result" data-category="مسلسلات"> مسلسلات</button>
-                        <button class="category-btn-result" data-category="أثاث"> أثاث</button>
-                        <button class="category-btn-result" data-category="لاعبين"> لاعبين</button>
-                        <button class="category-btn-result" data-category="أندية"> أندية</button>
+                        <button class="category-btn-result" data-category="مدن سعودية">🏙️ مدن سعودية</button>
+                        <button class="category-btn-result" data-category="دول">🌍 دول</button>
+                        <button class="category-btn-result" data-category="مسلسلات">📺 مسلسلات</button>
+                        <button class="category-btn-result" data-category="أثاث">🛋️ أثاث</button>
+                        <button class="category-btn-result" data-category="لاعبين">⚽ لاعبين</button>
+                        <button class="category-btn-result" data-category="أندية">🏟️ أندية</button>
                     </div>
-                    <button class="btn btn-full btn-success" id="confirmCategoryBtn" style="margin-top: 15px;">✅ تأكيد وبدء الجولة</button>
-                    <button class="btn btn-full btn-secondary" id="cancelCategoryBtn" style="margin-top: 10px;">❌ إلغاء</button>
+                    <button class="btn btn-full btn-success" id="confirmCategoryBtn">✅ تأكيد</button>
+                    <button class="btn btn-full btn-secondary" id="cancelCategoryBtn">❌ إلغاء</button>
                 </div>
             </div>
+
+            <div id="waitResult" class="status hidden"><p>⏳ انتظر المضيف...</p></div>
         </div>
     </div>
 
