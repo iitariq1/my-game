@@ -1266,12 +1266,15 @@
                 if (!rooms) { noEl.classList.remove('hidden'); return; }
 
                 var found = 0;
+                var now = Date.now();
                 for (var code in rooms) {
                     var info = rooms[code];
+                    // حذف رومات أقدم من ساعة
+                    if (info.created && (now - info.created) > 3600000) { db.ref('publicRooms/detective/' + code).remove(); continue; }
                     var roomSnap = await db.ref('rooms/' + code).once('value');
                     if (!roomSnap.exists()) { db.ref('publicRooms/detective/' + code).remove(); continue; }
                     var rd = roomSnap.val();
-                    if (rd.started) continue;
+                    if (rd.started) { db.ref('publicRooms/detective/' + code).remove(); continue; }
                     var pc = rd.players ? rd.players.length : 0;
 
                     var card = document.createElement('div');
@@ -1531,7 +1534,7 @@
 
             if (game.isHost) {
                 if (confirm('أنت المضيف. هل تريد حذف الغرفة بالكامل؟')) {
-                    db.ref('rooms/' + game.roomCode).remove();
+                    db.ref('rooms/' + game.roomCode).remove(); db.ref('publicRooms/detective/' + game.roomCode).remove();
                     sessionStorage.clear();
                     location.reload();
                 }
@@ -2327,7 +2330,7 @@
                     var updatedPlayers = players.filter(function(p) { return p.id !== game.oderId; });
                     
                     if (updatedPlayers.length === 0 || game.isHost) {
-                        db.ref('rooms/' + game.roomCode).remove();
+                        db.ref('rooms/' + game.roomCode).remove(); db.ref('publicRooms/detective/' + game.roomCode).remove();
                     } else {
                         db.ref('rooms/' + game.roomCode + '/players').set(updatedPlayers);
                     }
