@@ -889,8 +889,27 @@
                     </p>
                 </div>
                 <button onclick="showScreen('createRoomScreen')" class="btn-full">🏠 إنشاء غرفة</button>
-                <button onclick="showScreen('joinRoomScreen')" class="btn-full btn-secondary">🚪 انضمام</button>
+                <button onclick="showScreen('joinRoomScreen')" class="btn-full btn-secondary">🚪 انضمام (بالكود)</button>
+                <div style="text-align:center;margin:8px 0;color:#d4af37;font-size:0.8em;">── أو ──</div>
+                <button onclick="showScreen('publicRoomsScreen');loadPublicRoomsDetective()" class="btn-full btn-success">🌐 رومات عامة</button>
+                <button onclick="quickJoinDetective()" class="btn-full" id="quickJoinBtnDet" style="background:linear-gradient(135deg,#27ae60,#2ecc71);color:#fff;">⚡ انضمام سريع</button>
                 <button class="btn-full btn-secondary" onclick="window.location.href='../index.html'"> 🚪 العودة لقائمة الالعاب </button>
+            </div>
+        </div>
+
+        <!-- شاشة الرومات العامة -->
+        <div id="publicRoomsScreen" class="screen">
+            <div class="header"><h1>🌐 رومات عامة</h1></div>
+            <div class="card">
+                <input type="text" id="publicJoinNameDet" placeholder="اسمك للانضمام" maxlength="12">
+                <div id="publicRoomsListDet" style="margin:10px 0;">
+                    <div class="alert alert-info" style="text-align:center;">⏳ جاري البحث...</div>
+                </div>
+                <div id="noPublicRoomsDet" class="alert alert-warning hidden" style="text-align:center;">
+                    <p>😕 لا توجد رومات عامة حالياً</p>
+                </div>
+                <button onclick="loadPublicRoomsDetective()" class="btn-full btn-secondary">🔄 تحديث</button>
+                <button onclick="showScreen('homeScreen')" class="btn-full btn-secondary">🔙 رجوع</button>
             </div>
         </div>
 
@@ -899,6 +918,10 @@
             <div class="header"><h1>إنشاء غرفة</h1></div>
             <div class="card">
                 <input type="text" id="hostName" placeholder="اسمك" maxlength="12">
+                <div style="display:flex;gap:5px;margin:8px 0;">
+                    <button id="detRoomPublic" onclick="detIsPublic=true;this.style.opacity='1';document.getElementById('detRoomPrivate').style.opacity='0.5'" class="btn-full btn-success" style="flex:1;opacity:0.5;">🌐 عامة</button>
+                    <button id="detRoomPrivate" onclick="detIsPublic=false;this.style.opacity='1';document.getElementById('detRoomPublic').style.opacity='0.5'" class="btn-full btn-secondary" style="flex:1;">🔒 خاصة</button>
+                </div>
                 <select id="playerCount">
                     <option value="4">4 لاعبين</option>
                     <option value="5">5 لاعبين</option>
@@ -1194,6 +1217,8 @@
         }
 
         // ========== Room ==========
+        var detIsPublic = false;
+
         function createRoom() {
             var name = document.getElementById('hostName').value.trim();
             if (!name) { alert('أدخل اسمك'); return; }
@@ -1207,6 +1232,14 @@
 
             saveSession();
             db.ref('rooms/' + game.roomCode).set(game).then(function() {
+                // Register as public room
+                if (detIsPublic) {
+                    db.ref('publicRooms/detective/' + game.roomCode).set({
+                        hostName: name,
+                        maxPlayers: game.maxPlayers,
+                        created: Date.now()
+                    });
+                }
                 showScreen('lobbyScreen');
                 updateLobby();
                 document.getElementById('hostControls').classList.remove('hidden');
@@ -1216,6 +1249,99 @@
                 alert('خطأ في الاتصال بالسيرفر. تأكد من اتصالك بالإنترنت.');
                 console.error(err);
             });
+        }
+
+        // ========== Public Rooms - Detective ==========
+        async function loadPublicRoomsDetective() {
+            var listEl = document.getElementById('publicRoomsListDet');
+            var noEl = document.getElementById('noPublicRoomsDet');
+            listEl.innerHTML = '<div class="alert alert-info" style="text-align:center;">⏳ جاري البحث...</div>';
+            noEl.classList.add('hidden');
+
+            try {
+                var snap = await db.ref('publicRooms/detective').once('value');
+                var rooms = snap.val();
+                listEl.innerHTML = '';
+
+                if (!rooms) { noEl.classList.remove('hidden'); return; }
+
+                var found = 0;
+                for (var code in rooms) {
+                    var info = rooms[code];
+                    var roomSnap = await db.ref('rooms/' + code).once('value');
+                    if (!roomSnap.exists()) { db.ref('publicRooms/detective/' + code).remove(); continue; }
+                    var rd = roomSnap.val();
+                    if (rd.started) continue;
+                    var pc = rd.players ? rd.players.length : 0;
+
+                    var card = document.createElement('div');
+                    card.className = 'lobby-player';
+                    card.style.cursor = 'pointer';
+                    card.style.transition = 'all 0.2s';
+                    card.innerHTML = '<div><span style="color:#d4af37;font-weight:700;">🎮 ' + (info.hostName||'مضيف') + '</span><br><span style="font-size:0.8em;color:#999;">الكود: ' + code + ' · الحد: ' + (info.maxPlayers||'?') + '</span></div><span style="color:#2ecc71;font-weight:700;">👥 ' + pc + ' ←</span>';
+                    card.setAttribute('data-code', code);
+                    card.addEventListener('click', function() { joinPublicDetective(this.getAttribute('data-code')); });
+                    listEl.appendChild(card);
+                    found++;
+                }
+                if (found === 0) noEl.classList.remove('hidden');
+            } catch(e) {
+                listEl.innerHTML = '<div class="alert alert-danger" style="text-align:center;">❌ خطأ</div>';
+            }
+        }
+
+        function joinPublicDetective(code) {
+            var name = document.getElementById('publicJoinNameDet').value.trim();
+            if (!name) { alert('أدخل اسمك أولاً!'); return; }
+
+            db.ref('rooms/' + code).once('value').then(function(snap) {
+                if (!snap.exists()) { alert('الغرفة لم تعد موجودة!'); loadPublicRoomsDetective(); return; }
+                var d = snap.val();
+                if (d.started) { alert('اللعبة بدأت!'); loadPublicRoomsDetective(); return; }
+                if (d.players && d.players.length >= d.maxPlayers) { alert('الغرفة ممتلئة!'); return; }
+
+                game.roomCode = code;
+                game.oderId = genId();
+                game.name = name;
+                game.isHost = false;
+                game.players = d.players || [];
+                game.maxPlayers = d.maxPlayers;
+                game.players.push({ id: game.oderId, name: name, isHost: false });
+
+                saveSession();
+                db.ref('rooms/' + code + '/players').set(game.players).then(function() {
+                    showScreen('lobbyScreen');
+                    updateLobby();
+                    listen();
+                    initChat();
+                });
+            });
+        }
+
+        async function quickJoinDetective() {
+            var btn = document.getElementById('quickJoinBtnDet');
+            btn.disabled = true; btn.textContent = '⏳ جاري البحث...';
+            try {
+                var snap = await db.ref('publicRooms/detective').once('value');
+                var rooms = snap.val();
+                if (!rooms) { alert('لا توجد رومات عامة حالياً!'); btn.disabled=false; btn.textContent='⚡ انضمام سريع'; return; }
+
+                var foundCode = null;
+                for (var code in rooms) {
+                    var rs = await db.ref('rooms/' + code).once('value');
+                    if (rs.exists() && !rs.val().started) { var pc = rs.val().players ? rs.val().players.length : 0; if (pc < (rs.val().maxPlayers || 12)) { foundCode = code; break; } }
+                    else { db.ref('publicRooms/detective/' + code).remove(); }
+                }
+                if (!foundCode) { alert('لا توجد رومات متاحة!'); btn.disabled=false; btn.textContent='⚡ انضمام سريع'; return; }
+
+                var name = prompt('أدخل اسمك:');
+                if (!name || !name.trim()) { btn.disabled=false; btn.textContent='⚡ انضمام سريع'; return; }
+                
+                document.getElementById('playerName').value = name.trim();
+                document.getElementById('roomCodeInput').value = foundCode;
+                joinRoom();
+            } catch(e) { alert('خطأ: ' + e.message); }
+            btn.disabled=false; btn.textContent='⚡ انضمام سريع';
         }
 
         function joinRoom() {
@@ -1312,6 +1438,7 @@
 
             game.players = shuffled;
             game.started = true;
+            db.ref('publicRooms/detective/' + game.roomCode).remove();
             game.murderer = murderer.name;
             game.accomplice = accomplice ? accomplice.name : null;
             game.witness = witness.name;
