@@ -322,6 +322,19 @@
         }
         .kick-btn:hover { background:rgba(231,76,60,0.25); }
 
+        /* Public Room Cards */
+        .public-room-card {
+            background:rgba(255,255,255,0.05); border:1.5px solid rgba(212,175,55,0.2);
+            border-radius:10px; padding:12px; margin:6px 0; cursor:pointer;
+            transition:all 0.2s; display:flex; justify-content:space-between; align-items:center;
+        }
+        .public-room-card:hover { border-color:#d4af37; background:rgba(212,175,55,0.08); transform:translateY(-1px); }
+        .public-room-card .room-info { flex:1; }
+        .public-room-card .room-info .room-host { color:#d4af37; font-weight:700; font-size:0.85em; }
+        .public-room-card .room-info .room-details { color:#999; font-size:0.75em; margin-top:2px; }
+        .public-room-card .room-players { background:rgba(46,204,113,0.15); color:#2ecc71; padding:4px 10px; border-radius:8px; font-size:0.8em; font-weight:700; }
+        .public-room-card .join-arrow { color:#d4af37; font-size:1.2em; margin-right:8px; }
+
         /* Info box */
         .info-box {
             background: rgba(0,0,0,0.2); border-right: 3px solid #d4af37;
@@ -366,8 +379,31 @@
             </div>
 
             <button class="btn btn-full btn-gold" id="goToCreateBtn">🏠 إنشاء غرفة جديدة</button>
-            <button class="btn btn-full btn-purple" id="goToJoinBtn">🚪 انضمام لغرفة</button>
+            <button class="btn btn-full btn-purple" id="goToJoinBtn">🚪 انضمام لغرفة (بالكود)</button>
+            <div style="margin:6px 0;"><div class="divider"><span>أو</span></div></div>
+            <button class="btn btn-full btn-success" id="goToPublicBtn">🌐 رومات عامة</button>
+            <button class="btn btn-full btn-green" id="quickJoinBtn">⚡ انضمام سريع</button>
             <button class="btn btn-full btn-secondary" onclick="window.location.href='../index.html'">← العودة للقائمة</button>
+        </div>
+
+        <!-- شاشة الرومات العامة -->
+        <div id="publicRoomsScreen" class="card hidden">
+            <div class="ramadan">☪ رمضان كريم ☪</div>
+            <div style="text-align:center;"><h2>🌐 رومات عامة</h2></div>
+            
+            <input type="text" id="publicJoinName" placeholder="اسمك للانضمام" maxlength="15">
+            
+            <div id="publicRoomsList" style="margin:10px 0;">
+                <div class="status"><p>⏳ جاري البحث عن رومات...</p></div>
+            </div>
+
+            <div id="noPublicRooms" class="status hidden">
+                <p>😕 لا توجد رومات عامة حالياً</p>
+                <p style="font-size:0.75em;opacity:0.7;">أنشئ غرفة عامة وخلّ الناس تنضم!</p>
+            </div>
+
+            <button class="btn btn-full btn-purple" id="refreshPublicBtn">🔄 تحديث</button>
+            <button class="btn btn-full btn-secondary" id="backFromPublic">🔙 رجوع</button>
         </div>
 
         <!-- شاشة إنشاء غرفة -->
@@ -375,6 +411,12 @@
             <div class="ramadan">☪ رمضان كريم ☪</div>
             <h2>إنشاء غرفة جديدة</h2>
             <input type="text" id="hostName" placeholder="اسمك" maxlength="15">
+
+            <!-- نوع الغرفة -->
+            <div style="margin:10px 0;display:flex;gap:6px;">
+                <button class="btn btn-full btn-gold" id="roomTypePublic" onclick="setRoomType(true)" style="flex:1;opacity:0.5;">🌐 عامة</button>
+                <button class="btn btn-full btn-purple" id="roomTypePrivate" onclick="setRoomType(false)" style="flex:1;">🔒 خاصة</button>
+            </div>
 
             <div id="categorySection" style="margin:8px 0;">
                 <label style="display:block;text-align:center;font-weight:700;color:#d4af37;margin-bottom:6px;font-size:0.85em;">اختر الفئة:</label>
@@ -903,6 +945,175 @@
             showScreen('homeScreen');
         });
 
+        // ========== Public Rooms System ==========
+        let isPublicRoom = false;
+
+        function setRoomType(isPublic) {
+            isPublicRoom = isPublic;
+            document.getElementById('roomTypePublic').style.opacity = isPublic ? '1' : '0.5';
+            document.getElementById('roomTypePrivate').style.opacity = isPublic ? '0.5' : '1';
+        }
+
+        document.getElementById('goToPublicBtn').addEventListener('click', () => {
+            showScreen('publicRoomsScreen');
+            loadPublicRooms();
+        });
+
+        document.getElementById('backFromPublic').addEventListener('click', () => {
+            showScreen('homeScreen');
+        });
+
+        document.getElementById('refreshPublicBtn').addEventListener('click', () => {
+            loadPublicRooms();
+        });
+
+        async function loadPublicRooms() {
+            const listEl = document.getElementById('publicRoomsList');
+            const noRoomsEl = document.getElementById('noPublicRooms');
+            listEl.innerHTML = '<div class="status"><p>⏳ جاري البحث...</p></div>';
+            noRoomsEl.classList.add('hidden');
+
+            try {
+                const snap = await db.ref('publicRooms/menBra').once('value');
+                const rooms = snap.val();
+                listEl.innerHTML = '';
+
+                if (!rooms || Object.keys(rooms).length === 0) {
+                    noRoomsEl.classList.remove('hidden');
+                    return;
+                }
+
+                let found = 0;
+                for (const [code, info] of Object.entries(rooms)) {
+                    // Verify room still exists and is in lobby
+                    const roomSnap = await db.ref('rooms/' + code).once('value');
+                    if (!roomSnap.exists()) {
+                        db.ref('publicRooms/menBra/' + code).remove();
+                        continue;
+                    }
+                    const roomData = roomSnap.val();
+                    if (roomData.state !== 'lobby') continue;
+
+                    const playerCount = roomData.players ? Object.keys(roomData.players).length : 0;
+                    const hostName = info.hostName || 'مضيف';
+                    const category = roomData.category || '---';
+
+                    const card = document.createElement('div');
+                    card.className = 'public-room-card';
+                    card.innerHTML = `
+                        <span class="join-arrow">←</span>
+                        <div class="room-info">
+                            <div class="room-host">🎮 غرفة ${hostName}</div>
+                            <div class="room-details">الفئة: ${category} · الكود: ${code}</div>
+                        </div>
+                        <div class="room-players">👥 ${playerCount}</div>
+                    `;
+                    card.addEventListener('click', () => joinPublicRoom(code));
+                    listEl.appendChild(card);
+                    found++;
+                }
+
+                if (found === 0) {
+                    noRoomsEl.classList.remove('hidden');
+                }
+            } catch (e) {
+                listEl.innerHTML = '<div class="status error"><p>❌ خطأ في تحميل الرومات</p></div>';
+            }
+        }
+
+        async function joinPublicRoom(code) {
+            const name = document.getElementById('publicJoinName').value.trim();
+            if (!name) { alert('أدخل اسمك أولاً!'); return; }
+            if (!db) { alert('يرجى الانتظار...'); return; }
+
+            try {
+                const snapshot = await db.ref('rooms/' + code).once('value');
+                if (!snapshot.exists()) { alert('الغرفة لم تعد موجودة!'); loadPublicRooms(); return; }
+                const roomData = snapshot.val();
+                if (roomData.state !== 'lobby') { alert('اللعبة بدأت بالفعل!'); loadPublicRooms(); return; }
+
+                const playerId = Date.now().toString();
+                await db.ref('rooms/' + code + '/players/' + playerId).set({ name, ready: false });
+                await db.ref('rooms/' + code + '/scores/' + playerId).set(0);
+
+                state.roomCode = code;
+                state.playerId = playerId;
+                state.playerName = name;
+                state.isHost = false;
+
+                listenToRoom();
+                showScreen('lobbyScreen');
+                saveSession();
+                initChat();
+            } catch (e) {
+                alert('خطأ في الانضمام: ' + e.message);
+            }
+        }
+
+        // Quick Join
+        document.getElementById('quickJoinBtn').addEventListener('click', async () => {
+            const quickBtn = document.getElementById('quickJoinBtn');
+            quickBtn.disabled = true;
+            quickBtn.textContent = '⏳ جاري البحث...';
+
+            try {
+                const snap = await db.ref('publicRooms/menBra').once('value');
+                const rooms = snap.val();
+
+                if (!rooms) {
+                    alert('لا توجد رومات عامة حالياً. أنشئ غرفة عامة!');
+                    quickBtn.disabled = false;
+                    quickBtn.textContent = '⚡ انضمام سريع';
+                    return;
+                }
+
+                // Find first available room
+                let foundCode = null;
+                for (const [code, info] of Object.entries(rooms)) {
+                    const roomSnap = await db.ref('rooms/' + code).once('value');
+                    if (roomSnap.exists() && roomSnap.val().state === 'lobby') {
+                        foundCode = code;
+                        break;
+                    } else {
+                        db.ref('publicRooms/menBra/' + code).remove();
+                    }
+                }
+
+                if (!foundCode) {
+                    alert('لا توجد رومات متاحة حالياً!');
+                    quickBtn.disabled = false;
+                    quickBtn.textContent = '⚡ انضمام سريع';
+                    return;
+                }
+
+                // Need a name - show a prompt
+                const name = prompt('أدخل اسمك:');
+                if (!name || !name.trim()) {
+                    quickBtn.disabled = false;
+                    quickBtn.textContent = '⚡ انضمام سريع';
+                    return;
+                }
+
+                const playerId = Date.now().toString();
+                await db.ref('rooms/' + foundCode + '/players/' + playerId).set({ name: name.trim(), ready: false });
+                await db.ref('rooms/' + foundCode + '/scores/' + playerId).set(0);
+
+                state.roomCode = foundCode;
+                state.playerId = playerId;
+                state.playerName = name.trim();
+                state.isHost = false;
+
+                listenToRoom();
+                showScreen('lobbyScreen');
+                saveSession();
+                initChat();
+            } catch (e) {
+                alert('خطأ: ' + e.message);
+            }
+            quickBtn.disabled = false;
+            quickBtn.textContent = '⚡ انضمام سريع';
+        });
+
         // أزرار الفئات في شاشة الإنشاء
         document.querySelectorAll('#createRoomScreen .category-btn').forEach(btn => {
             btn.addEventListener('click', function() {
@@ -947,6 +1158,7 @@
                 category: selectedCategory,
                 winScore: winScore,
                 state: 'lobby',
+                isPublic: isPublicRoom,
                 players: {},
                 scores: {},
                 currentRound: null
@@ -957,6 +1169,15 @@
 
             try {
                 await db.ref(`rooms/${code}`).set(room);
+                
+                // Register in public rooms index
+                if (isPublicRoom) {
+                    await db.ref('publicRooms/menBra/' + code).set({
+                        hostName: name,
+                        category: selectedCategory,
+                        created: Date.now()
+                    });
+                }
                 console.log('✅ تم إنشاء الغرفة:', code);
                 
                 state.roomCode = code;
@@ -1221,6 +1442,8 @@
                 state: 'revealing',
                 currentRound: round
             });
+            // Remove from public rooms listing when game starts
+            db.ref('publicRooms/menBra/' + state.roomCode).remove();
         });
 
         function showWordScreen() {
