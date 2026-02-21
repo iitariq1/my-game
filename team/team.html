@@ -112,15 +112,33 @@ body{font-family:'Tajawal',sans-serif;background:var(--bg);color:var(--txt);min-
                     </p>
                 </div>
 <button class="btn bp" onclick="showScr('scrCreate')">إنشاء غرفة جديدة</button>
-<button class="btn bo" onclick="showScr('scrJoin')">الانضمام لغرفة</button>
+<button class="btn bo" onclick="showScr('scrJoin')">الانضمام لغرفة (بالكود)</button>
+<div style="text-align:center;margin:6px 0;color:#d4af37;font-size:0.8em;">── أو ──</div>
+<button class="btn bp" onclick="showScr('scrPublic');loadPublicRoomsTeam()" style="background:linear-gradient(135deg,#27ae60,#2ecc71);color:#fff;">🌐 رومات عامة</button>
+<button class="btn bp" onclick="quickJoinTeam()" id="quickJoinBtnTeam" style="background:linear-gradient(135deg,#2ecc71,#27ae60);color:#fff;">⚡ انضمام سريع</button>
 <button class="btn bo" onclick="goBack()">رجوع</button>
 </div></div></div>
+
+<!-- PUBLIC ROOMS -->
+<div class="scr" id="scrPublic">
+<div class="hdr"><h1>🌐 رومات عامة</h1></div>
+<div class="card">
+<div class="fld"><label>اسمك</label><input id="publicNameTeam" placeholder="أدخل اسمك"></div>
+<div id="publicRoomsListTeam" style="margin:10px 0;"><p style="text-align:center;color:#aaa;">⏳ جاري البحث...</p></div>
+<div id="noPublicRoomsTeam" class="hidden" style="text-align:center;color:#aaa;padding:15px;">😕 لا توجد رومات عامة حالياً</div>
+<button class="btn bo" onclick="loadPublicRoomsTeam()">🔄 تحديث</button>
+<button class="btn bo" onclick="showScr('scrWelcome')">🔙 رجوع</button>
+</div></div>
 
 <!-- CREATE -->
 <div class="scr" id="scrCreate">
 <div class="hdr"><h1>إنشاء غرفة</h1></div>
 <div class="card">
 <div class="fld"><label>اسمك</label><input id="hostName" placeholder="أدخل اسمك"></div>
+<div style="display:flex;gap:5px;margin:8px 0;">
+<button id="teamRoomPublic" onclick="teamIsPublic=true;this.style.opacity='1';document.getElementById('teamRoomPrivate').style.opacity='0.5'" class="btn bp" style="flex:1;opacity:0.5;background:#27ae60;color:#fff;">🌐 عامة</button>
+<button id="teamRoomPrivate" onclick="teamIsPublic=false;this.style.opacity='1';document.getElementById('teamRoomPublic').style.opacity='0.5'" class="btn bo" style="flex:1;">🔒 خاصة</button>
+</div>
 <div class="fld"><label>اسم الفريق الأول</label><input id="t1n" value="الفريق الأحمر"></div>
 <div class="fld"><label>اسم الفريق الثاني</label><input id="t2n" value="الفريق الأزرق"></div>
 <div class="fld"><label>عدد لاعبي كل فريق (= حجم الكنبة)</label><select id="tsz"><option value="2">2</option><option value="3">3</option><option value="4">4</option><option value="5">5</option></select></div>
@@ -310,6 +328,8 @@ function restoreS(){
 }
 
 /* ═══════ CREATE / JOIN ═══════ */
+var teamIsPublic = false;
+
 function createRoom(){
   const n=document.getElementById('hostName').value.trim();if(!n){alert('أدخل اسمك');return}
   const t1=document.getElementById('t1n').value.trim()||'الفريق الأحمر';
@@ -320,6 +340,7 @@ function createRoom(){
     players:{[PID]:{name:n,isHost:true,team:''}},state:'lobby',
     curQ:'',usedQ:[],couch:[],buzzP:'',showOpts:false,banTeam:'',
     corAns:'',selAns:'',waitChoice:false,choiceP:'',waitText:false,qStart:'',buzzTime:''});
+  if(teamIsPublic){db.ref('publicRooms/team/'+RC).set({hostName:n,t1Name:t1,t2Name:t2,created:Date.now()})}
   saveS();listen();showLobby()}
 
 function joinRoom(){
@@ -330,6 +351,61 @@ function joinRoom(){
     RC=c;PID='p-'+Date.now();PN=n;isH=false;
     db.ref('rooms/'+RC+'/players/'+PID).set({name:n,isHost:false,team:''});
     saveS();listen();showScr('scrTeam');document.getElementById('wpn').textContent=n})}
+
+/* ═══════ PUBLIC ROOMS - TEAM ═══════ */
+async function loadPublicRoomsTeam(){
+  var el=document.getElementById('publicRoomsListTeam');
+  var noEl=document.getElementById('noPublicRoomsTeam');
+  el.innerHTML='<p style="text-align:center;color:#aaa;">⏳ جاري البحث...</p>';
+  noEl.classList.add('hidden');
+  try{
+    var snap=await db.ref('publicRooms/team').once('value');
+    var rooms=snap.val();el.innerHTML='';
+    if(!rooms){noEl.classList.remove('hidden');return}
+    var found=0;
+    for(var code in rooms){
+      var info=rooms[code];
+      var rs=await db.ref('rooms/'+code).once('value');
+      if(!rs.exists()){db.ref('publicRooms/team/'+code).remove();continue}
+      var rd=rs.val();if(rd.state!=='lobby')continue;
+      var pc=rd.players?Object.keys(rd.players).length:0;
+      var card=document.createElement('div');
+      card.style.cssText='background:rgba(255,255,255,0.05);border:1px solid rgba(212,175,55,0.2);border-radius:8px;padding:10px;margin:5px 0;cursor:pointer;display:flex;justify-content:space-between;align-items:center;transition:all 0.2s;';
+      card.innerHTML='<div><span style="color:#d4af37;font-weight:700;">🎮 '+(info.hostName||'مضيف')+'</span><br><span style="font-size:0.8em;color:#999;">'+(info.t1Name||'')+ ' vs '+(info.t2Name||'')+' · '+code+'</span></div><span style="color:#2ecc71;font-weight:700;">👥 '+pc+' ←</span>';
+      card.setAttribute('data-code',code);
+      card.addEventListener('click',function(){joinPublicTeam(this.getAttribute('data-code'))});
+      el.appendChild(card);found++}
+    if(found===0)noEl.classList.remove('hidden');
+  }catch(e){el.innerHTML='<p style="text-align:center;color:#e74c3c;">❌ خطأ</p>'}}
+
+function joinPublicTeam(code){
+  var name=document.getElementById('publicNameTeam').value.trim();
+  if(!name){alert('أدخل اسمك أولاً!');return}
+  db.ref('rooms/'+code).once('value',snap=>{
+    if(!snap.exists()){alert('الغرفة لم تعد موجودة!');loadPublicRoomsTeam();return}
+    var rd=snap.val();if(rd.state!=='lobby'){alert('اللعبة بدأت!');return}
+    RC=code;PID='p-'+Date.now();PN=name;isH=false;
+    db.ref('rooms/'+RC+'/players/'+PID).set({name:name,isHost:false,team:''});
+    saveS();listen();showScr('scrTeam');document.getElementById('wpn').textContent=name})}
+
+async function quickJoinTeam(){
+  var btn=document.getElementById('quickJoinBtnTeam');
+  btn.disabled=true;btn.textContent='⏳ جاري البحث...';
+  try{
+    var snap=await db.ref('publicRooms/team').once('value');
+    var rooms=snap.val();
+    if(!rooms){alert('لا توجد رومات عامة حالياً!');btn.disabled=false;btn.textContent='⚡ انضمام سريع';return}
+    var foundCode=null;
+    for(var code in rooms){var rs=await db.ref('rooms/'+code).once('value');
+      if(rs.exists()&&rs.val().state==='lobby'){foundCode=code;break}else{db.ref('publicRooms/team/'+code).remove()}}
+    if(!foundCode){alert('لا توجد رومات متاحة!');btn.disabled=false;btn.textContent='⚡ انضمام سريع';return}
+    var name=prompt('أدخل اسمك:');
+    if(!name||!name.trim()){btn.disabled=false;btn.textContent='⚡ انضمام سريع';return}
+    RC=foundCode;PID='p-'+Date.now();PN=name.trim();isH=false;
+    db.ref('rooms/'+RC+'/players/'+PID).set({name:PN,isHost:false,team:''});
+    saveS();listen();showScr('scrTeam');document.getElementById('wpn').textContent=PN;
+  }catch(e){alert('خطأ: '+e.message)}
+  btn.disabled=false;btn.textContent='⚡ انضمام سريع'}
 
 /* ═══════ LISTEN ═══════ */
 function listen(){
@@ -367,7 +443,7 @@ function updateLobby(){
 function updateWait(){
   document.getElementById('wtn').textContent=myT==='team1'?RD.t1Name:RD.t2Name;renderPlayers('wpl')}
 
-function startGame(){if(!myT){alert('اختر فريقك');return}db.ref('rooms/'+RC).update({state:'playing'})}
+function startGame(){if(!myT){alert('اختر فريقك');return}db.ref('publicRooms/team/'+RC).remove();db.ref('rooms/'+RC).update({state:'playing'})}
 
 /* ═══════ UPDATE UI ═══════ */
 function updateUI(){
