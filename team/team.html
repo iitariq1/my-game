@@ -436,12 +436,13 @@ async function loadPublicRoomsTeam(){
     var snap=await db.ref('publicRooms/team').once('value');
     var rooms=snap.val();el.innerHTML='';
     if(!rooms){noEl.classList.remove('hidden');return}
-    var found=0;
+    var found=0;var now=Date.now();
     for(var code in rooms){
       var info=rooms[code];
+      if(info.created&&(now-info.created)>3600000){db.ref('publicRooms/team/'+code).remove();continue}
       var rs=await db.ref('rooms/'+code).once('value');
       if(!rs.exists()){db.ref('publicRooms/team/'+code).remove();continue}
-      var rd=rs.val();if(rd.state!=='lobby')continue;
+      var rd=rs.val();if(rd.state!=='lobby'){db.ref('publicRooms/team/'+code).remove();continue}
       var pc=rd.players?Object.keys(rd.players).length:0;
       var card=document.createElement('div');
       card.style.cssText='background:rgba(255,255,255,0.05);border:1px solid rgba(212,175,55,0.2);border-radius:8px;padding:10px;margin:5px 0;cursor:pointer;display:flex;justify-content:space-between;align-items:center;transition:all 0.2s;';
