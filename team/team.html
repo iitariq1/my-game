@@ -8,8 +8,8 @@
 <style>
 :root{--bg:#0a1a3a;--card:rgba(12,28,60,0.85);--card2:rgba(15,35,70,0.8);--bdr:rgba(212,175,55,0.25);--gold:#d4af37;--goldL:rgba(212,175,55,0.15);--red:#C0392B;--redL:rgba(192,57,43,0.15);--blue:#4a9fd4;--blueL:rgba(74,159,212,0.15);--grn:#2ecc71;--grnL:rgba(46,204,113,0.15);--txt:#e8e0d4;--txtM:#b8c5d6;--txtD:#8fa3c0;--org:#d4af37;--orgL:rgba(212,175,55,0.15);--sh:0 2px 10px rgba(0,0,0,.2);--R:14px;--r:10px}
 *{margin:0;padding:0;box-sizing:border-box}
-body{font-family:'Tajawal',sans-serif;background:var(--bg);color:var(--txt);min-height:100dvh;display:flex;justify-content:center;padding:10px;position:relative}
-.app{width:100%;max-width:460px;display:flex;flex-direction:column;min-height:calc(100dvh - 20px)}
+body{font-family:'Tajawal',sans-serif;background:var(--bg);color:var(--txt);min-height:100dvh;display:flex;justify-content:center;align-items:center;padding:10px;position:relative;margin:0}
+.app{width:100%;max-width:460px;display:flex;flex-direction:column;margin:0 auto}
 .scr{display:none;flex-direction:column;flex:1}.scr.on{display:flex}
 .hdr{text-align:center;padding:14px 0 10px}.hdr h1{font-size:1.5em;font-weight:900}.hdr .sub{font-size:.8em;color:var(--txtD);margin-top:2px}
 .card{background:var(--card);border:1px solid var(--bdr);border-radius:var(--R);padding:16px;margin-bottom:10px;box-shadow:var(--sh)}
@@ -97,7 +97,7 @@ body{font-family:'Tajawal',sans-serif;background:var(--bg);color:var(--txt);min-
 <div class="app" style="position:relative;z-index:1;">
 
 <!-- WELCOME -->
-<div id="homeScreen" class="screen active">
+<div id="scrWelcome" class="scr on">
             <div class="header">
                 <p style="color:#d4af37;font-size:0.9em;margin-bottom:8px;">☪ رمضان كريم ☪</p>
                 <h1>لعبة الكنبة🛋️</h1>
@@ -117,7 +117,7 @@ body{font-family:'Tajawal',sans-serif;background:var(--bg);color:var(--txt);min-
 <button class="btn bp" onclick="showScr('scrPublic');loadPublicRoomsTeam()" style="background:linear-gradient(135deg,#27ae60,#2ecc71);color:#fff;">🌐 رومات عامة</button>
 <button class="btn bp" onclick="quickJoinTeam()" id="quickJoinBtnTeam" style="background:linear-gradient(135deg,#2ecc71,#27ae60);color:#fff;">⚡ انضمام سريع</button>
 <button class="btn bo" onclick="goBack()">رجوع</button>
-</div></div></div>
+</div></div>
 
 <!-- PUBLIC ROOMS -->
 <div class="scr" id="scrPublic">
