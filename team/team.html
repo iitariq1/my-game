@@ -109,7 +109,7 @@ body{font-family:'Tajawal',sans-serif;background:var(--bg);color:var(--txt);min-
                         <strong style="color:#d4af37;">📖 كيف تلعب:</strong><br><br>
                         فريقين يتسابقون بالاجابة على الأسئلة واللاعب اللي يجاوب اول يجلس على الكنبة ولايمكنه المشاركة الا اذا قرر الخصم بعد الإجابة الصحيحة انهم يسحبونه من الكنبة.<br><br>
                         الفريق اللي يجلس كامل على الكنبة يفوز.<br><br>
-                        <strong style="color:#e74c3c;">⚠️ تنبيه:</strong> من يضغط الجرس أولا لديه 7 ثواني لكتابة الإجابة اذا اخطأ يتكمل السؤال ويجاوب الفريق الاخر
+                        <strong style="color:#e74c3c;">⚠️ تنبيه:</strong> من يضغط الجرس أولا لديه 7 ثواني لكتابة الإجابة اذا اخطأ يتكمل السؤال وتظهر الخيارات للفريق الاخر
                     </p>
                 </div>
 <button class="btn bp" onclick="showScr('scrCreate')">إنشاء غرفة جديدة</button>
@@ -752,15 +752,12 @@ function renderGC(){
     if(isH)startTypewriter();
     return}
 
-  // Typewriter resumed after wrong answer - other team can buzz
+  // Typewriter resumed after wrong answer - question completing for other team
   if(RD.typeResumed && RD.typeActive && (RD.typePos||0)<(RD.curQ.q||'').length && !RD.buzzP && !hasAns()){
     showQ();showMainTimer();
-    const bb=document.getElementById('bzBtn');bb.classList.remove('hid');
-    const onCouch=(RD.couch||[]).includes(PID);
     const banned=RD.banTeam&&RD.banTeam===myT;
-    if(onCouch){bb.disabled=true;st.textContent='🛋️ أنت على الكنبة - شاهد فقط';st.className='sts w'}
-    else if(banned){bb.disabled=true;st.textContent='⛔ فريقك ممنوع - فرصة الخصم';st.className='sts e'}
-    else{bb.disabled=false;st.textContent='📖 فرصتك! اضغط الجرس!';st.className='sts s'}
+    if(banned){st.textContent='❌ إجابة خاطئة! السؤال يتكمل...';st.className='sts e'}
+    else{st.textContent='⏳ السؤال يتكمل... استعد للخيارات';st.className='sts w'}
     if(isH)resumeTypewriter();
     return}
 
@@ -860,6 +857,15 @@ function startTypewriter(){
       db.ref('rooms/'+RC).update({typePos:pos+1});
     } else {
       clearInterval(tmrTypewriter);tmrTypewriter=null;
+      // If resumed after wrong answer, show options for other team
+      if(RD.typeResumed&&RD.banTeam){
+        db.ref('rooms/'+RC).update({
+          showOpts:true,
+          oneShotOpts:true,
+          typeActive:false,
+          typeResumed:false
+        });
+      }
     }
   },80);
 }
@@ -913,6 +919,7 @@ function startAnsTimer(){if(!RD.buzzTime)return;clearInterval(tmrAns);const ci=d
         buzzP:'',
         typeResumed:true,
         typePaused:false,
+        typeActive:true,
         qStart:Date.now()
       });
     }},1000)}
@@ -943,6 +950,7 @@ function submitAns(){const inp=document.getElementById('tAns');const v=inp.value
     buzzP:'',
     typeResumed:true,
     typePaused:false,
+    typeActive:true,
     qStart:Date.now()
   });
 }
