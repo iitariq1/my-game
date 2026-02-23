@@ -430,7 +430,11 @@ function clearS(){sessionStorage.removeItem('gs')}
 function restoreS(){
   const s=sessionStorage.getItem('gs');if(!s)return false;
   try{const d=JSON.parse(s);
+    // Set a timeout - if Firebase doesn't respond in 3s, go to welcome
+    let answered=false;
+    setTimeout(()=>{if(!answered){clearS();showScr('scrWelcome')}},3000);
     db.ref('rooms/'+d.rc).once('value',snap=>{
+      answered=true;
       if(!snap.exists()||!snap.val().players||!snap.val().players[d.pid]){clearS();showScr('scrWelcome');return}
       RC=d.rc;PID=d.pid;PN=d.pn;isH=d.h;myT=d.t;saveS();listen()});return true}
   catch(e){clearS();return false}
