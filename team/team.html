@@ -92,6 +92,7 @@ body{font-family:'Tajawal',sans-serif;background:var(--bg);color:var(--txt);min-
 (function(){document.addEventListener('contextmenu',function(e){e.preventDefault();return false;});document.addEventListener('keydown',function(e){if(e.key==='F12')return e.preventDefault(),false;if(e.ctrlKey&&e.shiftKey&&['I','i','J','j','C','c'].includes(e.key))return e.preventDefault(),false;if(e.ctrlKey&&['u','U','s','S'].includes(e.key))return e.preventDefault(),false;});document.addEventListener('dragstart',function(e){e.preventDefault();});document.addEventListener('copy',function(e){e.preventDefault();});document.addEventListener('cut',function(e){e.preventDefault();});})();
 </script>
 <style>*:not(input):not(textarea):not(button){-webkit-user-select:none!important;-moz-user-select:none!important;user-select:none!important;}</style>
+<script>function showScr(id){document.querySelectorAll('.scr').forEach(function(s){s.classList.remove('on')});document.getElementById(id).classList.add('on')}</script>
 </head>
 <body>
 <div id="teamStars" style="position:fixed;top:0;left:0;width:100%;height:100%;pointer-events:none;z-index:0;"></div>
