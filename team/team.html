@@ -576,7 +576,9 @@ function updateGame(){
   // ALL players see questions - even on couch
   document.getElementById('gContent').style.display='block';
   renderGC();
-  document.getElementById('hNext').classList.toggle('hid',!isH);
+  // Show next button ONLY for host AND only when question is done
+  const qDone = hasAns() || (!RD.curQ || RD.curQ==='');
+  document.getElementById('hNext').classList.toggle('hid', !isH || !qDone);
   document.getElementById('gTop').style.display='';document.getElementById('couchSec').style.display=''}
 
 function renderTP(cid,team){
