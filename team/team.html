@@ -86,6 +86,20 @@ body{font-family:'Tajawal',sans-serif;background:var(--bg);color:var(--txt);min-
 .rto{display:none;position:fixed;inset:0;background:rgba(0,0,0,.4);z-index:100;justify-content:center;align-items:center}
 .rto.on{display:flex}
 .rto .inner{background:rgba(12,28,60,0.95);border:1.5px solid rgba(212,175,55,0.3);border-radius:var(--R);padding:24px;width:90%;max-width:380px;box-shadow:0 8px 30px rgba(0,0,0,.3)}
+
+/* ===== وضع البث المباشر ===== */
+.row{display:flex;gap:8px}.row .fld,.row input,.row .btn{flex:1;min-width:0}
+.row input{padding:11px;background:rgba(10,26,58,.5);border:1.5px solid var(--bdr);border-radius:var(--r);color:var(--txt);font-family:inherit;font-weight:600;outline:none}
+.hint{font-size:.78em;color:var(--txtD);line-height:1.7;margin-top:10px}
+.cmdbar{display:flex;justify-content:space-around;gap:6px;background:linear-gradient(135deg,#d4af37,#f5e6a3);color:#0a1a3a;border-radius:var(--R);padding:10px;margin-bottom:8px;font-weight:800;text-align:center}
+.cmdbar b{font-size:1.5em;background:#0a1a3a;color:#d4af37;border-radius:8px;padding:0 10px;margin:0 4px}
+.ctrl{display:grid;grid-template-columns:1fr 1fr;gap:6px;margin:8px 0}.ctrl .btn{margin:0;padding:10px;font-size:.85em}
+.ob .l{color:var(--gold);font-weight:900;margin-inline-end:8px}.ob.x{opacity:.3;text-decoration:line-through}
+.sts b{color:#fff;font-size:1.25em}
+.lvic{display:none;position:fixed;inset:0;background:rgba(10,26,58,.97);z-index:50;padding:20px;flex-direction:column;align-items:center;justify-content:center;text-align:center}
+.lvic.on{display:flex}.lvic .btn{max-width:340px}
+.lvic .tr{font-size:4em;margin-bottom:12px;animation:bnc 1.5s infinite}
+.lvic h2{font-size:1.6em;font-weight:900;color:var(--gold);margin-bottom:20px}
 </style>
 <!-- Code Protection -->
 <script>
@@ -114,6 +128,7 @@ body{font-family:'Tajawal',sans-serif;background:var(--bg);color:var(--txt);min-
                 </div>
 <button class="btn bp" onclick="showScr('scrCreate')">إنشاء غرفة جديدة</button>
 <button class="btn bo" onclick="showScr('scrJoin')">الانضمام لغرفة (بالكود)</button>
+<button class="btn bp" onclick="LV.open()" style="background:linear-gradient(135deg,#8e44ad,#e91e63);color:#fff;">📺 العب في البث</button>
 <div style="text-align:center;margin:6px 0;color:#d4af37;font-size:0.8em;">── أو ──</div>
 <button class="btn bp" onclick="showScr('scrPublic');loadPublicRoomsTeam()" style="background:linear-gradient(135deg,#27ae60,#2ecc71);color:#fff;">🌐 رومات عامة</button>
 <button class="btn bp" onclick="quickJoinTeam()" id="quickJoinBtnTeam" style="background:linear-gradient(135deg,#2ecc71,#27ae60);color:#fff;">⚡ انضمام سريع</button>
@@ -201,6 +216,62 @@ body{font-family:'Tajawal',sans-serif;background:var(--bg);color:var(--txt);min-
 </div>
 <div class="spc"></div>
 <div class="hid" id="hNext"><button class="btn bp" onclick="nextQ()">السؤال التالي ▶️</button></div>
+</div>
+
+<!-- LIVE STREAM MODE -->
+<div id="lv_setup" class="scr on">
+ <div class="hdr"><h1>🛋️ لعبة الكنبة</h1><div class="sub">نسخة البث المباشر · تيك توك لايف</div></div>
+ <div class="card">
+  <div class="fld"><label>رابط الاتصال بالبث (TikFinity)</label><input id="lv_wsUrl" value="ws://127.0.0.1:21213" dir="ltr"></div>
+  <div class="row">
+   <div class="fld"><label>رقم المشاركة</label><input id="lv_joinCmd" value="1" inputmode="numeric"></div>
+   <div class="fld"><label>رقم طلب الإجابة</label><input id="lv_buzzCmd" value="2" inputmode="numeric"></div>
+  </div>
+  <div class="fld"><label>الفريق الأول</label><input id="lv_t1n" value="الفريق الأحمر"></div>
+  <div class="fld"><label>الفريق الثاني</label><input id="lv_t2n" value="الفريق الأزرق"></div>
+  <div class="fld"><label>حجم الكنبة</label><select id="lv_tsz"><option>2</option><option selected>3</option><option>4</option><option>5</option></select></div>
+  <div class="sts i" id="lv_conn">غير متصل بالبث</div>
+  <button class="btn bg" onclick="LV.connect()">🔌 اتصال بالبث</button>
+  <button class="btn bp" onclick="LV.lobby()">فتح التسجيل ▶️</button>
+  <button class="btn bo" onclick="showScr('scrWelcome')">رجوع</button>
+  <div class="hint">شغّل TikFinity وابدأ بثك من خلاله ثم اضغط اتصال. للتجربة بدون بث افتح التسجيل واستخدم زر «محاكاة».</div>
+ </div>
+</div>
+
+<div id="lv_game" class="scr">
+ <div class="cmdbar"><div>للمشاركة اكتب <b id="lv_cJ"></b></div><div>لطلب الإجابة اكتب <b id="lv_cB"></b></div></div>
+ <div class="gtb">
+  <div class="tsc r"><div class="tn" id="lv_n1"></div><div class="tv" id="lv_s1">0</div><div class="mpl" id="lv_p1"></div></div>
+  <div class="vb">VS</div>
+  <div class="tsc b"><div class="tn" id="lv_n2"></div><div class="tv" id="lv_s2">0</div><div class="mpl" id="lv_p2"></div></div>
+ </div>
+ <div class="couch"><div class="clb">🛋️ كنبة الفوز (<span id="lv_cc">0</span>/<span id="lv_cm">3</span>)</div><div class="cseats" id="lv_seats"></div></div>
+ <div id="lv_lobbyBox" class="card" style="text-align:center">
+  <div style="font-size:1.15em;font-weight:800;color:var(--gold)">التسجيل مفتوح</div>
+  <div id="lv_lobInfo" style="margin:6px 0;color:var(--txtM)"></div>
+  <button class="btn bp" onclick="LV.start()">ابدأ اللعبة ▶️</button>
+ </div>
+ <div id="lv_playBox" class="hid">
+  <div class="qcard"><div class="qcat" id="lv_qCat"></div><div class="qtxt" id="lv_qTxt"></div></div>
+  <div class="tbar"><div class="tc" id="lv_tc"></div></div>
+  <div class="sts i" id="lv_sts"></div>
+  <div class="opts" id="lv_opts"></div>
+ </div>
+ <div class="ctrl">
+  <button class="btn bp" onclick="LV.next()">⏭️ السؤال التالي</button>
+  <button class="btn bo" id="lv_autoB" onclick="LV.toggle('auto')"></button>
+  <button class="btn bo" id="lv_lockB" onclick="LV.toggle('lock')"></button>
+  <button class="btn bo" onclick="LV.sim()">🧪 محاكاة</button>
+  <button class="btn br" style="grid-column:1/-1" onclick="LV.exit()">↩️ خروج من وضع البث</button>
+ </div>
+ <div id="lv_sim" class="card hid">
+  <div class="fld"><label>محاكاة تعليق مشارك (للتجربة)</label>
+   <div class="row"><input id="lv_sU" value="سالم"><input id="lv_sT" placeholder="التعليق"></div></div>
+  <div class="row"><button class="btn bg" onclick="LV.simSend()">إرسال</button><button class="btn bo" onclick="LV.simBots()">+6 مشاركين</button></div>
+ </div>
+ <div class="lvic" id="lv_vic"><div class="tr">🏆</div><h2 id="lv_vicMsg"></h2><div id="lv_vicP" class="mpl" style="margin-bottom:16px"></div>
+  <button class="btn bp" onclick="LV.newGame(true)">لعبة جديدة بنفس المشاركين</button>
+  <button class="btn bo" onclick="LV.newGame(false)">تصفير المشاركين</button></div>
 </div>
 
 <!-- REPLAY TEAM SELECT OVERLAY -->
@@ -1179,6 +1250,170 @@ document.getElementById('tAns')?.addEventListener('keypress',function(e){if(e.ke
 
 /* ═══════ INIT ═══════ */
 if(!restoreS())showScr('scrWelcome');
+</script>
+<script>
+(function(){
+
+/* ═══════ LIVE GAME ═══════ */
+const $=id=>document.getElementById('lv_'+id);
+const esc=s=>String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const toEn=s=>s.replace(/[٠-٩]/g,d=>d.charCodeAt(0)-1632).replace(/[۰-۹]/g,d=>d.charCodeAt(0)-1776);
+const sh=a=>{for(let i=a.length-1;i>0;i--){const j=Math.random()*(i+1)|0;[a[i],a[j]]=[a[j],a[i]]}return a};
+const LET=['أ','ب','ج','د'],LMAP={'ا':0,'a':0,'ب':1,'b':1,'ج':2,'c':2,'د':3,'d':3};
+const S={ph:'setup',players:{},couch:[],used:[],auto:true,lock:false,joinCmd:'1',buzzCmd:'2',size:3,t1:'',t2:'',note:''};
+const toggle=k=>{S[k]=!S[k];render()};
+
+function saveCfg(){try{localStorage.setItem('couchLive',JSON.stringify({w:$('wsUrl').value,j:$('joinCmd').value,b:$('buzzCmd').value,a:$('t1n').value,c:$('t2n').value,z:$('tsz').value}))}catch(e){}}
+function loadCfg(){try{const c=JSON.parse(localStorage.getItem('couchLive'));if(c){$('wsUrl').value=c.w;$('joinCmd').value=c.j;$('buzzCmd').value=c.b;$('t1n').value=c.a;$('t2n').value=c.c;$('tsz').value=c.z}}catch(e){}}
+
+/* ── الاتصال ببث تيك توك (TikFinity أو أي WebSocket يرسل {event:'chat',data:{...}}) ── */
+let ws,keep=false,rt;
+const setConn=(t,c)=>{const e=$('conn');e.textContent=t;e.className='sts '+c};
+function connectWS(){keep=true;clearTimeout(rt);if(ws){ws.onclose=null;ws.close()}dial()}
+function dial(){
+  setConn('⏳ جاري الاتصال...','w');
+  try{ws=new WebSocket($('wsUrl').value.trim())}catch(e){setConn('❌ الرابط غير صحيح','e');return}
+  ws.onopen=()=>setConn('✅ متصل بالبث — التعليقات توصل الآن','s');
+  ws.onmessage=e=>{let m;try{m=JSON.parse(e.data)}catch(x){return}
+    if(!['chat','comment'].includes(m.event))return;
+    const d=m.data||{},x=d.user||d;
+    onChat(x.uniqueId||d.uniqueId||x.userId,x.nickname||d.nickname||x.uniqueId,d.comment||d.text)};
+  ws.onclose=()=>{if(keep){setConn('❌ انقطع الاتصال... إعادة المحاولة','e');rt=setTimeout(dial,3000)}}}
+
+/* ── إعداد اللعبة ── */
+function openLobby(){
+  const j=toEn(norm($('joinCmd').value)),b=toEn(norm($('buzzCmd').value));
+  if(!j||!b||j===b){alert('اكتب رقمين مختلفين: واحد للمشاركة وواحد لطلب الإجابة');return}
+  Object.assign(S,{joinCmd:j,buzzCmd:b,t1:$('t1n').value.trim()||'الفريق الأحمر',t2:$('t2n').value.trim()||'الفريق الأزرق',size:+$('tsz').value});
+  saveCfg();showScr('lv_game');newGame(false)}
+
+function newGame(keepP){
+  if(!keepP)S.players={};
+  Object.assign(S,{ph:'lobby',couch:[],used:[],q:null,buzzP:null,ban:'',dis:[],win:null,note:''});
+  $('vic').classList.remove('on');
+  keepP?nextQ():render()}
+
+function startGame(){
+  if(Object.keys(S.players).length<2){alert('لازم مشاركين اثنين على الأقل');return}
+  nextQ()}
+
+function nextQ(){
+  if(S.ph==='setup'||S.ph==='vic')return;
+  if(S.ph==='lobby'&&Object.keys(S.players).length<2)return;
+  if(S.used.length>=ALL_Q.length)S.used=[];
+  let i;do{i=Math.random()*ALL_Q.length|0}while(S.used.includes(i));S.used.push(i);
+  const q=ALL_Q[i];
+  S.ans=q.opts[q.c];S.opts=sh(q.opts.map((t,k)=>({t,c:k===q.c})));S.q={cat:q.cat,q:q.q};
+  Object.assign(S,{ph:'typing',pos:0,dl:Date.now()+30000,buzzP:null,ban:'',dis:[],win:null,note:'',act:''});
+  render()}
+
+/* ── التعليقات: هنا تُعتمد إجابات المشاركين فقط ── */
+function onChat(uid,name,text){
+  if(S.ph==='setup'||!uid)return;
+  text=String(text||'').trim();if(!text)return;
+  const t=toEn(norm(text)).replace(/[\uFE0F\u20E3\s]/g,''),p=S.players[uid];
+  // إجابة اللاعب اللي ضغط الجرس (تعليقه التالي)
+  if(p&&S.ph==='answer'&&uid===S.buzzP){if(t!==S.buzzCmd)checkAns(text,S.ans)?win(uid):wrong(uid,text);return}
+  // رقم المشاركة
+  if(t===S.joinCmd){
+    if(!p&&!S.lock){const a=Object.values(S.players).filter(x=>x.team==='team1').length,b=Object.keys(S.players).length-a;
+      S.players[uid]={name:name||uid,team:a<=b?'team1':'team2'};render()}
+    return}
+  if(!p)return; // غير مسجّل = ما تُحسب له أي إجابة
+  // رقم طلب الإجابة: أسرع واحد يفوز
+  if(S.ph==='typing'&&t===S.buzzCmd&&!S.couch.includes(uid)&&p.team!==S.ban){
+    Object.assign(S,{ph:'answer',buzzP:uid,ad:Date.now()+7000,note:''});render();return}
+  // الخيارات: حرف الإجابة
+  if(S.ph==='opts'){const i=LMAP[t];
+    if(i===undefined||!S.opts[i]||S.dis.includes(i)||p.team===S.ban||S.couch.includes(uid))return;
+    if(S.opts[i].c)return win(uid);
+    S.dis.push(i);if(S.ban)return endQ();
+    S.ban=p.team;S.od=Date.now()+15000;render();return}
+  // اختيار الفائز: جلوس / سحب
+  if(S.ph==='choice'&&uid===S.win){
+    if(S.couch.length<S.size&&/جلس|جلوس/.test(t))choose(uid,'sit');else if(/سحب/.test(t))choose(uid,'pull')}}
+
+function wrong(uid,text){
+  const p=S.players[uid];
+  S.note=text?`❌ ${esc(p.name)}: ${esc(text)}`:`⏱️ ${esc(p.name)} انتهى وقته`;
+  openOpts(p.team)}
+function openOpts(ban){Object.assign(S,{ph:'opts',ban,pos:S.q.q.length,dis:[],od:Date.now()+15000});render()}
+
+function win(uid){
+  const p=S.players[uid];S.win=uid;
+  if(!S.couch.some(i=>S.players[i].team!==p.team))return choose(uid,'sit');
+  Object.assign(S,{ph:'choice',cd:Date.now()+12000});render()}
+
+function choose(uid,how){
+  const p=S.players[uid];
+  if(how==='sit'){if(S.couch.length<S.size)S.couch.push(uid);S.act='🛋️ جلس على الكنبة'}
+  else{let k=-1;S.couch.forEach((i,x)=>{if(S.players[i].team!==p.team)k=x});if(k>=0)S.couch.splice(k,1);S.act='🎯 سحب لاعباً من الخصم'}
+  finish()}
+
+function finish(){
+  const c=t=>S.couch.filter(i=>S.players[i].team===t).length;
+  if(S.couch.length>=S.size&&(c('team1')===S.size||c('team2')===S.size)){S.ph='vic';S.champ=c('team1')===S.size?'team1':'team2'}
+  else Object.assign(S,{ph:'result',res:'ok',nx:Date.now()+5000});
+  render()}
+function endQ(){Object.assign(S,{ph:'result',res:'no',nx:Date.now()+4000});render()}
+
+/* ── المؤقتات ── */
+function tick(){
+  const n=Date.now();let left=0;
+  if(S.ph==='typing'){
+    if(S.pos<S.q.q.length){S.pos++;$('qTxt').textContent=S.q.q.slice(0,S.pos)}
+    left=S.dl-n;if(left<=0)return openOpts('')}
+  else if(S.ph==='answer'){left=S.ad-n;if(left<=0)return wrong(S.buzzP)}
+  else if(S.ph==='opts'){left=S.od-n;if(left<=0)return endQ()}
+  else if(S.ph==='choice'){left=S.cd-n;if(left<=0)return choose(S.win,S.couch.length<S.size?'sit':'pull')}
+  else if(S.ph==='result'&&S.auto&&n>S.nx)return nextQ();
+  const s=Math.max(0,Math.ceil(left/1000)),c=$('tc');
+  c.textContent=s;c.classList.toggle('dng',s<=5);c.parentNode.classList.toggle('hid',left<=0)}
+setInterval(tick,80);
+
+/* ── العرض ── */
+function render(){
+  const P=S.players,ids=Object.keys(P),lob=S.ph==='lobby',nm=i=>esc(P[i]?P[i].name:'');
+  $('cJ').textContent=S.joinCmd;$('cB').textContent=S.buzzCmd;
+  [1,2].forEach(k=>{const tk='team'+k,m=ids.filter(i=>P[i].team===tk);
+    $('n'+k).textContent=S['t'+k];$('s'+k).textContent=S.couch.filter(i=>P[i].team===tk).length;
+    $('p'+k).innerHTML=m.slice(-12).map(i=>`<span class="mp${S.couch.includes(i)?' oc':''}">${esc(P[i].name)}</span>`).join('')+(m.length>12?`<span class="mp">+${m.length-12}</span>`:'')});
+  $('cc').textContent=S.couch.length;$('cm').textContent=S.size;
+  $('seats').innerHTML=Array.from({length:S.size},(_,i)=>{const p=P[S.couch[i]];
+    return p?`<div class="cseat ${p.team==='team1'?'fr':'fb'}">🏆 ${esc(p.name)}</div>`:'<div class="cseat empty">—</div>'}).join('');
+  $('autoB').textContent='🔁 تلقائي: '+(S.auto?'يعمل':'متوقف');
+  $('lockB').textContent=S.lock?'🔒 التسجيل مقفل':'🔓 التسجيل مفتوح';
+  $('lobbyBox').classList.toggle('hid',!lob);$('playBox').classList.toggle('hid',lob);
+  $('lobInfo').textContent='المشاركون: '+ids.length;
+  if(!lob&&S.q){
+    $('qCat').textContent=S.q.cat;$('qTxt').textContent=S.q.q.slice(0,S.pos||0);
+    let m='',c='i',o='';
+    if(S.ph==='typing'){m=`🔔 أول من يكتب <b>${S.buzzCmd}</b> يجاوب!`;c='w'}
+    else if(S.ph==='answer'){m=`🔔 ${nm(S.buzzP)} يجاوب... اكتب الإجابة في التعليقات`;c='w'}
+    else if(S.ph==='opts'){
+      m=S.ban?`🎯 فرصة ${esc(S.ban==='team1'?S.t2:S.t1)} — اكتب حرف الإجابة`:'🎯 الخيارات مفتوحة — اكتب حرف الإجابة';c='s';
+      o=S.opts.map((x,i)=>`<div class="ob${S.dis.includes(i)?' x':''}"><span class="l">${LET[i]}</span>${esc(x.t)}</div>`).join('')}
+    else if(S.ph==='choice'){m=`✅ ${nm(S.win)} أجاب صح! اكتب ${S.couch.length<S.size?'«جلوس» أو «سحب»':'«سحب»'}`;c='s'}
+    else if(S.ph==='result'){
+      m=S.res==='ok'?`✅ ${nm(S.win)}: ${esc(S.ans)}<br>${S.act}`:'❌ انتهت الفرصة — ما أحد جاوب صح';c=S.res==='ok'?'s':'e'}
+    $('sts').innerHTML=(S.note?S.note+'<br>':'')+m;$('sts').className='sts '+c;$('opts').innerHTML=o}
+  const v=S.ph==='vic';$('vic').classList.toggle('on',v);
+  if(v){$('vicMsg').textContent='🎉 '+S['t'+S.champ.slice(4)]+' فاز! 🎉';
+    $('vicP').innerHTML=S.couch.map(i=>`<span class="mp">${nm(i)}</span>`).join('')}}
+
+/* ── محاكاة للتجربة بدون بث ── */
+function simSend(){const u=$('sU').value.trim();onChat(u,u,$('sT').value);$('sT').value=''}
+function simBots(){['سالم','نورة','فهد','ريم','خالد','لولوة'].forEach(n=>onChat(n,n,S.joinCmd))}
+$('sT').addEventListener('keydown',e=>{if(e.key==='Enter')simSend()});
+loadCfg();
+
+window.LV={
+  open(){loadCfg();showScr('lv_setup')},
+  connect:connectWS,lobby:openLobby,start:startGame,next:nextQ,toggle,newGame,simSend,simBots,
+  sim(){$('sim').classList.toggle('hid')},
+  exit(){keep=false;clearTimeout(rt);if(ws){ws.onclose=null;ws.close();ws=null}S.ph='setup';setConn('غير متصل بالبث','i');showScr('scrWelcome')}
+};
+})();
 </script>
 </body>
 </html>
