@@ -1,0 +1,598 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>لعبة الكنبة - بث مباشر</title>
+<link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700;800;900&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#0a1a3a;--card:rgba(12,28,60,0.85);--card2:rgba(15,35,70,0.8);--bdr:rgba(212,175,55,0.25);--gold:#d4af37;--goldL:rgba(212,175,55,0.15);--red:#C0392B;--redL:rgba(192,57,43,0.15);--blue:#4a9fd4;--blueL:rgba(74,159,212,0.15);--grn:#2ecc71;--grnL:rgba(46,204,113,0.15);--txt:#e8e0d4;--txtM:#b8c5d6;--txtD:#8fa3c0;--org:#d4af37;--orgL:rgba(212,175,55,0.15);--sh:0 2px 10px rgba(0,0,0,.2);--R:14px;--r:10px}
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:'Tajawal',sans-serif;background:var(--bg);color:var(--txt);min-height:100dvh;display:flex;justify-content:center;align-items:center;padding:10px;position:relative;margin:0}
+.app{width:100%;max-width:460px;display:flex;flex-direction:column;margin:0 auto}
+.scr{display:none;flex-direction:column;flex:1}.scr.on{display:flex}
+.hdr{text-align:center;padding:14px 0 10px}.hdr h1{font-size:1.5em;font-weight:900}.hdr .sub{font-size:.8em;color:var(--txtD);margin-top:2px}
+.card{background:var(--card);border:1px solid var(--bdr);border-radius:var(--R);padding:16px;margin-bottom:10px;box-shadow:var(--sh)}
+.fld{margin-bottom:12px}.fld label{display:block;font-size:.85em;font-weight:700;margin-bottom:5px;color:#d4af37}
+.fld input,.fld select{width:100%;padding:11px 14px;background:rgba(10,26,58,0.5);border:1.5px solid var(--bdr);border-radius:var(--r);color:var(--txt);font-family:inherit;font-size:.95em;font-weight:500;outline:none}
+.fld input:focus,.fld select:focus{border-color:var(--gold);box-shadow:0 0 0 3px rgba(212,175,55,.2)}
+.fld input::placeholder{color:var(--txtD)}.fld select option{background:#0a1a3a;color:#fff}
+.btn{width:100%;padding:13px;border:none;border-radius:var(--r);font-family:inherit;font-size:1em;font-weight:700;cursor:pointer;transition:all .15s;margin-top:6px}
+.btn:active:not(:disabled){transform:scale(.97)}.btn:disabled{opacity:.4;cursor:not-allowed}
+.bp{background:linear-gradient(135deg,#d4af37,#b8941e);color:#0a1a3a;font-weight:800;box-shadow:0 3px 12px rgba(212,175,55,.25)}
+.bo{background:rgba(10,26,58,0.5);border:1.5px solid var(--bdr);color:var(--txtM)}
+.bg{background:var(--grn);color:#fff}.br{background:var(--red);color:#fff}
+.rcb{text-align:center;padding:14px;background:linear-gradient(135deg,#d4af37,#f5e6a3);border:1.5px solid #d4af37;border-radius:var(--R);margin-bottom:12px;box-shadow:var(--sh)}
+.rcb .lb{font-size:.78em;color:#0a1a3a;font-weight:700}.rcb .code{font-size:2.4em;font-weight:900;color:#0a1a3a;letter-spacing:10px}
+.chip{display:inline-flex;align-items:center;gap:5px;padding:5px 10px;background:rgba(10,26,58,0.5);border:1px solid var(--bdr);border-radius:20px;font-size:.82em;font-weight:600;margin:3px}
+.dot{width:8px;height:8px;border-radius:50%}.dr{background:var(--red)}.db{background:var(--blue)}.dg{background:var(--gold)}
+.tsg{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin:8px 0}
+.tsb{padding:14px 8px;border-radius:var(--R);font-family:inherit;font-size:.95em;font-weight:700;cursor:pointer;border:2px solid transparent;transition:all .2s;text-align:center}
+.tsb.rt{background:rgba(192,57,43,0.2);color:#e74c3c;border-color:rgba(192,57,43,.3)}
+.tsb.bt{background:rgba(74,159,212,0.2);color:#4a9fd4;border-color:rgba(74,159,212,.3)}
+.tsb.sel{border-color:var(--gold)!important;box-shadow:0 0 0 3px rgba(196,127,23,.15)}
+.tsb:active{transform:scale(.96)}
+.gtb{display:grid;grid-template-columns:1fr auto 1fr;align-items:center;gap:6px;margin-bottom:8px}
+.tsc{padding:8px;border-radius:var(--r);text-align:center;box-shadow:var(--sh)}
+.tsc.r{background:rgba(192,57,43,0.15);border:1.5px solid rgba(192,57,43,.3)}
+.tsc.b{background:rgba(74,159,212,0.15);border:1.5px solid rgba(74,159,212,.3)}
+.tsc .tn{font-size:.7em;font-weight:700;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.tsc.r .tn{color:#e74c3c}.tsc.b .tn{color:#4a9fd4}
+.tsc .tv{font-size:1.4em;font-weight:900;line-height:1}.tsc.r .tv{color:#e74c3c}.tsc.b .tv{color:#4a9fd4}
+.vb{font-size:.75em;font-weight:900;color:var(--txtD);padding:4px 8px;border-radius:20px;border:1px solid var(--bdr);background:var(--card)}
+.mpl{display:flex;flex-wrap:wrap;gap:3px;justify-content:center;margin-top:3px}
+.mp{font-size:.63em;padding:2px 5px;border-radius:8px;font-weight:600;background:rgba(255,255,255,.05);color:var(--txtD)}.mp.oc{opacity:.5;background:rgba(212,175,55,0.15);color:var(--gold)}
+.couch{background:rgba(212,175,55,0.1);border:1.5px solid rgba(212,175,55,0.3);border-radius:var(--R);padding:12px;margin-bottom:8px;box-shadow:var(--sh)}
+.couch .clb{text-align:center;font-size:.78em;font-weight:800;color:var(--gold);letter-spacing:2px;margin-bottom:8px}
+.cseats{display:flex;justify-content:center;gap:8px;flex-wrap:wrap}
+.cseat{display:inline-flex;align-items:center;justify-content:center;gap:4px;padding:5px 12px;border-radius:20px;font-size:.78em;font-weight:700}
+.cseat.fr{background:var(--red);color:#fff}.cseat.fb{background:var(--blue);color:#fff}
+.cseat.empty{width:36px;height:36px;border-radius:50%;border:2px dashed rgba(212,175,55,0.3);color:rgba(212,175,55,0.4);font-size:.7em;padding:0}
+.cseat.me{box-shadow:0 0 0 3px rgba(196,127,23,.4)}
+.qcard{background:var(--card);border:1.5px solid var(--bdr);border-radius:var(--R);padding:16px;margin-bottom:8px;text-align:center;box-shadow:var(--sh)}
+.qcat{font-size:.72em;font-weight:700;color:var(--gold);letter-spacing:1px;margin-bottom:6px}
+.tbar{text-align:center;margin-bottom:8px}
+.tc{display:inline-flex;align-items:center;justify-content:center;width:56px;height:56px;border-radius:50%;border:3px solid var(--gold);font-size:1.5em;font-weight:900;color:var(--gold);background:var(--card);box-shadow:var(--sh);transition:all .3s}
+.tc.dng{border-color:var(--red);color:var(--red);animation:tp .5s infinite}
+.tc.sm{width:44px;height:44px;font-size:1.2em;border-color:var(--org);color:var(--org)}
+.tc.sm.dng{border-color:var(--red);color:var(--red)}
+@keyframes tp{0%,100%{transform:scale(1)}50%{transform:scale(1.08)}}
+.buzzb{width:100%;padding:20px;border:none;border-radius:var(--R);font-family:inherit;font-size:1.25em;font-weight:800;cursor:pointer;background:linear-gradient(135deg,#d4af37,#b8941e);color:#0a1a3a;box-shadow:0 4px 18px rgba(212,175,55,.3);transition:all .15s;margin-bottom:8px}
+.buzzb:active:not(:disabled){transform:scale(.96)}
+.buzzb:disabled{background:rgba(15,30,65,0.5);color:var(--txtD);box-shadow:none;cursor:not-allowed}
+.sts{padding:8px 12px;border-radius:var(--r);font-size:.85em;font-weight:700;text-align:center;margin-bottom:8px}
+.sts.i{background:rgba(74,159,212,0.15);color:#4a9fd4}.sts.s{background:rgba(46,204,113,0.15);color:#2ecc71}
+.sts.e{background:rgba(192,57,43,0.15);color:#e74c3c}.sts.w{background:rgba(212,175,55,0.15);color:#d4af37}
+.opts{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:8px}
+.ob{padding:12px 8px;background:var(--card);border:1.5px solid var(--bdr);border-radius:var(--r);font-family:inherit;font-size:.9em;font-weight:700;color:var(--txt);cursor:pointer;transition:all .2s;text-align:center;min-height:50px;display:flex;align-items:center;justify-content:center;box-shadow:var(--sh)}
+.ob:hover:not(:disabled){border-color:var(--gold);background:rgba(212,175,55,0.15)}
+.ob:active:not(:disabled){transform:scale(.96)}.ob:disabled{opacity:.35;cursor:not-allowed}
+.aia{margin-bottom:8px}
+.aia input{width:100%;padding:12px;background:rgba(10,26,58,0.5);border:2px solid var(--gold);border-radius:var(--r);color:var(--txt);font-family:inherit;font-size:1em;font-weight:700;text-align:center;outline:none;margin-bottom:6px}
+.aia input::placeholder{color:var(--txtD)}
+.chg{display:grid;gap:8px;margin-bottom:8px}
+.chb{padding:14px;border:none;border-radius:var(--r);font-family:inherit;font-size:.95em;font-weight:700;cursor:pointer;transition:all .2s}
+.chb:active{transform:scale(.97)}.chb.sit{background:var(--grn);color:#fff}.chb.pull{background:var(--red);color:#fff}
+.bzi{padding:6px 12px;border-radius:var(--r);background:rgba(212,175,55,0.1);text-align:center;font-size:.82em;font-weight:700;color:#d4af37;margin-bottom:8px}
+.vic{display:none;text-align:center;padding:40px 16px;flex:1;justify-content:center;align-items:center;flex-direction:column}
+.vic.on{display:flex}
+.vic .tr{font-size:4em;margin-bottom:12px;animation:bnc 1.5s infinite}
+@keyframes bnc{0%,100%{transform:translateY(0)}50%{transform:translateY(-12px)}}
+.vic h2{font-size:1.6em;font-weight:900;color:var(--gold);margin-bottom:20px}
+.spc{flex:1}.hid{display:none!important}
+@keyframes blink{0%,100%{opacity:1}50%{opacity:0}}
+.qtxt{font-size:1.08em;font-weight:700;line-height:1.5;min-height:1.5em}
+/* Replay team select overlay */
+.rto{display:none;position:fixed;inset:0;background:rgba(0,0,0,.4);z-index:100;justify-content:center;align-items:center}
+.rto.on{display:flex}
+.rto .inner{background:rgba(12,28,60,0.95);border:1.5px solid rgba(212,175,55,0.3);border-radius:var(--R);padding:24px;width:90%;max-width:380px;box-shadow:0 8px 30px rgba(0,0,0,.3)}
+</style>
+<style>
+.app{max-width:560px}
+.row{display:flex;gap:8px}.row .fld,.row input,.row .btn{flex:1;min-width:0}
+.row input{padding:11px;background:rgba(10,26,58,.5);border:1.5px solid var(--bdr);border-radius:var(--r);color:var(--txt);font-family:inherit;font-weight:600;outline:none}
+.hint{font-size:.78em;color:var(--txtD);line-height:1.7;margin-top:10px}
+.cmdbar{display:flex;justify-content:space-around;gap:6px;background:linear-gradient(135deg,#d4af37,#f5e6a3);color:#0a1a3a;border-radius:var(--R);padding:10px;margin-bottom:8px;font-weight:800;text-align:center}
+.cmdbar b{font-size:1.5em;background:#0a1a3a;color:#d4af37;border-radius:8px;padding:0 10px;margin:0 4px}
+.ctrl{display:grid;grid-template-columns:1fr 1fr;gap:6px;margin:8px 0}.ctrl .btn{margin:0;padding:10px;font-size:.85em}
+.ob .l{color:var(--gold);font-weight:900;margin-inline-end:8px}.ob.x{opacity:.3;text-decoration:line-through}
+.sts b{color:#fff;font-size:1.25em}
+.vic{position:fixed;inset:0;background:rgba(10,26,58,.97);z-index:50;padding:20px}.vic .btn{max-width:340px}
+</style>
+</head>
+<body>
+<div class="app">
+
+<div id="setup" class="scr on">
+ <div class="hdr"><h1>🛋️ لعبة الكنبة</h1><div class="sub">نسخة البث المباشر · تيك توك لايف</div></div>
+ <div class="card">
+  <div class="fld"><label>رابط الاتصال بالبث (TikFinity)</label><input id="wsUrl" value="ws://127.0.0.1:21213" dir="ltr"></div>
+  <div class="row">
+   <div class="fld"><label>رقم المشاركة</label><input id="joinCmd" value="1" inputmode="numeric"></div>
+   <div class="fld"><label>رقم طلب الإجابة</label><input id="buzzCmd" value="2" inputmode="numeric"></div>
+  </div>
+  <div class="fld"><label>الفريق الأول</label><input id="t1n" value="الفريق الأحمر"></div>
+  <div class="fld"><label>الفريق الثاني</label><input id="t2n" value="الفريق الأزرق"></div>
+  <div class="fld"><label>حجم الكنبة</label><select id="tsz"><option>2</option><option selected>3</option><option>4</option><option>5</option></select></div>
+  <div class="sts i" id="conn">غير متصل بالبث</div>
+  <button class="btn bg" onclick="connectWS()">🔌 اتصال بالبث</button>
+  <button class="btn bp" onclick="openLobby()">فتح التسجيل ▶️</button>
+  <div class="hint">شغّل TikFinity وابدأ بثك من خلاله ثم اضغط اتصال. للتجربة بدون بث افتح التسجيل واستخدم زر «محاكاة».</div>
+ </div>
+</div>
+
+<div id="game" class="scr">
+ <div class="cmdbar"><div>للمشاركة اكتب <b id="cJ"></b></div><div>لطلب الإجابة اكتب <b id="cB"></b></div></div>
+ <div class="gtb">
+  <div class="tsc r"><div class="tn" id="n1"></div><div class="tv" id="s1">0</div><div class="mpl" id="p1"></div></div>
+  <div class="vb">VS</div>
+  <div class="tsc b"><div class="tn" id="n2"></div><div class="tv" id="s2">0</div><div class="mpl" id="p2"></div></div>
+ </div>
+ <div class="couch"><div class="clb">🛋️ كنبة الفوز (<span id="cc">0</span>/<span id="cm">3</span>)</div><div class="cseats" id="seats"></div></div>
+ <div id="lobbyBox" class="card" style="text-align:center">
+  <div style="font-size:1.15em;font-weight:800;color:var(--gold)">التسجيل مفتوح</div>
+  <div id="lobInfo" style="margin:6px 0;color:var(--txtM)"></div>
+  <button class="btn bp" onclick="startGame()">ابدأ اللعبة ▶️</button>
+ </div>
+ <div id="playBox" class="hid">
+  <div class="qcard"><div class="qcat" id="qCat"></div><div class="qtxt" id="qTxt"></div></div>
+  <div class="tbar"><div class="tc" id="tc"></div></div>
+  <div class="sts i" id="sts"></div>
+  <div class="opts" id="opts"></div>
+ </div>
+ <div class="ctrl">
+  <button class="btn bp" onclick="nextQ()">⏭️ السؤال التالي</button>
+  <button class="btn bo" id="autoB" onclick="toggle('auto')"></button>
+  <button class="btn bo" id="lockB" onclick="toggle('lock')"></button>
+  <button class="btn bo" onclick="$('sim').classList.toggle('hid')">🧪 محاكاة</button>
+ </div>
+ <div id="sim" class="card hid">
+  <div class="fld"><label>محاكاة تعليق مشارك (للتجربة)</label>
+   <div class="row"><input id="sU" value="سالم"><input id="sT" placeholder="التعليق"></div></div>
+  <div class="row"><button class="btn bg" onclick="simSend()">إرسال</button><button class="btn bo" onclick="simBots()">+6 مشاركين</button></div>
+ </div>
+ <div class="vic" id="vic"><div class="tr">🏆</div><h2 id="vicMsg"></h2><div id="vicP" class="mpl" style="margin-bottom:16px"></div>
+  <button class="btn bp" onclick="newGame(true)">لعبة جديدة بنفس المشاركين</button>
+  <button class="btn bo" onclick="newGame(false)">تصفير المشاركين</button></div>
+</div>
+
+</div>
+<script>
+/* ═══════ QUESTIONS ═══════ */
+const ALL_Q = [
+  {cat:"دينية",q:"كم عدد سور القرآن الكريم؟",opts:["114 سورة","110 سورة","120 سورة","100 سورة"],c:0},
+  {cat:"دينية",q:"ما هي أطول سورة في القرآن الكريم؟",opts:["سورة البقرة","سورة آل عمران","سورة النساء","سورة الأعراف"],c:0},
+  {cat:"دينية",q:"كم عدد أركان الإسلام؟",opts:["5","4","6","7"],c:0},
+  {cat:"دينية",q:"من هو خاتم الأنبياء؟",opts:["محمد ﷺ","عيسى عليه السلام","موسى عليه السلام","إبراهيم عليه السلام"],c:0},
+  {cat:"دينية",q:"في أي شهر فُرض الصيام؟",opts:["رمضان","شعبان","رجب","ذو القعدة"],c:0},
+  {cat:"دينية",q:"كم عدد أركان الإيمان؟",opts:["6","5","7","4"],c:0},
+  {cat:"دينية",q:"ما أول ما نزل من القرآن الكريم؟",opts:["اقرأ","الفاتحة","المدثر","البسملة"],c:0},
+  {cat:"دينية",q:"كم عدد الأنبياء المذكورين في القرآن؟",opts:["25","24","26","30"],c:0},
+  {cat:"دينية",q:"ما هي السورة التي تعدل ثلث القرآن؟",opts:["الإخلاص","الفاتحة","البقرة","يس"],c:0},
+  {cat:"ثقافية",q:"من هو مخترع المصباح الكهربائي؟",opts:["توماس إديسون","نيكولا تسلا","بنجامين فرانكلين","ألكسندر بيل"],c:0},
+  {cat:"ثقافية",q:"ما هي أكبر دولة عربية مساحة؟",opts:["الجزائر","السعودية","السودان","ليبيا"],c:0},
+  {cat:"ثقافية",q:"كم عدد قارات العالم؟",opts:["7","6","5","8"],c:0},
+  {cat:"ثقافية",q:"ما هي اللغة الأكثر تحدثاً في العالم؟",opts:["الصينية","الإنجليزية","الإسبانية","العربية"],c:0},
+  {cat:"جغرافية",q:"ما هي عاصمة اليابان؟",opts:["طوكيو","كيوتو","أوساكا","يوكوهاما"],c:0},
+  {cat:"جغرافية",q:"ما هو أطول نهر في العالم؟",opts:["نهر النيل","نهر الأمازون","نهر المسيسيبي","نهر اليانغتسي"],c:0},
+  {cat:"جغرافية",q:"كم عدد دول مجلس التعاون الخليجي؟",opts:["6","5","7","8"],c:0},
+  {cat:"جغرافية",q:"ما هي أكبر صحراء في العالم؟",opts:["الصحراء الكبرى","الربع الخالي","غوبي","كالاهاري"],c:0},
+  {cat:"جغرافية",q:"ما هي أصغر دولة في العالم؟",opts:["الفاتيكان","موناكو","سان مارينو","ليختنشتاين"],c:0},
+  {cat:"رياضية",q:"كم عدد لاعبي كرة القدم في الفريق؟",opts:["11","10","12","9"],c:0},
+  {cat:"رياضية",q:"في أي عام أقيمت أول بطولة كأس عالم؟",opts:["1930","1928","1934","1926"],c:0},
+  {cat:"رياضية",q:"كم مدة الشوط الواحد في كرة القدم؟",opts:["45 دقيقة","40 دقيقة","50 دقيقة","30 دقيقة"],c:0},
+  {cat:"علمية",q:"كم عدد كواكب المجموعة الشمسية؟",opts:["8","9","7","10"],c:0},
+  {cat:"علمية",q:"ما هو العنصر الأكثر وفرة في الكون؟",opts:["الهيدروجين","الأكسجين","الكربون","الهيليوم"],c:0},
+  {cat:"علمية",q:"كم عدد عظام جسم الإنسان البالغ؟",opts:["206","205","208","200"],c:0},
+  {cat:"علمية",q:"ما هو أصلب معدن على وجه الأرض؟",opts:["الألماس","الحديد","التيتانيوم","الذهب"],c:0},
+  {cat:"عامة",q:"كم عدد ألوان قوس قزح؟",opts:["7","6","8","5"],c:0},
+  {cat:"عامة",q:"ما هي العملة الرسمية لليابان؟",opts:["الين","الوون","اليوان","الدولار"],c:0},
+  {cat:"عامة",q:"كم عدد حروف اللغة العربية؟",opts:["28","26","30","27"],c:0},
+  {cat:"عامة",q:"ما هو الحيوان الأسرع في العالم؟",opts:["الفهد","الأسد","الحصان","النسر"],c:0},
+  {cat:"عامة",q:"كم عدد أيام السنة الكبيسة؟",opts:["366","365","364","367"],c:0},
+  // ===== رياضية =====
+{cat:"رياضية",q:"كم عدد تبديلات الفريق المسموحة عادةً في مباريات كرة القدم (بعد تحديثات الفيفا)؟",opts:["5","3","6","4"],c:0},
+{cat:"رياضية",q:"كم عدد أشواط مباراة كرة السلة الرسمية؟",opts:["4","2","3","5"],c:0},
+{cat:"رياضية",q:"كم طول سباق الماراثون الرسمي؟",opts:["42.195 كم","40 كم","21.097 كم","50 كم"],c:0},
+{cat:"رياضية",q:"في أي دولة أُقيمت أولمبياد 2016؟",opts:["البرازيل","الصين","اليونان","بريطانيا"],c:0},
+{cat:"رياضية",q:"كم نقطة تُحتسب الرمية الثلاثية في كرة السلة؟",opts:["3","2","1","4"],c:0},
+{cat:"رياضية",q:"كم عدد اللاعبين داخل الملعب لكل فريق في كرة الطائرة؟",opts:["6","5","7","8"],c:0},
+{cat:"رياضية",q:"كم عدد الجولات في النزال الاحترافي للملاكمة عادةً؟",opts:["12","10","8","15"],c:0},
+{cat:"رياضية",q:"ما اسم البطولة الأقوى للأندية في أوروبا؟",opts:["دوري أبطال أوروبا","الدوري الأوروبي","كأس العالم للأندية","كأس السوبر الأوروبي"],c:0},
+{cat:"رياضية",q:"كم عدد أشواط مباراة التنس للرجال في البطولات الأربع الكبرى؟",opts:["5","3","4","2"],c:0},
+{cat:"رياضية",q:"أي رياضة تُعرف بـ(الرياضة البيضاء)؟",opts:["التنس","السباحة","الجودو","الكرة الطائرة"],c:0},
+
+// ===== تاريخية =====
+{cat:"تاريخية",q:"في أي عام انتهت الحرب العالمية الثانية؟",opts:["1945","1944","1946","1939"],c:0},
+{cat:"تاريخية",q:"ما اسم الحضارة التي بُنيت حول نهر النيل قديماً؟",opts:["المصرية القديمة","الرومانية","الإغريقية","الفينيقية"],c:0},
+{cat:"تاريخية",q:"من هو القائد المقدوني الذي فتح بلاداً واسعة حتى الهند؟",opts:["الإسكندر الأكبر","يوليوس قيصر","حنبعل","نيرون"],c:0},
+{cat:"تاريخية",q:"ما اسم السفينة الشهيرة التي غرقت عام 1912؟",opts:["تايتانيك","بريتانك","كوين ماري","سانتا ماريا"],c:0},
+{cat:"تاريخية",q:"ما اسم الجدار الدفاعي الشهير في الصين؟",opts:["سور الصين العظيم","جدار برلين","السور الهادرياني","سور القدس"],c:0},
+{cat:"تاريخية",q:"أي إمبراطورية كانت عاصمتها روما؟",opts:["الإمبراطورية الرومانية","البيزنطية","الفرعونية","العباسية"],c:0},
+{cat:"تاريخية",q:"في أي قارة قامت حضارة الإنكا؟",opts:["أمريكا الجنوبية","أمريكا الشمالية","أوروبا","آسيا"],c:0},
+{cat:"تاريخية",q:"ما اسم الحدث الذي أدى لانقسام ألمانيا إلى شرقية وغربية بعد الحرب العالمية الثانية؟",opts:["الحرب الباردة","حرب القرم","حرب فيتنام","حرب الخليج"],c:0},
+{cat:"تاريخية",q:"من هو المستكشف الذي ارتبط اسمه باكتشاف الأمريكتين عام 1492؟",opts:["كريستوفر كولومبوس","فاسكو دا غاما","ماجلان","جيمس كوك"],c:0},
+{cat:"تاريخية",q:"ما اسم العصر الذي تميز بالاعتماد على الحجر لصناعة الأدوات؟",opts:["العصر الحجري","العصر البرونزي","العصر الحديدي","العصر الصناعي"],c:0},
+
+// ===== مسلسلات =====
+{cat:"مسلسلات",q:"ما اسم المسلسل الذي تدور أحداثه حول صناعة المخدرات وشخصية والتر وايت؟",opts:["Breaking Bad","The Office","Friends","Sherlock"],c:0},
+{cat:"مسلسلات",q:"ما اسم المسلسل الكوري الذي يعتمد على ألعاب قاتلة للفوز بجائزة؟",opts:["لعبة الحبار","دارك","ناركوس","بيكي بلايندرز"],c:0},
+{cat:"مسلسلات",q:"ما اسم المسلسل الإسباني عن سرقة مطبعة النقود بقيادة (البروفيسور)؟",opts:["La Casa de Papel","Vikings","Stranger Things","Narcos"],c:0},
+{cat:"مسلسلات",q:"ما اسم المسلسل الكوميدي الشهير الذي تدور أحداثه حول 6 أصدقاء في نيويورك؟",opts:["Friends","How I Met Your Mother","The Big Bang Theory","Modern Family"],c:0},
+{cat:"مسلسلات",q:"أي مسلسل تدور أحداثه حول محقق عبقري اسمه شيرلوك هولمز؟",opts:["Sherlock","House","Dark","Suits"],c:0},
+{cat:"مسلسلات",q:"ما اسم مسلسل الفانتازيا الذي اشتهر بصراع العروش؟",opts:["Game of Thrones","The Witcher","The Crown","Lost"],c:0},
+{cat:"مسلسلات",q:"ما اسم المسلسل الذي يتناول عصابة في برمنغهام وزعيمها توماس شيلبي؟",opts:["Peaky Blinders","Narcos","Vikings","Suits"],c:0},
+{cat:"مسلسلات",q:"ما اسم المسلسل الذي تدور أحداثه حول وباء الزومبي وبقاء الناجين؟",opts:["The Walking Dead","Dark","Prison Break","Lost"],c:0},
+{cat:"مسلسلات",q:"ما اسم المسلسل القانوني الذي بطلُه محامٍ اسمه هارفي سبيكتر؟",opts:["Suits","House","The Office","Dexter"],c:0},
+{cat:"مسلسلات",q:"ما اسم المسلسل الذي بطلُه مايكل سكوفيلد ويهرب من السجن؟",opts:["Prison Break","Lost","Dexter","Narcos"],c:0},
+
+// ===== أفلام =====
+{cat:"أفلام",q:"ما اسم فيلم الرسوم المتحركة الذي تدور قصته حول ألعاب تتحرك عندما لا يراها البشر؟",opts:["Toy Story","Shrek","Frozen","Cars"],c:0},
+{cat:"أفلام",q:"ما اسم الفيلم الذي تدور قصته حول سفينة غرقت في المحيط وقصة حب؟",opts:["Titanic","Inception","Gladiator","Avatar"],c:0},
+{cat:"أفلام",q:"ما اسم الفيلم الذي يدور حول دخول الأحلام وزراعة الأفكار؟",opts:["Inception","Interstellar","The Matrix","Memento"],c:0},
+{cat:"أفلام",q:"ما اسم الفيلم الذي يتحدث عن كوكب باندورا وكائنات زرقاء؟",opts:["Avatar","Dune","Star Wars","Joker"],c:0},
+{cat:"أفلام",q:"ما اسم فيلم الأبطال الخارقين الذي يجمع شخصيات مارفل ضد تهديد كبير؟",opts:["Avengers","Batman","Superman","X-Men"],c:0},
+{cat:"أفلام",q:"ما اسم الفيلم الذي تدور أحداثه في مدرسة سحرية وبطله هاري؟",opts:["Harry Potter","The Hobbit","Narnia","Fantastic Beasts"],c:0},
+{cat:"أفلام",q:"ما اسم الفيلم الذي بطلُه محارب روماني يعود للانتقام في الساحة؟",opts:["Gladiator","Braveheart","Troy","300"],c:0},
+{cat:"أفلام",q:"ما اسم الفيلم الذي بطلُه مهرج ويستعرض تحوله النفسي في جوثام؟",opts:["Joker","The Dark Knight","Venom","Logan"],c:0},
+{cat:"أفلام",q:"ما اسم الفيلم الذي يدور حول رحلة فضائية لإنقاذ البشرية عبر ثقب دودي؟",opts:["Interstellar","Gravity","The Martian","Arrival"],c:0},
+{cat:"أفلام",q:"ما اسم الفيلم الشهير عن ديناصورات تعود للحياة داخل حديقة؟",opts:["Jurassic Park","King Kong","Godzilla","Jumanji"],c:0},
+            // ===== اقتصاد =====
+{cat:"اقتصاد",q:"ما العملة الرسمية للمملكة العربية السعودية؟",opts:["الريال","الدينار","الدرهم","الجنيه"],c:0},
+{cat:"اقتصاد",q:"ما معنى GDP؟",opts:["الناتج المحلي الإجمالي","الدخل الفردي","الميزانية العامة","قيمة الصادرات"],c:0},
+{cat:"اقتصاد",q:"من يتحكم بالسياسة النقدية للدولة؟",opts:["البنك المركزي","وزارة التعليم","البلدية","الشركات"],c:0},
+{cat:"اقتصاد",q:"ارتفاع الأسعار يسمى؟",opts:["التضخم","الكساد","الانكماش","الاحتكار"],c:0},
+{cat:"اقتصاد",q:"شراء الأسهم يعني؟",opts:["امتلاك جزء من شركة","إقراض بنك","شراء أرض","فتح حساب"],c:0},
+
+// ===== علوم =====
+{cat:"علمية",q:"ما الغاز الذي نتنفسه؟",opts:["الأكسجين","الهيدروجين","النيتروجين","ثاني أكسيد الكربون"],c:0},
+{cat:"علمية",q:"درجة غليان الماء؟",opts:["100°","90°","80°","120°"],c:0},
+{cat:"علمية",q:"أقوى حاسة لدى الإنسان؟",opts:["البصر","الشم","السمع","اللمس"],c:0},
+{cat:"علمية",q:"مركز الجهاز العصبي؟",opts:["الدماغ","القلب","الرئة","المعدة"],c:0},
+{cat:"علمية",q:"كم عدد كروموسومات الإنسان؟",opts:["46","44","48","50"],c:0},
+
+// ===== ألعاب =====
+{cat:"ألعاب",q:"شركة بلايستيشن تتبع؟",opts:["سوني","مايكروسوفت","نينتندو","سيغا"],c:0},
+{cat:"ألعاب",q:"لعبة ماينكرافت تعتمد على؟",opts:["البناء والاستكشاف","السباق","الرياضة","الرماية فقط"],c:0},
+{cat:"ألعاب",q:"أشهر لعبة باتل رويال؟",opts:["Fortnite","FIFA","GTA","Need for Speed"],c:0},
+{cat:"ألعاب",q:"جهاز Xbox تابع لشركة؟",opts:["مايكروسوفت","سوني","جوجل","أبل"],c:0},
+{cat:"ألعاب",q:"لعبة GTA تصنف؟",opts:["عالم مفتوح","سباق","ألغاز","رياضة"],c:0},
+
+// ===== جسم الإنسان =====
+{cat:"جسم",q:"أكبر عضو في جسم الإنسان؟",opts:["الجلد","القلب","الكبد","الرئة"],c:0},
+{cat:"جسم",q:"عدد أسنان الإنسان البالغ؟",opts:["32","28","30","36"],c:0},
+{cat:"جسم",q:"العضو المسؤول عن ضخ الدم؟",opts:["القلب","الرئة","الدماغ","الكبد"],c:0},
+{cat:"جسم",q:"أقوى عضلة نسبة لحجمها؟",opts:["اللسان","الذراع","الساق","الظهر"],c:0},
+{cat:"جسم",q:"العظام تحمي؟",opts:["الأعضاء الداخلية","الجلد","الدم","الأعصاب"],c:0},
+
+// ===== ذكاء سريع =====
+{cat:"ألغاز",q:"شيء كلما مشى فقد جزءاً منه؟",opts:["الشمعة","القلم","الكتاب","الظل"],c:0},
+{cat:"ألغاز",q:"له رقبة بلا رأس؟",opts:["الزجاجة","الإنسان","الحصان","الشجرة"],c:0},
+{cat:"ألغاز",q:"يذهب ولا يعود؟",opts:["الوقت","المطر","النهر","الصوت"],c:0},
+{cat:"ألغاز",q:"بيت بلا أبواب ولا نوافذ؟",opts:["البيضة","الخيمة","القصر","الكهف"],c:0},
+{cat:"ألغاز",q:"يمشي ويقف وليس له أرجل؟",opts:["الساعة","السيارة","القلم","النهر"],c:0},
+
+// ===== دول =====
+{cat:"دول",q:"عاصمة فرنسا؟",opts:["باريس","روما","مدريد","برلين"],c:0},
+{cat:"دول",q:"أكبر دولة في العالم؟",opts:["روسيا","الصين","أمريكا","كندا"],c:0},
+{cat:"دول",q:"عاصمة مصر؟",opts:["القاهرة","الإسكندرية","الجيزة","الأقصر"],c:0},
+{cat:"دول",q:"عاصمة تركيا؟",opts:["أنقرة","إسطنبول","إزمير","بورصة"],c:0},
+{cat:"دول",q:"عاصمة كندا؟",opts:["أوتاوا","تورنتو","فانكوفر","مونتريال"],c:0},
+{cat:"دول",q:"ما هي عاصمة إيطاليا؟",opts:["روما","ميلان","نابولي","فلورنسا"],c:0},
+{cat:"دول",q:"ما هي عاصمة ألمانيا؟",opts:["برلين","ميونخ","فرانكفورت","هامبورغ"],c:0},
+{cat:"دول",q:"ما هي عاصمة إسبانيا؟",opts:["مدريد","برشلونة","فالنسيا","إشبيلية"],c:0},
+{cat:"دول",q:"ما هي عاصمة أستراليا؟",opts:["كانبرا","سيدني","ملبورن","بيرث"],c:0},
+{cat:"دول",q:"ما هي عاصمة البرازيل؟",opts:["برازيليا","ريو دي جانيرو","ساو باولو","سلفادور"],c:0},
+{cat:"دول",q:"ما هي عاصمة الهند؟",opts:["نيودلهي","مومباي","كالكوتا","تشيناي"],c:0},
+{cat:"دول",q:"ما هي عاصمة الصين؟",opts:["بكين","شنغهاي","هونغ كونغ","قوانغتشو"],c:0},
+{cat:"دول",q:"ما هي عاصمة روسيا؟",opts:["موسكو","سانت بطرسبرغ","سوتشي","قازان"],c:0},
+{cat:"دول",q:"ما هي عاصمة اليونان؟",opts:["أثينا","سالونيك","باتراس","كريت"],c:0},
+{cat:"دول",q:"ما هي عاصمة السويد؟",opts:["ستوكهولم","مالمو","أوبسالا","غوتنبرغ"],c:0},
+{cat:"دول",q:"ما هي عاصمة النرويج؟",opts:["أوسلو","بيرغن","تروندهايم","ستافنغر"],c:0},
+{cat:"دول",q:"ما هي عاصمة الدنمارك؟",opts:["كوبنهاغن","آرهوس","أودنسه","ألبورغ"],c:0},
+{cat:"دول",q:"ما هي عاصمة فنلندا؟",opts:["هلسنكي","تامبيري","توركو","أولو"],c:0},
+{cat:"دول",q:"ما هي عاصمة هولندا؟",opts:["أمستردام","روتردام","لاهاي","أوترخت"],c:0},
+{cat:"دول",q:"ما هي عاصمة بلجيكا؟",opts:["بروكسل","أنتويرب","بروج","غنت"],c:0},
+{cat:"دول",q:"ما هي عاصمة سويسرا؟",opts:["برن","زيورخ","جنيف","لوزان"],c:0},
+{cat:"دول",q:"ما هي عاصمة النمسا؟",opts:["فيينا","سالزبورغ","غراتس","لينز"],c:0},
+
+{cat:"دول",q:"ما هي عاصمة المكسيك؟",opts:["مكسيكو سيتي","كانكون","غوادالاخارا","مونتيري"],c:0},
+{cat:"دول",q:"ما هي عاصمة الأرجنتين؟",opts:["بوينس آيرس","قرطبة","مندوزا","روزاريو"],c:0},
+{cat:"دول",q:"ما هي عاصمة تشيلي؟",opts:["سانتياغو","فالبارايسو","كونثبثيون","لاكاليرا"],c:0},
+{cat:"دول",q:"ما هي عاصمة جنوب أفريقيا؟",opts:["بريتوريا","كيب تاون","جوهانسبرغ","ديربان"],c:0},
+{cat:"دول",q:"ما هي عاصمة نيجيريا؟",opts:["أبوجا","لاغوس","كانو","إيبادان"],c:0},
+{cat:"دول",q:"ما هي عاصمة المغرب؟",opts:["الرباط","الدار البيضاء","مراكش","طنجة"],c:0},
+{cat:"دول",q:"ما هي عاصمة الجزائر؟",opts:["الجزائر","وهران","قسنطينة","عنابة"],c:0},
+{cat:"دول",q:"ما هي عاصمة تونس؟",opts:["تونس","صفاقس","سوسة","بنزرت"],c:0},
+
+// ===== متنوعة =====
+{cat:"عامة",q:"كم عدد أيام الأسبوع؟",opts:["7","6","5","8"],c:0},
+{cat:"عامة",q:"لون الزمرد؟",opts:["أخضر","أحمر","أزرق","أصفر"],c:0},
+{cat:"عامة",q:"آلة قياس الحرارة؟",opts:["الترمومتر","البارومتر","الميزان","المقياس"],c:0},
+{cat:"عامة",q:"كم عدد ساعات اليوم؟",opts:["24","12","18","30"],c:0},
+{cat:"عامة",q:"أكبر محيط في العالم؟",opts:["الهادئ","الأطلسي","الهندي","المتجمد"],c:0}
+];
+function norm(s){return s.toLowerCase().replace(/[\u064B-\u065F\u0670]/g,'').replace(/ة/g,'ه').replace(/ى/g,'ي').replace(/[أإآٱ]/g,'ا').replace(/ؤ/g,'و').replace(/ئ/g,'ي').replace(/\s+/g,' ').trim()}
+
+const AR_N={'واحد':1,'اثنين':2,'اثنان':2,'ثلاثة':3,'ثلاث':3,'اربعة':4,'اربع':4,'خمسة':5,'خمس':5,
+'ستة':6,'ست':6,'سبعة':7,'سبع':7,'ثمانية':8,'ثماني':8,'ثمان':8,'تسعة':9,'تسع':9,
+'عشرة':10,'عشر':10,'احد عشر':11,'اثنا عشر':12,'مئة':100,'مائة':100,'مئتين':200,
+'ثلاثمئة':300,'اربعمئة':400,'خمسمئة':500,'الف':1000};
+
+function getNums(s){const m=s.match(/\d+/g);const r=m?m.map(Number):[];
+const n=norm(s);for(const[w,v]of Object.entries(AR_N))if(n.includes(norm(w)))r.push(v);return[...new Set(r)]}
+
+/* ═══════ PHONETIC TRANSLITERATION SYSTEM ═══════ */
+// تحويل النص العربي إلى أحرف لاتينية صوتية
+function arToLatin(s){
+  s=s.replace(/[\u064B-\u065F\u0670]/g,'');
+  const m={'ا':'a','أ':'a','إ':'a','آ':'aa','ب':'b','پ':'p','ت':'t','ث':'th','ج':'j','ح':'h','خ':'kh',
+    'د':'d','ذ':'dh','ر':'r','ز':'z','س':'s','ش':'sh','ص':'s','ض':'d','ط':'t','ظ':'z',
+    'ع':'a','غ':'g','ف':'f','ق':'q','ك':'k','ل':'l','م':'m','ن':'n','ه':'h','و':'w',
+    'ي':'y','ة':'a','ى':'a','ئ':'y','ؤ':'w'};
+  let r='';
+  for(let c of s) r+=(m[c]!==undefined)?m[c]:c;
+  return r;
+}
+
+// توليد مفتاح صوتي موحد للمقارنة (يعمل مع عربي ولاتيني)
+function phoneticKey(s){
+  s=s.toLowerCase().trim();
+  // لو عربي حوّله للاتيني أول
+  if(/[\u0600-\u06FF]/.test(s)){
+    // شيل "ال" التعريف
+    s=s.replace(/(^|\s)ال/g,'$1');
+    s=arToLatin(s);
+  }
+  // نظّف الانجليزي
+  s=s.replace(/ph/g,'f').replace(/ck/g,'k').replace(/x/g,'ks');
+  // تبسيط الحروف الصامتة في الانجليزي
+  s=s.replace(/ght/g,'t');     // knight→knit, night→nit, fight→fit
+  s=s.replace(/\bkn/g,'n');    // knight→nit, know→now, knee→nee
+  s=s.replace(/\bwr/g,'r');    // write→rite, wrong→rong
+  s=s.replace(/mb\b/g,'m');    // climb→clim, bomb→bom
+  // شيل أدوات التعريف والربط
+  s=s.replace(/\b(the|of|a|an|de|la|el|le|los|las)\b/g,'');
+  // وحّد الأصوات المتشابهة
+  s=s.replace(/[gqj]/g,'k');   // ق غ ج ك → k (في العربي ج تمثل g و j)
+  s=s.replace(/c(?=[eiy])/g,'s'); // ce ci cy → s
+  s=s.replace(/c/g,'k');       // c → k
+  s=s.replace(/[sz]/g,'s');    // س ز ص → s
+  s=s.replace(/[dt]/g,'t');    // د ت ط ض → t
+  s=s.replace(/[pb]/g,'b');    // ب پ → b
+  s=s.replace(/v/g,'f');       // ف ڤ → f
+  // شيل كل شي غير حروف
+  s=s.replace(/[^a-z]/g,'');
+  // شيل التكرار
+  s=s.replace(/(.)\1+/g,'$1');
+  return s;
+}
+
+// توليد مفتاح الحروف الساكنة فقط (بدون حركات)
+function consonantKey(s){
+  s=phoneticKey(s);
+  // شيل كل الحركات + الأحرف اللي تمثل حركات في التعريب (و=o/u, ي=i/e, ه=غالباً صامتة)
+  s=s.replace(/[aeiouhyw]/g,'');
+  // شيل التكرار الجديد اللي صار بعد حذف الحركات
+  s=s.replace(/(.)\1+/g,'$1');
+  return s;
+}
+
+// مقارنة صوتية ذكية
+function phoneticMatch(userInput,correctAns){
+  // لو ما فيه خلط عربي/انجليزي لا تسوي شي
+  const hasAr=/[\u0600-\u06FF]/.test(userInput);
+  const hasEn=/[a-zA-Z]/.test(correctAns);
+  if(!hasAr && !hasEn) return false;
+
+  const uKey=phoneticKey(userInput);
+  const cKey=phoneticKey(correctAns);
+
+  // مطابقة كاملة
+  if(uKey===cKey) return true;
+  if(uKey.length>=3 && cKey.length>=3){
+    // مطابقة جزئية (لو كتب جزء كبير من الاسم)
+    if(cKey.includes(uKey) && uKey.length>=cKey.length*0.5) return true;
+    if(uKey.includes(cKey) && cKey.length>=uKey.length*0.5) return true;
+  }
+
+  // مقارنة الحروف الساكنة
+  const uCon=consonantKey(userInput);
+  const cCon=consonantKey(correctAns);
+  if(uCon.length>=3 && cCon.length>=3){
+    if(uCon===cCon) return true;
+    if(cCon.includes(uCon) && uCon.length>=cCon.length*0.5) return true;
+    if(uCon.includes(cCon) && cCon.length>=uCon.length*0.5) return true;
+  }
+
+  // مقارنة كلمة بكلمة
+  const uWords=userInput.replace(/(^|\s)ال/g,'$1').split(/\s+/).filter(w=>w.length>1);
+  const cWords=correctAns.toLowerCase().replace(/\b(the|of|a|an|de|la)\b/g,'').split(/\s+/).filter(w=>w.length>1);
+  if(cWords.length>0){
+    let matched=0;
+    for(const cw of cWords){
+      const ck=phoneticKey(cw);
+      if(ck.length<2) continue;
+      for(const uw of uWords){
+        const uk=phoneticKey(uw);
+        if(uk.length<2) continue;
+        if(uk===ck || (ck.length>=3 && uk.length>=3 && (ck.includes(uk)||uk.includes(ck)))) {matched++;break}
+        // مقارنة ساكنة
+        const ukc=consonantKey(uw), ckc=consonantKey(cw);
+        if(ukc.length>=2 && ckc.length>=2 && (ukc===ckc||(ckc.includes(ukc)&&ukc.length>=ckc.length*0.6)||(ukc.includes(ckc)&&ckc.length>=ukc.length*0.6))){matched++;break}
+      }
+    }
+    // لو طابق أغلب الكلمات المهمة
+    if(matched>=Math.ceil(cWords.length*0.6) && matched>=1) return true;
+  }
+
+  return false;
+}
+
+function checkAns(u,c){
+  const un=norm(u),cn=norm(c);if(un===cn)return true;
+  const uN=getNums(u),cN=getNums(c);
+  if(uN.length&&cN.length){for(const a of uN)for(const b of cN)if(a===b)return true}
+  if(un.length>=3&&cn.includes(un))return true;if(cn.length>=3&&un.includes(cn))return true;
+  const uw=un.split(' ').filter(w=>w.length>2),cw=cn.split(' ').filter(w=>w.length>2);
+  for(const a of uw)for(const b of cw){if(a===b)return true;if(a.length>=3&&b.includes(a))return true;if(b.length>=3&&a.includes(b))return true}
+  // ✅ مطابقة صوتية للتعريب (مثلاً: والكينق ديد = Walking Dead)
+  if(phoneticMatch(u,c)) return true;
+  return false}
+
+/* ═══════ LIVE GAME ═══════ */
+const $=id=>document.getElementById(id);
+const esc=s=>String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const toEn=s=>s.replace(/[٠-٩]/g,d=>d.charCodeAt(0)-1632).replace(/[۰-۹]/g,d=>d.charCodeAt(0)-1776);
+const sh=a=>{for(let i=a.length-1;i>0;i--){const j=Math.random()*(i+1)|0;[a[i],a[j]]=[a[j],a[i]]}return a};
+const LET=['أ','ب','ج','د'],LMAP={'ا':0,'a':0,'ب':1,'b':1,'ج':2,'c':2,'د':3,'d':3};
+const S={ph:'setup',players:{},couch:[],used:[],auto:true,lock:false,joinCmd:'1',buzzCmd:'2',size:3,t1:'',t2:'',note:''};
+const scr=id=>document.querySelectorAll('.scr').forEach(s=>s.classList.toggle('on',s.id===id));
+const toggle=k=>{S[k]=!S[k];render()};
+
+function saveCfg(){try{localStorage.setItem('couchLive',JSON.stringify({w:$('wsUrl').value,j:$('joinCmd').value,b:$('buzzCmd').value,a:$('t1n').value,c:$('t2n').value,z:$('tsz').value}))}catch(e){}}
+function loadCfg(){try{const c=JSON.parse(localStorage.getItem('couchLive'));if(c){$('wsUrl').value=c.w;$('joinCmd').value=c.j;$('buzzCmd').value=c.b;$('t1n').value=c.a;$('t2n').value=c.c;$('tsz').value=c.z}}catch(e){}}
+
+/* ── الاتصال ببث تيك توك (TikFinity أو أي WebSocket يرسل {event:'chat',data:{...}}) ── */
+let ws,keep=false,rt;
+const setConn=(t,c)=>{const e=$('conn');e.textContent=t;e.className='sts '+c};
+function connectWS(){keep=true;clearTimeout(rt);if(ws){ws.onclose=null;ws.close()}dial()}
+function dial(){
+  setConn('⏳ جاري الاتصال...','w');
+  try{ws=new WebSocket($('wsUrl').value.trim())}catch(e){setConn('❌ الرابط غير صحيح','e');return}
+  ws.onopen=()=>setConn('✅ متصل بالبث — التعليقات توصل الآن','s');
+  ws.onmessage=e=>{let m;try{m=JSON.parse(e.data)}catch(x){return}
+    if(!['chat','comment'].includes(m.event))return;
+    const d=m.data||{},x=d.user||d;
+    onChat(x.uniqueId||d.uniqueId||x.userId,x.nickname||d.nickname||x.uniqueId,d.comment||d.text)};
+  ws.onclose=()=>{if(keep){setConn('❌ انقطع الاتصال... إعادة المحاولة','e');rt=setTimeout(dial,3000)}}}
+
+/* ── إعداد اللعبة ── */
+function openLobby(){
+  const j=toEn(norm($('joinCmd').value)),b=toEn(norm($('buzzCmd').value));
+  if(!j||!b||j===b){alert('اكتب رقمين مختلفين: واحد للمشاركة وواحد لطلب الإجابة');return}
+  Object.assign(S,{joinCmd:j,buzzCmd:b,t1:$('t1n').value.trim()||'الفريق الأحمر',t2:$('t2n').value.trim()||'الفريق الأزرق',size:+$('tsz').value});
+  saveCfg();scr('game');newGame(false)}
+
+function newGame(keepP){
+  if(!keepP)S.players={};
+  Object.assign(S,{ph:'lobby',couch:[],used:[],q:null,buzzP:null,ban:'',dis:[],win:null,note:''});
+  $('vic').classList.remove('on');
+  keepP?nextQ():render()}
+
+function startGame(){
+  if(Object.keys(S.players).length<2){alert('لازم مشاركين اثنين على الأقل');return}
+  nextQ()}
+
+function nextQ(){
+  if(['setup','lobby'].includes(S.ph)&&!Object.keys(S.players).length)return;
+  if(S.ph==='vic')return;
+  if(S.used.length>=ALL_Q.length)S.used=[];
+  let i;do{i=Math.random()*ALL_Q.length|0}while(S.used.includes(i));S.used.push(i);
+  const q=ALL_Q[i];
+  S.ans=q.opts[q.c];S.opts=sh(q.opts.map((t,k)=>({t,c:k===q.c})));S.q={cat:q.cat,q:q.q};
+  Object.assign(S,{ph:'typing',pos:0,dl:Date.now()+30000,buzzP:null,ban:'',dis:[],win:null,note:'',act:''});
+  render()}
+
+/* ── التعليقات: هنا تُعتمد إجابات المشاركين فقط ── */
+function onChat(uid,name,text){
+  if(S.ph==='setup'||!uid)return;
+  text=String(text||'').trim();if(!text)return;
+  const t=toEn(norm(text)).replace(/[\uFE0F\u20E3\s]/g,''),p=S.players[uid];
+  // إجابة اللاعب اللي ضغط الجرس (تعليقه التالي)
+  if(p&&S.ph==='answer'&&uid===S.buzzP){if(t!==S.buzzCmd)checkAns(text,S.ans)?win(uid):wrong(uid,text);return}
+  // رقم المشاركة
+  if(t===S.joinCmd){
+    if(!p&&!S.lock){const a=Object.values(S.players).filter(x=>x.team==='team1').length,b=Object.keys(S.players).length-a;
+      S.players[uid]={name:name||uid,team:a<=b?'team1':'team2'};render()}
+    return}
+  if(!p)return; // غير مسجّل = ما تُحسب له أي إجابة
+  // رقم طلب الإجابة: أسرع واحد يفوز
+  if(S.ph==='typing'&&t===S.buzzCmd&&!S.couch.includes(uid)&&p.team!==S.ban){
+    Object.assign(S,{ph:'answer',buzzP:uid,ad:Date.now()+7000,note:''});render();return}
+  // الخيارات: حرف الإجابة
+  if(S.ph==='opts'){const i=LMAP[t];
+    if(i===undefined||!S.opts[i]||S.dis.includes(i)||p.team===S.ban||S.couch.includes(uid))return;
+    if(S.opts[i].c)return win(uid);
+    S.dis.push(i);if(S.ban)return endQ();
+    S.ban=p.team;S.od=Date.now()+15000;render();return}
+  // اختيار الفائز: جلوس / سحب
+  if(S.ph==='choice'&&uid===S.win){
+    if(S.couch.length<S.size&&/جلس|جلوس/.test(t))choose(uid,'sit');else if(/سحب/.test(t))choose(uid,'pull')}}
+
+function wrong(uid,text){
+  const p=S.players[uid];
+  S.note=text?`❌ ${esc(p.name)}: ${esc(text)}`:`⏱️ ${esc(p.name)} انتهى وقته`;
+  openOpts(p.team)}
+function openOpts(ban){Object.assign(S,{ph:'opts',ban,pos:S.q.q.length,dis:[],od:Date.now()+15000});render()}
+
+function win(uid){
+  const p=S.players[uid];S.win=uid;
+  if(!S.couch.some(i=>S.players[i].team!==p.team))return choose(uid,'sit');
+  Object.assign(S,{ph:'choice',cd:Date.now()+12000});render()}
+
+function choose(uid,how){
+  const p=S.players[uid];
+  if(how==='sit'){if(S.couch.length<S.size)S.couch.push(uid);S.act='🛋️ جلس على الكنبة'}
+  else{let k=-1;S.couch.forEach((i,x)=>{if(S.players[i].team!==p.team)k=x});if(k>=0)S.couch.splice(k,1);S.act='🎯 سحب لاعباً من الخصم'}
+  finish()}
+
+function finish(){
+  const c=t=>S.couch.filter(i=>S.players[i].team===t).length;
+  if(S.couch.length>=S.size&&(c('team1')===S.size||c('team2')===S.size)){S.ph='vic';S.champ=c('team1')===S.size?'team1':'team2'}
+  else Object.assign(S,{ph:'result',res:'ok',nx:Date.now()+5000});
+  render()}
+function endQ(){Object.assign(S,{ph:'result',res:'no',nx:Date.now()+4000});render()}
+
+/* ── المؤقتات ── */
+function tick(){
+  const n=Date.now();let left=0;
+  if(S.ph==='typing'){
+    if(S.pos<S.q.q.length){S.pos++;$('qTxt').textContent=S.q.q.slice(0,S.pos)}
+    left=S.dl-n;if(left<=0)return openOpts('')}
+  else if(S.ph==='answer'){left=S.ad-n;if(left<=0)return wrong(S.buzzP)}
+  else if(S.ph==='opts'){left=S.od-n;if(left<=0)return endQ()}
+  else if(S.ph==='choice'){left=S.cd-n;if(left<=0)return choose(S.win,S.couch.length<S.size?'sit':'pull')}
+  else if(S.ph==='result'&&S.auto&&n>S.nx)return nextQ();
+  const s=Math.max(0,Math.ceil(left/1000)),c=$('tc');
+  c.textContent=s;c.classList.toggle('dng',s<=5);c.parentNode.classList.toggle('hid',left<=0)}
+setInterval(tick,80);
+
+/* ── العرض ── */
+function render(){
+  const P=S.players,ids=Object.keys(P),lob=S.ph==='lobby',nm=i=>esc(P[i]?P[i].name:'');
+  $('cJ').textContent=S.joinCmd;$('cB').textContent=S.buzzCmd;
+  [1,2].forEach(k=>{const tk='team'+k,m=ids.filter(i=>P[i].team===tk);
+    $('n'+k).textContent=S['t'+k];$('s'+k).textContent=S.couch.filter(i=>P[i].team===tk).length;
+    $('p'+k).innerHTML=m.slice(-12).map(i=>`<span class="mp${S.couch.includes(i)?' oc':''}">${esc(P[i].name)}</span>`).join('')+(m.length>12?`<span class="mp">+${m.length-12}</span>`:'')});
+  $('cc').textContent=S.couch.length;$('cm').textContent=S.size;
+  $('seats').innerHTML=Array.from({length:S.size},(_,i)=>{const p=P[S.couch[i]];
+    return p?`<div class="cseat ${p.team==='team1'?'fr':'fb'}">🏆 ${esc(p.name)}</div>`:'<div class="cseat empty">—</div>'}).join('');
+  $('autoB').textContent='🔁 تلقائي: '+(S.auto?'يعمل':'متوقف');
+  $('lockB').textContent=S.lock?'🔒 التسجيل مقفل':'🔓 التسجيل مفتوح';
+  $('lobbyBox').classList.toggle('hid',!lob);$('playBox').classList.toggle('hid',lob);
+  $('lobInfo').textContent='المشاركون: '+ids.length;
+  if(!lob&&S.q){
+    $('qCat').textContent=S.q.cat;$('qTxt').textContent=S.q.q.slice(0,S.pos||0);
+    let m='',c='i',o='';
+    if(S.ph==='typing'){m=`🔔 أول من يكتب <b>${S.buzzCmd}</b> يجاوب!`;c='w'}
+    else if(S.ph==='answer'){m=`🔔 ${nm(S.buzzP)} يجاوب... اكتب الإجابة في التعليقات`;c='w'}
+    else if(S.ph==='opts'){
+      m=S.ban?`🎯 فرصة ${esc(S.ban==='team1'?S.t2:S.t1)} — اكتب حرف الإجابة`:'🎯 الخيارات مفتوحة — اكتب حرف الإجابة';c='s';
+      o=S.opts.map((x,i)=>`<div class="ob${S.dis.includes(i)?' x':''}"><span class="l">${LET[i]}</span>${esc(x.t)}</div>`).join('')}
+    else if(S.ph==='choice'){m=`✅ ${nm(S.win)} أجاب صح! اكتب ${S.couch.length<S.size?'«جلوس» أو «سحب»':'«سحب»'}`;c='s'}
+    else if(S.ph==='result'){
+      m=S.res==='ok'?`✅ ${nm(S.win)}: ${esc(S.ans)}<br>${S.act}`:'❌ انتهت الفرصة — ما أحد جاوب صح';c=S.res==='ok'?'s':'e'}
+    $('sts').innerHTML=(S.note?S.note+'<br>':'')+m;$('sts').className='sts '+c;$('opts').innerHTML=o}
+  const v=S.ph==='vic';$('vic').classList.toggle('on',v);
+  if(v){$('vicMsg').textContent='🎉 '+S['t'+S.champ.slice(4)]+' فاز! 🎉';
+    $('vicP').innerHTML=S.couch.map(i=>`<span class="mp">${nm(i)}</span>`).join('')}}
+
+/* ── محاكاة للتجربة بدون بث ── */
+function simSend(){const u=$('sU').value.trim();onChat(u,u,$('sT').value);$('sT').value=''}
+function simBots(){['سالم','نورة','فهد','ريم','خالد','لولوة'].forEach(n=>onChat(n,n,S.joinCmd))}
+$('sT').addEventListener('keydown',e=>{if(e.key==='Enter')simSend()});
+loadCfg();
+</script>
+</body>
+</html>
